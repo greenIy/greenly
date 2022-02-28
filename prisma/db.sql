@@ -2,14 +2,14 @@
 # Notes:
 # - VARCHAR(255) for longer strings (e.g. addresses)
 # - VARCHAR(50) for most other strings
-# - UIDs will be auto-incremented for compact size-management and fast searches. Using SERIAL.
-# - References to UIDs use BIGINT UNSIGNED NOT NULL. Can be changed further down the road for memory management purposes.
+# - UIDs will be auto-incremented for compact size-management and fast searches. Using INT UNSIGNED AUTO_INCREMENT.
+# - References to UIDs use INT UNSIGNED NOT NULL. Can be changed further down the road for memory management purposes.
 # - The way a Supply is identified and referenced can and may need to be changed later.
 # -- Viable alternative: (supplier, id). warehouse or product don't really need to be in composite PK.
 
 # OTHER TABLES
 CREATE TABLE Address (
-    id              SERIAL PRIMARY KEY,
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     address         VARCHAR(255)    NOT NULL,
     country         VARCHAR(50)     NOT NULL,
     city            VARCHAR(50)     NOT NULL,
@@ -20,9 +20,9 @@ CREATE TABLE Address (
 );
 
 CREATE TABLE Category (
-    id                  SERIAL PRIMARY KEY,
+    id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name                VARCHAR(50) NOT NULL,
-    parent_category     BIGINT UNSIGNED,
+    parent_category     INT UNSIGNED,
 
     FOREIGN KEY (parent_category)
         REFERENCES Category(id)
@@ -30,12 +30,12 @@ CREATE TABLE Category (
 );
 
 CREATE TABLE Product (
-    id              SERIAL PRIMARY KEY,
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name            VARCHAR(255) NOT NULL,
     description     VARCHAR(1000) NOT NULL,
     # Category can be null so that categories can be deleted without
     # product interference. Products should never be left without categories though.
-    category        BIGINT UNSIGNED,
+    category        INT UNSIGNED,
     # Can eventually be changed, complement_name could be stored here
     # instead of necessarily linking to an existing product (e.g. what if
     # required product is deleted?)
@@ -49,11 +49,11 @@ CREATE TABLE Product (
 # USER TABLES
 # Administrator privileges could just be an attribute here
 CREATE TABLE User (
-    id          SERIAL PRIMARY KEY,
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     password    BINARY(60),# bcrypt hashes always use 60 bytes
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
-    address     BIGINT UNSIGNED NOT NULL,
+    address     INT UNSIGNED NOT NULL,
 
 
     FOREIGN KEY (address)
@@ -77,11 +77,11 @@ CREATE TABLE User (
 # SUPPLIER-RELATED TABLES
 
 CREATE TABLE Warehouse (
-    id              SERIAL,
-    address         BIGINT UNSIGNED NOT NULL,
+    id              INT UNSIGNED AUTO_INCREMENT,
+    address         INT UNSIGNED NOT NULL,
     capacity        INT UNSIGNED NOT NULL,
     resource_usage  INT UNSIGNED NOT NULL,
-    supplier     BIGINT UNSIGNED NOT NULL,
+    supplier     INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, supplier), # Composite PK allows warehouse indexing per supplier. No use-case requires listing all known warehouses.
 
@@ -96,10 +96,10 @@ CREATE TABLE Warehouse (
 
 # TRANSPORTER-RELATED TABLES
 CREATE TABLE Distribution_Center (
-    id          SERIAL,
-    address     BIGINT UNSIGNED NOT NULL,
+    id          INT UNSIGNED AUTO_INCREMENT,
+    address     INT UNSIGNED NOT NULL,
     capacity    INT UNSIGNED NOT NULL,
-    transporter BIGINT UNSIGNED NOT NULL,
+    transporter INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, transporter), # Composite PK allows dist. center indexing per transporter.
 
@@ -113,15 +113,15 @@ CREATE TABLE Distribution_Center (
 );
 
 CREATE TABLE Vehicle (
-    id                  SERIAL,
+    id                  INT UNSIGNED AUTO_INCREMENT,
     resource_usage      INT UNSIGNED NOT NULL,
     license_plate       VARCHAR(6) NOT NULL,
     average_emissions   INT UNSIGNED NOT NULL,
     fuel_type           ENUM('ELECTRICITY', 'DIESEL', 'PETROL') NOT NULL,
     payload_capacity    INT UNSIGNED NOT NULL,
 
-    transporter         BIGINT UNSIGNED NOT NULL,
-    distribution_center BIGINT UNSIGNED NOT NULL,
+    transporter         INT UNSIGNED NOT NULL,
+    distribution_center INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, transporter), # Composite PK allows vehicle indexing per transporter.
 
@@ -135,8 +135,8 @@ CREATE TABLE Vehicle (
 
 # CONSUMER, ORDER & SUPPLY RELATED TABLES
 CREATE TABLE `Order` (
-    id          SERIAL PRIMARY KEY,
-    consumer    BIGINT UNSIGNED NOT NULL,
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    consumer    INT UNSIGNED NOT NULL,
     date        DATE NOT NULL,
 
     FOREIGN KEY (consumer)
@@ -145,10 +145,10 @@ CREATE TABLE `Order` (
 );
 
 CREATE TABLE Supply (
-    product         BIGINT UNSIGNED NOT NULL,
-    supplier        BIGINT UNSIGNED NOT NULL,
-    warehouse       BIGINT UNSIGNED NOT NULL,
-    quantity        BIGINT UNSIGNED NOT NULL,
+    product         INT UNSIGNED NOT NULL,
+    supplier        INT UNSIGNED NOT NULL,
+    warehouse       INT UNSIGNED NOT NULL,
+    quantity        INT UNSIGNED NOT NULL,
     price           INT UNSIGNED NOT NULL,
     production_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
@@ -172,17 +172,17 @@ CREATE TABLE Order_Item (
     # Represents Supply inside Order
     # This structure allows items from multiple suppliers and transporters to be within the same order. (e.g. AliExpress)
 
-    id          SERIAL,
+    id          INT UNSIGNED AUTO_INCREMENT,
     quantity    INT UNSIGNED NOT NULL,
     status      CHAR(1),
-    `order`       BIGINT UNSIGNED NOT NULL,
+    `order`       INT UNSIGNED NOT NULL,
 
-    product     BIGINT UNSIGNED NOT NULL,
-    supplier    BIGINT UNSIGNED NOT NULL,
-    warehouse   BIGINT UNSIGNED NOT NULL,
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
 
-    transporter BIGINT UNSIGNED NOT NULL,
-    vehicle     BIGINT UNSIGNED NOT NULL,
+    transporter INT UNSIGNED NOT NULL,
+    vehicle     INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, `order`), # Composite PK allows item indexing per order.
 
@@ -201,9 +201,9 @@ CREATE TABLE Supply_History (
     # regarding the same supply to be kept in the same table.
 
     # Supply Identifiers
-    product     BIGINT UNSIGNED NOT NULL,
-    supplier    BIGINT UNSIGNED NOT NULL,
-    warehouse   BIGINT UNSIGNED NOT NULL,
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
 
     # Statement date
     moment      DATE NOT NULL,
@@ -223,12 +223,12 @@ CREATE TABLE Supply_Transporters (
     # Specified which transporters can serve which supplies
 
     # Supply Identifiers
-    product     BIGINT UNSIGNED NOT NULL,
-    supplier    BIGINT UNSIGNED NOT NULL,
-    warehouse   BIGINT UNSIGNED NOT NULL,
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
 
     # Transporter
-    transporter BIGINT UNSIGNED NOT NULL,
+    transporter INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (product, supplier, warehouse, transporter),
 

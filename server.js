@@ -2,7 +2,9 @@
 /* Imports */
 const express = require('express');
 const path = require('path');
+const glob = require( 'glob' );
 const bcrypt = import('bcrypt');
+
 require("dotenv").config();
 
 /* Middleware */
@@ -15,6 +17,13 @@ const http = require('http');
 
 /* Greenly libraries */
 const persistence = import('./lib/persistence.js')
+
+/* Route Imports
+   Imports all site and API routes */
+
+glob.sync( './routes/**/*.js' ).forEach( function( file ) {
+  require( path.resolve( file ) );
+}); 
 
 /* Init */
 const app = express();
@@ -38,8 +47,9 @@ app.use((req, res, next) => {
       return next();
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`🌿 Greenly server listening on port ${process.env.PORT}`)
+const port = process.env.PORT || 4000
+app.listen(port, () => {
+  console.log(`🌿 Greenly server listening on port ${port}`)
 })
 
 module.exports = app;

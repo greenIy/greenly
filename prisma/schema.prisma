@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Address {
-  id                  BigInt                @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
   address             String                @db.VarChar(255)
   country             String                @db.VarChar(50)
   city                String                @db.VarChar(50)
@@ -21,9 +21,9 @@ model Address {
 }
 
 model Category {
-  id              BigInt     @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id              Int        @id @default(autoincrement()) @db.UnsignedInt
   name            String     @db.VarChar(50)
-  parent_category BigInt?    @db.UnsignedBigInt
+  parent_category Int?       @db.UnsignedInt
   Category        Category?  @relation("CategoryToCategory_parent_category", fields: [parent_category], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Category_ibfk_1")
   other_Category  Category[] @relation("CategoryToCategory_parent_category")
   Product         Product[]
@@ -32,10 +32,10 @@ model Category {
 }
 
 model Distribution_Center {
-  id          BigInt    @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
-  address     BigInt    @db.UnsignedBigInt
+  id          Int       @default(autoincrement()) @db.UnsignedInt
+  address     Int       @db.UnsignedInt
   capacity    Int       @db.UnsignedInt
-  transporter BigInt    @db.UnsignedBigInt
+  transporter Int       @db.UnsignedInt
   Address     Address   @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Distribution_Center_ibfk_1")
   User        User      @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Distribution_Center_ibfk_2")
   Vehicle     Vehicle[]
@@ -46,8 +46,8 @@ model Distribution_Center {
 }
 
 model Order {
-  id         BigInt       @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
-  consumer   BigInt       @db.UnsignedBigInt
+  id         Int          @id @default(autoincrement()) @db.UnsignedInt
+  consumer   Int          @db.UnsignedInt
   date       DateTime     @db.Date
   User       User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
   Order_Item Order_Item[]
@@ -56,15 +56,15 @@ model Order {
 }
 
 model Order_Item {
-  id          BigInt  @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id          Int     @default(autoincrement()) @db.UnsignedInt
   quantity    Int     @db.UnsignedInt
   status      String? @db.Char(1)
-  order       BigInt  @db.UnsignedBigInt
-  product     BigInt  @db.UnsignedBigInt
-  supplier    BigInt  @db.UnsignedBigInt
-  warehouse   BigInt  @db.UnsignedBigInt
-  transporter BigInt  @db.UnsignedBigInt
-  vehicle     BigInt  @db.UnsignedBigInt
+  order       Int     @db.UnsignedInt
+  product     Int     @db.UnsignedInt
+  supplier    Int     @db.UnsignedInt
+  warehouse   Int     @db.UnsignedInt
+  transporter Int     @db.UnsignedInt
+  vehicle     Int     @db.UnsignedInt
   Order       Order   @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
   Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
   Vehicle     Vehicle @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
@@ -76,10 +76,10 @@ model Order_Item {
 }
 
 model Product {
-  id                BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
   name              String    @db.VarChar(255)
   description       String    @db.VarChar(1000)
-  category          BigInt?   @db.UnsignedBigInt
+  category          Int?      @db.UnsignedInt
   complement_name   String?   @db.VarChar(50)
   complement_amount Decimal?  @db.Decimal(2, 0)
   Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
@@ -89,10 +89,10 @@ model Product {
 }
 
 model Supply {
-  product             BigInt                @db.UnsignedBigInt
-  supplier            BigInt                @db.UnsignedBigInt
-  warehouse           BigInt                @db.UnsignedBigInt
-  quantity            BigInt                @db.UnsignedBigInt
+  product             Int                   @db.UnsignedInt
+  supplier            Int                   @db.UnsignedInt
+  warehouse           Int                   @db.UnsignedInt
+  quantity            Int                   @db.UnsignedInt
   price               Int                   @db.UnsignedInt
   production_date     DateTime              @db.Date
   expiration_date     DateTime              @db.Date
@@ -109,9 +109,9 @@ model Supply {
 }
 
 model Supply_History {
-  product   BigInt   @db.UnsignedBigInt
-  supplier  BigInt   @db.UnsignedBigInt
-  warehouse BigInt   @db.UnsignedBigInt
+  product   Int      @db.UnsignedInt
+  supplier  Int      @db.UnsignedInt
+  warehouse Int      @db.UnsignedInt
   moment    DateTime @db.Date
   quantity  Int      @db.UnsignedInt
   price     Int?
@@ -121,10 +121,10 @@ model Supply_History {
 }
 
 model Supply_Transporters {
-  product     BigInt @db.UnsignedBigInt
-  supplier    BigInt @db.UnsignedBigInt
-  warehouse   BigInt @db.UnsignedBigInt
-  transporter BigInt @db.UnsignedBigInt
+  product     Int    @db.UnsignedInt
+  supplier    Int    @db.UnsignedInt
+  warehouse   Int    @db.UnsignedInt
+  transporter Int    @db.UnsignedInt
   Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporters_ibfk_1")
   User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporters_ibfk_2")
 
@@ -133,11 +133,11 @@ model Supply_Transporters {
 }
 
 model User {
-  id                  BigInt                @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
   password            Bytes?                @db.Binary(60)
   name                String                @db.VarChar(255)
   email               String                @db.VarChar(255)
-  address             BigInt                @db.UnsignedBigInt
+  address             Int                   @db.UnsignedInt
   Address             Address               @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
   Distribution_Center Distribution_Center[]
   Order               Order[]
@@ -150,14 +150,14 @@ model User {
 }
 
 model Vehicle {
-  id                  BigInt              @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  id                  Int                 @default(autoincrement()) @db.UnsignedInt
   resource_usage      Int                 @db.UnsignedInt
   license_plate       String              @db.VarChar(6)
   average_emissions   Int                 @db.UnsignedInt
   fuel_type           Vehicle_fuel_type
   payload_capacity    Int                 @db.UnsignedInt
-  transporter         BigInt              @db.UnsignedBigInt
-  distribution_center BigInt              @db.UnsignedBigInt
+  transporter         Int                 @db.UnsignedInt
+  distribution_center Int                 @db.UnsignedInt
   Distribution_Center Distribution_Center @relation(fields: [distribution_center], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicle_ibfk_2")
   User                User                @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Vehicle_ibfk_1")
   Order_Item          Order_Item[]
@@ -168,11 +168,11 @@ model Vehicle {
 }
 
 model Warehouse {
-  id             BigInt   @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
-  address        BigInt   @db.UnsignedBigInt
+  id             Int      @default(autoincrement()) @db.UnsignedInt
+  address        Int      @db.UnsignedInt
   capacity       Int      @db.UnsignedInt
   resource_usage Int      @db.UnsignedInt
-  supplier       BigInt   @db.UnsignedBigInt
+  supplier       Int      @db.UnsignedInt
   Address        Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
   User           User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
   Supply         Supply[]

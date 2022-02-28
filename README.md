@@ -29,6 +29,7 @@
   
 ## Running
 * Main logic can be run with `npm start`.
+* If you're looking for an easier development environment, run `npx nodemon` so that the server auto-reloads with changes.
 
 ## Notes
 * For all hashing purposes, this project uses [bcrypt](https://www.npmjs.com/package/bcrypt), a Blowfish-cipher-based cryptographic algorithm which has stood the test of time.
