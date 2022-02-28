@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id                  BigInt                @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  address             String                @db.VarChar(255)
+  country             String                @db.VarChar(50)
+  city                String                @db.VarChar(50)
+  latitude            Decimal               @db.Decimal(10, 0)
+  longitude           Decimal               @db.Decimal(10, 0)
+  postal_code         String                @db.VarChar(10)
+  Distribution_Center Distribution_Center[]
+  User                User[]
+  Warehouse           Warehouse[]
+}
+
+model Category {
+  id              BigInt     @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  name            String     @db.VarChar(50)
+  parent_category BigInt?    @db.UnsignedBigInt
+  Category        Category?  @relation("CategoryToCategory_parent_category", fields: [parent_category], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Category_ibfk_1")
+  other_Category  Category[] @relation("CategoryToCategory_parent_category")
+  Product         Product[]
+
+  @@index([parent_category], map: "parent_category")
+}
+
+model Distribution_Center {
+  id          BigInt    @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  address     BigInt    @db.UnsignedBigInt
+  capacity    Int       @db.UnsignedInt
+  transporter BigInt    @db.UnsignedBigInt
+  Address     Address   @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Distribution_Center_ibfk_1")
+  User        User      @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Distribution_Center_ibfk_2")
+  Vehicle     Vehicle[]
+
+  @@id([id, transporter])
+  @@index([address], map: "address")
+  @@index([transporter], map: "transporter")
+}
+
+model Order {
+  id         BigInt       @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  consumer   BigInt       @db.UnsignedBigInt
+  date       DateTime     @db.Date
+  User       User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
+  Order_Item Order_Item[]
+
+  @@index([consumer], map: "consumer")
+}
+
+model Order_Item {
+  id          BigInt  @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  quantity    Int     @db.UnsignedInt
+  status      String? @db.Char(1)
+  order       BigInt  @db.UnsignedBigInt
+  product     BigInt  @db.UnsignedBigInt
+  supplier    BigInt  @db.UnsignedBigInt
+  warehouse   BigInt  @db.UnsignedBigInt
+  transporter BigInt  @db.UnsignedBigInt
+  vehicle     BigInt  @db.UnsignedBigInt
+  Order       Order   @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
+  Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
+  Vehicle     Vehicle @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
+
+  @@id([id, order])
+  @@index([order], map: "order")
+  @@index([product, supplier, warehouse], map: "product")
+  @@index([transporter, vehicle], map: "transporter")
+}
+
+model Product {
+  id                BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  name              String    @db.VarChar(255)
+  description       String    @db.VarChar(1000)
+  category          BigInt?   @db.UnsignedBigInt
+  complement_name   String?   @db.VarChar(50)
+  complement_amount Decimal?  @db.Decimal(2, 0)
+  Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  Supply            Supply[]
+
+  @@index([category], map: "category")
+}
+
+model Supply {
+  product             BigInt                @db.UnsignedBigInt
+  supplier            BigInt                @db.UnsignedBigInt
+  warehouse           BigInt                @db.UnsignedBigInt
+  quantity            BigInt                @db.UnsignedBigInt
+  price               Int                   @db.UnsignedInt
+  production_date     DateTime              @db.Date
+  expiration_date     DateTime              @db.Date
+  Product             Product               @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_1")
+  User                User                  @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_2")
+  Warehouse           Warehouse             @relation(fields: [warehouse], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Supply_ibfk_3")
+  Order_Item          Order_Item[]
+  Supply_History      Supply_History[]
+  Supply_Transporters Supply_Transporters[]
+
+  @@id([product, supplier, warehouse])
+  @@index([supplier], map: "supplier")
+  @@index([warehouse], map: "warehouse")
+}
+
+model Supply_History {
+  product   BigInt   @db.UnsignedBigInt
+  supplier  BigInt   @db.UnsignedBigInt
+  warehouse BigInt   @db.UnsignedBigInt
+  moment    DateTime @db.Date
+  quantity  Int      @db.UnsignedInt
+  price     Int?
+  Supply    Supply   @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_History_ibfk_1")
+
+  @@id([product, supplier, warehouse, moment])
+}
+
+model Supply_Transporters {
+  product     BigInt @db.UnsignedBigInt
+  supplier    BigInt @db.UnsignedBigInt
+  warehouse   BigInt @db.UnsignedBigInt
+  transporter BigInt @db.UnsignedBigInt
+  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporters_ibfk_1")
+  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporters_ibfk_2")
+
+  @@id([product, supplier, warehouse, transporter])
+  @@index([transporter], map: "transporter")
+}
+
+model User {
+  id                  BigInt                @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  password            Bytes?                @db.Binary(60)
+  name                String                @db.VarChar(255)
+  email               String                @db.VarChar(255)
+  address             BigInt                @db.UnsignedBigInt
+  Address             Address               @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Distribution_Center Distribution_Center[]
+  Order               Order[]
+  Supply              Supply[]
+  Supply_Transporters Supply_Transporters[]
+  Vehicle             Vehicle[]
+  Warehouse           Warehouse[]
+
+  @@index([address], map: "address")
+}
+
+model Vehicle {
+  id                  BigInt              @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  resource_usage      Int                 @db.UnsignedInt
+  license_plate       String              @db.VarChar(6)
+  average_emissions   Int                 @db.UnsignedInt
+  fuel_type           Vehicle_fuel_type
+  payload_capacity    Int                 @db.UnsignedInt
+  transporter         BigInt              @db.UnsignedBigInt
+  distribution_center BigInt              @db.UnsignedBigInt
+  Distribution_Center Distribution_Center @relation(fields: [distribution_center], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicle_ibfk_2")
+  User                User                @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Vehicle_ibfk_1")
+  Order_Item          Order_Item[]
+
+  @@id([id, transporter])
+  @@index([distribution_center], map: "distribution_center")
+  @@index([transporter], map: "transporter")
+}
+
+model Warehouse {
+  id             BigInt   @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  address        BigInt   @db.UnsignedBigInt
+  capacity       Int      @db.UnsignedInt
+  resource_usage Int      @db.UnsignedInt
+  supplier       BigInt   @db.UnsignedBigInt
+  Address        Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
+  User           User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
+  Supply         Supply[]
+
+  @@id([id, supplier])
+  @@index([address], map: "address")
+  @@index([supplier], map: "supplier")
+}
+
+enum Vehicle_fuel_type {
+  ELECTRICITY
+  DIESEL
+  PETROL
+}
