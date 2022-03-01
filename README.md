@@ -21,15 +21,16 @@
     Check the [Prisma Docs](https://www.prisma.io/docs/reference/database-reference/connection-urls) for more information regarding connection URLs. 
 2. If you'd like to run the project _as is_, you can skip to the next step.
    1.  Otherwise, if you'd like to change the database structure (not advised), you'll have to compile a new `prisma/scheme.prisma` file. More information [here](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/introspection-node-mysql). Advance only when your `prisma/scheme.prisma` file is ready.
-3. We've built [Greenly's database in MySQL](prisma/db.sql), which was then [_Introspected_](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/introspection-node-mysql) into a [Prisma Data Model](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model), allowing us to use the [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client)
+3. We've built [Greenly's database in MySQL](prisma/db.sql), which was then [_Introspected_](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/introspection-node-mysql) into a [Prisma Data Model](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model), allowing us to use the [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client).
    1. As such, if you're using the provided `prisma/scheme.prisma` file or have already built your own valid file, run `npm install @prisma/client`
 4. That's it! You're locked and loaded! Keep in mind: if you ever change your `.env` file, you'll have to regenerate the Prisma Client. This can be done in one of the following ways:
    1. Rerunning `npm install @prisma/client`
    2. Running `npx prisma generate`
   
 ## Running
-* Main logic can be run with `npm start`.
-* If you're looking for an easier development environment, run `npx nodemon` so that the server auto-reloads with changes.
+* *Backend* server logic ([express.js](https://expressjs.com/)) can be run with `npm start`.
+  * If you're looking for an easier development environment, run `npx nodemon` so that the server auto-reloads with changes.
+* The [Vue.js](https://vuejs.org/) server (*frontend*) can be run by moving into `/client` and executing `npm run serve`.
 
 ## Notes
 * For all hashing purposes, this project uses [bcrypt](https://www.npmjs.com/package/bcrypt), a Blowfish-cipher-based cryptographic algorithm which has stood the test of time.

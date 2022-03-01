@@ -134,7 +134,7 @@ model Supply_Transporters {
 
 model User {
   id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  password            Bytes?                @db.Binary(60)
+  password            String?               @db.VarChar(60)
   name                String                @db.VarChar(255)
   email               String                @db.VarChar(255)
   address             Int                   @db.UnsignedInt

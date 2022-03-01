@@ -13,7 +13,7 @@ CREATE TABLE Address (
     address         VARCHAR(255)    NOT NULL,
     country         VARCHAR(50)     NOT NULL,
     city            VARCHAR(50)     NOT NULL,
-    # Best way to store latitude and longitude is using MySQL POINT, but it's not supported by Prisma
+    # Best way to store latitude and longitude is using MySQL POINT, but it is not supported by Prisma
     latitude        DECIMAL         NOT NULL,
     longitude       DECIMAL         NOT NULL,
     postal_code     VARCHAR(10)     NOT NULL
@@ -50,7 +50,7 @@ CREATE TABLE Product (
 # Administrator privileges could just be an attribute here
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    password    BINARY(60),# bcrypt hashes always use 60 bytes
+    password    VARCHAR(60),# bcrypt hashes always use 60 characters
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
     address     INT UNSIGNED NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE Supply (
 
     FOREIGN KEY (product)
         REFERENCES Product(id)
-        ON DELETE CASCADE, # Suppliers can no longer supply a product which isn't being sold
+        ON DELETE CASCADE, # Suppliers can no longer supply a product which is not being sold
 
     FOREIGN KEY (supplier)
         REFERENCES User(id)

@@ -3,7 +3,6 @@
 const express = require('express');
 const path = require('path');
 const glob = require( 'glob' );
-const bcrypt = import('bcrypt');
 
 require("dotenv").config();
 
