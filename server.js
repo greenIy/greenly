@@ -47,8 +47,16 @@ app.use((req, res, next) => {
 });
 
 const port = process.env.PORT || 4000
+
 app.listen(port, () => {
   console.log(`🌿 Greenly server listening on port ${port}`)
-})
+}).on('error', function(err) {
+  if (err.code == 'EADDRINUSE') {
+    console.log("🚫 Port already in use.");
+  } else {
+    console.log("🔥 Something went wrong.");
+  }
+  process.exit(1);
+ });
 
 module.exports = app;

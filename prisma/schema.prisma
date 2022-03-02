@@ -9,11 +9,11 @@ datasource db {
 
 model Address {
   id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  address             String                @db.VarChar(255)
+  street              String                @db.VarChar(255)
   country             String                @db.VarChar(50)
   city                String                @db.VarChar(50)
-  latitude            Decimal               @db.Decimal(10, 0)
-  longitude           Decimal               @db.Decimal(10, 0)
+  latitude            Decimal               @db.Decimal(8, 6)
+  longitude           Decimal               @db.Decimal(8, 6)
   postal_code         String                @db.VarChar(10)
   Distribution_Center Distribution_Center[]
   User                User[]
@@ -29,6 +29,19 @@ model Category {
   Product         Product[]
 
   @@index([parent_category], map: "parent_category")
+}
+
+model Product {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  name              String    @db.VarChar(255)
+  description       String    @db.VarChar(1000)
+  category          Int?      @db.UnsignedInt
+  complement_name   String?   @db.VarChar(50)
+  complement_amount Decimal?  @db.Decimal(2, 0)
+  Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  Supply            Supply[]
+
+  @@index([category], map: "category")
 }
 
 model Distribution_Center {
@@ -56,36 +69,23 @@ model Order {
 }
 
 model Order_Item {
-  id          Int     @default(autoincrement()) @db.UnsignedInt
-  quantity    Int     @db.UnsignedInt
-  status      String? @db.Char(1)
-  order       Int     @db.UnsignedInt
-  product     Int     @db.UnsignedInt
-  supplier    Int     @db.UnsignedInt
-  warehouse   Int     @db.UnsignedInt
-  transporter Int     @db.UnsignedInt
-  vehicle     Int     @db.UnsignedInt
-  Order       Order   @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
-  Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
-  Vehicle     Vehicle @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
+  id          Int                @default(autoincrement()) @db.UnsignedInt
+  quantity    Int                @db.UnsignedInt
+  status      Order_Item_status?
+  order       Int                @db.UnsignedInt
+  product     Int                @db.UnsignedInt
+  supplier    Int                @db.UnsignedInt
+  warehouse   Int                @db.UnsignedInt
+  transporter Int                @db.UnsignedInt
+  vehicle     Int                @db.UnsignedInt
+  Order       Order              @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
+  Supply      Supply             @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
+  Vehicle     Vehicle            @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
 
   @@id([id, order])
   @@index([order], map: "order")
   @@index([product, supplier, warehouse], map: "product")
   @@index([transporter, vehicle], map: "transporter")
-}
-
-model Product {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  name              String    @db.VarChar(255)
-  description       String    @db.VarChar(1000)
-  category          Int?      @db.UnsignedInt
-  complement_name   String?   @db.VarChar(50)
-  complement_amount Decimal?  @db.Decimal(2, 0)
-  Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
-  Supply            Supply[]
-
-  @@index([category], map: "category")
 }
 
 model Supply {
@@ -138,6 +138,7 @@ model User {
   name                String                @db.VarChar(255)
   email               String                @db.VarChar(255)
   address             Int                   @db.UnsignedInt
+  type                User_type?
   Address             Address               @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
   Distribution_Center Distribution_Center[]
   Order               Order[]
@@ -182,8 +183,25 @@ model Warehouse {
   @@index([supplier], map: "supplier")
 }
 
+enum User_type {
+  ADMINISTRATOR
+  CONSUMER
+  SUPPLIER
+  TRANSPORTER
+}
+
 enum Vehicle_fuel_type {
   ELECTRICITY
   DIESEL
   PETROL
+}
+
+enum Order_Item_status {
+  AWAITING_PAYMENT
+  PROCESSING
+  AWAITING_TRANSPORT
+  IN_TRANSIT
+  COMPLETE
+  FAILURE
+  CANCELED
 }

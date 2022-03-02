@@ -1,3 +1,6 @@
+# Utility scripts
+regen_db.sh
+
 # Logs
 logs
 *.log

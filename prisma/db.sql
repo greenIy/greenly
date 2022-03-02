@@ -10,12 +10,12 @@
 # OTHER TABLES
 CREATE TABLE Address (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    address         VARCHAR(255)    NOT NULL,
+    street          VARCHAR(255)    NOT NULL,
     country         VARCHAR(50)     NOT NULL,
     city            VARCHAR(50)     NOT NULL,
     # Best way to store latitude and longitude is using MySQL POINT, but it is not supported by Prisma
-    latitude        DECIMAL         NOT NULL,
-    longitude       DECIMAL         NOT NULL,
+    latitude        DECIMAL(8,6)    NOT NULL,
+    longitude       DECIMAL(8,6)    NOT NULL,
     postal_code     VARCHAR(10)     NOT NULL
 );
 
@@ -54,6 +54,7 @@ CREATE TABLE User (
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
     address     INT UNSIGNED NOT NULL,
+    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
 
 
     FOREIGN KEY (address)
@@ -174,8 +175,14 @@ CREATE TABLE Order_Item (
 
     id          INT UNSIGNED AUTO_INCREMENT,
     quantity    INT UNSIGNED NOT NULL,
-    status      CHAR(1),
-    `order`       INT UNSIGNED NOT NULL,
+    status      ENUM('AWAITING_PAYMENT',
+                     'PROCESSING',
+                     'AWAITING_TRANSPORT',
+                     'IN_TRANSIT',
+                     'COMPLETE',
+                     'FAILURE',
+                     'CANCELED'),
+    `order`     INT UNSIGNED NOT NULL,
 
     product     INT UNSIGNED NOT NULL,
     supplier    INT UNSIGNED NOT NULL,
