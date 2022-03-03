@@ -12,10 +12,12 @@
 * Run `npm install` to install all listed dependencies. For more details check [package.json](package.json).
 
 ## Database & Authentication
-1. To run this project, create a `.env` file at the root. Populate it with information regarding database access and local machine hosting port, following the correct format. Here's an example:
+1. To run this project, follow these steps inside `/server`. Create a `.env` file. Populate it with information regarding database access and local machine hosting port, following the correct format. Here's an example:
     ```
     PORT=8080
     DATABASE_URL=mysql://janedoe:mypassword@localhost:5432/mydb
+    GOOGLE_API_KEY=...
+    ...
     ```
     Replace `8080` with your desired hosting port (remember you may need elevated privileges if you'd like to use port 80). <br>
     Check the [Prisma Docs](https://www.prisma.io/docs/reference/database-reference/connection-urls) for more information regarding connection URLs. 
@@ -28,7 +30,7 @@
    2. Running `npx prisma generate`
   
 ## Running
-* *Backend* server logic ([express.js](https://expressjs.com/)) can be run with `npm start`.
+* *Backend* server logic ([express.js](https://expressjs.com/)) can be run by moving into `/server` and executing `npm start`.
   * If you're looking for an easier development environment, run `npx nodemon` so that the server auto-reloads with changes.
 * The [Vue.js](https://vuejs.org/) server (*frontend*) can be run by moving into `/client` and executing `npm run serve`.
 

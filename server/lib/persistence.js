@@ -70,4 +70,6 @@ module.exports = {
     getUserByID
 }
 
+// Test Lines
+
 createUser("zeval", "contact@zeval.pt", "password", "ADMINISTRATOR", "Rua Do Quelhas", "Portugal", "City","")
