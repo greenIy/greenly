@@ -1,9 +1,11 @@
 <template>
-  <footer class="bg-light text-center text-lg-start">
-    <div class="text-center p-3">
-        Greenly © 2022
-    </div>
-</footer>
+<div class="d-flex flex-column min-vh-100">
+    <footer class="bg-light text-center text-lg-start mt-auto">
+        <div class="text-center p-3 mt-auto footer">
+            Greenly © 2022
+        </div>
+    </footer>
+</div>
 </template>
 
 <script>
@@ -14,7 +16,7 @@ export default {
 </script>
 
 <style scoped>
-    div {
+    .footer {
         background-color: #608072;
         color: #fcfaf9;
     }
