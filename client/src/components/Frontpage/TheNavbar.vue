@@ -8,7 +8,7 @@
                 </router-link>
             </div>
             <div class="flex-grow-1 input-group search-group align-self-center">
-                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control" type="search" placeholder="" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </div>
             <div class="p-2 align-self-center pt-4 text-uppercase nav-links">
