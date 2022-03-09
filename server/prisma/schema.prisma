@@ -135,11 +135,14 @@ model Supply_Transporters {
 model User {
   id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
   password            String?               @db.VarChar(60)
-  name                String                @db.VarChar(255)
-  email               String                @db.VarChar(255)
-  address             Int                   @db.UnsignedInt
+  first_name          String                @db.VarChar(255)
+  last_name           String                @db.VarChar(255)
+  nif                 Int                   @unique(map: "nif")
+  email               String                @unique(map: "email") @db.VarChar(255)
+  phone               String                @db.VarChar(20)
+  address             Int?                  @db.UnsignedInt
   type                User_type?
-  Address             Address               @relation(fields: [address], references: [id], onUpdate: Restrict, map: "User_ibfk_1")
+  Address             Address?              @relation(fields: [address], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "User_ibfk_1")
   Distribution_Center Distribution_Center[]
   Order               Order[]
   Supply              Supply[]
