@@ -14,6 +14,14 @@ const routes = [
       return import(/* webpackChunkName: "login" */ '../views/LoginView.vue');
     },
   },
+  {
+    path: '/register',
+    name: 'register',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
+    },
+  },
+
 ];
 
 const router = createRouter({
