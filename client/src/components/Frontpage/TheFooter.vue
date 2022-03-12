@@ -27,12 +27,24 @@
                    <span class="sr-only">Link para o Twitter</span>
                     <font-awesome-icon :icon="['fab', 'twitter']" size="lg"/>
                 </a>
+                <a :href="url_facebook" target=”_blank”>
+                   <span class="sr-only">Link para o Facebook</span>
+                    <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>
+                </a>
             </div>
             <div class="col-2 mt-4">
-                <p>Modo de pagamento</p>
-                <div class="ms-auto">
+                <p>Modos de pagamento</p>
+                <!-- eslint-disable max-len -->
+                <div class="ms-auto icons-div">
+                    <font-awesome-icon :icon="['fab', 'cc-visa']" size="2xl"/>
+                    <font-awesome-icon :icon="['fab', 'cc-mastercard']" size="2xl" class="icon-space"/>
+                    <font-awesome-icon :icon="['fab', 'cc-amex']" size="2xl" class="icon-space"/>
+                    <br>
                     <font-awesome-icon :icon="['fab', 'cc-paypal']" size="2xl"/>
+                    <font-awesome-icon :icon="['fab', 'cc-apple-pay']" size="2xl" class="icon-space"/>
+                    <font-awesome-icon :icon="['fab', 'google-pay']" size="2xl" class="icon-space"/>
                 </div>
+                <!-- eslint-enable max-len -->
             </div>
         </div>
     </footer>
@@ -41,11 +53,18 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCcPaypal, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
+// eslint-disable-next-line
+import { faCcPaypal, faInstagram, faTwitter, faFacebookSquare, faCcVisa, faCcMastercard, faCcAmex, faCcApplePay, faGooglePay } from '@fortawesome/free-brands-svg-icons';
 
 library.add(faCcPaypal);
 library.add(faInstagram);
 library.add(faTwitter);
+library.add(faFacebookSquare);
+library.add(faCcVisa);
+library.add(faCcMastercard);
+library.add(faCcAmex);
+library.add(faCcApplePay);
+library.add(faGooglePay);
 
 export default {
   name: 'TheFooter',
@@ -53,6 +72,7 @@ export default {
     return {
       url_instagram: 'https://www.instagram.com',
       url_twitter: 'https://www.twitter.com',
+      url_facebook: 'https://www.facebook.com',
     };
   },
 };
@@ -81,5 +101,13 @@ export default {
 
     a:hover {
         color: #dce5e1;
+    }
+
+    .icon-space {
+        padding-left: 5px;
+    }
+
+    .icons-div {
+       font-size: 10px;
     }
 </style>
