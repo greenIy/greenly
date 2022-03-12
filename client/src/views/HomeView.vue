@@ -1,6 +1,8 @@
 <template>
-  <div class="home">
-    <the-navbar />
+  <div class="page-container">
+    <div class="content-wrap">
+      <the-navbar />
+    </div>
     <the-footer />
   </div>
 </template>
@@ -18,3 +20,13 @@ export default {
   },
 };
 </script>
+<style>
+  .page-container {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .content-wrap {
+    padding-bottom: 7.5rem;
+  }
+</style>

@@ -79,6 +79,10 @@ export default {
         font-size: 12px;
     }
 
+    .container {
+        width: 100%;
+    }
+
     img {
         width: 90px;
         height: 35px;
