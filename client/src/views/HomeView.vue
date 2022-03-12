@@ -2,6 +2,9 @@
   <div class="page-container">
     <div class="content-wrap">
       <the-navbar />
+      <router-link to="/products">
+        <img alt="Logo do greenly" src="../assets/poster.png">
+      </router-link>
     </div>
     <the-footer />
   </div>
@@ -28,5 +31,9 @@ export default {
 
   .content-wrap {
     padding-bottom: 7.5rem;
+  }
+
+  img {
+    width: 100%;
   }
 </style>
