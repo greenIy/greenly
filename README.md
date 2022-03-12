@@ -32,6 +32,9 @@
 ## Running
 * *Backend* server logic ([express.js](https://expressjs.com/)) can be run by moving into `/server` and executing `npm start`.
   * If you're looking for an easier development environment, run `npx nodemon` so that the server auto-reloads with changes.
+    * SSL support can also be disabled by including the flag `--SSL=False`. If disabled, the server will stop enforcing SSL on all requests. Use only for development purposes, otherwise heavily discouraged.
+    * You can also enable request logging to `stdout` by including the `-l` or `--request-logging` flag.
+    * Additionally, use the `-m` or `--database-monitoring` flag for debugging purposes, where all database operations will be explicit and logged to `stdout`.
 * The [Vue.js](https://vuejs.org/) server (*frontend*) can be run by moving into `/client` and executing `npm run serve`.
 
 ## Notes
