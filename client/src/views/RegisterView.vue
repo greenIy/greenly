@@ -4,7 +4,7 @@
 
     <the-navbar/>
 
-    <register-form/>
+    <register-pills/>
 
     <the-footer/>
 
@@ -17,20 +17,20 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
-import registerForm from '../components/registerForm.vue';
+import registerPills from '../components/registerPills.vue';
 
 export default {
   name: 'RegisterView',
   components: {
     TheNavbar,
     TheFooter,
-    registerForm,
+    registerPills,
   },
 };
 
 </script>
 
-<style scoped>
 
+<style scoped>
 
 </style>
