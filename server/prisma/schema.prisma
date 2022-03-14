@@ -31,6 +31,27 @@ model Category {
   @@index([parent_category], map: "parent_category")
 }
 
+model Product {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  name              String    @db.VarChar(255)
+  description       String    @db.VarChar(1000)
+  category          Int?      @db.UnsignedInt
+  complement_name   String?   @db.VarChar(50)
+  complement_amount Decimal?  @db.Decimal(2, 0)
+  Category          Category? @relation(fields: [category], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "Product_ibfk_1")
+  Supply            Supply[]
+
+  @@index([category], map: "category")
+}
+
+model Company {
+  id    Int     @id @default(autoincrement()) @db.UnsignedInt
+  name  String  @db.VarChar(50)
+  email String  @db.VarChar(255)
+  bio   String? @db.VarChar(255)
+  User  User[]
+}
+
 model Distribution_Center {
   id          Int       @default(autoincrement()) @db.UnsignedInt
   address     Int       @db.UnsignedInt
@@ -56,18 +77,18 @@ model Order {
 }
 
 model Order_Item {
-  id          Int                @default(autoincrement()) @db.UnsignedInt
-  quantity    Int                @db.UnsignedInt
-  status      Order_Item_status?
-  order       Int                @db.UnsignedInt
-  product     Int                @db.UnsignedInt
-  supplier    Int                @db.UnsignedInt
-  warehouse   Int                @db.UnsignedInt
-  transporter Int                @db.UnsignedInt
-  vehicle     Int                @db.UnsignedInt
-  Order       Order              @relation(fields: [order], references: [id], onUpdate: Restrict, map: "Order_Item_ibfk_1")
-  Supply      Supply             @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onUpdate: Restrict, map: "Order_Item_ibfk_2")
-  Vehicle     Vehicle            @relation(fields: [transporter, vehicle], references: [transporter, id], onUpdate: Restrict, map: "Order_Item_ibfk_3")
+  id          Int               @default(autoincrement()) @db.UnsignedInt
+  quantity    Int               @db.UnsignedInt
+  status      Order_Item_status
+  order       Int               @db.UnsignedInt
+  product     Int               @db.UnsignedInt
+  supplier    Int               @db.UnsignedInt
+  warehouse   Int               @db.UnsignedInt
+  transporter Int               @db.UnsignedInt
+  vehicle     Int               @db.UnsignedInt
+  Order       Order             @relation(fields: [order], references: [id], onUpdate: Restrict, map: "Order_Item_ibfk_1")
+  Supply      Supply            @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onUpdate: Restrict, map: "Order_Item_ibfk_2")
+  Vehicle     Vehicle           @relation(fields: [transporter, vehicle], references: [transporter, id], onUpdate: Restrict, map: "Order_Item_ibfk_3")
 
   @@id([id, order])
   @@index([order], map: "order")
@@ -75,33 +96,20 @@ model Order_Item {
   @@index([transporter, vehicle], map: "transporter")
 }
 
-model Product {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  name              String    @db.VarChar(255)
-  description       String    @db.VarChar(1000)
-  category          Int?      @db.UnsignedInt
-  complement_name   String?   @db.VarChar(50)
-  complement_amount Decimal?  @db.Decimal(2, 0)
-  Category          Category? @relation(fields: [category], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "Product_ibfk_1")
-  Supply            Supply[]
-
-  @@index([category], map: "category")
-}
-
 model Supply {
-  product             Int                   @db.UnsignedInt
-  supplier            Int                   @db.UnsignedInt
-  warehouse           Int                   @db.UnsignedInt
-  quantity            Int                   @db.UnsignedInt
-  price               Int                   @db.UnsignedInt
-  production_date     DateTime              @db.Date
-  expiration_date     DateTime              @db.Date
-  Product             Product               @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_ibfk_1")
-  User                User                  @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_ibfk_2")
-  Warehouse           Warehouse             @relation(fields: [warehouse], references: [id], onUpdate: Restrict, map: "Supply_ibfk_3")
-  Order_Item          Order_Item[]
-  Supply_History      Supply_History[]
-  Supply_Transporters Supply_Transporters[]
+  product            Int                  @db.UnsignedInt
+  supplier           Int                  @db.UnsignedInt
+  warehouse          Int                  @db.UnsignedInt
+  quantity           Int                  @db.UnsignedInt
+  price              Int                  @db.UnsignedInt
+  production_date    DateTime             @db.Date
+  expiration_date    DateTime             @db.Date
+  Product            Product              @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_ibfk_1")
+  User               User                 @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_ibfk_2")
+  Warehouse          Warehouse            @relation(fields: [warehouse], references: [id], onUpdate: Restrict, map: "Supply_ibfk_3")
+  Order_Item         Order_Item[]
+  Supply_History     Supply_History[]
+  Supply_Transporter Supply_Transporter[]
 
   @@id([product, supplier, warehouse])
   @@index([supplier], map: "supplier")
@@ -120,18 +128,6 @@ model Supply_History {
   @@id([product, supplier, warehouse, moment])
 }
 
-model Supply_Transporters {
-  product     Int    @db.UnsignedInt
-  supplier    Int    @db.UnsignedInt
-  warehouse   Int    @db.UnsignedInt
-  transporter Int    @db.UnsignedInt
-  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: Restrict, map: "Supply_Transporters_ibfk_1")
-  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_Transporters_ibfk_2")
-
-  @@id([product, supplier, warehouse, transporter])
-  @@index([transporter], map: "transporter")
-}
-
 model User {
   id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
   password            String?               @db.VarChar(60)
@@ -141,16 +137,19 @@ model User {
   email               String                @unique(map: "email") @db.VarChar(255)
   phone               String                @db.VarChar(20)
   address             Int?                  @db.UnsignedInt
+  company             Int?                  @db.UnsignedInt
   type                User_type?
   Address             Address?              @relation(fields: [address], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "User_ibfk_1")
+  Company             Company?              @relation(fields: [company], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "User_ibfk_2")
   Distribution_Center Distribution_Center[]
   Order               Order[]
   Supply              Supply[]
-  Supply_Transporters Supply_Transporters[]
+  Supply_Transporter  Supply_Transporter[]
   Vehicle             Vehicle[]
   Warehouse           Warehouse[]
 
   @@index([address], map: "address")
+  @@index([company], map: "company")
 }
 
 model Vehicle {
@@ -184,6 +183,18 @@ model Warehouse {
   @@id([id, supplier])
   @@index([address], map: "address")
   @@index([supplier], map: "supplier")
+}
+
+model Supply_Transporter {
+  product     Int    @db.UnsignedInt
+  supplier    Int    @db.UnsignedInt
+  warehouse   Int    @db.UnsignedInt
+  transporter Int    @db.UnsignedInt
+  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: Restrict, map: "Supply_Transporter_ibfk_1")
+  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_Transporter_ibfk_2")
+
+  @@id([product, supplier, warehouse, transporter])
+  @@index([transporter], map: "transporter")
 }
 
 enum Order_Item_status {

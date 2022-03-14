@@ -3,7 +3,6 @@
 const { defaultUrl } = require('@googlemaps/google-maps-services-js/dist/directions');
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
 
 /* Greenly libraries & required server data */
 const persistence = require('../lib/persistence.js');
@@ -39,7 +38,10 @@ router.post('/', createUserValidator(), (req, res) => {
                                req.body.address.street,
                                req.body.address.country,
                                req.body.address.city,
-                               req.body.address.postalCode)
+                               req.body.address.postalCode,
+                               req.body.company.name,
+                               req.body.company.bio,
+                               req.body.company.email)
             .then((result) => {
                 if (result) {
                     res.status(201).json(result);
@@ -60,6 +62,9 @@ router.get('/:userId', (req, res) => {
     try {
         persistence.getUserByID(Number(req.params.userId)).then((user) => {
             if (user) {
+
+                // Renaming Address key (Prisma limitation)
+                delete Object.assign(user, {["address"]: user["Address"] })["Address"];
                 res.status(200).json(user)
             } else {
                 res.status(404).send({message: "User not found."})

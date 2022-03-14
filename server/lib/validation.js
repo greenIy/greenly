@@ -1,5 +1,5 @@
 /* Parameter Validation Package */
-const { body, validationResult, param } = require('express-validator');
+const { body, validationResult, param, query } = require('express-validator');
 const { checkUserConflict, getUserByID } = require('./persistence');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -17,6 +17,7 @@ function createUserValidator() {
             .isString(),
         body('email')
             .isEmail()
+            .toLowerCase()
             .custom(value => {
                 return checkUserConflict("email", value).then(conflict => {
                     if (conflict) {
@@ -50,6 +51,27 @@ function createUserValidator() {
         body('address.postalCode')
             .notEmpty()
             .isString(),
+        body('company.name')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company name must be included if user type is supplier or transporter.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.bio')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company bio must be included if user type is supplier or transporter.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.email')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company email must be included if user type is supplier or transporter.").bail()
+            .isEmail(),
+        
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -91,6 +113,7 @@ function updateUserValidator() {
         body('email')
             .isEmail()
             .optional()
+            .toLowerCase()
             .custom(value => {
                 return checkUserConflict("email", value).then(conflict => {
                     if (conflict) {
@@ -157,7 +180,39 @@ function updateUserValidator() {
     ]
 }
 
+/* Product Validation Functions */
+
+function getProductsValidator() {
+    return [
+        query("sort")
+            .optional()
+            .isIn(["price_asc", "price_desc"]),
+        query("limit")
+            .optional()
+            .isInt({min: 0, max: 250})
+            .toInt(),
+        query("page")
+            .optional()
+            .isInt({min:1}),
+        query("category")
+            .optional()
+            .isInt()
+            .toInt(),
+        query("keywords.*")
+            .optional()
+            .isString(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     createUserValidator,
-    updateUserValidator
+    updateUserValidator,
+    getProductsValidator
 }

@@ -21,16 +21,16 @@ const maps = new Client();
 /* User Functions */
 
 /* Returns user object on creation, or null if invalid */
-async function createUser(first_name, last_name, email, phone, password, nif, type, street, country, city, postal_code) {
+async function createUser(first_name, last_name, email, phone, password, nif, type, street, country, city, postal_code, company_name, company_bio, company_email) {
 
 
     // API Call: Disabled for testing (works)
-    // const geocoded = await maps.geocode({
-    //     params: {
-    //         address: `${street}, ${city}, ${country}`,
-    //         key: process.env.GOOGLE_API_KEY
-    //     }
-    // })
+    const geocoded = await maps.geocode({
+        params: {
+            address: `${street}, ${city}, ${country}`,
+            key: process.env.GOOGLE_API_KEY
+        }
+    })
 
     try {
         let newUser = await prisma.user.create({
@@ -53,20 +53,29 @@ async function createUser(first_name, last_name, email, phone, password, nif, ty
                 // Using dummy values for testing. Use this for API call:
                 // geocoded.data.results[0].geometry.location.lat
                 // geocoded.data.results[0].geometry.location.lng
-                latitude: 0,
-                longitude: 0,
+                latitude: geocoded.data.results[0].geometry.location.lat,
+                longitude: geocoded.data.results[0].geometry.location.lng,
                 postal_code: postal_code
             }
         })
 
-        // Updating the user's address after we're sure user creation didn't go wrong.
+        const newCompany = await prisma.company.create({
+            data: {
+                name: company_name,
+                bio: company_bio,
+                email: company_email
+            }
+        })
+
+        // Updating the user's address and company after we're sure user creation didn't go wrong.
 
         newUser = await prisma.user.update({
             where: {
                 id: newUser.id
             },
             data: {
-                address: newAddress.id
+                address: newAddress.id,
+                company: newCompany.id
             }
         })
 
@@ -268,13 +277,123 @@ async function checkUserConflict(attribute, value) {
     }
 }
 
+/* Product Functions */
+
+async function getAllProducts(limit = 50,
+                              page = 1, 
+                              category, 
+                              keywords) {
+
+    // TODO: Eventually overhaul this function and getProductById
+    //       to also return the suppliers which sell this product
+    //       and the transporters who transport it, or at least 
+    //       think about it.
+    // TODO: Don't forget filters, sorting, and pagination
+    // TODO: Don't forget to implement price sorting (relationship based)
+
+    let filterSelection = {}
+
+    if (category) {
+        filterSelection.category = category
+    }
+
+    return users = await prisma.product.findMany({
+        skip: (page-1)*limit,
+        take: limit,
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            complement_name: true,
+            complement_amount: true,
+            Category: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            Supply: {
+                select: {
+                    price: true
+                }
+            }
+        },
+        where: filterSelection
+    });
+}
+
+async function getProductByID(id){
+    try {
+        return {name: testName} = await prisma.product.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                name: true,
+                description: true,
+                Category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                } ,
+                complement_name: true,
+                complement_amount: true,
+                Supply: {
+                    select: {
+                        product: true,
+                        User: {
+                            select: {
+                                Company: {
+                                    select: {
+                                        name: true,
+                                        id: true
+                                    }
+                                },
+                            }
+                        },
+                        warehouse: true,
+                        quantity: true,
+                        price: true,
+                        production_date: true,
+                        expiration_date: true,
+                        Supply_Transporter: {
+                            select: {
+                                User: {
+                                    select: {
+                                        Company: {
+                                            select: {
+                                                name: true,
+                                                id: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Supply_History: true
+                    }
+                }
+                },
+        })
+    } catch (e){
+        console.log(e)
+        return null;
+    }
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
+    // User Functions
     createUser,
     updateUser,
     deleteUser,
     getUserByID,
     getAllUsers,
     checkUserConflict,
+
+    // Product Functions
+    getAllProducts,
+    getProductByID
 }
