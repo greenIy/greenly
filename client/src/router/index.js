@@ -14,6 +14,13 @@ const routes = [
       return import(/* webpackChunkName: "login" */ '../views/LoginView.vue');
     },
   },
+  {
+    path: '/produtos',
+    name: 'produtos',
+    component() {
+      return import(/* webpackChunkName: "login" */ '../views/FiltersView.vue');
+    },
+  },
 ];
 
 const router = createRouter({
