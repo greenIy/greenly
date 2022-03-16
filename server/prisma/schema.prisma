@@ -101,7 +101,7 @@ model Supply {
   supplier           Int                  @db.UnsignedInt
   warehouse          Int                  @db.UnsignedInt
   quantity           Int                  @db.UnsignedInt
-  price              Int                  @db.UnsignedInt
+  price              Decimal              @db.Decimal(10, 2)
   production_date    DateTime             @db.Date
   expiration_date    DateTime             @db.Date
   Product            Product              @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "Supply_ibfk_1")
@@ -122,7 +122,7 @@ model Supply_History {
   warehouse Int      @db.UnsignedInt
   moment    DateTime @db.Date
   quantity  Int      @db.UnsignedInt
-  price     Int?
+  price     Decimal? @db.Decimal(10, 2)
   Supply    Supply   @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: Restrict, map: "Supply_History_ibfk_1")
 
   @@id([product, supplier, warehouse, moment])

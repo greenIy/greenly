@@ -13,7 +13,6 @@ const defaultErr = require("../lib/error").defaultErr
 /* GET /store/products */
 
 router.get('/product', getProductsValidator(), (req, res) => {
-    // TODO: Implement keyword search. Currently only supporting: pagination (+ limiting), category filtering and sorting.
     try {
         persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((products) => {
 

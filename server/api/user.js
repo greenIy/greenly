@@ -28,20 +28,7 @@ router.get('/', (req, res) => {
 router.post('/', createUserValidator(), (req, res) => {
             
     try {
-        persistence.createUser(req.body.firstName,
-                               req.body.lastName,
-                               req.body.email,
-                               req.body.phone,
-                               req.body.password,
-                               req.body.nif,
-                               req.body.type,
-                               req.body.address.street,
-                               req.body.address.country,
-                               req.body.address.city,
-                               req.body.address.postalCode,
-                               req.body.company.name,
-                               req.body.company.bio,
-                               req.body.company.email)
+        persistence.createUser(req.body)
             .then((result) => {
                 if (result) {
                     res.status(201).json(result);
@@ -51,6 +38,7 @@ router.post('/', createUserValidator(), (req, res) => {
                 }
             })
     } catch (e) {
+        console.log(e)
         res.status(400).send({message: "Invalid data. Make sure to include every field."});
     }
 })
@@ -65,6 +53,15 @@ router.get('/:userId', (req, res) => {
 
                 // Renaming Address key (Prisma limitation)
                 delete Object.assign(user, {["address"]: user["Address"] })["Address"];
+                
+                // Renaming or removing Company key. Company should only be displayed if
+                // user is either supplier or transporter.
+                if (["SUPPLIER", "TRANSPORTER"].includes(user.type)) {
+                    Object.assign(user, {["company"]: user["Company"]});
+                }
+
+                delete user.Company
+
                 res.status(200).json(user)
             } else {
                 res.status(404).send({message: "User not found."})

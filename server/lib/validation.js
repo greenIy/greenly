@@ -1,5 +1,5 @@
 /* Parameter Validation Package */
-const { body, validationResult, param, query } = require('express-validator');
+const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID } = require('./persistence');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -9,10 +9,10 @@ const saltRounds = 10;
 function createUserValidator() {
     // TODO: Don't forget to proof this (try/catch/detail exception) during database access
     return[
-        body('firstName')
+        body('first_name')
             .notEmpty()
             .isString(),
-        body('lastName')
+        body('last_name')
             .notEmpty()
             .isString(),
         body('email')
@@ -48,7 +48,7 @@ function createUserValidator() {
         body('address.country')
             .notEmpty()
             .isString(),
-        body('address.postalCode')
+        body('address.postal_code')
             .notEmpty()
             .isString(),
         body('company.name')
@@ -102,11 +102,11 @@ function updateUserValidator() {
                         })
                     }),
 
-        body('firstName')
+        body('first_name')
             .optional()
             .isString(),
 
-        body('lastName')
+        body('last_name')
             .optional()
             .notEmpty(),
 
@@ -126,22 +126,29 @@ function updateUserValidator() {
             .optional()
             .notEmpty(),
 
-        body('oldPassword') // Require newPassword if oldPassword is included.
-            .if(body("newPassword").exists()).notEmpty().withMessage("newPassword and oldPassword both have to be included.")
-            .custom( (oldPassword, { req }) => {
-                // Check if oldPassword matches current user password using bcrypt.compareSync
+        body('old_password') // Require new_password if old_password is included.
+            .if(body("new_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
+            .custom( (old_password, { req }) => {
+                // Check if old_password matches current user password using bcrypt.compareSync
                 return user = getUserByID(req.params.userId, true).then((user) => {
-
-                    if (!bcrypt.compareSync(oldPassword, user.password)) {
-                        return Promise.reject("oldPassword doesn't match user password.")
+                    if (!bcrypt.compareSync(old_password, user.password)) {
+                        return Promise.reject("old_password doesn't match user password.")
                     }
+                    return true
                 })
             }),
 
-        body('newPassword') // Require oldPassword if newPassword is included.
-            .if(body("oldPassword").exists()).notEmpty().withMessage("newPassword and oldPassword both have to be included.")
+        body('new_password') // Require old_password if new_password is included.
+            .if(body("old_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
             .isLength({min: 5})
-            .withMessage("Minimum password length is 5."),
+            .withMessage("Minimum password length is 5.").bail()
+            .custom((new_password, {req}) => {
+                if (req.body.old_password == new_password) {
+                    return Promise.reject("old_password can't be the same as new_password")
+                } else {
+                    return true
+                }
+            }),
 
         body('nif')
             .optional()
@@ -165,7 +172,7 @@ function updateUserValidator() {
             .optional()
             .notEmpty(),
 
-        body('address.postalCode')
+        body('address.postal_code')
             .optional()
             .notEmpty(),
             

@@ -21,13 +21,14 @@ const maps = new Client();
 /* User Functions */
 
 /* Returns user object on creation, or null if invalid */
-async function createUser(first_name, last_name, email, phone, password, nif, type, street, country, city, postal_code, company_name, company_bio, company_email) {
+async function createUser(params) {
+
 
 
     // API Call: Disabled for testing (works)
     const geocoded = await maps.geocode({
         params: {
-            address: `${street}, ${city}, ${country}`,
+            address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
             key: process.env.GOOGLE_API_KEY
         }
     })
@@ -35,37 +36,46 @@ async function createUser(first_name, last_name, email, phone, password, nif, ty
     try {
         let newUser = await prisma.user.create({
             data: {
-                first_name: first_name,
-                last_name: last_name,
-                nif: nif,
-                email: email,
-                phone: phone,
-                password: bcrypt.hashSync(password, saltRounds),
-                type: type
+                first_name: params.first_name,
+                last_name: params.last_name,
+                nif: params.nif,
+                email: params.email,
+                phone: params.phone,
+                password: bcrypt.hashSync(params.password, saltRounds),
+                type: params.type
             }
         })
 
         const newAddress = await prisma.address.create({
             data: {
-                street: street,
-                country: country,
-                city: city,
+                street: params.address.street,
+                country: params.address.country,
+                city: params.address.city,
                 // Using dummy values for testing. Use this for API call:
                 // geocoded.data.results[0].geometry.location.lat
                 // geocoded.data.results[0].geometry.location.lng
                 latitude: geocoded.data.results[0].geometry.location.lat,
                 longitude: geocoded.data.results[0].geometry.location.lng,
-                postal_code: postal_code
+                postal_code: params.address.postal_code
             }
         })
 
-        const newCompany = await prisma.company.create({
-            data: {
-                name: company_name,
-                bio: company_bio,
-                email: company_email
-            }
-        })
+        let updateDataSelection = {
+            address: newAddress.id
+        }
+
+        // Create a new company if the user is a transporter or a supplier
+        if (["TRANSPORTER", "SUPPLIER"].includes(newUser.type)) {
+            const newCompany = await prisma.company.create({
+                data: {
+                    name: params.company.name,
+                    bio: params.company.bio,
+                    email: params.company.email
+                }
+            })
+
+            updateDataSelection.company = newCompany.id
+        }
 
         // Updating the user's address and company after we're sure user creation didn't go wrong.
 
@@ -73,10 +83,7 @@ async function createUser(first_name, last_name, email, phone, password, nif, ty
             where: {
                 id: newUser.id
             },
-            data: {
-                address: newAddress.id,
-                company: newCompany.id
-            }
+            data: updateDataSelection
         })
 
         return {id: newUser.id};
@@ -95,19 +102,19 @@ async function updateUser(id, params) {
     */
 
     const userKeyMap = {
-        firstName: "first_name",
-        lastName: "last_name",
+        first_name: "first_name",
+        last_name: "last_name",
         nif: "nif",
         email: "email",
         phone: "phone",
         type: "type",
-        newPassword: "password"
+        new_password: "password"
     }
 
     const addressKeyMap = {
         street: "street",
         city: "city",
-        postalCode: "postal_code",
+        postal_code: "postal_code",
         country: "country"
     }
 
@@ -118,7 +125,12 @@ async function updateUser(id, params) {
 
     for (const [key, value] of Object.entries(params)) {
         if (key in userKeyMap) {
-            userDataSelection[userKeyMap[key]] = value
+            if (key == "new_password") {
+                userDataSelection[userKeyMap[key]] = bcrypt.hashSync(value, saltRounds)
+
+            } else {
+                userDataSelection[userKeyMap[key]] = value
+            }
         }
     }
     
@@ -236,9 +248,17 @@ async function getUserByID(id, withPassword=false) {
                         country: true
                     }
                 },
+                Company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        bio: true,
+                    }
+                },
             }
         })
     } catch (e){
+        console.log(e)
         return null;
     }
 }
@@ -284,12 +304,7 @@ async function getAllProducts(limit = 50,
                               category, 
                               keywords) {
 
-    // TODO: Eventually overhaul this function and getProductById
-    //       to also return the suppliers which sell this product
-    //       and the transporters who transport it, or at least 
-    //       think about it.
-    // TODO: Don't forget filters, sorting, and pagination
-    // TODO: Don't forget to implement price sorting (relationship based)
+    // TODO: Implement keyword search. Currently only supporting: pagination (+ limiting), category filtering and sorting. 
 
     let filterSelection = {}
 
@@ -324,7 +339,7 @@ async function getAllProducts(limit = 50,
 
 async function getProductByID(id){
     try {
-        return {name: testName} = await prisma.product.findUnique({
+        return product = await prisma.product.findUnique({
             where: {
                 id: id
             },
@@ -346,8 +361,8 @@ async function getProductByID(id){
                             select: {
                                 Company: {
                                     select: {
-                                        name: true,
-                                        id: true
+                                        id: true,
+                                        name: true
                                     }
                                 },
                             }
@@ -363,8 +378,8 @@ async function getProductByID(id){
                                     select: {
                                         Company: {
                                             select: {
-                                                name: true,
-                                                id: true
+                                                id: true,
+                                                name: true
                                             }
                                         }
                                     }

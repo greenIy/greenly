@@ -39,7 +39,7 @@ paths:
         "200":
           description: "Operação efetuada com sucesso"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/ReceivedUser"
     post:
       tags:
       - "user"
@@ -56,10 +56,12 @@ paths:
         description: "Cria um objeto User.\n\nNota: Por padrão, o atributo 'password' não é devolvido."
         required: true
         schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/SentUser"
       responses:
         "201":
           description: "Operação efetuada com sucesso"
+          schema:
+            $ref: "#/definitions/ReceivedID"
         "400":
           description: "Dados inválidos"
   /user/{userId}:
@@ -81,7 +83,7 @@ paths:
         "200":
           description: "Operação efetuada com sucesso"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/ReceivedUser"
         "400":
           description: "userId inválido"
         "404":
@@ -102,10 +104,10 @@ paths:
         type: "string"
       - in: "body"
         name: "body"
-        description: "Atualiza o objeto User. Requere-se apenas que sejam enviados os parâmetros que seram alterados. (e.g. enviar um valor no parâmetro e-mail causará a sua atualização.\nNo caso de atualização de password, deverão ser incluidos os parâmetros 'oldPassword', representativo da password atual do respetivo utilizador, e 'newPassword', representativo do novo valor da password. Caso o valor do parâmetro 'oldPassword' não corresponder à atual password do utilizador, o pedido não será concluido.\n\nNota: O parâmetro 'userId' não é aceite, devendo este ser mencionado como parâmetro de URL."
+        description: "Atualiza o objeto User. Requere-se apenas que sejam enviados os parâmetros que seram alterados. (e.g. enviar um valor no parâmetro e-mail causará a sua atualização.\nNo caso de atualização de password, deverão ser incluidos os parâmetros 'old_password', representativo da password atual do respetivo utilizador, e 'new_password', representativo do novo valor da password. Caso o valor do parâmetro 'old_password' não corresponder à atual password do utilizador, o pedido não será concluido.\n\nNota: O parâmetro 'userId' não é aceite, devendo este ser mencionado como parâmetro de URL."
         required: true
         schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/UpdateUser"
       responses:
         "204":
           description: "Utilizador atualizado com sucesso"
@@ -115,6 +117,8 @@ paths:
           description: "Utilizador não autorizado"
         "404":
           description: "Utilizador não encontrado"
+        "409":
+          description: "Valor unico fornecido está em conflito com valores de outros utilizadores (e.g. e-mail, NIF)"
     delete:
       tags:
       - "user"
@@ -214,7 +218,7 @@ paths:
         "200":
           description: "Operação efetuada com sucesso"
           schema:
-            $ref: "#/definitions/Product"
+            $ref: "#/definitions/Products"
         "400":
           description: "userId inválido"
         "404":
@@ -240,7 +244,7 @@ paths:
         description: "productId do produto a ser adicionado à wishlist"
         required: true
         schema:
-          $ref: "#/definitions/Product"
+          $ref: "#/definitions/WishlistProduct"
       responses:
         "201":
           description: "Operação efetuada com sucesso"
@@ -401,12 +405,13 @@ paths:
       - "application/json"
       parameters:
       - in: "query"
-        name: "filter"
-        type: "array"
-        items:
-          type: "string"
+        name: "sort"
+        type: "string"
+        enum:
+          - "price_asc"
+          - "price_desc"
         required: false
-        description: "Filtros a aplicar à pesquisa"
+        description: "Ordem aplicada ao resultado devolvido"
       - in: "query"
         name: "limit"
         type: "integer"
@@ -418,19 +423,22 @@ paths:
         required: false
         description: "Página de produtos a devolver"
       - in: "query"
-        name: "order"
-        type: "string"
-        enum:
-          - "name"
-          - "price_asc"
-          - "price_desc"
+        name: "category"
+        type: "integer"
         required: false
-        description: "Ordem aplicada ao resultado devolvido"
+        description: "Identificador da categoria de produtos a devolver"
+      - in: "query"
+        name: "keyword"
+        type: "array"
+        items:
+          type: "string"
+        required: false
+        description: "Palavas-chave a incluir na pesquisa"
       responses:
         "200":
           description: "Operação efetuada com sucesso"
           schema:
-            $ref: "#/definitions/Product"
+            $ref: "#/definitions/Products"
     post:
       tags:
       - "store"
@@ -447,7 +455,7 @@ paths:
         description: "Cria um objeto Product"
         required: true
         schema:
-          $ref: "#/definitions/Product"
+          $ref: "#/definitions/SentProduct"
       responses:
         "201":
           description: "Operação efetuada com sucesso"
@@ -474,7 +482,7 @@ paths:
         "200":
           description: "Operação efetuada com sucesso"
           schema:
-            $ref: "#/definitions/Product"
+            $ref: "#/definitions/SingleProduct"
         "400":
           description: "productId inválido"
         "404":
@@ -498,7 +506,7 @@ paths:
         description: "Atualiza o objeto Product"
         required: true
         schema:
-          $ref: "#/definitions/Product"
+          $ref: "#/definitions/SentProduct"
       responses:
         "204":
           description: "Produto atualizado com sucesso"
@@ -1182,20 +1190,50 @@ paths:
   
 definitions:
 ### USER DEF
-  User:
+  SentUser:
     type: "object"
     description: "Objeto utilizado para devolver informação sobre um utilizador"
     properties:
-      userId:
+      nif:
+        type: "integer"
+        description: "Número de identificação fiscal do utilizador"
+      first_name:
+        type: "string"
+        description: "Nome do utilizador"
+      last_name:
+        type: "string"
+        description: "Apelido do utilizador"
+      email:
+        type: "string"
+        description: "E-mail do utilizador"
+      phone:
+        type: "string"
+        description: "Número de telefone do utilizador"
+      type:
+        type: "string"
+        enum:
+          - "ADMINISTRATOR"
+          - "CONSUMER"
+          - "SUPPLIER"
+          - "TRANSPORTER"
+      address:
+        $ref: '#/definitions/Address'
+      company:
+        $ref: '#/definitions/SentCompany'
+  ReceivedUser:
+    type: "object"
+    description: "Exemplo de objeto de retorno que inclui a informação do utilizador"
+    properties:
+      id:
         type: "integer"
         description: "Código identificador do utilizador"
       nif:
         type: "integer"
         description: "Número de identificação fiscal do utilizador"
-      firstName:
+      first_name:
         type: "string"
         description: "Nome do utilizador"
-      lastName:
+      last_name:
         type: "string"
         description: "Apelido do utilizador"
       email:
@@ -1214,9 +1252,84 @@ definitions:
 
       address:
         $ref: '#/definitions/Address'
-    xml:
-      name: "User"
+      company:
+        $ref: '#/definitions/ReceivedCompany'
+
+  # TODO: Create UpdateUser
+  UpdateUser:
+    type: "object"
+    description: "Objeto utilizado para devolver informação sobre um utilizador"
+    properties:
+      nif:
+        type: "integer"
+        description: "Número de identificação fiscal do utilizador"
+      first_name:
+        type: "string"
+        description: "Nome do utilizador"
+      last_name:
+        type: "string"
+        description: "Apelido do utilizador"
+      email:
+        type: "string"
+        description: "E-mail do utilizador"
+      phone:
+        type: "string"
+        description: "Número de telefone do utilizador"
+      old_password:
+        type: "string"
+        description: "A palavra-passe atual do utilizador. Terá que condizer com a palavra-passe atualmente registada para que qualquer alteração restante seja feita (Opcional)"
+      new_password:
+        type: "string"
+        description: "A nova palavra-passe a definir para o utilizador. Este campo apenas é requerido se o campo 'old_password' estiver incluido (Opcional)"
+      type:
+        type: "string"
+        enum:
+          - "ADMINISTRATOR"
+          - "CONSUMER"
+          - "SUPPLIER"
+          - "TRANSPORTER"
+      address:
+        $ref: '#/definitions/Address'
+
+  ReceivedID:
+    type: "object"
+    description: "Objeto utilizado para devolver o ID de um utilizador acabado de criar"
+    properties: 
+      id:
+        type: "integer"
+        description: "O código identificador de um utilizador acabado de criar"
+      
   
+### COMPANY DEF
+  ReceivedCompany:
+    type: "object"
+    description: "Objeto utilizado para representar informação sobre uma empresa"
+    properties:
+      id:
+        type: "integer"
+        description: "Código identificador da empresa"
+      name:
+        type: "string"
+        description: "Nome da empresa"
+      bio:
+        type: "string"
+        description: "Descrição da empresa"
+      email:
+        type: "string"
+        description: "E-mail de contacto da empresa"
+  SentCompany:
+    type: "object"
+    description: "Objeto utilizado para representar informação sobre uma empresa"
+    properties:
+      name:
+        type: "string"
+        description: "Nome da empresa"
+      bio:
+        type: "string"
+        description: "Descrição da empresa"
+      email:
+        type: "string"
+        description: "E-mail de contacto da empresa"
 ### ORDER DEF
   Order:
     type: "object"
@@ -1270,9 +1383,9 @@ definitions:
     
   
 ### PRODUCT DEF
-  Product: 
+  SentProduct: 
     type: "object"
-    description: "Objeto utilizado para devolver informação sobre um produto"
+    description: "Objeto utilizado para enviar informação de criação de um novo produto"
     properties:
       productId:
         type: "string"
@@ -1298,6 +1411,143 @@ definitions:
           $ref: "#/definitions/Item"
     xml:
       name: "Product"
+
+  SingleProduct: 
+    type: "object"
+    description: "Objeto utilizado para devolver informação detalhada sobre um único produto"
+    properties:
+      id:
+        type: "integer"
+        description: "O código identificador do produto"
+      name:
+        type: "string"
+        description: "O nome do produto"
+      description:
+        type: "string"
+        description: "A descrição do produto"
+      complement_name:
+        type: "string"
+        description: "O nome de um produto adicional que seja necessário para o uso deste produto (e.g. pilhas)"
+      complement_amount:
+        type: "integer"
+        description: "A quantidade do produto adicional requerido"
+      category:
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            description: "O código identificador da categoria à qual o produto pertence"
+          name:
+            type: "string"
+            description: "O nome da categoria à qual o produto pertence"
+      supplies:
+        type: "array"
+        description: "Informação detalhada sobre o fornecimento de cada fornecedor para cada este produto"
+        items:
+          type: "object"
+          properties:
+            warehouse:
+              type: "integer"
+              description: "Código identificador do armazém em que o produto se encontra"
+            quantity:
+              type: "integer"
+              description: "Quantidade em stock que o fornecedor tem deste produto"
+            price:
+              type: "number"
+              format: "float"
+              description: "Preço a que o fornecedor está a vender o produto"
+            production_date:
+              type: "string"
+              description: "String representativo da data a que o produto foi feito"
+            expiration_date:
+              type: "string"
+              description: "String representativo da data de validade do produto"
+            supplier: 
+              type: "object"
+              description: "Informação do fornecedor"
+              properties:
+                id:
+                  type: "integer"
+                  description: "Código identificador da empresa do fornecedor"
+                name:
+                  type: "string"
+                  description: "Nome da empresa"
+            transporters: 
+              description: "Informação sobre todos os transportadores que podem transportar este produto, quando vendido por este fornecedor"
+              type: "array"
+              items: 
+                type: "object"
+
+                properties:
+                  id:
+                    type: "integer"
+                    description: "Código identificador da empresa do fornecedor"
+                  name:
+                    type: "string"
+                    description: "Nome da empresa"
+            history:
+              description: "Informação histórica sobre a venda deste produto por parte deste fornecedor"
+              type: "array"
+              items:
+                type: "object"
+                properties: 
+                  moment:
+                    type: "string"
+                    description: "String representativo do momento a que esta informação histórica corresponde"
+                  quantity:
+                    type: "integer"
+                    description: "Quantidade deste produto em inventário por parte do fornecedor, no momento"
+                  price:
+                    type: "number"
+                    format: "float"
+                    description: "Preço a que este fornecedor vendia o produto, no momento"
+
+
+
+  Products:
+    type: "array"
+    description: "Objeto utilizado para devolver informação sobre vários produtos"
+    items:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "O código identificador do produto"
+        name:
+          type: "string"
+          description: "O nome do produto"
+        description:
+          type: "string"
+          description: "A descrição do produto"
+        complement_name:
+          type: "string"
+          description: "O nome de um produto adicional que seja necessário para o uso deste produto (e.g. pilhas)"
+        complement_amount:
+          type: "integer"
+          description: "A quantidade do produto adicional requerido"
+        category:
+          type: "object"
+          properties:
+            id:
+              type: "string"
+              description: "O código identificador da categoria à qual o produto pertence"
+            name:
+              type: "string"
+              description: "O nome da categoria à qual o produto pertence"
+        lowest_price:
+          type: "integer"
+          description: "O preço mais baixo a que o produto é vendido, de entre todos os seus fornecedores"
+        highest_price:
+          type: "integer"
+          description: "O preço mais alto a que o produto é vendido, de entre todos os seus fornecedores"
+
+  WishlistProduct:
+    type: "object"
+    description: "Envio do identificador do produto para a wishlist do utilizador"
+    properties:
+      id: 
+        type: "integer"
+        description: "Código identificador do produto"
 
 ### CATEGORY DEF
   Category:
@@ -1451,7 +1701,7 @@ definitions:
       city:
         type: "string"
         description: "Cidade da morada"
-      postalCode: 
+      postal_code: 
         type: "string"
         description: "Código postal da morada"
       country:

@@ -164,7 +164,7 @@ CREATE TABLE Supply (
     supplier        INT UNSIGNED NOT NULL,
     warehouse       INT UNSIGNED NOT NULL,
     quantity        INT UNSIGNED NOT NULL,
-    price           INT UNSIGNED NOT NULL,
+    price           NUMERIC(10, 2) UNSIGNED NOT NULL,
     production_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
 
@@ -232,7 +232,7 @@ CREATE TABLE Supply_History (
 
     # Data to be stored (relative to statement date)
     quantity    INT UNSIGNED NOT NULL, # Per warehouse
-    price       INT,
+    price       NUMERIC (10, 2),
 
     PRIMARY KEY (product, supplier, warehouse, moment),
 
