@@ -35,7 +35,7 @@ router.get('/product', getProductsValidator(), (req, res) => {
                         // only one Supply. Because array.reduce
                         // works differently when there's only
                         // one element in an array.
-                        products[i]["lowest_price"] = products[i]["highest_price"] = products[i].Supply[0].price;
+                        products[i]["lowest_price"] = products[i]["highest_price"] = Number(products[i].Supply[0].price);
                     }
 
                     // Removing unrequired keys

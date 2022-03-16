@@ -23,9 +23,6 @@ const maps = new Client();
 /* Returns user object on creation, or null if invalid */
 async function createUser(params) {
 
-
-
-    // API Call: Disabled for testing (works)
     const geocoded = await maps.geocode({
         params: {
             address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
@@ -304,9 +301,28 @@ async function getAllProducts(limit = 50,
                               category, 
                               keywords) {
 
-    // TODO: Implement keyword search. Currently only supporting: pagination (+ limiting), category filtering and sorting. 
-
     let filterSelection = {}
+
+    if (keywords) {
+        // The following code searches the keywords on both name and description of the products
+
+        // Initialize OR search between name and description
+        filterSelection.OR = []
+
+        // Initializing filter objects
+        nameKeywords = {"name":{}}
+        descriptionKeywords = {"description":{}}
+
+        // According to Prisma Full-Search API and MySQL Full-Text Search
+        if (Array.isArray(keywords)) {
+            nameKeywords.name.search = descriptionKeywords.description.search = keywords.join("* ")
+        } else {
+            nameKeywords.name.search = descriptionKeywords.description.search = keywords + "*"
+        }
+        
+        // Adding created filters to the filterSelection
+        filterSelection.OR.push(nameKeywords, descriptionKeywords)
+    }
 
     if (category) {
         filterSelection.category = category

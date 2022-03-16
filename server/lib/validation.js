@@ -207,6 +207,7 @@ function getProductsValidator() {
             .toInt(),
         query("keywords.*")
             .optional()
+            .notEmpty()
             .isString(),
 
         (req, res, next) => {

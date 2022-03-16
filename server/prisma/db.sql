@@ -43,7 +43,9 @@ CREATE TABLE Product (
     complement_amount   NUMERIC(2),
 
     FOREIGN KEY (category)
-         REFERENCES Category(id)
+         REFERENCES Category(id),
+        
+    FULLTEXT (name, description)
 );
 
 # USER TABLES
