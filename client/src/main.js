@@ -16,3 +16,6 @@ myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
 myApp.use(router).mount('#app');
+
+
+

@@ -16,7 +16,7 @@
       
         <div class="tab-content register-form" id="register-content" style="width: 45%; margin-top: 1.5%">
             <div class="tab-pane fade show active" id="register-consumidor" role="tabpanel" aria-labelledby="consumidor-pill">
-                <register-transportador/>
+                <register-consumidor/>
             </div>
 
             <div class="tab-pane fade" id="register-transportador" role="tabpanel" aria-labelledby="transportador-pill">       
@@ -39,7 +39,7 @@ import registerTransportador from './registerTransportador.vue';
 import registerFornecedor from './registerFornecedor.vue';
 
 export default {
-  name: 'registerForm',
+  name: 'registerPills',
   components: {
     registerConsumidor,
     registerTransportador,
