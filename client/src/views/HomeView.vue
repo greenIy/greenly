@@ -1,14 +1,19 @@
 <template>
-  <div class="home">
-    <the-navbar />
+  <div class="page-container">
+    <div class="content-wrap">
+      <the-navbar />
+      <router-link to="/products">
+        <img alt="Logo do greenly" src="../assets/poster.png">
+      </router-link>
+    </div>
     <the-footer />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import TheNavbar from '@/components/TheNavbar.vue';
-import TheFooter from '@/components/TheFooter.vue';
+import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
+import TheFooter from '@/components/Frontpage/TheFooter.vue';
 
 export default {
   name: 'HomeView',
@@ -18,3 +23,17 @@ export default {
   },
 };
 </script>
+<style>
+  .page-container {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .content-wrap {
+    padding-bottom: 7.5rem;
+  }
+
+  img {
+    width: 100%;
+  }
+</style>

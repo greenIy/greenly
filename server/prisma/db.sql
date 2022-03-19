@@ -51,9 +51,12 @@ CREATE TABLE Product (
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     password    VARCHAR(60),# bcrypt hashes always use 60 characters
-    name        VARCHAR(255) NOT NULL,
-    email       VARCHAR(255) NOT NULL,
-    address     INT UNSIGNED NOT NULL,
+    first_name  VARCHAR(255) NOT NULL,
+    last_name   VARCHAR(255) NOT NULL,
+    nif         INT(9)       UNIQUE NOT NULL,
+    email       VARCHAR(255) UNIQUE NOT NULL,
+    phone       VARCHAR(20)  NOT NULL,
+    address     INT UNSIGNED,
     type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
 
 

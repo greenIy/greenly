@@ -14,8 +14,8 @@
 
 <script>
   // @ is an alias to /src
-  import TheNavbar from '@/components/TheNavbar.vue';
-  import TheFooter from '@/components/TheFooter.vue';
+  import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
+  import TheFooter from '@/components/Frontpage/TheFooter.vue';
   import loginForm from '@/components/loginForm.vue';
 
 
