@@ -8,7 +8,7 @@
           </div>
           <div class="mb-3">
             <label for="inputPassword" class="form-label">Palavra-passe</label>
-           <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe...">
+            <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe...">
           </div>
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="rememberMe">
@@ -18,9 +18,9 @@
         <div class="or-seperator"><i>ou</i></div>
             <p class="text-center">Inicia sessão com uma rede social</p>
             <div class="text-center social-btn">
-                <a href="#" class="btn btn-secondary"><font-awesome-icon icon="fa-brands fa-facebook" />&nbsp; Facebook</a>
-                <a href="#" class="btn btn-danger"><font-awesome-icon icon="fa-brands fa-google" />&nbsp; Google</a>
-                <a href="#" class="btn btn-info"><font-awesome-icon icon="fa-brands fa-apple" />&nbsp; Apple</a>
+                <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+                <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
+                <a href="#" class="btn btn-info"><font-awesome-icon :icon="['fab', 'apple']" size="lg"/>&nbsp; Apple</a>
             </div>
         </form>
         <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
@@ -28,6 +28,14 @@
 </template>
 
 <script>
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFacebookSquare, faGoogle, faApple} from '@fortawesome/free-brands-svg-icons';
+
+library.add(faFacebookSquare);
+library.add(faGoogle);
+library.add(faApple);
+
 export default {
   name: 'loginForm',
 };
@@ -37,6 +45,9 @@ export default {
     .btn-primary {
         background-color: #608072;
         border-color: white;
+    }
+    .btn-primary:hover {
+        opacity: 0.9;
     }
     .login-form {
         width: 400px;

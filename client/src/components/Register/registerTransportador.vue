@@ -1,8 +1,6 @@
 <template>
     <div>
-        <form>
-            <h2 class="text-center">Criar conta</h2> 
-            
+        <form>   
             <p class="text-left" style="margin-bottom: -2%">Informações pessoais</p><hr/>
             <div class="row">
                 <div class="col mb-3">
@@ -77,7 +75,7 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputDescription" class="form-label">Descrição <span style='color: #FF0000;'>*</span></label>
-                    <input type="description" class="form-control" id="description" placeholder="Introduza descrição...">
+                    <textarea rows="3" type="description" class="form-control" id="description" placeholder="Introduza descrição..."></textarea>
                 </div>
             </div>
 
@@ -86,7 +84,7 @@
                 <label class="form-check-label" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%">Registar como consumidor</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Registar como transportador</button>
 
         </form>
         <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>

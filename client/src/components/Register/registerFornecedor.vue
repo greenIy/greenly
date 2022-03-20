@@ -1,8 +1,6 @@
 <template>
     <div>
-        <form>
-            <h2 class="text-center">Criar conta</h2> 
-            
+        <form>            
             <p class="text-left" style="margin-bottom: -2%">Informações pessoais</p><hr/>
             <div class="row">
                 <div class="col mb-3">
@@ -44,12 +42,12 @@
             <p class="text-left" style="margin-bottom: -2%">Morada</p><hr/>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                    <country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/>
+                    <label for="inputCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" id="country" placeholder="Introduza país...">
                 </div>
                 <div class="col mb-3">
-                    <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                    <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
+                    <label for="inputCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" id="city" placeholder="Introduza cidade...">
                 </div>
             </div>
             <div class="row">
@@ -63,12 +61,30 @@
                 </div>
             </div>
 
+            <p class="text-left" style="margin-bottom: -2%">Empresa</p><hr/>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="inputCompanyName" class="form-label">Nome da empresa <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" id="companyName" placeholder="Introduza nome empresa...">
+                </div>
+                <div class="col mb-3">
+                    <label for="inputCompanyEmail" class="form-label">E-mail da empresa <span style='color: #FF0000;'>*</span></label>
+                    <input type="email" class="form-control" id="city" placeholder="Introduza e-mail empresa...">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="inputDescription" class="form-label">Descrição <span style='color: #FF0000;'>*</span></label>
+                    <input type="description" class="form-control" id="description" placeholder="Introduza descrição...">
+                </div>
+            </div>
+
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsConditons">
                 <label class="form-check-label" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%">Registar como consumidor</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Registar como fornecedor</button>
 
         </form>
         <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
@@ -76,24 +92,11 @@
 </template>
 
 <script>
-import countrySelect from '@/components/country-select'
-import regionSelect from '@/components/region-select'
 
-export default {
-  name: 'registerConsumidor',
-  components: {
-    countrySelect,
-    regionSelect
-  },
-  data: () => ({
-    country: '',
-    region: ''
-  })
-};
 </script>
 
 <style scoped>
-   .btn-primary {
+    .btn-primary {
       background-color: #608072;
       border-color: white;
     }

@@ -17,7 +17,7 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-import registerPills from '../components/registerPills.vue';
+import registerPills from '@/components/Register/registerPills.vue';
 
 export default {
   name: 'RegisterView',

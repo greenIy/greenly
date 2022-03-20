@@ -84,7 +84,7 @@ export default {
         color: #fcfaf9;
         font-size: 9px;
         width: 100%;
-        position: absolute;
+        position: relative;
         bottom: 0;
         height: 7.5rem;
     }

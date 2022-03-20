@@ -2,8 +2,8 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
 // Country and Region select
-import CountrySelect from '@/components/country-select.vue'
-import RegionSelect from '@/components/region-select.vue'
+import CountrySelect from '@/components/Register/country-select.vue'
+import RegionSelect from '@/components/Register/region-select.vue'
 
 const install = function (Vue) {
   const components = { CountrySelect, RegionSelect }
