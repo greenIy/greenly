@@ -1,5 +1,5 @@
 /* Parameter Validation Package */
-const { body, validationResult, param } = require('express-validator');
+const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID } = require('./persistence');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -9,14 +9,15 @@ const saltRounds = 10;
 function createUserValidator() {
     // TODO: Don't forget to proof this (try/catch/detail exception) during database access
     return[
-        body('firstName')
+        body('first_name')
             .notEmpty()
             .isString(),
-        body('lastName')
+        body('last_name')
             .notEmpty()
             .isString(),
         body('email')
             .isEmail()
+            .toLowerCase()
             .custom(value => {
                 return checkUserConflict("email", value).then(conflict => {
                     if (conflict) {
@@ -47,9 +48,30 @@ function createUserValidator() {
         body('address.country')
             .notEmpty()
             .isString(),
-        body('address.postalCode')
+        body('address.postal_code')
             .notEmpty()
             .isString(),
+        body('company.name')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company name must be included if user type is supplier or transporter.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.bio')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company bio must be included if user type is supplier or transporter.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.email')
+            .if(body('type')
+                .isIn(["SUPPLIER", "TRANSPORTER"]))
+            .exists()
+            .withMessage("Company email must be included if user type is supplier or transporter.").bail()
+            .isEmail(),
+        
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -80,17 +102,18 @@ function updateUserValidator() {
                         })
                     }),
 
-        body('firstName')
+        body('first_name')
             .optional()
             .isString(),
 
-        body('lastName')
+        body('last_name')
             .optional()
             .notEmpty(),
 
         body('email')
             .isEmail()
             .optional()
+            .toLowerCase()
             .custom(value => {
                 return checkUserConflict("email", value).then(conflict => {
                     if (conflict) {
@@ -103,22 +126,29 @@ function updateUserValidator() {
             .optional()
             .notEmpty(),
 
-        body('oldPassword') // Require newPassword if oldPassword is included.
-            .if(body("newPassword").exists()).notEmpty().withMessage("newPassword and oldPassword both have to be included.")
-            .custom( (oldPassword, { req }) => {
-                // Check if oldPassword matches current user password using bcrypt.compareSync
+        body('old_password') // Require new_password if old_password is included.
+            .if(body("new_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
+            .custom( (old_password, { req }) => {
+                // Check if old_password matches current user password using bcrypt.compareSync
                 return user = getUserByID(req.params.userId, true).then((user) => {
-
-                    if (!bcrypt.compareSync(oldPassword, user.password)) {
-                        return Promise.reject("oldPassword doesn't match user password.")
+                    if (!bcrypt.compareSync(old_password, user.password)) {
+                        return Promise.reject("old_password doesn't match user password.")
                     }
+                    return true
                 })
             }),
 
-        body('newPassword') // Require oldPassword if newPassword is included.
-            .if(body("oldPassword").exists()).notEmpty().withMessage("newPassword and oldPassword both have to be included.")
+        body('new_password') // Require old_password if new_password is included.
+            .if(body("old_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
             .isLength({min: 5})
-            .withMessage("Minimum password length is 5."),
+            .withMessage("Minimum password length is 5.").bail()
+            .custom((new_password, {req}) => {
+                if (req.body.old_password == new_password) {
+                    return Promise.reject("old_password can't be the same as new_password")
+                } else {
+                    return true
+                }
+            }),
 
         body('nif')
             .optional()
@@ -142,7 +172,7 @@ function updateUserValidator() {
             .optional()
             .notEmpty(),
 
-        body('address.postalCode')
+        body('address.postal_code')
             .optional()
             .notEmpty(),
             
@@ -157,7 +187,40 @@ function updateUserValidator() {
     ]
 }
 
+/* Product Validation Functions */
+
+function getProductsValidator() {
+    return [
+        query("sort")
+            .optional()
+            .isIn(["price_asc", "price_desc"]),
+        query("limit")
+            .optional()
+            .isInt({min: 0, max: 250})
+            .toInt(),
+        query("page")
+            .optional()
+            .isInt({min:1}),
+        query("category")
+            .optional()
+            .isInt()
+            .toInt(),
+        query("keywords.*")
+            .optional()
+            .notEmpty()
+            .isString(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     createUserValidator,
-    updateUserValidator
+    updateUserValidator,
+    getProductsValidator
 }

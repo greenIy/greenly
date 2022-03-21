@@ -1,11 +1,10 @@
 {
   "devDependencies": {
-    "nodemon": "^2.0.15",
-    "prisma": "^3.10.0"
+    "nodemon": "^2.0.15"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.3.10",
-    "@prisma/client": "^3.10.0",
+    "@prisma/client": "^3.11.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
     "cookie-parser": "~1.4.4",

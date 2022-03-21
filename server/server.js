@@ -43,7 +43,7 @@ app.use(express.json({
   strict: false
 }));
 app.use(cookieParser());
-app.use(session({ secret: 'keyboard cat',
+app.use(session({ secret: process.env.SESSION_SECRET || 'keyboard cat',
                   cookie: {maxAge: 600000},
                   resave: true,
                   saveUninitialized: true}))
@@ -71,7 +71,7 @@ app.use('/transporter', transporter);
 
 app.use(errorHandler);
 
-
+  
 
 const port = process.env.PORT || 4000
 

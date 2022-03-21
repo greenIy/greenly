@@ -43,11 +43,20 @@ CREATE TABLE Product (
     complement_amount   NUMERIC(2),
 
     FOREIGN KEY (category)
-         REFERENCES Category(id)
+         REFERENCES Category(id),
+        
+    FULLTEXT (name, description)
 );
 
 # USER TABLES
-# Administrator privileges could just be an attribute here
+
+CREATE TABLE Company (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR (50)    NOT NULL,
+    email       VARCHAR (255)   NOT NULL,
+    bio         VARCHAR (255)   NULL
+);
+
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     password    VARCHAR(60),# bcrypt hashes always use 60 characters
@@ -57,11 +66,15 @@ CREATE TABLE User (
     email       VARCHAR(255) UNIQUE NOT NULL,
     phone       VARCHAR(20)  NOT NULL,
     address     INT UNSIGNED,
+    company     INT UNSIGNED,
     type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
 
 
     FOREIGN KEY (address)
-        REFERENCES Address(id)
+        REFERENCES Address(id),
+
+    FOREIGN KEY (company)
+        REFERENCES Company(id)
 
 );
 
@@ -153,7 +166,7 @@ CREATE TABLE Supply (
     supplier        INT UNSIGNED NOT NULL,
     warehouse       INT UNSIGNED NOT NULL,
     quantity        INT UNSIGNED NOT NULL,
-    price           INT UNSIGNED NOT NULL,
+    price           NUMERIC(10, 2) UNSIGNED NOT NULL,
     production_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
 
@@ -184,7 +197,8 @@ CREATE TABLE Order_Item (
                      'IN_TRANSIT',
                      'COMPLETE',
                      'FAILURE',
-                     'CANCELED'),
+                     'CANCELED')
+                     NOT NULL,
     `order`     INT UNSIGNED NOT NULL,
 
     product     INT UNSIGNED NOT NULL,
@@ -220,7 +234,7 @@ CREATE TABLE Supply_History (
 
     # Data to be stored (relative to statement date)
     quantity    INT UNSIGNED NOT NULL, # Per warehouse
-    price       INT,
+    price       NUMERIC (10, 2),
 
     PRIMARY KEY (product, supplier, warehouse, moment),
 
@@ -229,7 +243,7 @@ CREATE TABLE Supply_History (
         ON DELETE CASCADE
 );
 
-CREATE TABLE Supply_Transporters (
+CREATE TABLE Supply_Transporter (
     # Specified which transporters can serve which supplies
 
     # Supply Identifiers
