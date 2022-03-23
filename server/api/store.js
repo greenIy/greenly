@@ -1,12 +1,12 @@
 /* Keep in mind, the path for each route in this file is prepended with /store */
 
-const express = require('express');
-const router = express.Router();
+const express   = require('express');
+const router    = express.Router();
 
 /* Greenly libraries */
-const persistence = require('../lib/persistence.js')
 const { getProductsValidator } = require('../lib/validation.js');
-const defaultErr = require("../lib/error").defaultErr
+const persistence   = require('../lib/persistence.js')
+const defaultErr    = require("../lib/error").defaultErr
 
 /* Product Routes */
 

@@ -12,7 +12,7 @@ const argv = require('../server').argv
 const saltRounds = 10;
 
 const prisma = new PrismaClient({ 
-    // Log database operations if -d flag is present
+    // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
 const maps = new Client();
@@ -172,6 +172,7 @@ async function deleteUser(id) {
     try {
         /* TODO: Eventually also delete: 
                 * All orders by user, in case of consumer
+                * Company
         */
 
         if (getUserByID(id)) {
@@ -227,6 +228,44 @@ async function getUserByID(id, withPassword=false) {
         return user = await prisma.user.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                id: true,
+                nif: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                phone: true,
+                type: true,
+                password: withPassword,
+                Address: {
+                    select: {
+                        street: true,
+                        city: true,
+                        postal_code: true,
+                        country: true
+                    }
+                },
+                Company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        bio: true,
+                    }
+                },
+            }
+        })
+    } catch (e){
+        console.log(e)
+        return null;
+    }
+}
+
+async function getUserByEmail(email, withPassword=false) {
+    try {
+        return user = await prisma.user.findUnique({
+            where: {
+                email: email
             },
             select: {
                 id: true,
@@ -421,6 +460,7 @@ module.exports = {
     updateUser,
     deleteUser,
     getUserByID,
+    getUserByEmail,
     getAllUsers,
     checkUserConflict,
 

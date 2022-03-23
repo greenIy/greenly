@@ -2,9 +2,11 @@
 
 const { defaultUrl } = require('@googlemaps/google-maps-services-js/dist/directions');
 const express = require('express');
+const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
 
 /* Greenly libraries & required server data */
+const authentication = require("../lib/authentication")
 const persistence = require('../lib/persistence.js');
 const { createUserValidator, updateUserValidator } = require('../lib/validation.js');
 const defaultErr = require("../lib/error").defaultErr
@@ -45,9 +47,10 @@ router.post('/', createUserValidator(), (req, res) => {
 
 /* GET /user/{userId} (User, Admin or Transporter only) */
 
-router.get('/:userId', (req, res) => {
+router.get('/:userId', authentication.check, (req, res, next) => {
     
     try {
+        //TODO: With authentication and authorization in place, this DB call could be replaced with req.user
         persistence.getUserByID(Number(req.params.userId)).then((user) => {
             if (user) {
 
