@@ -1,18 +1,39 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="page-container">
+    <div class="content-wrap">
+      <the-navbar />
+      <router-link to="/products">
+        <img alt="Logo do greenly" src="../assets/poster.png">
+      </router-link>
+    </div>
+    <the-footer />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
+import TheFooter from '@/components/Frontpage/TheFooter.vue';
 
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld,
+    TheNavbar,
+    TheFooter,
   },
 };
 </script>
+<style>
+  .page-container {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .content-wrap {
+    padding-bottom: 7.5rem;
+  }
+
+  img {
+    width: 100%;
+  }
+</style>
