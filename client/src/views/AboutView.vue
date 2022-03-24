@@ -17,7 +17,7 @@
   </div>
   <div class="col-3 mb-3">
     <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia do Augusto">
+      <img class="img-fluid mt-3 mb-2" src="../assets/Team/augusto.jpg" alt="Fotografia do Augusto">
       <div class="container">
         <h4>Augusto Gouveia</h4>
         <p class="title">Back-end</p>
@@ -26,7 +26,7 @@
   </div>
    <div class="col-3 mb-3">
     <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia da Lívia" >
+      <img class="img-fluid mt-3 mb-2" src="../assets/Team/livia.jpg" alt="Fotografia da Lívia" >
       <div class="container">
         <h4>Lívia Batalha</h4>
         <p class="title">Front-end</p>

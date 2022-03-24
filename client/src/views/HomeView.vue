@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="content-wrap">
       <the-navbar />
-      <router-link to="/products">
+      <router-link to="/produtos">
         <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
     </div>
