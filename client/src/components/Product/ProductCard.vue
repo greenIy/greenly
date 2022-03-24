@@ -1,8 +1,8 @@
 <template>
-<div >
-<div class="card-group card hover-shadow">
-  <div class="card">
-    <img class="img-fluid " src='../../assets/logo.png' alt="" >
+<div>
+<div class="card-group card mt-2">
+  <div class="card hover-shadow">
+    <img class="img-fluid mt-3" src='../../assets/Team/daniela.jpg' alt="" >
     <div class="card-body" style="text-align:left;">
         <h5 class="card-title">Categoria</h5>
         <div>
@@ -16,7 +16,9 @@ Nome
     </div>
     <div class="div fs-6">
     <button class="btnH fav"  @click="liked">
-    <font-awesome-icon class="icons fa-cog " id="like" :icon="['fa', 'heart']" size="lg"/> Favoritos</button>
+      <font-awesome-icon class="icons fa-cog" id="like" :icon="['fa', 'heart']" size="xs"/>
+    Favoritos
+    </button>
       <form>
       <div class="form-group form-check">
           <label class="form-check-label ms-2 product" for="accept">
@@ -24,14 +26,13 @@ Nome
       </div>
       </form>
        </div>
-          <div class="d-inline-block mt-2 mb-3">
+          <div class="d-inline-block mt-2 mb-3 center">
         <button class="btnS">
            <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
         </div >
   </div>
 </div>
 </div>
- <!-- eslint-enable max-len -->
 </template>
 <script>
 /* eslint-disable */
@@ -46,7 +47,7 @@ export default {
  
   name: 'ProductCard',
   data() {
-    return{
+    return {
        isActive: false,
        user: {
          accept: false
@@ -58,7 +59,7 @@ export default {
       if (this.isActive == false){
         document.getElementById('like').classList.add("red");
         this.isActive = true;
-      }else{
+      } else{
         document.getElementById('like').classList.remove("red");
         this.isActive = false;
       }
@@ -68,9 +69,18 @@ export default {
 </script>
 
 <style scoped>
+    h4 {
+      font-size: 14px;
+    }
+
+    h5{
+      font-size: 10px;
+    }
+
     .card {
          margin: auto;
-         width: 18rem;
+         width: 14rem;
+         font-size: 10px;
     }
     .card:hover{ 
      box-shadow: 1px 8px 10px #d9d9d9;
@@ -84,12 +94,13 @@ export default {
     }
 
     .icons {
-        width:20px;
+        width:15px;
         height:auto;
     }
 
     .fa-cog {
       color:#b9bbb4;
+      vertical-align:-0.3em;
     }
 
     .red{
@@ -126,6 +137,10 @@ export default {
       align-items: center;
     }
 
+    .div button, .div label {
+      font-size: 11px;
+    }
+
     .fav{
       color:#2c3e50;
     }
@@ -139,8 +154,17 @@ export default {
     }
     
     .img-fluid {
-    max-width: 85%;
+    max-width: 55%;
     height: auto;
     margin: auto;
+    }
+
+    .center{
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .card-group {
+      border: none;
     }
 </style>

@@ -3,7 +3,7 @@
     <div class="content-wrap">
       <the-navbar />
       <router-link to="/products">
-        <img alt="Logo do greenly" src="../assets/poster.png">
+        <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
     </div>
     <the-footer />
@@ -33,7 +33,7 @@ export default {
     padding-bottom: 7.5rem;
   }
 
-  img {
+  #front {
     width: 100%;
   }
 </style>

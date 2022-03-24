@@ -1,4 +1,5 @@
 <template>
+<!-- eslint-disable max-len -->
 <nav>
     <div class="container">
         <div class="d-flex">
@@ -34,7 +35,7 @@
                 </router-link>
             </div>
             <div class="pt-2">
-                <router-link to="/servicos" class="mb-2 ml-2">
+                <router-link to="/" class="mb-2 ml-2">
                     serviços
                 </router-link>
             </div>
@@ -72,7 +73,7 @@ export default {
     }
 
     nav a:hover {
-        color: #dce5e1;
+        color: #e4e4e4;
     }
 
     .nav-links {
@@ -110,5 +111,9 @@ export default {
         background-color: #dce5e1;
         border: 0px;
         color: #608072;
+    }
+
+    .router-link-exact-active {
+       text-decoration: underline;
     }
 </style>

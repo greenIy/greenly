@@ -1,11 +1,14 @@
 <template>
  <!-- eslint-disable max-len -->
-<div class="cards">
-  <h3 class="mt-2 mb-4"> A NOSSA EQUIPA:</h3>
+<div class="page-container">
+    <div class="content-wrap">
+      <the-navbar />
+      <div class="cards mb-4">
+  <h3 class="mt-4 mb-4 text-center"> A NOSSA EQUIPA</h3>
   <div class="row">
   <div class="col-3 mb-3">
     <div class="card">
-      <img class="img-fluid mt-3 mb-2 " src="../assets/Team/jose.jpg" alt="Fotografia do José" >
+      <img class="img-fluid mt-3 mb-2 " src="../assets/Team/jose.jpg" alt="Fotografia do José">
       <div class="container">
         <h4>José Almeida</h4>
         <p class="title">Back-end</p>
@@ -14,7 +17,7 @@
   </div>
   <div class="col-3 mb-3">
     <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia do Augusto" >
+      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia do Augusto">
       <div class="container">
         <h4>Augusto Gouveia</h4>
         <p class="title">Back-end</p>
@@ -70,7 +73,23 @@
   </div>
 </div>
 </div>
+    </div>
+   <the-footer />
+</div>
+
 </template>
+<script>
+import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
+import TheFooter from '@/components/Frontpage/TheFooter.vue';
+
+export default {
+  name: 'aboutUs',
+  components: {
+    TheNavbar,
+    TheFooter,
+  },
+};
+</script>
 
 <style scoped>
 

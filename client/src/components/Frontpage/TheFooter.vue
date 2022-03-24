@@ -2,7 +2,7 @@
 <div class="d-flex">
     <footer class="footer p-3 text-uppercase">
         <div class="row footer">
-            <div class="col-6">
+            <div class="col-4">
                 <img class="pt-2 pb-2" alt="Logo do greenly" src="../../assets/logo_dark.png">
                 <p>
                     Projeto Final da Licenciatura de Tecnologias de Informação.
@@ -10,6 +10,12 @@
                 <div class="align-self-stretch">
                     <p>© 2022 Greenly <br> Todos os Direitos Reservados</p>
                 </div>
+            </div>
+            <div class="col-2 mt-4">
+                <p>Sobre Greenly</p>
+                <router-link to="/aboutUs" class="mb-2 pr-2">
+                    Conheça a equipa
+                </router-link>
             </div>
             <div class="col-2 mt-4">
                 <p>Contacto</p>
@@ -33,7 +39,7 @@
                 </a>
             </div>
             <div class="col-2 mt-4">
-                <p>Modos de pagamento</p>
+                <p>Métodos de pagamento</p>
                 <!-- eslint-disable max-len -->
                 <div class="ms-auto icons-div">
                     <font-awesome-icon :icon="['fab', 'cc-visa']" size="2xl"/>
