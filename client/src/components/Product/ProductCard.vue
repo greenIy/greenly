@@ -74,7 +74,6 @@ export default {
     }
     .card:hover{ 
      box-shadow: 1px 8px 10px #d9d9d9;
-    -webkit-transition:  box-shadow .6s ease-in;
     } 
 
     .card-text:hover{
