@@ -1,7 +1,7 @@
 /* Variable checking */
 require("dotenv").config();
 
-const requiredEnvironmentVariables = ["GOOGLE_API_KEY", "DATABASE_URL", "JWT_SECRET"]
+const requiredEnvironmentVariables = ["GOOGLE_API_KEY", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRATION"]
 
 if (requiredEnvironmentVariables.some((value) => !(value in process.env))) { 
   console.log('❌ Missing environment variables. Double-check your .env file.');
@@ -27,9 +27,6 @@ const http          = require('http');
 const cors          = require('cors');
 const errorHandler  = require('./lib/error').errorHandler;
 const passport      = require('./lib/authentication').passport;
-
-// Importing simplified middleware checkers from Greenly libraries
-const authenticationCheck = require('./lib/authentication').check;
 
 /* Initializing */
 const app = express();

@@ -57,13 +57,13 @@ passport.use('basic-login', new LocalStrategy({
 passport.use(
     new JWTstrategy({
             secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme("jwt"),
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
             passReqToCallback: true,
         },
         async (req, token, done) => {
             try {
-                console.log(token)
                 if (token) {
+                    // TODO: Check for blacklisted tokens here!
                     // Allow ID to proceed into authentication checking middleware
                     return done(null, token.user)
                 } else {
@@ -98,7 +98,6 @@ const check = function (req, res, next) {
                 }
             })
         } catch (e) {
-            console.log(e)
             return res.status(500).send(defaultErr())
         }
     })(req, res, next);

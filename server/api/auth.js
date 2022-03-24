@@ -3,12 +3,13 @@
 // Imports
 const express   = require('express');
 const router    = express.Router();
-const passport  = require('passport');
+const passport  = require('../server').passport;
 const jwt       = require("jsonwebtoken");
 
 /* Greenly libraries */
 const { loginValidator } = require('../lib/validation');
-const { defaultErr } = require('../lib/error.js');
+const { defaultErr } = require('../lib/error');
+const authentication = require('../lib/authentication');
 
 /* This function uses the basic-login strategy. Returns JWT token to use if everything goes well, returns error messages otherwise. */
 
@@ -37,7 +38,11 @@ router.post('/login', loginValidator(), async (req, res, next) => {
                 };
                 const token = jwt.sign({
                     user: body
-                }, process.env.JWT_SECRET);
+                }, process.env.JWT_SECRET,
+                // Signing options
+                {
+                    expiresIn: process.env.JWT_EXPIRATION
+                });
 
                 return res.json({
                     token: token,
@@ -49,5 +54,14 @@ router.post('/login', loginValidator(), async (req, res, next) => {
         }
     })(req, res, next);
 });
+
+router.get('/status', authentication.check, async (req, res, next) => {
+    if (req.user) {
+        res.status(200).send({
+            message: "Valid connection. User logged in.",
+            id: req.user.id
+        })
+    }
+})
 
 module.exports = router;
