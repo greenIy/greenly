@@ -93,8 +93,8 @@ const port = process.env.PORT || 4000
 
 app.listen(port, () => {
     console.log(`🌿 Greenly server listening on port ${port} ${
-        argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
-    }`)
+    argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
+}`)
 
     /* Flag definition */
     if (argv.l || argv.requestLogging) {

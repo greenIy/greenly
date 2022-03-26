@@ -58,7 +58,7 @@ router.post('/login', loginValidator(), async (req, res, next) => {
 router.get('/status', authentication.check, async (req, res, next) => {
     if (req.user) {
         res.status(200).send({
-            message: "Valid connection. User logged in.",
+            message: "Valid token. User logged in.",
             id: req.user.id
         })
     }
