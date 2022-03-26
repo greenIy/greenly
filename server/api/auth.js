@@ -6,6 +6,7 @@ const router    = express.Router();
 const passport  = require('../server').passport;
 const jwt       = require("jsonwebtoken");
 
+
 /* Greenly libraries */
 const { loginValidator } = require('../lib/validation');
 const { defaultErr } = require('../lib/error');
@@ -54,6 +55,23 @@ router.post('/login', loginValidator(), async (req, res, next) => {
         }
     })(req, res, next);
 });
+
+/* This function handles the Google sign-in strategy. Returns JWT token to use if everything goes well, returns error messages otherwise. */
+
+router.get('/google', passport.authenticate('google', { scope:
+        [ 'email', 'profile' ] }
+));
+
+router.get( '/google/callback',
+    passport.authenticate( 'google', {
+        successRedirect: '/auth/google/success',
+        failureRedirect: '/auth/google/failure'
+    }), async (req, profile) => {
+    console.log(profile);
+})
+
+
+
 
 router.get('/status', authentication.check, async (req, res, next) => {
     if (req.user) {

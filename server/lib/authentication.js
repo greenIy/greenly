@@ -5,10 +5,12 @@
 // Importing dependencies
 const passport  = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const { User_type } = require('@prisma/client');
 const bcrypt = require('bcrypt');
+
 
 // Importing Greenly libraries
 const {getUserByID, getUserByEmail} = require("./persistence");
@@ -51,6 +53,21 @@ passport.use('basic-login', new LocalStrategy({
             }
         })
     }))
+
+authUser = (request, accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}
+/* Defining login GoogleStrategy, used to create new JWT tokens */
+
+passport.use( new GoogleStrategy({
+        clientID: process.env['GOOGLE_CLIENT_ID'],
+        clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
+        callbackURL: 'http://localhost:4000/auth/google/callback',
+        passReqToCallback: true
+    }, function (request, accessToken, refreshToken, profile, done) {
+    console.log(request.query.code);
+    }
+));
 
 
 /* Defining JWT validation strategy, used to check if JWT tokens are valid. Does NOT authenticate, only validates token. */
