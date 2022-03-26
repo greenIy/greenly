@@ -89,7 +89,7 @@ export default {
         background-color: #608072;
         color: #fcfaf9;
         font-size: 9px;
-        width: 100%;
+        width: 99.88%;
         position: absolute;
         bottom: 0;
         height: 7.5rem;
