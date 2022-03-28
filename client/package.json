@@ -15,11 +15,14 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@popperjs/core": "^2.11.2",
     "bootstrap": "^5.1.3",
-    "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "country-region-data": "^2.2.0",
+    "react-country-region-selector": "^3.4.0",
+    "vue": "^3.2.31",
+    "vue-country-region-select": "^2.0.16",
+    "vue-router": "^4.0.3",
+    "vue-tabz": "^1.1.5"
   },
   "devDependencies": {
-    "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "@vue/eslint-config-airbnb": "^6.0.0",
