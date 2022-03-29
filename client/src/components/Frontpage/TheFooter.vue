@@ -29,7 +29,7 @@
                    <span class="sr-only">Link para o Instagram</span>
                     <font-awesome-icon :icon="['fab', 'instagram']" size="lg"/>
                 </a>
-                <a :href="url_instagram" class="m-3" target=”_blank”>
+                <a :href="url_twitter" class="m-3" target=”_blank”>
                    <span class="sr-only">Link para o Twitter</span>
                     <font-awesome-icon :icon="['fab', 'twitter']" size="lg"/>
                 </a>
@@ -76,9 +76,9 @@ export default {
   name: 'TheFooter',
   data() {
     return {
-      url_instagram: 'https://www.instagram.com',
-      url_twitter: 'https://www.twitter.com',
-      url_facebook: 'https://www.facebook.com',
+      url_instagram: 'https://www.instagram.com/greenlypt/',
+      url_twitter: 'https://www.twitter.com/greenlypt/',
+      url_facebook: 'https://www.facebook.com/Greenly-102561432419524',
     };
   },
 };
