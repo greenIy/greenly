@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" placeholder="Introduzir NIF">
+                    <input type="number" class="form-control" id="nif" placeholder="Introduza NIF">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
@@ -78,7 +78,7 @@
             </div>
 
         </form>
-        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
+        <p class="text-center text-muted small">Já tens conta?<router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
