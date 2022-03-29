@@ -35,7 +35,7 @@
                 </router-link>
             </div>
             <div class="pt-2">
-                <router-link to="/" class="mb-2 ml-2">
+                <router-link to="/servicos" class="mb-2 ml-2">
                     serviços
                 </router-link>
             </div>

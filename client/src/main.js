@@ -5,11 +5,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 
+// Axios imports
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
 const myApp = createApp(App);
+
+myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
