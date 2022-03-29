@@ -2,19 +2,13 @@
 <div class="page-container">
     <div class="content-wrap">
       <the-navbar />
-      <ul>
-        <li
-          is="ProductCard"
-          v-for="(product, index) in products"
+      <product-card v-for="product in products"
           v-bind:key="product.id"
           v-bind:name="product.name"
           v-bind:description="product.description"
-          v-bind:category="product.category"
-          v-bind:highestPrice="product.highestPrice"
-          v-bind:lowestPrice="product.lowestPrice"
-          v-on:remove="todos.splice(index, 1)"
-        ></li>
-      </ul>
+          v-bind:category="product.category.name"
+          v-bind:highestPrice="product.highest_price"
+          v-bind:lowestPrice="product.lowest_price"></product-card>
       <TheNextPage/>
     </div>
    <the-footer />
@@ -42,8 +36,8 @@ export default {
     name: String,
     description: String,
     category: String,
-    hightestPrice: String,
-    lowestPrice: String,
+    highestPrice: Number,
+    lowestPrice: Number,
   },
   data() {
     return {

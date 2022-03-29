@@ -46,6 +46,13 @@ library.add(faCartPlus);
 export default {
  
   name: 'ProductCard',
+  props: {
+    name: String,
+    description: String,
+    category: String,
+    highestPrice: Number,
+    lowestPrice: Number,
+  },
   data() {
     return {
        isActive: false,
