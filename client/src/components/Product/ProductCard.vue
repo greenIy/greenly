@@ -4,15 +4,15 @@
   <div class="card hover-shadow">
     <img class="img-fluid mt-3" src='../../assets/Team/daniela.jpg' alt="" >
     <div class="card-body" style="text-align:left;">
-        <h5 class="card-title">Categoria</h5>
+        <h5 class="card-title">{{ category }}</h5>
         <div>
 <h4 class="card-title">
   <!-- eslint-disable max-len -->
-Nome
+{{ name }}
   </h4>
   </div>
-      <p class="card-text">Lorem ipsum nisi suspendisse orci nullam dui neque convallis orci in fusce duis per.</p>
-      <p class="card-text">00.00 - 00.00€</p>
+      <p class="card-text">{{ description }}</p>
+      <p class="card-text">{{ lowestPrice }}€ - {{ highestPrice }}€</p>
     </div>
     <div class="div fs-6">
     <button class="btnH fav"  @click="liked">
@@ -63,8 +63,8 @@ export default {
         document.getElementById('like').classList.remove("red");
         this.isActive = false;
       }
-     },
-  },
+    }
+  }
 };
 </script>
 

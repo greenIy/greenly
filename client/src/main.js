@@ -5,13 +5,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 
-// Axios imports
-import axios from 'axios';
-import VueAxios from 'vue-axios';
-
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+
+// Axios imports
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
 const myApp = createApp(App);
 
