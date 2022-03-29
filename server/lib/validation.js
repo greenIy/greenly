@@ -219,8 +219,29 @@ function getProductsValidator() {
     ]
 }
 
+/* Login Validation */
+
+function loginValidator() {
+    return [
+        body("email")
+            .notEmpty()
+            .isEmail()
+            .withMessage("A valid e-mail is required for login."),
+        body("password")
+            .notEmpty()
+            .withMessage("Password is required for login."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     createUserValidator,
     updateUserValidator,
-    getProductsValidator
+    getProductsValidator,
+    loginValidator
 }

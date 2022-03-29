@@ -2,16 +2,18 @@
 
 const { defaultUrl } = require('@googlemaps/google-maps-services-js/dist/directions');
 const express = require('express');
+const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
 
 /* Greenly libraries & required server data */
+const authentication = require("../lib/authentication")
 const persistence = require('../lib/persistence.js');
 const { createUserValidator, updateUserValidator } = require('../lib/validation.js');
 const defaultErr = require("../lib/error").defaultErr
 
 /* GET /user (Admin only) */
 
-router.get('/', (req, res) => {
+router.get('/', authentication.check, (req, res) => {
     try {
         persistence.getAllUsers().then((users) => {
             res.status(200).json(users)
@@ -45,9 +47,10 @@ router.post('/', createUserValidator(), (req, res) => {
 
 /* GET /user/{userId} (User, Admin or Transporter only) */
 
-router.get('/:userId', (req, res) => {
+router.get('/:userId', authentication.check, (req, res, next) => {
     
     try {
+        //TODO: With authentication and authorization in place, this DB call could be replaced with req.user
         persistence.getUserByID(Number(req.params.userId)).then((user) => {
             if (user) {
 
@@ -75,7 +78,7 @@ router.get('/:userId', (req, res) => {
 
 /* PUT /user/{userId} (User or Admin only) */
 
-router.put('/:userId', updateUserValidator(), (req, res) => {
+router.put('/:userId', authentication.check, updateUserValidator(), (req, res) => {
 
     try {
         persistence.updateUser(req.params.userId, req.body).then((success) => {
@@ -93,7 +96,7 @@ router.put('/:userId', updateUserValidator(), (req, res) => {
 
 /* DELETE /user/{userId} (User or Admin only) */
 
-router.delete('/:userId', (req, res) => {
+router.delete('/:userId', authentication.check, (req, res) => {
 
     try {
         persistence.deleteUser(Number(req.params.userId)).then((success) => {

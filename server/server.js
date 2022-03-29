@@ -1,53 +1,60 @@
 /* Variable checking */
 require("dotenv").config();
 
-if (!("GOOGLE_API_KEY" in process.env) ||
-   !("DATABASE_URL" in process.env)) { 
+const requiredEnvironmentVariables = ["GOOGLE_API_KEY", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRATION"]
+
+if (requiredEnvironmentVariables.some((value) => !(value in process.env))) { 
   console.log('❌ Missing environment variables. Double-check your .env file.');
   process.exit(0);
 }
 
 /* Imports */
-const express = require('express');
-const path = require('path');
-const glob = require( 'glob' );
-const argv = require('yargs').argv;
+const express   = require('express');
+const path      = require('path');
+const glob      = require('glob');
+const argv      = require('yargs').argv;
+
+/* Exporting arguments for usage in other routers */
+exports.argv = argv;
 
 /* Middleware */
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
-const createError = require('http-errors');
-const https = require('https');
-const http = require('http');
-const errorHandler = require('./lib/error').errorHandler;
+const session       = require('express-session');
+const cookieParser  = require('cookie-parser');
+const morgan        = require('morgan');
+const createError   = require('http-errors');
+const https         = require('https');
+const http          = require('http');
+const cors          = require('cors');
+const errorHandler  = require('./lib/error').errorHandler;
+const passport      = require('./lib/authentication').passport;
 
-/* Route Imports
-   Exporting useful information and importing all API routes */
-
-exports.argv = argv;
-const user = require('./api/user');
-const store = require('./api/store');
-const supplier = require('./api/supplier');
-const transporter = require('./api/transporter');
-
-/* Init */
+/* Initializing */
 const app = express();
 
 /* Middleware Init */
-if (argv.l) { // Enable request logging if -l flag is present
+// Enable request logging middleware if -l flag is present
+if (argv.l) {             
   app.use(morgan('short'));
 }
 
-app.use(express.json({
+// Important middleware
+app.use(cors())           // Enable cross-origin resource sharing
+app.use(express.json({    // Enable parsing for received JSON payloads
   strict: false
 }));
-app.use(cookieParser());
+app.use(cookieParser());  // Enable cookie parsing for session management
+app.use(express.urlencoded({ extended: true}));
 app.use(session({ secret: process.env.SESSION_SECRET || 'keyboard cat',
                   cookie: {maxAge: 600000},
                   resave: true,
-                  saveUninitialized: true}))
-app.use(express.urlencoded({ extended: true}));
+                  saveUninitialized: true}));
+
+// Passport middleware
+// Using pre-setup passport with rules defined in lib/authentication.js
+app.use(passport.initialize());
+app.use(passport.session());
+module.exports.passport = passport; // Allow passport to be used by other routes
+
 
 /* Critical Routes */
 
@@ -61,24 +68,35 @@ if (argv.SSL != "False") {
   });
 }
 
+/* Importing all API routes */
+
+const auth        = require('./api/auth')
+const user        = require('./api/user');
+const store       = require('./api/store');
+const supplier    = require('./api/supplier');
+const transporter = require('./api/transporter');
+
 // Using modular API routes
+app.use('/auth', auth);
 app.use('/user', user);
 app.use('/store', store);
 app.use('/supplier', supplier);
 app.use('/transporter', transporter);
 
 // Centralizing error handling
-
 app.use(errorHandler);
 
-  
+
+/* Starting server */
 
 const port = process.env.PORT || 4000
 
 app.listen(port, () => {
     console.log(`🌿 Greenly server listening on port ${port} ${
-        argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
-    }`)
+    argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
+}`)
+
+    /* Flag definition */
     if (argv.l || argv.requestLogging) {
       console.log("📝 Request logging enabled.")
     }

@@ -1,0 +1,3 @@
+/*  Greenly Authorization Library
+    Functions included pertain to user verification and resource limitation.
+*/
