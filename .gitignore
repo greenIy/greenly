@@ -85,3 +85,4 @@ typings/
 .idea/
 .vscode/
 .DS_Store
+*.code-workspace
