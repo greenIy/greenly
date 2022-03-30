@@ -4,11 +4,11 @@
           <h2 class="text-center">Iniciar sessão</h2>
           <div class="mb-3">
             <label for="inputEmail" class="form-label">E-mail</label>
-            <input type="email" class="form-control" id="email" placeholder="Introduza e-mail">
+            <input type="email" class="form-control" id="email" placeholder="E-mail">
           </div>
           <div class="mb-3">
             <label for="inputPassword" class="form-label">Palavra-passe</label>
-            <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe">
+            <input type="password" class="form-control" id="password" placeholder="Palavra-passe">
           </div>
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="rememberMe">

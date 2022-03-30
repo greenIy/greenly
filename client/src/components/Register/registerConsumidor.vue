@@ -5,64 +5,40 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="firstName" placeholder="Introduza nome">
+                    <input type="name" class="form-control" id="firstName" placeholder="Nome">
                 </div>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="lastName" placeholder="Introduza apelido">
+                    <input type="name" class="form-control" id="lastName" placeholder="Apelido">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" placeholder="Introduza e-mail">
+                    <input type="email" class="form-control" id="email" placeholder="E-mail">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" placeholder="Introduza NIF">
+                    <input type="number" class="form-control" id="nif" placeholder="NIF">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="phoneNumber" placeholder="Introduza telemóvel">
+                    <input type="number" class="form-control" id="phoneNumber" placeholder="Telemóvel">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe <span style='color: #FF0000;'>*</span></label>
-                    <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe">
+                    <input type="password" class="form-control" id="password" placeholder="Palavra-passe">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe <span style='color: #FF0000;'>*</span></label>
-                    <input type="password" class="form-control" id="passwordConfirm" placeholder="Introduza palavra-passe">
+                    <input type="password" class="form-control" id="passwordConfirm" placeholder="Palavra-passe">
                 </div>
             </div>
-
-            <!--
-            <p class="text-left" style="margin-bottom: -2%">Morada</p><hr/>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                    <country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/>
-                </div>
-                <div class="col mb-3">
-                    <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                    <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="inputStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="street" placeholder="Introduza rua">
-                </div>
-                <div class="col mb-3">
-                    <label for="postalCode" class="form-label">Código Postal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="postalCode" placeholder="Introduza código postal">
-                </div>
-            </div>
-            -->
-
+            
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsConditons">
                 <label class="form-check-label" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
