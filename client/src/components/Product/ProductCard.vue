@@ -2,7 +2,10 @@
   <div>
     <div class="card-group card mt-2 h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="imagem do produto" />
+        <router-link :to="'/produto/'+ String(id)" style="text-decoration:none;color:black;">
+        <div class="d-flex">
+        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" @click="clicked()" alt="imagem do produto"  />
+        </div>
         <div class="card-body">
           <h5 class="card-title">{{ category }}</h5>
           <div>
@@ -13,6 +16,7 @@
           </div>
           <p class="card-text">{{ description }}</p>
         </div>
+        </router-link>
         <div class="card-body py-0 position-relative mt-1 mb-1">
          <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ lowestPrice }}€ - {{ highestPrice }}€</h4></span>
         </div>
@@ -53,6 +57,8 @@ library.add(faHeart);
 export default {
   name: "ProductCard",
   props: {
+    key: Number,
+    id: Number,
     name: String,
     description: String,
     category: String,
@@ -77,8 +83,13 @@ export default {
       } else {
         svg.classList.add("red");
       }
+
       }
     },
+    clicked(){
+     
+    },
+     
   },
 };
 </script>

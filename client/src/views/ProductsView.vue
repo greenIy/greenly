@@ -2,20 +2,18 @@
   <div class="page-container">
      <TheNavbar />
     <div class="content-wrap  mw-0">
-     
       <div class=" content justify-content-center d-flex w-100 mt-4">
           <ProductCard
-            v-for="product in products"
-            v-bind:key="product.id"
-            v-bind:name="product.name"
-            v-bind:description="product.description"
-            v-bind:category="product.category.name"
-            v-bind:highestPrice="product.highest_price"
-            v-bind:lowestPrice="product.lowest_price"
+            v-for="p in products"
+            :key="p.id"
+            :id="p.id"
+            :name="p.name"
+            :description="p.description"
+            :category="p.category.name"
+            :highestPrice="p.highest_price"
+            :lowestPrice="p.lowest_price"
           ></ProductCard>
-        
       </div>
-
       <TheNextPage />
     </div>
     <TheFooter />
@@ -39,6 +37,8 @@ export default {
     TheFooter,
   },
   props: {
+    key: Number,
+    id: Number,
     name: String,
     description: String,
     category: String,
@@ -57,7 +57,7 @@ export default {
     getProducts() {
       http.get("/store/product").then((response) => {
         this.products = response.data;
-       // console.log(response.data);
+       console.log(response.data);
       });
     },
   },
