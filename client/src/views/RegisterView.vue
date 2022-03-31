@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="content-wrap">
       <TheNavbar/>
-      <register-pills/>
+      <RegisterPills/>
     </div>
     <TheFooter/>
   </div>
@@ -24,8 +24,3 @@ export default {
 };
 
 </script>
-
-
-<style scoped>
-
-</style>

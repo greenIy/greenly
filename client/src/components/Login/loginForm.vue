@@ -1,7 +1,7 @@
 <template>
     <div class="login-form" style="padding-top: 2.5%">
         <form>
-          <h2 class="text-center">Iniciar sessão</h2>
+          <h2 class="text-center">Iniciar Sessão</h2>
           <div class="mb-3">
             <label for="inputEmail" class="form-label">E-mail</label>
             <input type="email" class="form-control" id="email" placeholder="E-mail">

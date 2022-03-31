@@ -2,7 +2,7 @@
  <!-- eslint-disable max-len -->
 <div class="page-container">
     <div class="content-wrap">
-      <the-navbar />
+      <TheNavbar />
       <div class="cards mb-4">
   <h3 class="mt-4 mb-4 text-center"> A NOSSA EQUIPA</h3>
   <div class="row">
@@ -74,7 +74,7 @@
 </div>
 </div>
     </div>
-   <the-footer />
+   <TheFooter />
 </div>
 
 </template>

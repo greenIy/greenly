@@ -42,11 +42,11 @@
             <p class="text-left" style="margin-bottom:-2%">Empresa</p><hr/>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="inputCompanyName" class="form-label">Nome da empresa <span style='color: #FF0000;'>*</span></label>
+                    <label for="inputCompanyName" class="form-label">Nome<span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="companyName" placeholder="Nome">
                 </div>
                 <div class="col mb-3">
-                    <label for="inputCompanyEmail" class="form-label">E-mail da empresa <span style='color: #FF0000;'>*</span></label>
+                    <label for="inputCompanyEmail" class="form-label">E-mail<span style='color: #FF0000;'>*</span></label>
                     <input type="email" class="form-control" id="city" placeholder="E-mail ">
                 </div>
             </div>
