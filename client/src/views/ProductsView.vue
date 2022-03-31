@@ -1,17 +1,12 @@
 <template>
   <div class="page-container">
      <TheNavbar />
-    <div class="content-wrap  mw-0">
-      <div class=" content justify-content-center d-flex w-100 mt-4">
+    <div class="content-wrap mw-0">
+      <div class="content justify-content-center d-flex w-100 mt-4">
           <ProductCard
             v-for="p in products"
             :key="p.id"
-            :id="p.id"
-            :name="p.name"
-            :description="p.description"
-            :category="p.category.name"
-            :highestPrice="p.highest_price"
-            :lowestPrice="p.lowest_price"
+            :product="p"
           ></ProductCard>
       </div>
       <TheNextPage />
@@ -37,13 +32,7 @@ export default {
     TheFooter,
   },
   props: {
-    key: Number,
-    id: Number,
-    name: String,
-    description: String,
-    category: String,
-    highestPrice: Number,
-    lowestPrice: Number,
+    product: Object,
   },
   data() {
     return {

@@ -1,24 +1,24 @@
 <template>
-  <div>
+  <div class="product-card">
     <div class="card-group card mt-2 h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
-        <router-link :to="'/produto/'+ String(id)" style="text-decoration:none;color:black;">
+        <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
         <div class="d-flex">
         <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" @click="clicked()" alt="imagem do produto"  />
         </div>
         <div class="card-body">
-          <h5 class="card-title">{{ category }}</h5>
+          <h5 class="card-title">{{ product.category.name }}</h5>
           <div>
             <h4 class="card-title">
               <!-- eslint-disable max-len -->
-              {{ name }}
+              {{ product.name }}
             </h4>
           </div>
-          <p class="card-text">{{ description }}</p>
+          <p class="card-text">{{ product.description }}</p>
         </div>
         </router-link>
         <div class="card-body py-0 position-relative mt-1 mb-1">
-         <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ lowestPrice }}€ - {{ highestPrice }}€</h4></span>
+         <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
         </div>
         <div class="div d-flex align-items-center justify-content-between fs-6 mb-3">
           <button class="btnH fav">
@@ -57,13 +57,7 @@ library.add(faHeart);
 export default {
   name: "ProductCard",
   props: {
-    key: Number,
-    id: Number,
-    name: String,
-    description: String,
-    category: String,
-    highestPrice: Number,
-    lowestPrice: Number,
+    product: Object,
   },
   data() {
     return {
@@ -76,21 +70,13 @@ export default {
   methods: {
     liked(event){
       const svg = event.path[1]
-      if(svg.tagName.toLowerCase()=='button'){
-      }else{
       if (svg.classList.contains('red')) {
         svg.classList.remove("red");
       } else {
         svg.classList.add("red");
-      }
-
-      }
+      } 
     },
-    clicked(){
-     
-    },
-     
-  },
+  }
 };
 </script>
 
@@ -169,4 +155,11 @@ h5 {
 .card-group {
   border: none;
 }
+
+.product-card {
+  margin-bottom: 15px;
+  margin-left: 7px;
+  margin-right: 7px;
+}
+
 </style>
