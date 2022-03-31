@@ -8,8 +8,6 @@
   </div>
 </template>
 
-
-
 <script>
   // @ is an alias to /src
   import TheNavbar from '@/components/Frontpage/TheNavbar.vue';

@@ -2,7 +2,7 @@
   <div>
     <div class="card-group card mt-2 h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="" />
+        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="imagem do produto" />
         <div class="card-body">
           <h5 class="card-title">{{ category }}</h5>
           <div>
@@ -46,10 +46,9 @@
 /* eslint-disable */
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart, faCartPlus } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHeart);
-library.add(faCartPlus);
 
 export default {
   name: "ProductCard",
@@ -105,44 +104,25 @@ h5 {
 .card-title:hover {
   color: black;
 }
-
 .icons {
   width: 15px;
   height: auto;
 }
-
 .fa-cog {
   color: #b9bbb4;
   vertical-align: -0.3em;
 }
-
 .red {
   color: red !important;
 }
-
 .btnH {
   background: none;
   border: none;
   display: inline;
 }
-
 .glass {
   margin-left: 120px;
 }
-
-/* .btnS {
-  border: none;
-  color: white;
-  background-color: #7c9d8e;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.btnS:hover {
-  background-color: #89a799;
-}
- */
-
 .div {
   margin: auto;
 }
