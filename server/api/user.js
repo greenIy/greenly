@@ -27,8 +27,8 @@ router.get('/', authentication.check, authorization.check, (req, res) => {
 
 
 /* POST /user */
-
-router.post('/', createUserValidator(), (req, res) => {
+// This route only requires an authorization.check when it comes to creating new administrators
+router.post('/', authorization.check, createUserValidator(), (req, res) => {
             
     try {
         persistence.createUser(req.body)
