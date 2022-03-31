@@ -14,7 +14,7 @@
               {{ product.name }}
             </h4>
           </div>
-          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text text-truncate">{{ product.description }}</p>
         </div>
         </router-link>
         <div class="card-body py-0 position-relative mt-1 mb-1">
