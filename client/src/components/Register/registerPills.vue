@@ -16,15 +16,15 @@
       
         <div class="tab-content register-form" id="register-content" style="width: 45%; margin-top: 1.5%">
             <transition name="fade">
-                <register-consumidor v-if="activeTab === 'consumidor'"/>
+                <RegisterConsumidor v-if="activeTab === 'consumidor'"/>
             </transition>
             
             <transition name="fade">
-                <register-transportador v-if="activeTab === 'transportador'"/>
+                <RegisterTransportador v-if="activeTab === 'transportador'"/>
             </transition>
             
             <transition name="fade">
-                <register-fornecedor v-if="activeTab === 'fornecedor'"/>
+                <RegisterFornecedor v-if="activeTab === 'fornecedor'"/>
             </transition>
         </div>        
 
@@ -34,16 +34,16 @@
 
 <script>
 // @ is an alias to /src
-import registerConsumidor from '@/components/Register/registerConsumidor.vue';
-import registerTransportador from '@/components/Register/registerTransportador.vue';
-import registerFornecedor from '@/components/Register/registerFornecedor.vue';
+import RegisterConsumidor from '@/components/Register/RegisterConsumidor.vue';
+import RegisterTransportador from '@/components/Register/RegisterTransportador.vue';
+import RegisterFornecedor from '@/components/Register/RegisterFornecedor.vue';
 
 export default {
-  name: 'registerPills',
+  name: 'RegisterPills',
   components: {
-    registerConsumidor,
-    registerTransportador,
-    registerFornecedor,
+    RegisterConsumidor,
+    RegisterTransportador,
+    RegisterFornecedor,
   },
     data() {
        return {

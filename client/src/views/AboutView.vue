@@ -64,7 +64,7 @@
   </div>
   <div class="col-3 mb-3">
     <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia do Miguel" >
+      <img class="img-fluid mt-3 mb-2" src="../assets/Team/miguel.jpg" alt="Fotografia do Miguel" >
       <div class="container">
         <h4>Miguel Lages</h4>
         <p class="title">Front-end</p>

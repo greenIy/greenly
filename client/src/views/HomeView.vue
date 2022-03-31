@@ -2,12 +2,12 @@
   <div class="page-container">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div class="content-wrap">
-      <the-navbar />
+      <TheNavbar />
       <router-link to="/produtos">
         <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
     </div>
-    <the-footer />
+    <TheFooter />
   </div>
 </template>
 

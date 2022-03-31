@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import countrySelect from '@/components/Register/country-select'
-import regionSelect from '@/components/Register/region-select'
+import CountrySelect from '@/components/Register/Country-select'
+import RegionSelect from '@/components/Register/Region-select'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
@@ -70,8 +70,8 @@ library.add(faFacebookSquare, faGoogle);
 export default {
   name: 'registerConsumidor',
   components: {
-    countrySelect,
-    regionSelect
+    CountrySelect,
+    RegionSelect
   },
   data: () => ({
     country: '',
