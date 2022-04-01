@@ -6,8 +6,11 @@ const authentication = require("./authentication"); // One-time-usage for admini
 
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
-    const resourceIdentification = {"/user/": "ALL_USERS",
-                                    "/user/:userId": "SINGLE_USER",}
+    const resourceIdentification = {"/user/":                       "ALL_USERS",
+                                    "/user/:userId":                "SINGLE_USER",
+                                    "/store/products/:productId":   "SINGLE_PRODUCT",
+                                    "/store/orders/":               "ALL_ORDERS",
+                                    "/store/orders/:orderId":       "SINGLE_ORDER"}
 
     const intent = req.method
 
