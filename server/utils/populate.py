@@ -81,7 +81,7 @@ def genUsers(amount):
                  randint(333333333, 999999999),
                  fake.free_email(),
                  fake.phone_number(),
-                 choice(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
+                 choice(["SUPPLIER", "TRANSPORTER", "CONSUMER"]),
                  fake.street_address(),
                  fake.city(),
                  fake.postcode(),
