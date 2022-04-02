@@ -17,25 +17,40 @@ router.get('/products', getProductsValidator(), (req, res) => {
         persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((products) => {
 
             if (products) {
+
+                // Defining quick helper functions
+                const calcLowestPrice = (supplies) => {
+                    let min = Number.POSITIVE_INFINITY;
+                    supplies.forEach((supply) => {
+                        if (supply.price < min) {
+                            min = supply.price
+                        }
+                    })
+
+                    return min;
+                }; 
+
+                const calcHighestPrice = (supplies) => {
+                    let max = Number.NEGATIVE_INFINITY;
+                    supplies.forEach((supply) => {
+                        if (supply.price > max) {
+                            max = supply.price
+                        }
+                    })
+
+                    return max;
+                }; 
+
+
                 for (let i = 0; i < products.length; i++) {
                     // Renaming Category key -> category
                     delete Object.assign(products[i], {["category"]: products[i]["Category"] })["Category"];
 
-                    // Calculating lowest and highest price
-                    if (products[i].Supply.length > 1) {
-
-                        products[i]["lowest_price"] = products[i].Supply.reduce((a, b) => Math.min(a.price, b.price))
-
-                        products[i]["highest_price"] = products[i].Supply.reduce((a, b) => Math.max(a.price, b.price))
-
-
-                    } else if (products[i].Supply.length == 1) {
-
-                        // This is a workaround for when there's
-                        // only one Supply. Because array.reduce
-                        // works differently when there's only
-                        // one element in an array.
-                        products[i]["lowest_price"] = products[i]["highest_price"] = Number(products[i].Supply[0].price);
+                    // Calculating lowest and highest price 
+                    if (products[i].Supply.length > 0) {
+                        products[i]["lowest_price"] = parseFloat(calcLowestPrice(products[i].Supply).toFixed(2))
+                        products[i]["highest_price"] = parseFloat(calcHighestPrice(products[i].Supply).toFixed(2))
+                        
                     }
 
                     // Removing unrequired keys
