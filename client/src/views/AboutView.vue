@@ -131,7 +131,4 @@ export default {
 .col {
   padding: 0 8px;
 }
-body{
-  background:#ededed;
-    }
 </style>

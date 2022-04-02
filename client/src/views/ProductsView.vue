@@ -3,14 +3,14 @@
   <div class="page-container">
      <TheNavbar />
     <div class="content-wrap mw-0">
-      <div class="content justify-content-center d-flex w-100 mt-4">
+      <div class="content justify-content-center d-flex w-100 mt-4" @currentPage="getCurrentPage">
           <ProductCard
             v-for="p in products"
             :key="p.id"
             :product="p"
           ></ProductCard>
       </div>
-      <TheNextPage />
+      <TheNextPage @sendCurrentPage="getCurrentPage"/>
     </div>
     <TheFooter />
   </div>
@@ -19,7 +19,7 @@
 
 <script>
 import ProductCard from "@/components/Product/ProductCard.vue";
-import TheNextPage from "@/components/TheNextPage.vue";
+import TheNextPage from "@/components/Product/TheNextPage.vue";
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       products: [],
+      currentPage: 1,
     };
   },
   created() {
@@ -46,12 +47,17 @@ export default {
   },
   methods: {
     getProducts() {
-      http.get("/store/product").then((response) => {
+      http.get("/store/products?page=" + this.currentPage + "&limit=15").then((response) => {
         this.products = response.data;
-       console.log(response.data);
+        //console.log(response.data);
       });
     },
+    getCurrentPage: function(params) {
+      this.currentPage = params;
+      this.getProducts();
+    }
   },
+  computed: {},
 };
 </script>
 
@@ -59,7 +65,4 @@ export default {
 .content {
   flex-wrap:wrap
 }
-body{
-  background:#ededed;
-    }
 </style>

@@ -25,6 +25,9 @@ export default {
 };
 </script>
 <style>
+  body {
+    background:#ededed;
+  }
   .page-container {
     position: relative;
     min-height: 100vh;

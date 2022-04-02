@@ -30,7 +30,6 @@
   </div>
 </template>
 <script>
-import TheNextPage from "@/components/TheNextPage.vue";
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 /* eslint-disable */
