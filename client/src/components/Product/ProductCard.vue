@@ -1,10 +1,10 @@
 <template>
-  <div class="product-card">
+  <div class="product-card ml-2 mr-2">
     <div class="card-group card mt-2 h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
         <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
         <div class="d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" @click="clicked()" alt="imagem do produto"  />
+        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="imagem do produto"  />
         </div>
         <div class="card-body">
           <h5 class="card-title">{{ product.category.name }}</h5>
@@ -20,12 +20,12 @@
         <div class="card-body py-0 position-relative mt-1 mb-1">
          <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
         </div>
-        <div class="div d-flex align-items-center justify-content-between fs-6 mb-3">
+        <div class="div card-body py-0 position-relative mb-3">
           <button class="btnH fav">
             <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
             Favoritos
           </button>
-          <form>
+       <!--    <form>
             <div class="form-group form-check">
               <label class="form-check-label ms-2 product" for="accept">
                 <input
@@ -36,7 +36,7 @@
                 />Comparar Produto</label
               >
             </div>
-          </form>
+          </form> -->
         </div>
         <!--          <div class="d-inline-block mt-2 mb-3 center">
         <button class="btnS">
@@ -120,46 +120,35 @@ h5 {
 .glass {
   margin-left: 120px;
 }
-.div {
-  margin: auto;
-}
-
 .div button,
 .div label {
   font-size: 11px;
 }
-
 .fav {
   color: #2c3e50;
 }
-
 .fav:hover {
   color: black;
 }
-
 .product:hover {
   color: black;
 }
-
 .img-fluid {
   max-width: 55%;
   height: auto;
   margin: auto;
 }
-
 .center {
   margin-right: auto;
   margin-left: auto;
 }
-
 .card-group {
   border: none;
 }
-
-.product-card {
+ .product-card {
   margin-bottom: 15px;
-  margin-left: 7px;
-  margin-right: 7px;
-}
+  margin-left: 4px;
+  margin-right: 4px;
+} 
 
 </style>

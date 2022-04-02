@@ -19,7 +19,7 @@
             </div>
             <div class="col-2 mt-4">
                 <p>Contacto</p>
-                <a href="mailto:suporte@greenly.com">suporte@greenly.com</a>
+                <a href="mailto:support@greenly.pt">support@greenly.pt</a>
             </div>
             <div class="col-2 mt-4">
                 <p>Siga-nos</p>

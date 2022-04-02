@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex justify-content-center mt-5">
   <nav aria-label="Page navigation example" >
-    <ul class="pagination">
+    <ul class="pagination pagination-sm">
       <li class="page-item">
         <a class="page-link" href="#" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>

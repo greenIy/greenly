@@ -1,4 +1,5 @@
 <template>
+<body>
   <div class="page-container">
      <TheNavbar />
     <div class="content-wrap mw-0">
@@ -13,6 +14,7 @@
     </div>
     <TheFooter />
   </div>
+</body>
 </template>
 
 <script>
@@ -57,4 +59,7 @@ export default {
 .content {
   flex-wrap:wrap
 }
+body{
+  background:#ededed;
+    }
 </style>

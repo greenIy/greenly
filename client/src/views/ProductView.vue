@@ -1,6 +1,7 @@
 <template>
   <div class="page-container">
     <TheNavbar />
+    <body>
     <div class="content-wrap mw-0">
       
       <div class="card center mt-3" style="width: 18rem">
@@ -24,6 +25,7 @@
       </div>
       <TheNextPage />
     </div>
+    </body>
     <TheFooter />
   </div>
 </template>
@@ -35,6 +37,7 @@ import TheFooter from "@/components/Frontpage/TheFooter.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
+import AboutView from './AboutView.vue';
 
 library.add(faCartPlus);
 
@@ -44,6 +47,7 @@ export default {
     TheNextPage,
     TheNavbar,
     TheFooter,
+    AboutView,
   },
 };
 </script>

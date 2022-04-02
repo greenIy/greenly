@@ -1,6 +1,7 @@
 <template>
  <!-- eslint-disable max-len -->
 <div class="page-container">
+  <body>
     <div class="content-wrap">
       <TheNavbar />
       <div class="cards mb-4">
@@ -75,6 +76,7 @@
 </div>
     </div>
    <TheFooter />
+    </body>
 </div>
 
 </template>
@@ -129,4 +131,7 @@ export default {
 .col {
   padding: 0 8px;
 }
+body{
+  background:#ededed;
+    }
 </style>
