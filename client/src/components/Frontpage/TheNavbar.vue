@@ -1,42 +1,41 @@
 <template>
 <!-- eslint-disable max-len -->
 <nav>
-    <div class="container">
-        <div class="d-flex">
-            <div class="align-self-center pt-3">
+        <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
+            <div class="align-self-center mt-2 mb-2">
                 <router-link to="/" class="navbar-brand">
                     <img alt="Logo do greenly" src="../../assets/logo_dark.png">
                 </router-link>
             </div>
-            <div class="flex-grow-1 input-group search-group align-self-center">
+            <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
                 <input class="form-control" type="search" placeholder="" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </div>
-            <div class="p-2 align-self-center pt-4 text-uppercase nav-links">
+            <div class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">
                 <router-link to="/login">
                     Iniciar Sessão
                 </router-link>
             </div>
-            <div class="p-2 align-self-center pt-4 text-uppercase nav-links">
+            <div class="align-self-center nav-links mt-2 mb-2">
                 <router-link to="/cart">
                     <font-awesome-icon :icon="['fas', 'cart-shopping']" size="lg"/>
                 </router-link>
             </div>
         </div>
-        <div class="d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
+        <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
             <div class="pt-2">
                 <router-link to="/promocoes" class="mb-2 pr-2">
-                    promoções
+                    promoções <span class="ms-3"> | </span>            
                 </router-link>
             </div>
             <div class="pt-2">
                 <router-link to="/produtos" class="mb-2 mr-2">
-                    produtos
+                    produtos <span class="ms-3"> | </span> 
                 </router-link>
             </div>
             <div class="pt-2">
                 <router-link to="/servicos" class="mb-2 ml-2">
-                    serviços
+                    serviços <span class="ms-3"> | </span> 
                 </router-link>
             </div>
             <div class="pt-2">
@@ -45,7 +44,7 @@
                 </router-link>
             </div>
         </div>
-    </div>
+    
 </nav>
 </template>
 
@@ -61,19 +60,35 @@ export default {
 </script>
 
 <style scoped>
-    nav {
+    .navmenu {
         background-color: #608072;
         color: #fcfaf9;
     }
 
-    nav a {
+    .navmenu2 {
+        background-color: #ffffff;
+        color: #000000;
+        box-shadow: 0 2px 3px rgb(40 40 40 / 20%);
+    }
+
+    .navmenu a {
         color: #fcfaf9;
         text-decoration: none;
         margin-left: 20px;
     }
 
-    nav a:hover {
+    .navmenu2 a {
+        color: #000000;
+        text-decoration: none;
+        margin-left: 20px;
+
+    }
+
+    .navmenu a:hover {
         color: #e4e4e4;
+    }
+    .navmenu2 a:hover {
+        color: #608072;
     }
 
     .nav-links {
@@ -90,9 +105,7 @@ export default {
     }
 
     .search-group {
-        width: 570px;
-        margin-top: 2%;
-        margin-left: 5%;
+        width: 825px!important;
     }
 
     input, button {
@@ -114,6 +127,7 @@ export default {
     }
 
     .router-link-exact-active {
-       text-decoration: underline;
+       text-decoration: underline!important;
     }
+    
 </style>
