@@ -34,7 +34,11 @@ export default {
   methods: {
     prevPage() {
       if (this.currentPage > 1) {
+        var page = document.getElementById("page-" + this.currentPage);
+        page.classList.remove("active");
         this.currentPage--;
+        page = document.getElementById("page-" + this.currentPage);
+        page.classList.add("active");
         this.$emit("sendCurrentPage", this.currentPage);
 
         this.manageDisable();
@@ -42,7 +46,11 @@ export default {
     },
     nextPage() {
       if (this.currentPage < 5) {
+        var page = document.getElementById("page-" + this.currentPage);
+        page.classList.remove("active");
         this.currentPage++;
+        page = document.getElementById("page-" + this.currentPage);
+        page.classList.add("active");
         this.$emit("sendCurrentPage", this.currentPage);
 
         this.manageDisable();
@@ -54,7 +62,7 @@ export default {
         this.currentPage = num;
         page = document.getElementById("page-" + this.currentPage);
         page.classList.add("active");
-        
+
         this.$emit("sendCurrentPage", this.currentPage);
         this.manageDisable();
     },
