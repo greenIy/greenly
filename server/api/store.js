@@ -22,7 +22,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
                 const calcLowestPrice = (supplies) => {
                     let min = Number.POSITIVE_INFINITY;
                     supplies.forEach((supply) => {
-                        if (supply.price < min) {
+                        if (parseFloat(supply.price) < parseFloat(min)) {
                             min = supply.price
                         }
                     })
@@ -33,7 +33,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
                 const calcHighestPrice = (supplies) => {
                     let max = Number.NEGATIVE_INFINITY;
                     supplies.forEach((supply) => {
-                        if (supply.price > max) {
+                        if (parseFloat(supply.price) > parseFloat(max)) {
                             max = supply.price
                         }
                     })
