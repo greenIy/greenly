@@ -11,6 +11,10 @@ const argv = require('../server').argv
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
 
+// Round coordinates to 6 decimal places
+const coordinateRound = 6;
+
+
 const prisma = new PrismaClient({ 
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
@@ -43,8 +47,8 @@ async function createUser(params) {
                 }
             })
 
-            lat = geocoded.data.results[0].geometry.location.lat;
-            lng = geocoded.data.results[0].geometry.location.lng;
+            lat = round(geocoded.data.results[0].geometry.location.lat, coordinateRound);
+            lng = round(geocoded.data.results[0].geometry.location.lng, coordinateRound);
         } catch {
             lat = 0;
             lng = 0;
