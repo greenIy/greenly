@@ -51,6 +51,7 @@ export default {
         this.products = response.data;
         //console.log(response.data);
       });
+      window.scrollTo(0, 0);
     },
     getCurrentPage: function(params) {
       this.currentPage = params;
