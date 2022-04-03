@@ -23,7 +23,6 @@
           <a href="#" class="card-link">Another link</a>
         </div>
       </div>
-      <TheNextPage />
     </div>
     </body>
     <TheFooter />
@@ -43,7 +42,6 @@ library.add(faCartPlus);
 export default {
   name: "ProductView",
   components: {
-    TheNextPage,
     TheNavbar,
     TheFooter,
     AboutView,
