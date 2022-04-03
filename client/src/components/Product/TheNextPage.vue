@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex justify-content-center mt-5">
-  <nav aria-label="Page navigation example" >
-    <ul class="pagination .pagination-lg">
+  <nav aria-label="page navigation example" >
+    <ul class="pagination">
       <li class="page-item">
         <button class="page-link" @click='prevPage()'>
           <span aria-hidden="true">&laquo;</span>
@@ -57,6 +57,11 @@ button {
 
 button:hover {
   color: #608072;
+}
+
+button:focus {
+  color: #608072;
+  box-shadow: none;
 }
 
 </style>
