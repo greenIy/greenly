@@ -1,4 +1,5 @@
 <template>
+<div>
         <p class="d-flex align-items-center pb-3 mb-3 fs-4 fw-bold">
             CATEGORIA ATUAL
         </p>
