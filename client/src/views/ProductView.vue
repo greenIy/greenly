@@ -49,14 +49,10 @@
                     Favoritos
                   </button>
                   <!--    <form>
-            <div class="form-group form-check">
-              <label class="form-check-label ms-2 product" for="accept">
-                <input
-                  type="checkbox"
-                  v-model="user.accept"
-                  id="accept"
-                  class="form-check-input checkbox"
-                />Comparar Produto</label
+                    <div class="form-group form-check">
+                      <label class="form-check-label ms-2 product" for="accept">
+                       <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox"
+                     />Comparar Fornecedores</label
               >
             </div>
           </form> -->
