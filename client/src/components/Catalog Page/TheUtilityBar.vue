@@ -5,42 +5,27 @@
     
         <div class="row align-items-start">
             <div class="dropdown col-8 align-self-start">
-                <label>Ordenar por: &nbsp;</label>
-                
-                <a class="btn btn-sm btn-outline-success btn-toggle rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orderby-collapse" aria-expanded="false">
-                    Novidade 
-                </a>
-                    
-                <div class="dropdown-menu collapse" id="orderby-collapse" style="position: absolute; transform: translate3d(110px, 35px, 0px); top: 0px; left: 0px; will-change: transform;">
-                    <a class="dropdown-item" href="#">Novidade</a>
-                    <a class="dropdown-item" href="#">Preço Ascendente</a>
-                    <a class="dropdown-item" href="#">Preço Descendente</a>
-                </div>
+                <a class="dropdown-toggle btn btn-outline-success rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
+                <ul class="dropdown-menu" aria-labelledby="order-by">
+                    <li><a class="dropdown-item" href="#">Novidade</a></li>
+                    <li><a class="dropdown-item" href="#">Preço Ascendente</a></li>
+                    <li><a class="dropdown-item" href="#">Preço Descendente</a></li>
+                </ul>
             </div>
 
             <div class="dropdown col-2 text-end">
-                <div class="dropdown col-8 align-self-start">
-                    <label>Ver: &nbsp;</label>
-
-                    <a class="btn btn-sm btn-outline-success btn-toggle rounded collapsed" data-bs-toggle="collapse" data-bs-target="#view-collapse" aria-expanded="false">
-                        12 
-                    </a>
-
-                    <div class="dropdown-menu collapse" id="view-collapse" style="position: absolute; transform: translate3d(35px, 35px, 0px); top: 0px; left: 0px; will-change: transform;">
-                        <a class="dropdown-item" href="#">12</a>
-                        <a class="dropdown-item" href="#">24</a>
-                        <a class="dropdown-item" href="#">48</a>
-                        <a class="dropdown-item" href="#">96</a>
-                    </div>
-                </div>
+                <a class="dropdown-toggle btn btn-outline-success rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ver</a>
+                <ul class="dropdown-menu w-50" aria-labelledby="order-by">
+                    <li><a class="dropdown-item" href="#">12</a></li>
+                    <li><a class="dropdown-item" href="#">24</a></li>
+                    <li><a class="dropdown-item" href="#">48</a></li>
+                </ul>
             </div>
 
-            <div class="col-2 text-end">
-                <button type="button" class="btn btn-sm btn-outline-success rounded"> &larr; </button>
-                
-                <span>&nbsp;&nbsp;&nbsp;</span>
-                
-                <button type="button" class="btn btn-sm btn-outline-success rounded"> &rarr; </button>
+            <div class="dropdown col-2 text-end">
+                <p class="text-secondary">
+                    1-12 de 96 produtos 
+                </p>
             </div>
         </div>
 </template>
