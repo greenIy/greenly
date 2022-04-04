@@ -2,28 +2,70 @@
   <div class="page-container">
     <TheNavbar />
     <body>
-    <div class="content-wrap mw-0">
-      
-      <div class="card center mt-3" style="width: 18rem">
-        <img class="card-img-top" src="../assets/Team/daniela.jpg" alt="Card image cap" />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the bulk of the card's
-            content.
-          </p>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-        <div class="card-body">
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+      <div class="content-wrap mw-0">
+        <div class="d-flex w-100 justify-content-center">
+          <div class="card h-100 mt-3 mb-3">
+            <div class="row g-0">
+              <div class="col-md-3">
+                <img
+                  src="../assets/Team/daniela.jpg"
+                  class="rounded w-75 mt-4 mb-4 ms-4"
+                  alt="imagem do produto"
+                />
+              </div>
+              <div class="col-md-9">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    Categoria
+                    <!-- {{ product.category.name }} -->
+                  </h5>
+                  <div>
+                    <h4 class="card-title">
+                      Nome do Produto
+                      <!--  {{ product.name }} -->
+                    </h4>
+                  </div>
+                  <p class="card-text text-truncate">
+                    Descrição
+                    <!-- {{ product.description }} -->
+                  </p>
+                </div>
+                <div class="card-body py-0 position-relative mt-4 mb-1">
+                  <span class="position-absolute bottom-0"
+                    ><h4 class="card-text sticky-bottom">
+                      Preço
+                      <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
+                    </h4></span
+                  >
+                </div>
+                <div class="div card-body py-0 position-relative mt-1 mb-3">
+                  <button class="btnH fav">
+                    <font-awesome-icon
+                      @click="liked($event)"
+                      class="icons fa-cog"
+                      :icon="['fa', 'heart']"
+                      size="xs"
+                    />
+                    Favoritos
+                  </button>
+                  <!--    <form>
+            <div class="form-group form-check">
+              <label class="form-check-label ms-2 product" for="accept">
+                <input
+                  type="checkbox"
+                  v-model="user.accept"
+                  id="accept"
+                  class="form-check-input checkbox"
+                />Comparar Produto</label
+              >
+            </div>
+          </form> -->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </body>
     <TheFooter />
   </div>
@@ -31,12 +73,11 @@
 <script>
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
-/* eslint-disable */
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
-import AboutView from './AboutView.vue';
+import { faHeart,faCartPlus } from "@fortawesome/free-solid-svg-icons";
 
+library.add(faHeart);
 library.add(faCartPlus);
 
 export default {
@@ -44,16 +85,41 @@ export default {
   components: {
     TheNavbar,
     TheFooter,
-    AboutView,
   },
+  /*   props: {
+    product: Object,
+  },
+  data() {
+    return {
+      products: [],
+    };
+  },
+   methods: {
+    getProducts() {
+      http.get("/store/products").then((response) => {
+        this.products = response.data;
+        //console.log(response.data);
+      });
+    },
+   }, */
+    methods: {
+    liked(event){
+      const svg = event.path[1]
+      if (svg.classList.contains('red')) {
+        svg.classList.remove("red");
+      } else {
+        svg.classList.add("red");
+      } 
+    },
+  }
 };
 </script>
 
 <style scoped>
-.center{
-  margin:0 auto;
+.center {
+  margin: 0 auto;
 }
-.btnS {
+/* .btnS {
   border: none;
   color: white;
   background-color: #7c9d8e;
@@ -63,5 +129,13 @@ export default {
 
 .btnS:hover {
   background-color: #89a799;
+} */
+.btnH {
+  background: none;
+  border: none;
+  display: inline;
+}
+.red {
+  color: red !important;
 }
 </style>
