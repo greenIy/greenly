@@ -22,7 +22,7 @@
                 <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
             </div>
         </form>
-        <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
+        <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/registo" class="float-right">Regista-te aqui!</router-link></p>
     </div>
 </template>
 

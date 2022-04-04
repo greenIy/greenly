@@ -38,10 +38,6 @@
             </div>
           </form> -->
         </div>
-        <!--          <div class="d-inline-block mt-2 mb-3 center">
-        <button class="btnS">
-           <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
-        </div > -->
       </div>
     </div>
   </div>
@@ -127,12 +123,6 @@ h5 {
 .div button{
   padding: 0!important;
 }
-.fav {
-  color: #2c3e50;
-}
-.fav:hover {
-  color: black;
-}
 .product:hover {
   color: black;
 }
@@ -148,7 +138,7 @@ h5 {
 .card-group {
   border: none;
 }
- .product-card {
+.product-card {
   margin-bottom: 15px;
   margin-left: 4px;
   margin-right: 4px;

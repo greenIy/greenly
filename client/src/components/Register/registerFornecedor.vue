@@ -72,7 +72,7 @@
             </div>
 
         </form>
-        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
+        <p class="text-center text-muted small">Já tens conta? <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
@@ -86,7 +86,7 @@ import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 library.add(faFacebookSquare, faGoogle);
 
 export default {
-  name: 'registerConsumidor',
+  name: 'RegisterConsumidor',
   components: {
     CountrySelect,
     RegionSelect

@@ -13,7 +13,7 @@
             </div>
             <div class="col-2 mt-4">
                 <p>Sobre Greenly</p>
-                <router-link to="/aboutUs" class="mb-2 pr-2">
+                <router-link to="/equipa" class="mb-2 pr-2">
                     Conheça a equipa
                 </router-link>
             </div>

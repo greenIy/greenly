@@ -16,7 +16,7 @@ const routes = [
   },
   {
     path: '/produtos',
-    name: 'products',
+    name: 'produtos',
     // route level code-splitting
     // this generates a separate chunk (product.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -26,7 +26,7 @@ const routes = [
   },
   {
     path: '/produto/:id',
-    name: 'product',
+    name: 'produto',
     // route level code-splitting
     // this generates a separate chunk (product.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -35,8 +35,8 @@ const routes = [
     },
   },
   {
-    path: '/aboutUs',
-    name: 'aboutUs',
+    path: '/equipa',
+    name: 'equipa',
     // route level code-splitting
     // this generates a separate chunk (product.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -45,8 +45,8 @@ const routes = [
     },
   },
   {
-    path: '/register',
-    name: 'register',
+    path: '/registo',
+    name: 'registo',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
