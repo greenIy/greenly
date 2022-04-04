@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-shrink-0 p-3" style="width: 20%;"> <!--eu tinha a utility bar e produtos dentro de um div igual mas com width 80%. estes dois divs estavam dentro do container-->
-    <p class="d-flex align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
+  <div class="d-flex-shrink-0 p-3"> <!--eu tinha a utility bar e produtos dentro de um div igual mas com width 80%. estes dois divs estavam dentro do container-->
+    <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
       Filtros
     </p>
 
