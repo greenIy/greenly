@@ -7,7 +7,7 @@
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end">
-                <a class="dropdown-toggle btn btn-success rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ver</a>
+                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ver</a>
                 <ul class="dropdown-menu" aria-labelledby="order-by">
                     <li><a class="dropdown-item" href="#">12</a></li>
                     <li><a class="dropdown-item" href="#">24</a></li>
@@ -15,7 +15,7 @@
                 </ul>
             </div>
             <div class="dropdown col-4 align-self-start justify-content-end">
-                <a class="dropdown-toggle btn btn-success rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
+                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
                 <ul class="dropdown-menu" aria-labelledby="order-by">
                     <li><a class="dropdown-item" href="#">Nome</a></li>
                     <li><a class="dropdown-item" href="#">Novidade</a></li>
@@ -38,5 +38,15 @@
 <style scoped>
 .size{
     width:93%;
+}
+.btn{
+  border: none;
+  color: white;
+  background-color: #7c9d8e;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.dropdown-menu{
+    min-width: 90%!important
 }
 </style>

@@ -32,21 +32,22 @@
                     <!-- {{ product.description }} -->
                   </p>
                 </div>
-                <hr style="width:96%" class="center mt-3" color=black> 
-                <div class="card-body py-0  mt-5 mb-1">
-                    <div class="row">
-                   <h4 class="d-inline-block col-md-6">
+                <hr style="width:96%" class="center mt-3" color="black"> 
+                <div class="card-body py-0 my-3">
+                    <div class="row align-items-center justify-content-center">
+                      <div class="d-inline-block my-auto col-md-6">
+                   <h4 class="my-0">
                       Preço
                       <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
                     </h4>
-                  <div class="d-inline-block col-md-4">
+                    </div>
+                  <div class="d-inline-block text-end col-md-5">
                     <button class="btnS">
                       <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
                   </div >
-                   <button class="d-inline-block col-md-2 btnH fav">
+                   <button class="d-inline-block text-start col-md-1 btnH fav">
                     <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                   </button>
-                 
                   </div > 
                  <!--      <form>
                     <div class="form-group form-check">
@@ -140,5 +141,6 @@ h5 {
 .center{
   margin:0 auto;
 }
+
 
 </style>
