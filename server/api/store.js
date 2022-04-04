@@ -14,9 +14,9 @@ const defaultErr    = require("../lib/error").defaultErr
 
 router.get('/products', getProductsValidator(), (req, res) => {
     try {
-        persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((products) => {
+        let productData = persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((productData) => {
 
-            if (products) {
+            if (productData) {
 
                 // Defining quick helper functions
                 const calcLowestPrice = (supplies) => {
@@ -42,34 +42,34 @@ router.get('/products', getProductsValidator(), (req, res) => {
                 }; 
 
 
-                for (let i = 0; i < products.length; i++) {
+                for (let i = 0; i < productData.products.length; i++) {
                     // Renaming Category key -> category
-                    delete Object.assign(products[i], {["category"]: products[i]["Category"] })["Category"];
+                    delete Object.assign(productData.products[i], {["category"]: productData.products[i]["Category"] })["Category"];
 
                     // Calculating lowest and highest price 
-                    if (products[i].Supply.length > 0) {
-                        products[i]["lowest_price"] = parseFloat(calcLowestPrice(products[i].Supply).toFixed(2))
-                        products[i]["highest_price"] = parseFloat(calcHighestPrice(products[i].Supply).toFixed(2))
+                    if (productData.products[i].Supply.length > 0) {
+                        productData.products[i]["lowest_price"] = parseFloat(calcLowestPrice(productData.products[i].Supply).toFixed(2))
+                        productData.products[i]["highest_price"] = parseFloat(calcHighestPrice(productData.products[i].Supply).toFixed(2))
                         
                     }
 
                     // Removing unrequired keys
-                    delete products[i].Supply
+                    delete productData.products[i].Supply
                 }
 
                 // Sorting: has to be done here since Prisma does
                 // not support sorting over calculated attributes  
                 // such  as lowest_price)
                 if (req.query.sort == "price_asc") {
-                    products.sort((a, b) => a.lowest_price - b.lowest_price)
+                    productData.products.sort((a, b) => a.lowest_price - b.lowest_price)
 
                 } else if (req.query.sort == "price_desc") {
-                    products.sort((a, b) => b.lowest_price - a.lowest_price)
+                    productData.products.sort((a, b) => b.lowest_price - a.lowest_price)
                 }
             
             }
 
-            res.status(200).json(products)
+            res.status(200).json(productData)
         })
     } 
     catch {

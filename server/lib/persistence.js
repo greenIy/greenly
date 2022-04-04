@@ -347,6 +347,14 @@ async function checkUserConflict(attribute, value) {
 
 /* Product Functions */
 
+/**
+ * 
+ * @param {Number} limit 
+ * @param {Number} page 
+ * @param {String} category 
+ * @param {String[]} keywords 
+ * @returns An object composed of the total number of pages for the included filters and an array of product objects.
+ */
 async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
@@ -379,7 +387,13 @@ async function getAllProducts(limit = 50,
         filterSelection.category = category
     }
 
-    return users = await prisma.product.findMany({
+    // Calculate total pages according to provided filters
+    let totalPages = Math.ceil(await prisma.product.count({
+        where: filterSelection
+    })/limit)
+
+    // Get products based on provided filters
+    let products = await prisma.product.findMany({
         skip: (page-1)*limit,
         take: limit,
         select: {
@@ -402,6 +416,8 @@ async function getAllProducts(limit = 50,
         },
         where: filterSelection
     });
+
+    return {totalPages, products}
 }
 
 async function getProductByID(id){
