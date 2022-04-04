@@ -4,7 +4,7 @@
       <div class="card h-100 hover-shadow d-flex">
         <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
         <div class="d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="imagem do produto"  />
+        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  />
         </div>
         <div class="card-body">
           <h5 class="card-title">{{ product.category.name }}</h5>
@@ -75,7 +75,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 h4 {
   font-size: 14px;

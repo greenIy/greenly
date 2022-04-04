@@ -64,7 +64,7 @@ export default {
   methods: {
     getProducts() {
       http.get("/store/products?page=" + this.currentPage + "&limit=15").then((response) => {
-        this.products = response.data;
+        this.products = response.data.products;
         //console.log(response.data);
       });
       window.scrollTo(0, 0);

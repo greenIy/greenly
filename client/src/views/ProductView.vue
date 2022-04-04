@@ -7,7 +7,7 @@
           <div class="card h-100 mt-4 mb-3">
             <div class="row g-0">
               <div class="col-md-3">
-                <img src="../assets/Team/daniela.jpg" class="rounded w-75 mt-4 mb-4 ms-4" alt="imagem do produto"  />
+                <img src="../assets/Team/daniela.jpg" class="rounded w-75 mt-4 mb-4 ms-4" alt="Imagem do produto"  />
               </div>
               <div class="col-md-9">
                 <div class="card-body mt-2">
@@ -45,7 +45,6 @@
                   </div >
                    <button class="d-inline-block col-md-2 btnH fav">
                     <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
-                    
                   </button>
                  
                   </div > 
