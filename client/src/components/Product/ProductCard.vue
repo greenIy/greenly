@@ -20,7 +20,7 @@
         <div class="card-body py-0 position-relative mt-1 mb-1">
          <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
         </div>
-        <div class="div card-body py-0 position-relative mb-3">
+        <div class="div card-body py-0 position-relative mt-1 mb-3">
           <button class="btnH fav">
             <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
             Favoritos
@@ -123,6 +123,9 @@ h5 {
 .div button,
 .div label {
   font-size: 11px;
+}
+.div button{
+  padding: 0!important;
 }
 .fav {
   color: #2c3e50;
