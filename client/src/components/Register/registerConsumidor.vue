@@ -7,6 +7,9 @@
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="firstName" placeholder="Introduza nome...">
                 </div>
+                <div class="error" v-if="!$v.name.required">Field is required</div>
+                <div class="error" v-if="!$v.name.minLength">Name must have at least {{$v.name.$params.minLength.min}} letters.</div>
+                <tree-view :data="$v.name" :options="{rootObjectKey: '$v.name', maxDepth: 2}"></tree-view>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="lastName" placeholder="Introduza apelido...">
@@ -76,6 +79,8 @@
 <script>
 import countrySelect from '@/components/Register/country-select'
 import regionSelect from '@/components/Register/region-select'
+import {required, minLength} from 'vuelidate'
+
 
 export default {
   name: 'registerConsumidor',
@@ -85,8 +90,15 @@ export default {
   },
   data: () => ({
     country: '',
-    region: ''
-  })
+    region: '',
+    firstname: ''
+  }),
+  validations: {
+      firstname: {
+          required,
+          minLength: minLength(2)
+      }
+  }
 };
 </script>
 
