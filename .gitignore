@@ -84,3 +84,4 @@ typings/
 # IDE Project Files
 .idea/
 .vscode/
+*.code-workspace

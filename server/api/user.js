@@ -2,17 +2,19 @@
 
 const { defaultUrl } = require('@googlemaps/google-maps-services-js/dist/directions');
 const express = require('express');
+const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
 
 /* Greenly libraries & required server data */
-const persistence = require('../lib/persistence.js');
+const authentication    = require("../lib/authentication")
+const authorization     = require("../lib/authorization")
+const persistence       = require('../lib/persistence');
+const defaultErr        = require("../lib/error").defaultErr
 const { createUserValidator, updateUserValidator } = require('../lib/validation.js');
-const defaultErr = require("../lib/error").defaultErr
 
 /* GET /user (Admin only) */
 
-router.get('/', (req, res) => {
+router.get('/', authentication.check, authorization.check, (req, res) => {
     try {
         persistence.getAllUsers().then((users) => {
             res.status(200).json(users)
@@ -25,21 +27,11 @@ router.get('/', (req, res) => {
 
 
 /* POST /user */
-
-router.post('/', createUserValidator(), (req, res) => {
+// This route only requires an authorization.check when it comes to creating new administrators
+router.post('/', authorization.check, createUserValidator(), (req, res) => {
             
     try {
-        persistence.createUser(req.body.firstName,
-                               req.body.lastName,
-                               req.body.email,
-                               req.body.phone,
-                               req.body.password,
-                               req.body.nif,
-                               req.body.type,
-                               req.body.address.street,
-                               req.body.address.country,
-                               req.body.address.city,
-                               req.body.address.postalCode)
+        persistence.createUser(req.body)
             .then((result) => {
                 if (result) {
                     res.status(201).json(result);
@@ -49,17 +41,31 @@ router.post('/', createUserValidator(), (req, res) => {
                 }
             })
     } catch (e) {
+        console.log(e)
         res.status(400).send({message: "Invalid data. Make sure to include every field."});
     }
 })
 
 /* GET /user/{userId} (User, Admin or Transporter only) */
 
-router.get('/:userId', (req, res) => {
+router.get('/:userId', authentication.check, authorization.check, (req, res, next) => {
     
     try {
+        //TODO: With authentication and authorization in place, this DB call could be replaced with req.user
         persistence.getUserByID(Number(req.params.userId)).then((user) => {
             if (user) {
+
+                // Renaming Address key (Prisma limitation)
+                delete Object.assign(user, {["address"]: user["Address"] })["Address"];
+                
+                // Renaming or removing Company key. Company should only be displayed if
+                // user is either supplier or transporter.
+                if (["SUPPLIER", "TRANSPORTER"].includes(user.type)) {
+                    Object.assign(user, {["company"]: user["Company"]});
+                }
+
+                delete user.Company
+
                 res.status(200).json(user)
             } else {
                 res.status(404).send({message: "User not found."})
@@ -73,7 +79,7 @@ router.get('/:userId', (req, res) => {
 
 /* PUT /user/{userId} (User or Admin only) */
 
-router.put('/:userId', updateUserValidator(), (req, res) => {
+router.put('/:userId', authentication.check, authorization.check, updateUserValidator(), (req, res) => {
 
     try {
         persistence.updateUser(req.params.userId, req.body).then((success) => {
@@ -91,7 +97,7 @@ router.put('/:userId', updateUserValidator(), (req, res) => {
 
 /* DELETE /user/{userId} (User or Admin only) */
 
-router.delete('/:userId', (req, res) => {
+router.delete('/:userId', authentication.check, authorization.check, (req, res) => {
 
     try {
         persistence.deleteUser(Number(req.params.userId)).then((success) => {

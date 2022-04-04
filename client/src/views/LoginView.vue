@@ -1,15 +1,11 @@
 <template>
-
-  <div class="login">
-
-    <the-navbar/>
-
-    <login-form/>
-
+  <div class="page-container">
+    <div class="content-wrap">
+      <the-navbar/>
+      <login-form/>
+    </div>
     <the-footer/>
-
   </div>
-
 </template>
 
 <script>
@@ -29,7 +25,7 @@
   };
 </script>
 
-<style scoped>
+<style>
 
 
 </style>

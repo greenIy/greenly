@@ -12,7 +12,7 @@ const argv = require('../server').argv
 const saltRounds = 10;
 
 const prisma = new PrismaClient({ 
-    // Log database operations if -d flag is present
+    // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
 const maps = new Client();
@@ -21,57 +21,78 @@ const maps = new Client();
 /* User Functions */
 
 /* Returns user object on creation, or null if invalid */
-async function createUser(first_name, last_name, email, phone, password, nif, type, street, country, city, postal_code) {
-
-
-    // API Call: Disabled for testing (works)
-    // const geocoded = await maps.geocode({
-    //     params: {
-    //         address: `${street}, ${city}, ${country}`,
-    //         key: process.env.GOOGLE_API_KEY
-    //     }
-    // })
-
+async function createUser(params) {
     try {
         let newUser = await prisma.user.create({
             data: {
-                first_name: first_name,
-                last_name: last_name,
-                nif: nif,
-                email: email,
-                phone: phone,
-                password: bcrypt.hashSync(password, saltRounds),
-                type: type
+                first_name: params.first_name,
+                last_name: params.last_name,
+                nif: params.nif,
+                email: params.email,
+                phone: params.phone,
+                password: bcrypt.hashSync(params.password, saltRounds),
+                type: params.type
             }
         })
+
+        try {
+            const geocoded = await maps.geocode({
+                params: {
+                    address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
+                    key: process.env.GOOGLE_API_KEY
+                }
+            })
+
+            lat = geocoded.data.results[0].geometry.location.lat;
+            lng = geocoded.data.results[0].geometry.location.lng;
+        } catch {
+            lat = 0;
+            lng = 0;
+        }
 
         const newAddress = await prisma.address.create({
             data: {
-                street: street,
-                country: country,
-                city: city,
+                street: params.address.street,
+                country: params.address.country,
+                city: params.address.city,
                 // Using dummy values for testing. Use this for API call:
                 // geocoded.data.results[0].geometry.location.lat
                 // geocoded.data.results[0].geometry.location.lng
-                latitude: 0,
-                longitude: 0,
-                postal_code: postal_code
+                latitude: lat,
+                longitude: lng,
+                postal_code: params.address.postal_code
             }
         })
 
-        // Updating the user's address after we're sure user creation didn't go wrong.
+        let updateDataSelection = {
+            address: newAddress.id
+        }
+
+        // Create a new company if the user is a transporter or a supplier
+        if (["TRANSPORTER", "SUPPLIER"].includes(newUser.type)) {
+            const newCompany = await prisma.company.create({
+                data: {
+                    name: params.company.name,
+                    bio: params.company.bio,
+                    email: params.company.email
+                }
+            })
+
+            updateDataSelection.company = newCompany.id
+        }
+
+        // Updating the user's address and company after we're sure user creation didn't go wrong.
 
         newUser = await prisma.user.update({
             where: {
                 id: newUser.id
             },
-            data: {
-                address: newAddress.id
-            }
+            data: updateDataSelection
         })
 
         return {id: newUser.id};
     } catch (e) {
+        console.log(e)
         return null;
     }
 }
@@ -86,19 +107,19 @@ async function updateUser(id, params) {
     */
 
     const userKeyMap = {
-        firstName: "first_name",
-        lastName: "last_name",
+        first_name: "first_name",
+        last_name: "last_name",
         nif: "nif",
         email: "email",
         phone: "phone",
         type: "type",
-        newPassword: "password"
+        new_password: "password"
     }
 
     const addressKeyMap = {
         street: "street",
         city: "city",
-        postalCode: "postal_code",
+        postal_code: "postal_code",
         country: "country"
     }
 
@@ -109,7 +130,12 @@ async function updateUser(id, params) {
 
     for (const [key, value] of Object.entries(params)) {
         if (key in userKeyMap) {
-            userDataSelection[userKeyMap[key]] = value
+            if (key == "new_password") {
+                userDataSelection[userKeyMap[key]] = bcrypt.hashSync(value, saltRounds)
+
+            } else {
+                userDataSelection[userKeyMap[key]] = value
+            }
         }
     }
     
@@ -154,6 +180,7 @@ async function deleteUser(id) {
     try {
         /* TODO: Eventually also delete: 
                 * All orders by user, in case of consumer
+                * Company
         */
 
         if (getUserByID(id)) {
@@ -227,9 +254,55 @@ async function getUserByID(id, withPassword=false) {
                         country: true
                     }
                 },
+                Company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        bio: true,
+                    }
+                },
             }
         })
     } catch (e){
+        console.log(e)
+        return null;
+    }
+}
+
+async function getUserByEmail(email, withPassword=false) {
+    try {
+        return user = await prisma.user.findUnique({
+            where: {
+                email: email
+            },
+            select: {
+                id: true,
+                nif: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                phone: true,
+                type: true,
+                password: withPassword,
+                Address: {
+                    select: {
+                        street: true,
+                        city: true,
+                        postal_code: true,
+                        country: true
+                    }
+                },
+                Company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        bio: true,
+                    }
+                },
+            }
+        })
+    } catch (e){
+        console.log(e)
         return null;
     }
 }
@@ -268,13 +341,138 @@ async function checkUserConflict(attribute, value) {
     }
 }
 
+/* Product Functions */
+
+async function getAllProducts(limit = 50,
+                              page = 1, 
+                              category, 
+                              keywords) {
+
+    let filterSelection = {}
+
+    if (keywords) {
+        // The following code searches the keywords on both name and description of the products
+
+        // Initialize OR search between name and description
+        filterSelection.OR = []
+
+        // Initializing filter objects
+        nameKeywords = {"name":{}}
+        descriptionKeywords = {"description":{}}
+
+        // According to Prisma Full-Search API and MySQL Full-Text Search
+        if (Array.isArray(keywords)) {
+            nameKeywords.name.search = descriptionKeywords.description.search = keywords.join("* ")
+        } else {
+            nameKeywords.name.search = descriptionKeywords.description.search = keywords + "*"
+        }
+        
+        // Adding created filters to the filterSelection
+        filterSelection.OR.push(nameKeywords, descriptionKeywords)
+    }
+
+    if (category) {
+        filterSelection.category = category
+    }
+
+    return users = await prisma.product.findMany({
+        skip: (page-1)*limit,
+        take: limit,
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            complement_name: true,
+            complement_amount: true,
+            Category: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            Supply: {
+                select: {
+                    price: true
+                }
+            }
+        },
+        where: filterSelection
+    });
+}
+
+async function getProductByID(id){
+    try {
+        return product = await prisma.product.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                name: true,
+                description: true,
+                Category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                } ,
+                complement_name: true,
+                complement_amount: true,
+                Supply: {
+                    select: {
+                        product: true,
+                        User: {
+                            select: {
+                                Company: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                },
+                            }
+                        },
+                        warehouse: true,
+                        quantity: true,
+                        price: true,
+                        production_date: true,
+                        expiration_date: true,
+                        Supply_Transporter: {
+                            select: {
+                                User: {
+                                    select: {
+                                        Company: {
+                                            select: {
+                                                id: true,
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Supply_History: true
+                    }
+                }
+                },
+        })
+    } catch (e){
+        console.log(e)
+        return null;
+    }
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
+    // User Functions
     createUser,
     updateUser,
     deleteUser,
     getUserByID,
+    getUserByEmail,
     getAllUsers,
     checkUserConflict,
+
+    // Product Functions
+    getAllProducts,
+    getProductByID
 }

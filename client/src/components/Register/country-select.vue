@@ -17,7 +17,7 @@
       },
       placeholder: {
         type: String,
-        default: 'Selecione país...'
+        default: 'Selecione país'
       },
       disablePlaceholder: {
         type: Boolean,

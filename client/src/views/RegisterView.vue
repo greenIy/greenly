@@ -1,16 +1,11 @@
 <template>
-
-  <div class="register">
-
-    <the-navbar/>
-
-    <register-pills/>
-
+  <div class="page-container">
+    <div class="content-wrap">
+      <the-navbar/>
+      <register-pills/>
+    </div>
     <the-footer/>
-
   </div>
-
-  
 </template>
 
 <script>
