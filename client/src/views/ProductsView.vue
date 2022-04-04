@@ -10,8 +10,9 @@
               <TheFilters />
             </div>
           </div>
-          <div class="col">
-            <div class="content justify-content-center d-flex w-100 mt-4" @currentPage="getCurrentPage">
+          <div class="col mt-4">
+            <TheUtilityBar />
+            <div class="content justify-content-center d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
                v-for="p in products"
               :key="p.id"
@@ -34,6 +35,7 @@ import TheNextPage from "@/components/Product/TheNextPage.vue";
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
+import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
 
 import http from "../../http-common";
 
@@ -45,6 +47,7 @@ export default {
     TheNavbar,
     TheFooter,
     TheFilters,
+    TheUtilityBar,
   },
   props: {
     product: Object,
