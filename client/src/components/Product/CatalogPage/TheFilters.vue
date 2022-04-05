@@ -19,7 +19,7 @@
             </a>
 
             <!-- Existing categories within the current category -->      
-            <a v-for="category in categories" :key="category" @click="() => switchCurrentCategory(category)" class="list-group-item list-group-item-action border-0">
+            <a v-for="category in categories" :key="category" @click='showProducts(category.id)' class="list-group-item list-group-item-action border-0">
               {{ category.name }} <!--POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!!-->
             </a>
           </div>
@@ -66,11 +66,18 @@
     },
     data () { 
       return {
+        currentCategory: 0,
         //currentMinPrice,
         //currentMaxPrice,
         //parentCategory
       }
-    }
+    },
+    methods: {
+      showProducts(categoryId) {
+        this.currentCategory = categoryId;
+        this.$emit("sendCurrentCategory", this.currentCategory);
+      },
+    },
   }
 </script>
 

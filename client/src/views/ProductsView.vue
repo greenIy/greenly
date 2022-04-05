@@ -8,7 +8,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 filtros mt-1">
             <div class="content d-flex">
-              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice"/>
+              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9 mt-1">
@@ -59,6 +59,7 @@ export default {
       categories: [],
       minPrice: Number,
       maxPrice: Number,
+      currentCategory: 0,
     };
   },
   created() {
@@ -75,6 +76,10 @@ export default {
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();
+    },
+    getCurrentCategory: function(params) {
+      this.currentCategory = params;
+      this.products = Object.assign([], this.products.filter(product => product.category.id === params));
     }
   },
   computed: {
@@ -88,7 +93,6 @@ export default {
       var maxPrices = this.products.map(product =>
           product.highest_price
       );
-
       return maxPrices.reduce((a, b) => Math.max(a,b), 0);
     },
     getMinPrice: function () {
