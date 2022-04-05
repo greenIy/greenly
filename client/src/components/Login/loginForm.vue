@@ -1,27 +1,33 @@
 <template>
     <div class="login-form" style="padding-top: 2.5%">
-        <form>
-          <h2 class="text-center">Iniciar sessão</h2>
-          <div class="mb-3">
-            <label for="inputEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" placeholder="Introduza email...">
-          </div>
-          <div class="mb-3">
-            <label for="inputPassword" class="form-label">Palavra-passe</label>
-            <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe...">
-          </div>
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="rememberMe">
-            <label class="form-check-label" for="rememberMe">Lembrar-me</label>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%">Iniciar</button>
-        <div class="or-seperator"><i>ou</i></div>
-            <p class="text-center">Inicia sessão com uma rede social</p>
-            <div class="text-center social-btn">
-                <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
-                <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                <a href="#" class="btn btn-info"><font-awesome-icon :icon="['fab', 'apple']" size="lg"/>&nbsp; Apple</a>
+        <form @submit.prevent="loginUser">
+            <h2 class="text-center">Iniciar sessão</h2>
+            <div class="mb-3">
+                <label for="inputEmail" class="form-label">Email</label>
+                <input type="name" class="form-control" id="email" v-model="loginInfo.email" placeholder="Introduza email">
             </div>
+            <div class="mb-3">
+                <label for="inputPassword" class="form-label">Palavra-passe</label>
+                <div class="input-group">
+                <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="loginInfo.password" placeholder="Introduza palavra-passe">
+                    <div class="input-group-append">
+                        <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
+                                <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Lembrar-me</label>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Iniciar</button>
+            <div class="or-seperator"><i>ou</i></div>
+                <p class="text-center">Inicia sessão através de uma rede social</p>
+                <div class="text-center social-btn">
+                    <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+                    <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
+                </div>
         </form>
         <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
     </div>
@@ -30,15 +36,55 @@
 <script>
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFacebookSquare, faGoogle, faApple} from '@fortawesome/free-brands-svg-icons';
+import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash);
 
-library.add(faFacebookSquare);
-library.add(faGoogle);
-library.add(faApple);
+import http from "../../../http-commmon";
 
-export default {
+import { required } from "@vuelidate/validators";
+
+
+export default({
   name: 'loginForm',
-};
+    data(){
+        return {
+            showPassword: false,
+            loginInfo: {
+                email: '',
+                password: ''
+            }
+        }
+    },
+    validations() {
+        return {
+            loginInfo: {
+                email: {
+                    required : {
+                        $validator: required,
+                        $message: "Deve inserir um e-mail"
+                    }
+                },
+                password: {
+                    required : {
+                        $validator: required,
+                        $message: "Deve inserir uma palavra-passe"
+                    }
+                }
+            }
+        }
+    },
+    methods: {
+        loginUser() {
+            http.post("/auth/login", JSON.stringify({
+                    email: this.loginInfo.email,
+                    password: this.loginInfo.password })).then(response => {console.log(response)}),
+            alert("Successful login!")
+        }
+    },
+});
+
+
 </script>
 
 <style scoped>

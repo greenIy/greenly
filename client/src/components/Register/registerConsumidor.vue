@@ -7,9 +7,6 @@
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="firstName" placeholder="Introduza nome">
                 </div>
-                <div class="error" v-if="!$v.name.required">Field is required</div>
-                <div class="error" v-if="!$v.name.minLength">Name must have at least {{$v.name.$params.minLength.min}} letters.</div>
-                <tree-view :data="$v.name" :options="{rootObjectKey: '$v.name', maxDepth: 2}"></tree-view>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="lastName" placeholder="Introduza apelido">
@@ -24,7 +21,7 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" placeholder="Introduzir NIF">
+                    <input type="number" class="form-control" id="nif" placeholder="Introduza NIF">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
@@ -96,24 +93,7 @@ import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 
 library.add(faFacebookSquare, faGoogle);
 
-export default {
-  name: 'registerConsumidor',
-  components: {
-    countrySelect,
-    regionSelect
-  },
-  data: () => ({
-    country: '',
-    region: '',
-    firstname: ''
-  }),
-  validations: {
-      firstname: {
-          required,
-          minLength: minLength(2)
-      }
-  }
-};
+
 </script>
 
 <style scoped>
