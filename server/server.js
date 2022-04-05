@@ -34,7 +34,7 @@ const app = express();
 /* Middleware Init */
 // Enable request logging middleware if -l flag is present
 if (argv.l) {             
-  app.use(morgan('short'));
+  app.use(morgan(':status | :method :url | :remote-user | :response-time ms | :date[web]'));
 }
 
 // Important middleware
