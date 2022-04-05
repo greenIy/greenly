@@ -43,7 +43,7 @@ passport.use('basic-login', new LocalStrategy({
                     message: 'User with specified e-mail not found.'
                 });
             } else {
-                if (!bcrypt.compareSync(password, user.password)) {
+                if (!bcrypt.compareSync(password, user.Credentials.value)) {
                     return done(null, false, {
                         message: 'Wrong credentials for specified user.'
                     });
@@ -115,6 +115,7 @@ const check = function (req, res, next) {
                 }
             })
         } catch (e) {
+            console.log(e)
             return res.status(500).send(defaultErr())
         }
     })(req, res, next);

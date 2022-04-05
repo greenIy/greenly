@@ -38,8 +38,15 @@ async function createUser(params) {
                 nif: params.nif,
                 email: params.email,
                 phone: params.phone,
-                password: bcrypt.hashSync(params.password, saltRounds),
                 type: params.type
+            }
+        })
+
+        let newCredentials = await prisma.credentials.create({
+            data: {
+                id: newUser.id,
+                provider: "local",
+                value: bcrypt.hashSync(params.password, saltRounds)
             }
         })
 
@@ -237,7 +244,12 @@ async function getUserByID(id, withPassword=false) {
                 email: true,
                 phone: true,
                 type: true,
-                password: withPassword,
+                Credentials: withPassword ? {
+                    select: {
+                        provider: true,
+                        value: true,
+                    }
+                } : withPassword,
                 Address: {
                     select: {
                         street: true,
@@ -262,6 +274,7 @@ async function getUserByID(id, withPassword=false) {
 }
 
 async function getUserByEmail(email, withPassword=false) {
+    // TODO: Fix 'with password'
     try {
         return user = await prisma.user.findUnique({
             where: {
@@ -274,8 +287,13 @@ async function getUserByEmail(email, withPassword=false) {
                 last_name: true,
                 email: true,
                 phone: true,
+                Credentials: withPassword ? {
+                    select: {
+                        provider: true,
+                        value: true
+                    }
+                } : withPassword,
                 type: true,
-                password: withPassword,
                 Address: {
                     select: {
                         street: true,
