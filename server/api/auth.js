@@ -62,13 +62,42 @@ router.get('/google', passport.authenticate('google', { scope:
         [ 'email', 'profile' ] }
 ));
 
-router.get( '/google/callback',
-    passport.authenticate( 'google', {
-        successRedirect: '/auth/google/success',
-        failureRedirect: '/auth/google/failure'
-    }), async (req, profile) => {
-    console.log(profile);
-})
+router.get( '/google/callback', async (req, res, next) => {
+    passport.authenticate('google', async (err, user, info) => {
+        try {
+            if (err) {
+                return res.status(500).send(defaultErr())
+            }
+            if (!user) {
+                return res.status(401).send(info)
+            }
+            req.login(user, {
+                session: false
+            }, async (error) => {
+                if (error) {
+                    return res.status(500).send(defaultErr())
+                }
+                const body = {
+                    id: user.id,
+                    email: user.email
+                };
+                const token = jwt.sign({
+                        user: body
+                    }, process.env.JWT_SECRET,
+                    {
+                        expiresIn: process.env.JWT_EXPIRATION
+                    });
+                return res.json({
+                    token: token,
+                    id: user.id
+                });
+            });
+        } catch (error) {
+            return next(error);
+        }
+    })(req, res, next);
+});
+
 
 
 

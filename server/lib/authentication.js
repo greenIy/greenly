@@ -65,7 +65,23 @@ passport.use( new GoogleStrategy({
         callbackURL: 'http://localhost:4000/auth/google/callback',
         passReqToCallback: true
     }, function (request, accessToken, refreshToken, profile, done) {
-    console.log(request.query.code);
+    console.log(profile.email);
+    console.log(profile);
+        getUserByEmail(profile.email, true).then((user) => {
+            if (!user) {
+                return done(null, false, {
+                    message: 'User not found.'
+                })
+            } else {
+                if (profile.id.equals(user.Credentials.value) && profile.provider.equals(user.Credentials.provider)){
+                    return done(null, user);
+                } else {
+                    return done(null, false, {
+                        message: 'Returned wrong credentials.'
+                    })
+                }
+            }
+        })
     }
 ));
 
