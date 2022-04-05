@@ -14,13 +14,13 @@
         <div class="collapse" id="categories-collapse">
           <div class="list-group list-group-flush">
             <!-- Parent category of the current category (if applicable) -->
-            <a v-if="parentCategory" href="#" class="list-group-item list-group-item-action border-0">
-              &larr; {{ parentCategory }}
+            <a v-if="currentCategory" href="#" class="list-group-item list-group-item-action border-0">
+              &larr; {{ currentCategory }}
             </a>
 
             <!-- Existing categories within the current category -->      
             <a v-for="category in categories" :key="category" @click="() => switchCurrentCategory(category)" class="list-group-item list-group-item-action border-0">
-              {{ category }} <!--POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!!-->
+              {{ category.name }} <!--POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!!-->
             </a>
           </div>
         </div>
@@ -37,11 +37,11 @@
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
-                <input v-model.number:value="currentMinPrice" @keyup.enter="() => switchPriceRange(category)" class="form-control w-50 d-inline" id="min-price" type="number" min="0">
+                <input v-model.number:value="minPrice" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number">
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
-              <input v-model.number:value="currentMaxPrice" :max="absoluteMaxPrice" @keyup.enter="() => switchPriceRange(category)" class="form-control w-50 d-inline" id="max-price" type="number" min="0">
+              <input v-model.number:value="maxPrice" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number">
             </span>
           </div>
         </div>
@@ -53,23 +53,22 @@
 </template>
 
 <script>
-const parentCategory = 'eu'
-
   export default {
-    props: [
-      'categories',
-      'switchCurrentCategory',
-      'currentCategory',
-      'parentCategory',
-      'absoluteMaxPrice',
-      'switchPriceRange'
-    ],
-
+    props: {
+      categories: Array,
+      minPrice: Number,
+      maxPrice: Number,
+      //'switchCurrentCategory',
+      currentCategory: String,
+      //'parentCategory',
+      //'absoluteMaxPrice',
+      //'switchPriceRange'
+    },
     data () { 
       return {
         //currentMinPrice,
         //currentMaxPrice,
-        parentCategory
+        //parentCategory
       }
     }
   }

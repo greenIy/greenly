@@ -7,7 +7,7 @@
         <div class="row">
           <div class="col filtros mt-4">
             <div class="content d-flex">
-              <TheFilters />
+              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice"/>
             </div>
           </div>
           <div class="col mt-4">
@@ -56,6 +56,9 @@ export default {
     return {
       products: [],
       currentPage: 1,
+      categories: [],
+      minPrice: Number,
+      maxPrice: Number,
     };
   },
   created() {
@@ -74,7 +77,27 @@ export default {
       this.getProducts();
     }
   },
-  computed: {},
+  computed: {
+    getCategories: function () {
+      return this.products.map(product => ({
+          id: product.category.id, 
+          name: product.category.name
+          }));
+    },
+    getMaxPrice: function () {
+      var maxPrices = this.products.map(product =>
+          product.highest_price
+      );
+
+      return maxPrices.reduce((a, b) => Math.max(a,b), 0);
+    },
+    getMinPrice: function () {
+      var minPrices = this.products.map(product =>
+          product.lowest_price
+      );
+      return minPrices.reduce((a, b) => Math.min(a,b), 30000);
+    },
+  },
 };
 </script>
 

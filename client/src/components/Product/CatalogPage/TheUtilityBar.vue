@@ -1,7 +1,7 @@
 <template>
-<div class="d-flex justify-content-end size">
+<div class="d-flex justify-content-end size mt-4">
         <div class="row">
-            <div class="col-6 mt-2">
+            <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
                     1-12 de 96 produtos 
                 </p>
@@ -39,6 +39,7 @@
 .size{
     width:93%;
 }
+
 .btn{
   border: none;
   color: white;
