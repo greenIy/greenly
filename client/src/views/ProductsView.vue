@@ -59,7 +59,7 @@ export default {
       categories: [],
       minPrice: Number,
       maxPrice: Number,
-      currentCategory: 0,
+      currentCategory: {id: "", name: ""},
     };
   },
   created() {
@@ -79,7 +79,7 @@ export default {
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
-      this.products = Object.assign([], this.products.filter(product => product.category.id === params));
+      this.products = Object.assign([], this.products.filter(product => product.category.id === this.currentCategory.id));
     }
   },
   computed: {

@@ -138,7 +138,6 @@ h5 {
   border: none;
 }
 .product-card {
-  margin-bottom: 15px;
   margin-left: 4px;
   margin-right: 4px;
 } 

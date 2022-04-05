@@ -15,13 +15,13 @@
           <div class="list-group list-group-flush">
             <!-- Parent category of the current category (if applicable) -->
             <a v-if="currentCategory" href="#" class="list-group-item list-group-item-action border-0">
-              &larr; {{ currentCategory }}
+              &larr; {{ currentCategory.name }}
             </a>
 
             <!-- Existing categories within the current category -->      
-            <a v-for="category in categories" :key="category" @click='showProducts(category.id)' class="list-group-item list-group-item-action border-0">
-              {{ category.name }} <!--POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!!-->
-            </a>
+            <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+              {{ category.name }} {{$route.params.id}} <!-- POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!! -->
+            </a> 
           </div>
         </div>
       </li>
@@ -59,7 +59,13 @@
       minPrice: Number,
       maxPrice: Number,
       //'switchCurrentCategory',
-      currentCategory: String,
+      currentCategory: Object,
+      page: {
+        type: String
+      },
+      category: {
+        type: String
+      },
       //'parentCategory',
       //'absoluteMaxPrice',
       //'switchPriceRange'
@@ -73,8 +79,8 @@
       }
     },
     methods: {
-      showProducts(categoryId) {
-        this.currentCategory = categoryId;
+      showProducts(category) {
+        this.currentCategory = category;
         this.$emit("sendCurrentCategory", this.currentCategory);
       },
     },
