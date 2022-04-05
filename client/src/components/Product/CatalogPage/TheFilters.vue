@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex-shrink-0 p-3"> 
+  <div class="d-flex-shrink-0 pt-3 pl-3 mr-0"> 
     <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
       Filtros
     </p>
@@ -73,3 +73,17 @@
     }
   }
 </script>
+
+<style scoped>
+.list-group-item {
+  font-size: 12px;
+}
+
+.list-group-item input {
+  font-size: 12px;
+}
+
+.form-control {
+  padding: .300rem .20rem .300rem .40rem;
+}
+</style>

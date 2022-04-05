@@ -4,15 +4,15 @@
      <TheNavbar />
     <div class="content-wrap mw-0">
       <div class="container">
-        <div class="row">
-          <div class="col filtros mt-4">
+        <TheUtilityBar />
+        <div class="row content justify-content-center">
+          <div class="col-sm-2 col-md-2 filtros mt-1">
             <div class="content d-flex">
               <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice"/>
             </div>
           </div>
-          <div class="col mt-4">
-            <TheUtilityBar />
-            <div class="content justify-content-center d-flex w-100 " @currentPage="getCurrentPage">
+          <div class="col-sm-10 col-md-9 mt-1">
+            <div class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
                v-for="p in products"
               :key="p.id"
@@ -106,7 +106,8 @@ export default {
   flex-wrap:wrap
 }
 .filtros{
-  max-width:20%;
   background-color: white;
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
 }
 </style>

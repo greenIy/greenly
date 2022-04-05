@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex justify-content-end size mt-4">
+<div class="d-flex justify-content-end size mt-3">
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
@@ -37,7 +37,7 @@
 
 <style scoped>
 .size{
-    width:93%;
+    width:91.3%;
 }
 
 .btn{
