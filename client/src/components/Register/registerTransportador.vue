@@ -54,6 +54,31 @@
                 </div>
             </div>
 
+            <p class="text-left" style="margin-bottom: -2%">Morada</p><hr/>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
+                    <!-- <country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/> -->
+                    <input type="name" class="form-control" id="country" v-model="registerInfo.country" placeholder="Introduza país">
+
+                </div>
+                <div class="col mb-3">
+                    <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
+                    <!-- <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/> -->
+                    <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="inputStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" id="street" v-model="registerInfo.street" placeholder="Introduza rua">
+                </div>
+                <div class="col mb-3">
+                    <label for="postalCode" class="form-label">Código Postal <span style='color: #FF0000;'>*</span></label>
+                    <input type="number" class="form-control" id="postalCode" v-model="registerInfo.postalCode" placeholder="Introduza código postal">
+                </div>
+            </div>
+
             <p class="text-left" style="margin-bottom: -2%">Empresa</p><hr/>
             <div class="row">
                 <div class="col mb-3">
@@ -115,7 +140,7 @@ export default {
                 passwordConfirm:'',
                 street:'',
                 city:'',
-                postal_code:'',
+                postalCode:'',
                 country:'',
                 companyName:'',
                 description:'',
@@ -130,14 +155,14 @@ export default {
                 first_name: this.registerInfo.firstName,
                 last_name: this.registerInfo.lastName,
                 email: this.registerInfo.email,
-                phone: this.registerInfo.phoneNumber,
+                phone: this.registerInfo.phoneNumber.toString(),
+                password: this.registerInfo.password.toString(),
                 type: "TRANSPORTER",
-                password: this.registerInfo.password,
                 address:{
-                    street: this.registerInfo.street,
-                    city: this.registerInfo.city,
-                    postal_code: this.registerInfo.postal_code,
-                    country: this.registerInfo.country},
+                    street: this.registerInfo.street.toString(),
+                    city: this.registerInfo.city.toString(),
+                    postal_code: this.registerInfo.postalCode.toString(),
+                    country: this.registerInfo.country.toString()},
                 company:{
                     name: this.registerInfo.companyName,
                     bio: this.registerInfo.description,
