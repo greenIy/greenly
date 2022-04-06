@@ -6,15 +6,15 @@
       <div class="container">
         <TheUtilityBar />
         <div class="row content justify-content-center">
-          <div class="col-sm-2 col-md-2 filtros mt-1">
+          <div class="col-sm-2 col-md-2 mt-2 filtros ">
             <div class="content d-flex">
               <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory"/>
             </div>
           </div>
-          <div class="col-sm-10 col-md-9 mt-1">
+          <div class="col-sm-10 col-md-9 mt-2">
             <div class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
-               v-for="p in products"
+              v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
@@ -51,6 +51,7 @@ export default {
   },
   props: {
     product: Object,
+    totalProducts: Number,
   },
   data() {
     return {
@@ -67,7 +68,7 @@ export default {
   },
   methods: {
     getProducts() {
-      http.get("/store/products?page=" + this.currentPage + "&limit=15").then((response) => {
+      http.get("/store/products?page=" + this.currentPage + "&limit=12").then((response) => {
         this.products = response.data.products;
         //console.log(response.data);
       });
@@ -79,7 +80,7 @@ export default {
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
-      var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=15").then((response) => {
+      var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=12").then((response) => {
         this.products = response.data.products;
       });
       this.products = Object.assign([], productByCategory);

@@ -29,9 +29,9 @@
 
 <script>
   export default {
-    props: [
-        ''
-    ],
+    props: {
+        totalProducts: Number,
+    },
   }
 </script>
 
