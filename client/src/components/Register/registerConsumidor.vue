@@ -1,41 +1,56 @@
 <template>
     <div>
-        <form>            
+        <form @submit.prevent="registerConsumer">            
             <p class="text-left" style="margin-bottom: -2%">Informações Pessoais</p><hr/>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="firstName" placeholder="Introduza nome">
+                    <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Introduza nome">
                 </div>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="lastName" placeholder="Introduza apelido">
+                    <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Introduza apelido">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" placeholder="Introduza e-mail">
+                    <input type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" placeholder="Introduza NIF">
+                    <input type="number" class="form-control" id="nif" v-model="registerInfo.nif" placeholder="Introduza NIF">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="phoneNumber" placeholder="Introduza telemóvel">
+                    <input type="number" class="form-control" id="phoneNumber" v-model="registerInfo.phoneNumber" placeholder="Introduza telemóvel">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="inputPassword" class="form-label">Palavra-passe <span style='color: #FF0000;'>*</span></label>
-                    <input type="password" class="form-control" id="password" placeholder="Introduza palavra-passe">
+                    <label for="inputPassword" class="form-label">Palavra-passe</label>
+                    <div class="input-group">
+                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe">
+                        <div class="input-group-append">
+                            <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
+                                    <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div class="col mb-3">
-                    <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe <span style='color: #FF0000;'>*</span></label>
-                    <input type="password" class="form-control" id="passwordConfirm" placeholder="Introduza palavra-passe">
+
+                    <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
+                    <div class="input-group">
+                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe">
+                        <div class="input-group-append">
+                            <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
+                                    <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -86,6 +101,9 @@
 import countrySelect from '@/components/Register/country-select'
 import regionSelect from '@/components/Register/region-select'
 import {required, minLength} from 'vuelidate'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash);
+import http from "../../../http-commmon";
 
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -93,6 +111,45 @@ import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 
 library.add(faFacebookSquare, faGoogle);
 
+export default {
+    name: 'registerConsumer',
+    data(){
+        return {
+            showPassword: false,
+            registerInfo: {
+                firstName: '',
+                lastName:'',
+                email:'',
+                nif:'',
+                phoneNumber:'',
+                password:'',
+                passwordConfirm:'',
+                street:'',
+                city:'',
+                postal_code:'',
+                country:''
+            }
+        }
+    },
+    methods: {
+        registerConsumer() {
+            http.post("/user", JSON.stringify({
+                nif: this.registerInfo.nif,
+                first_name: this.registerInfo.firstName,
+                last_name: this.registerInfo.lastName,
+                email: this.registerInfo.email,
+                phone: this.registerInfo.phoneNumber,
+                type: "CONSUMER",
+                password: this.registerInfo.password,
+                address:{
+                    street: this.registerInfo.street,
+                    city: this.registerInfo.city,
+                    postal_code: this.registerInfo.postal_code,
+                    country: this.registerInfo.country}})
+            ).then(response => {console.log(response)}), alert("Successfull register!")
+        }
+    }
+};
 
 </script>
 
