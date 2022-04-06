@@ -8,7 +8,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mt-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory"/>
+              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9 mt-2">
@@ -84,6 +84,14 @@ export default {
         this.products = response.data.products;
       });
       this.products = Object.assign([], productByCategory);
+    },
+    goBackPage: function(params) {
+      this.currentCategory = params;
+      if (Object.keys(params).length === 0) {
+        this.getProducts();
+      } else {
+        this.getCurrentCategory(this.currentCategory);
+      }
     }
   },
   computed: {

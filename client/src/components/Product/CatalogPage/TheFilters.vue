@@ -14,15 +14,14 @@
         <div class="collapse" id="categories-collapse">
           <div class="list-group list-group-flush">
             <!-- Parent category of the current category (if applicable) -->
-            <button v-if="categorySelected" class="list-group-item list-group-item-action border-0">
-              &larr; {{ currentCategory.name }}
-            </button>
+            <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
+              <font-awesome-icon :icon="['fas', 'arrow-left']" size="sm"/> {{ currentCategory.name }}
+            </router-link>
             
-            <div v-if="showCategories.length">
-              <router-link v-for="category in categories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
-                {{ category.name }}
-              </router-link>
-            </div>
+            <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+              {{ category.name }}
+            </router-link>
+            
             <!-- Existing categories within the current category -->      
             <!-- <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
               {{ category.name }} {{$route.params.id}}
@@ -58,6 +57,11 @@
 </template>
 
 <script>
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faArrowLeft);
+
   export default {
     name: "ProductsView",
     props: {
@@ -77,8 +81,9 @@
     },
     data () { 
       return {
-        currentCategory: {},
+        categoryList: [],
         categorySelected: false,
+        currentCategory: {},
         //currentMinPrice,
         //currentMaxPrice,
         //parentCategory
@@ -86,17 +91,24 @@
     },
     methods: {
       showProducts(category) {
+        this.categoryList.push(category);
         this.currentCategory = category;
         this.categorySelected = true;
         this.$emit("sendCurrentCategory", this.currentCategory);
       },
+      goBack() {
+        this.categoryList.pop();
+        this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {};
+        this.categorySelected = (this.categoryList.length) ? true : false;
+        this.$emit("sendGoBack", this.currentCategory);
+      },
     },
     computed: {
       showCategories: function () {
-        var a = this.categories.map(category => category.id != this.currentCategory.id);
-        console.log(a);
-        console.log("categories: " + this.categories.name);
-        return a;
+        if (this.categorySelected) {
+          return this.categories.filter(category => this.categoryList.some(c => c.id != category.id));
+        }
+        return this.categories;
       },
     },
   }
