@@ -21,8 +21,8 @@
                       <!--  {{ product.name }} -->
                     </h4>
                   </div>
-                  <p class="card-text text-justify">
-                    Descrição : Lorem ipsum per netus ultricies bibendum tellus potenti platea curabitur porta scelerisque felis, 
+                  <p class="card-text about">
+                    Lorem ipsum per netus ultricies bibendum tellus potenti platea curabitur porta scelerisque felis, 
                     inceptos metus tortor condimentum etiam purus nisi interdum eros pretium. vulputate a arcu praesent vitae diam 
                     ultricies feugiat aptent, tincidunt aliquam et sit aenean litora tempus a urna, praesent tempor accumsan lacus primis
                     lacinia himenaeos. eget blandit eget fringilla pulvinar convallis fusce imperdiet platea feugiat risus molestie tristique 
@@ -140,6 +140,10 @@ h5 {
 }
 .center{
   margin:0 auto;
+}
+.about {
+  margin: 0;
+  text-align:justify;
 }
 
 

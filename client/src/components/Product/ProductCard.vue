@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card ml-2 mr-2">
+  <div class="product-card ml-2 mb-2 mr-2">
     <div class="card-group card h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
         <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">

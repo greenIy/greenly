@@ -118,11 +118,9 @@ library.add(faArrowLeft);
 .list-group-item {
   font-size: 12px;
 }
-
 .list-group-item input {
   font-size: 12px;
 }
-
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
 }

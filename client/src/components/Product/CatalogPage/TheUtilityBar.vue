@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
-                    1-12 de 96 produtos 
+                    1-12 de <!-- {{totalProducts}} --> 69 produtos 
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end">
@@ -37,7 +37,7 @@
 
 <style scoped>
 .size{
-    width:91.3%;
+    width:91%;
 }
 
 .btn{

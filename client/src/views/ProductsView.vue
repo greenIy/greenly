@@ -6,12 +6,12 @@
       <div class="container">
         <TheUtilityBar />
         <div class="row content justify-content-center">
-          <div class="col-sm-2 col-md-2 mt-2 filtros ">
+          <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
               <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
             </div>
           </div>
-          <div class="col-sm-10 col-md-9 mt-2">
+          <div class="col-sm-10 col-md-9 ">
             <div class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
               v-for="p in products"
@@ -60,20 +60,30 @@ export default {
       categories: [],
       minPrice: Number,
       maxPrice: Number,
+     /*  productAmount: 0,
+      pageAmount: 0, */
       currentCategory: {id: "", name: ""},
     };
   },
   created() {
     this.getProducts();
+    /* this.getTotalProducts(); */
   },
   methods: {
-    getProducts() {
-      http.get("/store/products?page=" + this.currentPage + "&limit=12").then((response) => {
+    getProducts(page=this.currentPage,limit=12) {
+      http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
+/*         this.productAmount = this.products.length;
+        this.pageAmount = response.data.totalPages; */
         //console.log(response.data);
       });
       window.scrollTo(0, 0);
     },
+ /*    getTotalProducts: function() {
+
+      this.getProducts(this.pageAmount,12);
+      console.log("OIeee: "+this.productAmount);
+    }, */
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();
