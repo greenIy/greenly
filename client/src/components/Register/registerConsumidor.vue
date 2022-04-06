@@ -5,34 +5,34 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Introduza nome">
+                    <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Introduza nome" required>
                 </div>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Introduza apelido">
+                    <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Introduza apelido" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail">
+                    <input type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" v-model="registerInfo.nif" placeholder="Introduza NIF">
+                    <input type="number" class="form-control" id="nif" v-model="registerInfo.nif" placeholder="Introduza NIF" required minlength="9" maxlength="9">
                 </div>
                 <div class="col mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="phoneNumber" v-model="registerInfo.phoneNumber" placeholder="Introduza telemóvel">
+                    <input type="number" class="form-control" id="phoneNumber" v-model="registerInfo.phoneNumber" placeholder="Introduza telemóvel" required minlength="9" maxlength="9">
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe">
+                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -44,7 +44,7 @@
 
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe">
+                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -59,31 +59,31 @@
                 <div class="col mb-3">
                     <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
                     <!--<country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/>-->
-                    <input type="name" class="form-control" id="country" v-model="registerInfo.country" placeholder="Introduza país">
+                    <input type="name" class="form-control" id="country" v-model="registerInfo.country" placeholder="Introduza país" required>
                 </div>
                 <div class="col mb-3">
                     <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
                     <!-- <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/> -->
-                    <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade">
+                    <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="street" v-model="registerInfo.street" placeholder="Introduza rua">
+                    <input type="name" class="form-control" id="street" v-model="registerInfo.street" placeholder="Introduza rua" required>
                 </div>
                 <div class="col mb-3">
                     <label for="postalCode" class="form-label">Código Postal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="postalCode" v-model="registerInfo.postalCode" placeholder="Introduza código postal">
+                    <input type="number" class="form-control" id="postalCode" v-model="registerInfo.postalCode" placeholder="Introduza código postal" required>
                 </div>
             </div>
 
             <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="termsConditons">
+                <input type="checkbox" class="form-check-input" id="termsConditons" required>
                 <label class="form-check-label" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%">Registar como consumidor</button>
+            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 100%">Registar como consumidor</button>
 
             <div class="or-seperator"><i>ou</i></div>
             <p class="text-center">Regista-te através de uma rede social</p>
@@ -110,6 +110,20 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 
 library.add(faFacebookSquare, faGoogle);
+
+function wrongRegister(message) {
+
+    document.getElementById("registerButton").style = "background-color: #a32c2c; width: 100%;";
+    document.getElementById("registerButton").innerHTML = message;
+    document.getElementById("registerButton").disabled = true;
+    document.getElementById("password").value = "";
+
+    setTimeout(function(){
+        document.getElementById("registerButton").style = "background-color: #608072; width: 100%;";
+        document.getElementById("registerButton").innerHTML = "Registar como consumidor";
+        document.getElementById("registerButton").disabled = false;
+   }, 3000);
+}
 
 export default {
     name: 'registerConsumer',
@@ -152,7 +166,14 @@ export default {
                     city: this.registerInfo.city.toString(),
                     postal_code: this.registerInfo.postalCode.toString(),
                     country: this.registerInfo.country.toString()}})
-            ).then(response => {console.log(response)}), alert("Successfull register!")
+                ).then((response) => {
+                    if (response.status == 201) {
+                        console.log(response.data.token)
+                        alert('Account registered successfully!')
+                        this.$router.push({path: '/login'});
+                    }
+                })
+                .catch(error => wrongRegister(error.response.data.errors[0].msg));
         }
     }
 };
