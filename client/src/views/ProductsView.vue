@@ -79,7 +79,10 @@ export default {
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
-      this.products = Object.assign([], this.products.filter(product => product.category.id === this.currentCategory.id));
+      var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=15").then((response) => {
+        this.products = response.data.products;
+      });
+      this.products = Object.assign([], productByCategory);
     }
   },
   computed: {

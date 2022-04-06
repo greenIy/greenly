@@ -14,14 +14,19 @@
         <div class="collapse" id="categories-collapse">
           <div class="list-group list-group-flush">
             <!-- Parent category of the current category (if applicable) -->
-            <a v-if="currentCategory" href="#" class="list-group-item list-group-item-action border-0">
+            <button v-if="categorySelected" class="list-group-item list-group-item-action border-0">
               &larr; {{ currentCategory.name }}
-            </a>
-
+            </button>
+            
+            <div v-if="showCategories.length">
+              <router-link v-for="category in categories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+                {{ category.name }}
+              </router-link>
+            </div>
             <!-- Existing categories within the current category -->      
-            <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
-              {{ category.name }} {{$route.params.id}} <!-- POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!! -->
-            </a> 
+            <!-- <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+              {{ category.name }} {{$route.params.id}}
+            </a>  -->
           </div>
         </div>
       </li>
@@ -54,12 +59,12 @@
 
 <script>
   export default {
+    name: "ProductsView",
     props: {
       categories: Array,
       minPrice: Number,
       maxPrice: Number,
       //'switchCurrentCategory',
-      currentCategory: Object,
       page: {
         type: String
       },
@@ -72,7 +77,8 @@
     },
     data () { 
       return {
-        currentCategory: 0,
+        currentCategory: {},
+        categorySelected: false,
         //currentMinPrice,
         //currentMaxPrice,
         //parentCategory
@@ -81,7 +87,16 @@
     methods: {
       showProducts(category) {
         this.currentCategory = category;
+        this.categorySelected = true;
         this.$emit("sendCurrentCategory", this.currentCategory);
+      },
+    },
+    computed: {
+      showCategories: function () {
+        var a = this.categories.map(category => category.id != this.currentCategory.id);
+        console.log(a);
+        console.log("categories: " + this.categories.name);
+        return a;
       },
     },
   }
