@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
-                    1-12 de <!-- {{totalProducts}} --> 69 produtos 
+                    {{ (productAmount * currentPage) - productAmount + 1 }} - {{ productAmount * currentPage }} de 60 produtos 
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end">
@@ -28,10 +28,27 @@
 </template>
 
 <script>
+import http from "../../../../http-common";
+
   export default {
     props: {
-        totalProducts: Number,
+        productAmount: Number,
+        pageAmount: Number,
+        currentPage: Number,
+        limit: Number,
     },
+    data() {
+        return {
+            lastPageProducts: 0,
+        };
+    },
+    methods: {
+        getTotalProducts: function() {
+            http.get("/store/products?page=" + this.pageAmount + "&limit="+ this.limit).then((response) => {
+               this.lastPageProducts = response.data.products.length;
+            });
+        },
+    }
   }
 </script>
 

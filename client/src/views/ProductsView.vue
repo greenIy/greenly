@@ -4,7 +4,7 @@
      <TheNavbar />
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar />
+        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit"/>
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
@@ -51,7 +51,10 @@ export default {
   },
   props: {
     product: Object,
-    totalProducts: Number,
+    productAmount: Number,
+    pageAmount: Number,
+    currentPage: Number,
+    limit: Number,
   },
   data() {
     return {
@@ -60,30 +63,28 @@ export default {
       categories: [],
       minPrice: Number,
       maxPrice: Number,
-     /*  productAmount: 0,
-      pageAmount: 0, */
+      productAmount: 0,
+      pageAmount: 0,
       currentCategory: {id: "", name: ""},
+      limit: 12,
     };
   },
   created() {
     this.getProducts();
-    /* this.getTotalProducts(); */
+  },
+  mounted() {
+    //this.getTotalProducts();
   },
   methods: {
-    getProducts(page=this.currentPage,limit=12) {
+    getProducts(page=this.currentPage, limit=12) {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
-/*         this.productAmount = this.products.length;
-        this.pageAmount = response.data.totalPages; */
+        this.pageAmount = response.data.totalPages;
+        this.productAmount = this.products.length;
         //console.log(response.data);
       });
       window.scrollTo(0, 0);
     },
- /*    getTotalProducts: function() {
-
-      this.getProducts(this.pageAmount,12);
-      console.log("OIeee: "+this.productAmount);
-    }, */
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();
