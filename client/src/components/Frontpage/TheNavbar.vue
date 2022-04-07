@@ -44,6 +44,9 @@
                 </router-link>
             </div>
         </div>
+        <button v-on:click="isLoggedIn">
+            Is Logged In?
+        </button>
     </div>
 </nav>
 </template>
@@ -51,11 +54,34 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
-
+import http from "../../../http-commmon"
 library.add(faCartShopping);
 
 export default {
   name: 'TheNavbar',
+  methods: {
+      isLoggedIn: function() {
+
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+        if (accessToken){
+            http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then(response => {
+            if (response.status == 200) {
+                console.log("true");
+                console.log(response);
+                return true;
+            } else {
+                console.log("false");
+                return false;
+            }
+            })  
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+  },
 };
 </script>
 

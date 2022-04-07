@@ -4,14 +4,15 @@
             <h2 class="text-center">Iniciar sessão</h2>
             <div class="mb-3">
                 <label for="inputEmail" class="form-label">Email</label>
-                <input type="name" class="form-control" id="email" v-model="loginInfo.email" placeholder="Introduza email">
+                <input type="email" class="form-control" id="email"  v-model="loginInfo.email" placeholder="Introduza email" required>
+                <div class="invalid-feedback">Deve inserir o e-mail.</div>
             </div>
             <div class="mb-3">
                 <label for="inputPassword" class="form-label">Palavra-passe</label>
                 <div class="input-group">
-                <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="loginInfo.password" placeholder="Introduza palavra-passe">
+                <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="loginInfo.password" placeholder="Introduza palavra-passe" required>
                     <div class="input-group-append">
-                        <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
+                        <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%; cursor: pointer;">
                                 <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                         </span>
                     </div>
@@ -21,7 +22,7 @@
                 <input type="checkbox" class="form-check-input" id="rememberMe">
                 <label class="form-check-label" for="rememberMe">Lembrar-me</label>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%">Iniciar</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar</button>
             <div class="or-seperator"><i>ou</i></div>
                 <p class="text-center">Inicia sessão através de uma rede social</p>
                 <div class="text-center social-btn">
@@ -42,8 +43,23 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash);
 
 import http from "../../../http-commmon";
 
-import { required } from "@vuelidate/validators";
+function wrongCredentials(message) {
 
+    document.getElementById("loginButton").style = "background-color: #a32c2c; width: 100%;";
+    document.getElementById("loginButton").disabled = true;
+    document.getElementById("password").value = "";
+    
+    if (message == "User with specified e-mail not found.") {
+        document.getElementById("loginButton").innerHTML = "E-mail não se encontra registado.";
+    } else if (message == "Wrong credentials for specified user.") {
+        document.getElementById("loginButton").innerHTML = "Palavra-passe incorreta.";
+    }
+     setTimeout(function(){
+        document.getElementById("loginButton").style = "background-color: #608072; width: 100%;";
+        document.getElementById("loginButton").innerHTML = "Iniciar";
+        document.getElementById("loginButton").disabled = false;
+   }, 3000);
+}
 
 export default({
   name: 'loginForm',
@@ -56,34 +72,23 @@ export default({
             }
         }
     },
-    validations() {
-        return {
-            loginInfo: {
-                email: {
-                    required : {
-                        $validator: required,
-                        $message: "Deve inserir um e-mail"
-                    }
-                },
-                password: {
-                    required : {
-                        $validator: required,
-                        $message: "Deve inserir uma palavra-passe"
-                    }
-                }
-            }
-        }
-    },
     methods: {
         loginUser() {
+
             http.post("/auth/login", JSON.stringify({
                     email: this.loginInfo.email,
-                    password: this.loginInfo.password })).then(response => {console.log(response)}),
-            alert("Successful login!")
+                    password: this.loginInfo.password }))
+                    .then((response) => {
+                        if (response.status == 200) {
+                            console.log(response.data.token),
+                            localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                            this.$router.push({path: '/'})
+                        }
+                    })
+                    .catch(error => wrongCredentials(error.response.data.message));
         }
     },
 });
-
 
 </script>
 
