@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkclient"]=self["webpackChunkclient"]||[]).push([[535],{229:function(e,n,t){t.r(n),t.d(n,{default:function(){return f}});var o=t(252);const r={class:"loginRegister"};function c(e,n,t,c,s,i){const u=(0,o.up)("the-footer");return(0,o.wg)(),(0,o.iD)("div",r,[(0,o.Wm)(u)])}var s=t(280),i={name:"HomeView",components:{TheFooter:s.Z}},u=t(744);const a=(0,u.Z)(i,[["render",c]]);var f=a}}]);
-//# sourceMappingURL=login.78a1cacb.js.map

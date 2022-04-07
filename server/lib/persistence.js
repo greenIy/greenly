@@ -22,6 +22,14 @@ const maps = new Client();
 
 /* Returns user object on creation, or null if invalid */
 async function createUser(params) {
+
+    const geocoded = await maps.geocode({
+        params: {
+            address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
+            key: process.env.GOOGLE_API_KEY
+        }
+    })
+
     try {
         let newUser = await prisma.user.create({
             data: {
@@ -35,21 +43,6 @@ async function createUser(params) {
             }
         })
 
-        try {
-            const geocoded = await maps.geocode({
-                params: {
-                    address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
-                    key: process.env.GOOGLE_API_KEY
-                }
-            })
-
-            lat = geocoded.data.results[0].geometry.location.lat;
-            lng = geocoded.data.results[0].geometry.location.lng;
-        } catch {
-            lat = 0;
-            lng = 0;
-        }
-
         const newAddress = await prisma.address.create({
             data: {
                 street: params.address.street,
@@ -58,8 +51,8 @@ async function createUser(params) {
                 // Using dummy values for testing. Use this for API call:
                 // geocoded.data.results[0].geometry.location.lat
                 // geocoded.data.results[0].geometry.location.lng
-                latitude: lat,
-                longitude: lng,
+                latitude: geocoded.data.results[0].geometry.location.lat,
+                longitude: geocoded.data.results[0].geometry.location.lng,
                 postal_code: params.address.postal_code
             }
         })
@@ -92,7 +85,6 @@ async function createUser(params) {
 
         return {id: newUser.id};
     } catch (e) {
-        console.log(e)
         return null;
     }
 }

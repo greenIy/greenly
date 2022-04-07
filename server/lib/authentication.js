@@ -86,13 +86,15 @@ const check = function (req, res, next) {
             // Handling any possible errors
             return res.status(401).json({message: "Invalid token. Unauthorized access."})
         }
+
+
         
         // If everything is alright, retrieve the user
         try {
-            await getUserByID(tokenUser.id).then((retrievedUser) => {
+            getUserByID(tokenUser.id).then((retrievedUser) => {
                 if (retrievedUser) {
                     req.user = retrievedUser;
-                    return next()
+                    next()
                 } else {
                     return res.status(401).json({message: "Invalid token. Unauthorized access."})
                 }

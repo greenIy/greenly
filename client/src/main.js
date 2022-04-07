@@ -8,8 +8,6 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fort
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import Vuelidate from 'vuelidate'
-
 
 const myApp = createApp(App);
 

@@ -14,7 +14,7 @@ export default {
     shortCodeDropdown: Boolean,
     placeholder: {
       type: String,
-      default: 'Selecione região'
+      default: 'Selecione regiã'
     },
     disablePlaceholder: {
       type: Boolean,

@@ -12,7 +12,7 @@ const defaultErr    = require("../lib/error").defaultErr
 
 /* GET /store/products */
 
-router.get('/products', getProductsValidator(), (req, res) => {
+router.get('/product', getProductsValidator(), (req, res) => {
     try {
         persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((products) => {
 
@@ -63,9 +63,9 @@ router.get('/products', getProductsValidator(), (req, res) => {
 )
 
 
-/* GET /store/product/{productId} */
+/* GET /store/products/{productId} */
 
-router.get('/products/:productId', (req, res) => {
+router.get('/product/:productId', (req, res) => {
     /* This function may seem rather confusing. It's purpose is to not 
        not only provide a decent REST API structure, but to obfuscate database structure, as it shouldn't be mirrored by the API */
     

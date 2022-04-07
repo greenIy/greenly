@@ -6,15 +6,14 @@ const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
 
 /* Greenly libraries & required server data */
-const authentication    = require("../lib/authentication")
-const authorization     = require("../lib/authorization")
-const persistence       = require('../lib/persistence');
-const defaultErr        = require("../lib/error").defaultErr
+const authentication = require("../lib/authentication")
+const persistence = require('../lib/persistence.js');
 const { createUserValidator, updateUserValidator } = require('../lib/validation.js');
+const defaultErr = require("../lib/error").defaultErr
 
 /* GET /user (Admin only) */
 
-router.get('/', authentication.check, authorization.check, (req, res) => {
+router.get('/', authentication.check, (req, res) => {
     try {
         persistence.getAllUsers().then((users) => {
             res.status(200).json(users)
@@ -27,8 +26,8 @@ router.get('/', authentication.check, authorization.check, (req, res) => {
 
 
 /* POST /user */
-// This route only requires an authorization.check when it comes to creating new administrators
-router.post('/', authorization.check, createUserValidator(), (req, res) => {
+
+router.post('/', createUserValidator(), (req, res) => {
             
     try {
         persistence.createUser(req.body)
@@ -48,7 +47,7 @@ router.post('/', authorization.check, createUserValidator(), (req, res) => {
 
 /* GET /user/{userId} (User, Admin or Transporter only) */
 
-router.get('/:userId', authentication.check, authorization.check, (req, res, next) => {
+router.get('/:userId', authentication.check, (req, res, next) => {
     
     try {
         //TODO: With authentication and authorization in place, this DB call could be replaced with req.user
@@ -79,7 +78,7 @@ router.get('/:userId', authentication.check, authorization.check, (req, res, nex
 
 /* PUT /user/{userId} (User or Admin only) */
 
-router.put('/:userId', authentication.check, authorization.check, updateUserValidator(), (req, res) => {
+router.put('/:userId', authentication.check, updateUserValidator(), (req, res) => {
 
     try {
         persistence.updateUser(req.params.userId, req.body).then((success) => {
@@ -97,7 +96,7 @@ router.put('/:userId', authentication.check, authorization.check, updateUserVali
 
 /* DELETE /user/{userId} (User or Admin only) */
 
-router.delete('/:userId', authentication.check, authorization.check, (req, res) => {
+router.delete('/:userId', authentication.check, (req, res) => {
 
     try {
         persistence.deleteUser(Number(req.params.userId)).then((success) => {
