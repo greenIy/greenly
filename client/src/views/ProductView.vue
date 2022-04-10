@@ -49,14 +49,6 @@
                     <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                   </button>
                   </div > 
-                 <!--      <form>
-                    <div class="form-group form-check">
-                      <label class="form-check-label ms-2 product" for="accept">
-                       <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox"
-                     />Comparar Fornecedores</label
-              >
-            </div>
-          </form>  -->
                 </div>
               </div>
             </div>

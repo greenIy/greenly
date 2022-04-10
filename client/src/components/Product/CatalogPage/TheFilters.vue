@@ -7,8 +7,8 @@
     <ul class="list-unstyled ">
       <li>
         <!-- Current category being displayed -->
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
-          Categoria
+        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="false">
+        <font-awesome-icon id="iconC" :icon="['fas', 'angle-up']" size="xs" /> Categoria
         </div>
                 
         <div class="collapse" id="categories-collapse">
@@ -33,8 +33,8 @@
       <li class="border-top my-3"></li>
 
       <li>
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
-          Preço
+        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold"  data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="false">
+         <font-awesome-icon  id="iconP" @click="transformP()" :icon="['fas', 'angle-up']" size="xs" /> Preço
         </div>
 
         <div class="collapse" id="price-range-collapse">
@@ -58,8 +58,9 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
+library.add(faAngleUp);
 library.add(faArrowLeft);
 
   export default {
@@ -102,6 +103,14 @@ library.add(faArrowLeft);
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.$emit("sendGoBack", this.currentCategory);
       },
+      transformC() {
+         document.getElementById("iconC").style.transform = "rotate(180deg)";
+        console.log("oiee");
+      },
+      transformP() {
+         document.getElementById("iconP").style.transform = "rotate(180deg)";
+        console.log("oiee");
+      },
     },
     computed: {
       showCategories: function () {
@@ -124,4 +133,5 @@ library.add(faArrowLeft);
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
 }
+
 </style>
