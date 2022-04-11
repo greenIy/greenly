@@ -114,10 +114,10 @@
                           </h4>
                       </div>
                       <div class="d-inline-block text-end col-md-4">
-                        <button class="btnS">
+                        <button class="btnS p-2">
                           <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
                       </div >
-                      <button class="d-inline-block text-start col-md-1 btnH fav">
+                      <button class="d-inline-block text-start col-md-1 btnH p-8 fav">
                         <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                       </button>
                   </div > 
@@ -179,7 +179,6 @@ export default {
   border: none;
   color: white;
   background-color: #7c9d8e;
-  padding: 8px;
   border-radius: 10px;
 }
 .btnS:hover {
@@ -225,6 +224,5 @@ h5 {
   border-radius: 50%;
   width: 45px;
   height: 45px; 
-
 }
 </style>
