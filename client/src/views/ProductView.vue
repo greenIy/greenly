@@ -186,10 +186,7 @@ export default {
   background-color: #89a799;
 } 
 .btnH {
-  background: none;
   border: none;
-  display: inline;
-  padding:0!important;
 }
 .red {
   color: red !important;
@@ -216,5 +213,18 @@ h5 {
 .max{
   width:100%
 }
+.btn{
+  border: none;
+  color: white;
+  background-color: #808080;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.fav{
+  background:#e6e6e6;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px; 
 
+}
 </style>
