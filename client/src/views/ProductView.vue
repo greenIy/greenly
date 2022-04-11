@@ -9,7 +9,7 @@
               <div class="col-md-3">
                 <img src="../assets/Team/daniela.jpg" class="rounded w-75 mt-4 mb-4 ms-4" alt="Imagem do produto"  />
               </div>
-              <div class="col-md-9">
+              <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
                   <h5 class="card-title">
                     Categoria
@@ -63,7 +63,7 @@
                       </div>
                       <div class="col">
                         <div class="dropdown">
-                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               1
                             </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -80,7 +80,7 @@
                       </div>
                       <div class="col ">
                         <div class="dropdown ">
-                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               1
                             </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -97,7 +97,7 @@
                       </div>
                       <div class="col">
                         <div class="dropdown ">
-                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               1
                             </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -110,22 +110,22 @@
                     </div>
                   </div>
                 </div>
-                <hr style="width:96%" class="center mt-3" color="black"> 
+                <hr style="width:97%" class="center mt-3" color="black"> 
                 <div class="card-body py-0 my-3">
                     <div class="row align-items-center justify-content-center">
-                      <div class="d-inline-block my-auto col-md-6">
-                   <h4 class="my-0">
-                      Preço
-                      <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
-                    </h4>
-                    </div>
-                  <div class="d-inline-block text-end col-md-5">
-                    <button class="btnS">
-                      <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
-                  </div >
-                   <button class="d-inline-block text-start col-md-1 btnH fav">
-                    <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
-                  </button>
+                      <div class="d-inline-block my-auto col-md-7">
+                        <h4 class="my-0">
+                            Preço
+                            <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
+                          </h4>
+                      </div>
+                      <div class="d-inline-block text-end col-md-4">
+                        <button class="btnS">
+                          <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
+                      </div >
+                      <button class="d-inline-block text-start col-md-1 btnH fav">
+                        <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
+                      </button>
                   </div > 
                 </div>
               </div>
@@ -216,7 +216,7 @@ h5 {
   text-align:justify;
 }
 .max{
-  width:80%
+  width:100%
 }
 
 </style>

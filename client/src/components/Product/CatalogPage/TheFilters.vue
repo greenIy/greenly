@@ -7,11 +7,11 @@
     <ul class="list-unstyled ">
       <li>
         <!-- Current category being displayed -->
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="false">
-        <font-awesome-icon id="iconC" class="fs-6" :icon="['fas', 'angle-up']" /> Categoria
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
+        <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-down']" /> Categoria
         </div>
                 
-        <div class="collapse" id="categories-collapse">
+        <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
             <!-- Parent category of the current category (if applicable) -->
             <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
@@ -33,11 +33,11 @@
       <li class="border-top my-3"></li>
 
       <li>
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="false">
-         <font-awesome-icon  id="iconP" class="fs-6"  :icon="['fas', 'angle-up']"  /> Preço
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
+         <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-down']"  /> Preço
         </div>
 
-        <div class="collapse" id="price-range-collapse">
+        <div class="collapse show" id="price-range-collapse">
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
@@ -58,9 +58,9 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowLeft, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faAngleUp);
+library.add(faAngleDown);
 library.add(faArrowLeft);
 
   export default {
