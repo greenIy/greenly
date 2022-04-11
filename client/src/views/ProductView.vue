@@ -31,6 +31,84 @@
                     cubilia proin condimentum vivamus himenaeos aliquam nullam libero. 
                     <!-- {{ product.description }} -->
                   </p>
+                  <div class="container">
+                    <div class="row mt-4">
+                      <div class="col-3 text-center">
+                        <b>Cadeia Logística</b>
+                      </div>
+                      <div class="col-5 text-center">
+                        <b>Gastos Médios em Armazenamento</b>
+                      </div>
+                      <div class="col-4 text-center">
+                        <b>Gastos Médios em Transporte</b>
+                      </div>
+                    </div>
+                    <div class="row ">
+                      <div class="col-3 text-center">
+                        Quantidade
+                      </div>
+                      <div class="col-5 text-center">
+                        Quantidade
+                      </div>
+                      <div class="col-4 text-center">
+                        Quantidade
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="container">
+                    <div class="row align-items-center mt-5">
+                      <div class="col ">
+                        <span> Quantidade: </span>
+                      </div>
+                      <div class="col">
+                        <div class="dropdown">
+                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              1
+                            </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                         <a class="dropdown-item" href="#">Action</a>
+                         <a class="dropdown-item" href="#">Another action</a>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                         </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                      <div class="col ">
+                        <span> Fornecedores: </span>
+                      </div>
+                      <div class="col ">
+                        <div class="dropdown ">
+                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              1
+                            </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                         <a class="dropdown-item" href="#">Action</a>
+                         <a class="dropdown-item" href="#">Another action</a>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                         </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row align-items-center  mt-2">
+                      <div class="col ">
+                        <span> Transportadores: </span>
+                      </div>
+                      <div class="col">
+                        <div class="dropdown ">
+                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              1
+                            </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                         <a class="dropdown-item" href="#">Action</a>
+                         <a class="dropdown-item" href="#">Another action</a>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                         </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <hr style="width:96%" class="center mt-3" color="black"> 
                 <div class="card-body py-0 my-3">
@@ -137,6 +215,8 @@ h5 {
   margin: 0;
   text-align:justify;
 }
-
+.max{
+  width:80%
+}
 
 </style>

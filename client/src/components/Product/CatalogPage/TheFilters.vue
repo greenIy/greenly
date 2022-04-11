@@ -8,7 +8,7 @@
       <li>
         <!-- Current category being displayed -->
         <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="false">
-        <font-awesome-icon id="iconC" :icon="['fas', 'angle-up']" size="xs" /> Categoria
+        <font-awesome-icon id="iconC" class="fs-6" :icon="['fas', 'angle-up']" /> Categoria
         </div>
                 
         <div class="collapse" id="categories-collapse">
@@ -34,7 +34,7 @@
 
       <li>
         <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="false">
-         <font-awesome-icon  id="iconP"  :icon="['fas', 'angle-up']" size="xs" /> Preço
+         <font-awesome-icon  id="iconP" class="fs-6"  :icon="['fas', 'angle-up']"  /> Preço
         </div>
 
         <div class="collapse" id="price-range-collapse">
@@ -107,7 +107,6 @@ library.add(faArrowLeft);
       },
       
       transformC() {
-        
         this.countC++;
         var deg=this.countC*180;
         document.getElementById("iconC").style.transform = "rotate("+deg+"deg)";
@@ -140,6 +139,12 @@ library.add(faArrowLeft);
 }
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
+}
+#iconC{
+  color:#608072;
+}
+#iconP{
+  color:#608072;
 }
 
 </style>
