@@ -33,8 +33,8 @@
       <li class="border-top my-3"></li>
 
       <li>
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold"  data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="false">
-         <font-awesome-icon  id="iconP" @click="transformP()" :icon="['fas', 'angle-up']" size="xs" /> Preço
+        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="false">
+         <font-awesome-icon  id="iconP"  :icon="['fas', 'angle-up']" size="xs" /> Preço
         </div>
 
         <div class="collapse" id="price-range-collapse">
@@ -85,6 +85,8 @@ library.add(faArrowLeft);
         categoryList: [],
         categorySelected: false,
         currentCategory: {},
+        countC: 0,
+        countP: 0,
         //currentMinPrice,
         //currentMaxPrice,
         //parentCategory
@@ -103,13 +105,19 @@ library.add(faArrowLeft);
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.$emit("sendGoBack", this.currentCategory);
       },
+      
       transformC() {
-         document.getElementById("iconC").style.transform = "rotate(180deg)";
-        console.log("oiee");
+        
+        this.countC++;
+        var deg=this.countC*180;
+        document.getElementById("iconC").style.transform = "rotate("+deg+"deg)";
+        return this.countC;
       },
       transformP() {
-         document.getElementById("iconP").style.transform = "rotate(180deg)";
-        console.log("oiee");
+        this.countP++;
+        var deg=this.countP*180;
+        document.getElementById("iconP").style.transform = "rotate("+deg+"deg)";
+        return this.countP;
       },
     },
     computed: {
