@@ -1511,6 +1511,9 @@ components:
         email:
           type: string
           description: E-mail do utilizador
+        password:
+          type: string
+          description: Palavra-passe do utilizador 
         phone:
           type: string
           description: Número de telefone do utilizador
