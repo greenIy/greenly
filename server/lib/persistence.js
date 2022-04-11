@@ -362,10 +362,23 @@ async function getAllProducts(limit = 50,
 
     let filterSelection = {}
 
+    if (category) {
+        // Initialize OR search between name, description and exact search for categories
+        filterSelection.AND = []
+
+        // Prisma doesn't support nested queries, this query is required to find all sub-categories of the mentioned category
+        let subCategories = await prisma.$queryRaw`WITH RECURSIVE CTE (id, name, parent_id) AS (SELECT id, name, parent_category FROM Category WHERE parent_category = ${category} UNION ALL SELECT p.id, p.name, p.parent_category FROM Category p INNER JOIN CTE ON p.parent_category = CTE.id) SELECT * FROM CTE;`
+
+        // Adding all subcategory IDs to search
+        // This piece of code produces objects such as {OR:[category:x, category:y, ...]}, which allow us to obtain every product belonging to the requested
+        // category and its subcategories
+        filterSelection.AND.push({OR:[{category:category}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]})
+    }
+
     if (keywords) {
         // The following code searches the keywords on both name and description of the products
 
-        // Initialize OR search between name and description
+        // Initialize OR for exact search of parent and child categories
         filterSelection.OR = []
 
         // Initializing filter objects
@@ -381,10 +394,6 @@ async function getAllProducts(limit = 50,
         
         // Adding created filters to the filterSelection
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
-    }
-
-    if (category) {
-        filterSelection.category = category
     }
 
     // Calculate total pages according to provided filters
