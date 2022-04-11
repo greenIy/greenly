@@ -62,16 +62,14 @@
                         <span> Quantidade: </span>
                       </div>
                       <div class="col">
-                        <div class="dropdown">
-                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              1
-                            </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                         <a class="dropdown-item" href="#">Action</a>
-                         <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                         </div>
-                        </div>
+                        <div class="dropdown justify-content-end">
+                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
+                          <ul class="dropdown-menu max" aria-labelledby="order-by">
+                              <li><a class="dropdown-item " href="#">1</a></li>
+                              <li><a class="dropdown-item" href="#">2</a></li>
+                              <li><a class="dropdown-item" href="#">3</a></li>
+                          </ul>
+                      </div>
                       </div>
                     </div>
                     <div class="row align-items-center mt-2">
@@ -79,16 +77,14 @@
                         <span> Fornecedores: </span>
                       </div>
                       <div class="col ">
-                        <div class="dropdown ">
-                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              1
-                            </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                         <a class="dropdown-item" href="#">Action</a>
-                         <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                         </div>
-                        </div>
+                        <div class="dropdown justify-content-end">
+                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
+                          <ul class="dropdown-menu max" aria-labelledby="order-by">
+                              <li><a class="dropdown-item " href="#">1</a></li>
+                              <li><a class="dropdown-item" href="#">2</a></li>
+                              <li><a class="dropdown-item" href="#">3</a></li>
+                          </ul>
+                      </div>
                       </div>
                     </div>
                     <div class="row align-items-center  mt-2">
@@ -96,16 +92,14 @@
                         <span> Transportadores: </span>
                       </div>
                       <div class="col">
-                        <div class="dropdown ">
-                           <button class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              1
-                            </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                         <a class="dropdown-item" href="#">Action</a>
-                         <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                         </div>
-                        </div>
+                        <div class="dropdown justify-content-end">
+                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
+                          <ul class="dropdown-menu max" aria-labelledby="order-by">
+                              <li><a class="dropdown-item " href="#">1</a></li>
+                              <li><a class="dropdown-item" href="#">2</a></li>
+                              <li><a class="dropdown-item" href="#">3</a></li>
+                          </ul>
+                      </div>
                       </div>
                     </div>
                   </div>
@@ -169,7 +163,11 @@ export default {
         svg.classList.add("red");
       } 
     },
-  }
+    showDropDownTransportador(){
+    var element = document.getElementById("transportador")
+    element.classList.add("show");
+    },
+  },
 };
 </script>
 

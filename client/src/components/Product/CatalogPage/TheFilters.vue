@@ -8,7 +8,7 @@
       <li>
         <!-- Current category being displayed -->
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
-        <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-down']" /> Categoria
+        <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Categoria
         </div>
                 
         <div class="collapse show" id="categories-collapse">
@@ -30,11 +30,9 @@
         </div>
       </li>
 
-      <li class="border-top my-3"></li>
-
       <li>
-        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
-         <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-down']"  /> Preço
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold mt-3" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
+         <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-up']"  /> Preço
         </div>
 
         <div class="collapse show" id="price-range-collapse">
@@ -50,17 +48,15 @@
           </div>
         </div>
       </li>
-
-      <li class="border-top my-3"></li>
     </ul>
   </div>
 </template>
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowLeft, faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faAngleDown);
+library.add(faAngleUp);
 library.add(faArrowLeft);
 
   export default {
