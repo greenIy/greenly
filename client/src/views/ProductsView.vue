@@ -76,7 +76,7 @@ export default {
     //this.getTotalProducts();
   },
   methods: {
-    getProducts(page=this.currentPage, limit=12) {
+    getProducts(page=this.currentPage, limit=this.limit) {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
         this.pageAmount = response.data.totalPages;
@@ -107,6 +107,7 @@ export default {
       }
     },
     productsPerPage: function (params) {
+      this.limit = params;
       this.getProducts(this.currentPage, params);
     }
   },
