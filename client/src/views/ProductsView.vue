@@ -1,7 +1,7 @@
 <template>
 <body>
   <div class="page-container">
-     <TheNavbar />
+     <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
         <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"/>
@@ -71,18 +71,14 @@ export default {
   },
   created() {
     this.getProducts();
-  },
-  mounted() {
-    //this.getTotalProducts();
+    console.log(this.$route);
   },
   methods: {
     getProducts(page=this.currentPage, limit=this.limit) {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
         this.pageAmount = response.data.totalPages;
-        console.log("qtd pag:"+ this.pageAmount);
         this.productAmount = this.products.length;
-        console.log("qtd prod:"+ this.productAmount);
         //console.log(response.data);
       });
       window.scrollTo(0, 0);
@@ -109,6 +105,15 @@ export default {
     productsPerPage: function (params) {
       this.limit = params;
       this.getProducts(this.currentPage, params);
+    },
+    searchInformation: function (params) {
+      console.log(this.$route.name);
+      http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
+        this.products = response.data.products;
+        this.pageAmount = response.data.totalPages;
+        this.productAmount = this.products.length;
+        //console.log(response.data);
+      });
     }
   },
   computed: {
