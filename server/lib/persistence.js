@@ -54,6 +54,7 @@ async function createUser(params) {
             lng = 0;
         }
 
+        // TODO: Rewrite this with prisma's nested writes!
         const newAddress = await prisma.address.create({
             data: {
                 street: params.address.street,
@@ -359,6 +360,10 @@ async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
                               keywords) {
+    /* TODO: Since sorting by minimum in a relationship isn't support by Prisma, and views are barely viable,
+     this entire function may have to be rewritten in raw SQL, as well as the corresponding route logic over at 
+     api/store.js GET /store/products
+     */
 
     let filterSelection = {}
 
@@ -423,7 +428,7 @@ async function getAllProducts(limit = 50,
                 }
             }
         },
-        where: filterSelection
+        where: filterSelection,
     });
 
     return {totalPages, products}

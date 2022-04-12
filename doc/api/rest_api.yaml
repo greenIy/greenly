@@ -576,7 +576,7 @@ paths:
         description: Identificador da categoria de produtos a devolver
         schema:
           type: integer
-      - name: keyword
+      - name: keywords
         in: query
         description: Palavas-chave a incluir na pesquisa
         style: form
