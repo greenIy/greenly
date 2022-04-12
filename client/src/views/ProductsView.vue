@@ -4,7 +4,7 @@
      <TheNavbar />
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit"/>
+        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"/>
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
@@ -80,7 +80,9 @@ export default {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
         this.pageAmount = response.data.totalPages;
+        console.log("qtd pag:"+ this.pageAmount);
         this.productAmount = this.products.length;
+        console.log("qtd prod:"+ this.productAmount);
         //console.log(response.data);
       });
       window.scrollTo(0, 0);
@@ -103,6 +105,9 @@ export default {
       } else {
         this.getCurrentCategory(this.currentCategory);
       }
+    },
+    productsPerPage: function (params) {
+      this.getProducts(this.currentPage, params);
     }
   },
   computed: {
