@@ -44,9 +44,6 @@
                 </router-link>
             </div>
         </div>
-        <button v-on:click="isLoggedIn">
-            Is Logged In?
-        </button>
     </div>
 </nav>
 </template>

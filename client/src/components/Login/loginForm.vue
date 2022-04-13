@@ -5,7 +5,7 @@
             <div class="mb-3">
                 <label for="inputEmail" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email"  v-model="loginInfo.email" placeholder="Introduza email" required>
-                <div class="invalid-feedback">Deve inserir o e-mail.</div>
+                <div class="invalid-feedback">E-mail não se encontra registado.</div>
             </div>
             <div class="mb-3">
                 <label for="inputPassword" class="form-label">Palavra-passe</label>
@@ -16,18 +16,16 @@
                                 <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                         </span>
                     </div>
+                <div class="invalid-feedback">Palavra-passe incorreta.</div>
                 </div>
             </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="rememberMe">
-                <label class="form-check-label" for="rememberMe">Lembrar-me</label>
-            </div>
+            <p class="text-muted small" style="font-size: 85%"><router-link to="">Esqueceste-te da tua palavra-passe?</router-link></p>
             <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar</button>
             <div class="or-seperator"><i>ou</i></div>
                 <p class="text-center">Inicia sessão através de uma rede social</p>
                 <div class="text-center social-btn">
-                    <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
                     <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
+                    <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
                 </div>
         </form>
         <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
@@ -46,13 +44,14 @@ import http from "../../../http-commmon";
 function wrongCredentials(message) {
 
     document.getElementById("loginButton").style = "background-color: #a32c2c; width: 100%;";
+    document.getElementById("loginButton").innerHTML = "Corrija os erros.";
     document.getElementById("loginButton").disabled = true;
     document.getElementById("password").value = "";
     
     if (message == "User with specified e-mail not found.") {
-        document.getElementById("loginButton").innerHTML = "E-mail não se encontra registado.";
+        document.getElementById("email").classList.add("is-invalid")
     } else if (message == "Wrong credentials for specified user.") {
-        document.getElementById("loginButton").innerHTML = "Palavra-passe incorreta.";
+        document.getElementById("password").classList.add("is-invalid")
     }
      setTimeout(function(){
         document.getElementById("loginButton").style = "background-color: #608072; width: 100%;";
@@ -115,9 +114,6 @@ export default({
     }
     .form-control, .login-btn {
         border-radius: 2px;
-    }
-    .input-group-prepend .fa {
-        font-size: 18px;
     }
     .login-btn {
         font-size: 15px;
