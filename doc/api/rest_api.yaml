@@ -1813,9 +1813,9 @@ components:
     Products:
       type: object
       properties:
-        totalPages:
+        total_products:
           type: integer
-          description: A quantidade de páginas disponíveis considerando os filtros específicados
+          description: A quantidade de produtos disponíveis considerando os filtros específicados
         products:
           type: array
           description: Objeto utilizado para devolver informação sobre vários produtos
