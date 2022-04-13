@@ -12,24 +12,15 @@
               <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
                   <h5 class="card-title">
-                    Categoria
-                    <!-- {{ product.category.name }} -->
+                    {{ product.category.name }}
                   </h5>
                   <div>
                     <h4 class="card-title">
-                      Nome do Produto
-                      <!--  {{ product.name }} -->
+                      {{ product.name }}
                     </h4>
                   </div>
                   <p class="card-text about">
-                    Lorem ipsum per netus ultricies bibendum tellus potenti platea curabitur porta scelerisque felis, 
-                    inceptos metus tortor condimentum etiam purus nisi interdum eros pretium. vulputate a arcu praesent vitae diam 
-                    ultricies feugiat aptent, tincidunt aliquam et sit aenean litora tempus a urna, praesent tempor accumsan lacus primis
-                    lacinia himenaeos. eget blandit eget fringilla pulvinar convallis fusce imperdiet platea feugiat risus molestie tristique 
-                    laoreet, orci taciti sociosqu tristique enim ut sagittis diam ad venenatis aliquam in, non quisque facilisis senectus egestas 
-                    hendrerit sem bibendum vivamus eget orci congue. dolor arcu vulputate purus gravida nunc libero posuere justo ut lacus,
-                    cubilia proin condimentum vivamus himenaeos aliquam nullam libero. 
-                    <!-- {{ product.description }} -->
+                    {{ product.description }}
                   </p>
                   <div class="container">
                     <div class="row mt-4">
@@ -110,7 +101,7 @@
                       <div class="d-inline-block p-0 col-md-7">
                         <h4 class="my-0 fs-5 ">
                             Preço
-                            <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
+                            {{ product.lowest_price }}€ - {{ product.highest_price }}€
                           </h4>
                       </div>
                       <div class="d-inline-block text-end col-md-4">
@@ -141,6 +132,8 @@ import { faHeart,faCartPlus } from "@fortawesome/free-solid-svg-icons";
 library.add(faHeart);
 library.add(faCartPlus);
 
+import http from "../../http-common";
+
 export default {
   name: "ProductView",
   components: {
@@ -152,20 +145,31 @@ export default {
       user: {
         accept: false,
       },
+      product: {},
     };
   },
-    methods: {
+  created() {
+    this.getInfo();
+  },
+  methods: {
     liked(event){
       const svg = event.path[1]
       if (svg.classList.contains('red')) {
         svg.classList.remove("red");
       } else {
         svg.classList.add("red");
-      } 
+      }
     },
     showDropDownTransportador(){
     var element = document.getElementById("transportador")
     element.classList.add("show");
+    },
+    getInfo() {
+      http.get("/store/products/" + this.$route.params.id).then((response) => {
+        this.product = response.data;
+        console.log(response.data);
+      });
+      window.scrollTo(0, 0);
     },
   },
 };
