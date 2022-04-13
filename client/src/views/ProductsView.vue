@@ -77,8 +77,7 @@ export default {
     getProducts(page=this.currentPage, limit=this.limit) {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
-        this.pageAmount = response.data.totalPages;
-        this.productAmount = this.products.length;
+        this.productAmount = response.data.total_products;
         //console.log(response.data);
       });
       window.scrollTo(0, 0);
@@ -110,8 +109,7 @@ export default {
       console.log(this.$route.name);
       http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
-        this.pageAmount = response.data.totalPages;
-        this.productAmount = this.products.length;
+        this.productAmount = response.data.total_products;
         //console.log(response.data);
       });
     }
