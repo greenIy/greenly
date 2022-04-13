@@ -27,7 +27,7 @@
           </button>
           <form>
             <div class="form-group form-check">
-              <label class="form-check-label ms-2 product" for="accept">
+              <label class="form-check-label product" for="accept">
                 <input
                   type="checkbox"
                   v-model="user.accept"
