@@ -78,7 +78,7 @@ export default {
       http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;
-        //console.log(response.data);
+        console.log(response.data);
       });
       window.scrollTo(0, 0);
     },
@@ -119,7 +119,8 @@ export default {
       return this.products.map(product => ({
           id: product.category.id, 
           name: product.category.name
-          }));
+          })).filter((value, index, self) =>
+                self.findIndex(value2=>(value2.id === value.id)) === index).sort();
     },
     getMaxPrice: function () {
       var maxPrices = this.products.map(product =>
