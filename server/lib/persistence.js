@@ -401,10 +401,10 @@ async function getAllProducts(limit = 50,
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
 
-    // Calculate total pages according to provided filters
-    let totalPages = Math.ceil(await prisma.product.count({
+    // Get total product count
+    let totalProducts = await prisma.product.count({
         where: filterSelection
-    })/limit)
+    })
 
     // Get products based on provided filters
     let products = await prisma.product.findMany({
@@ -431,7 +431,7 @@ async function getAllProducts(limit = 50,
         where: filterSelection,
     });
 
-    return {totalPages, products}
+    return {total_products: totalProducts, products}
 }
 
 async function getProductByID(id){
