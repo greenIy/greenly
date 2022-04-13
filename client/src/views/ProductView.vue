@@ -108,7 +108,7 @@
                 <div class="card-body my-1">
                     <div class="row align-items-center justify-content-center">
                       <div class="d-inline-block p-0 col-md-7">
-                        <h4 class="my-0 ">
+                        <h4 class="my-0 fs-5 ">
                             Preço
                             <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
                           </h4>
