@@ -3,11 +3,11 @@
     <TheNavbar />
     <body>
       <div class="content-wrap mw-0">
-        <div class="d-flex center w-75">
-          <div class="card h-100 mt-4 mb-3">
+        <div class="d-flex center w-75" > 
+          <div class="card h-100 mt-4 mb-4">
             <div class="row g-0">
               <div class="col-md-3">
-                <img src="../assets/Team/daniela.jpg" class="rounded w-75 mt-4 mb-4 ms-4" alt="Imagem do produto"  />
+                <img src="../assets/Team/daniela.jpg" class="rounded mt-4 mb-4 ms-4" alt="Imagem do produto" style="width:90%" />
               </div>
               <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
@@ -105,10 +105,10 @@
                   </div>
                 </div>
                 <hr style="width:97%" class="center mt-3" color="black"> 
-                <div class="card-body py-0 my-3">
+                <div class="card-body my-1">
                     <div class="row align-items-center justify-content-center">
-                      <div class="d-inline-block my-auto col-md-7">
-                        <h4 class="my-0">
+                      <div class="d-inline-block p-0 col-md-7">
+                        <h4 class="my-0 ">
                             Preço
                             <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
                           </h4>

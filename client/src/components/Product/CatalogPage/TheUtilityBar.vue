@@ -1,5 +1,6 @@
 <template>
-<div class="d-flex justify-content-end size mt-3">
+<div class="container size">
+<div class="d-flex justify-content-end mt-3">
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
@@ -25,6 +26,7 @@
             </div>
         </div>
 </div>
+</div>
 </template>
 
 <script>
@@ -40,6 +42,7 @@ import http from "../../../../http-common";
     data() {
         return {
             lastPageProducts: 0,
+            // totalProducts:0,
         };
     },
     methods: {
@@ -50,16 +53,15 @@ import http from "../../../../http-common";
         },
         productsPerPage: function (amount) {
             this.$emit("sendProductsPerPage", amount);
-        }
+        },
     }
   }
 </script>
 
 <style scoped>
 .size{
-    width:95%;
+    width:85%;
 }
-
 .btn{
   border: none;
   color: white;

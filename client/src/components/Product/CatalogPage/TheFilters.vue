@@ -3,17 +3,13 @@
     <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
       Filtros
     </p>
-
     <ul class="list-unstyled ">
       <li>
-        <!-- Current category being displayed -->
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
         <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Categoria
-        </div>
-                
+        </div>   
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
-            <!-- Parent category of the current category (if applicable) -->
             <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
               <font-awesome-icon :icon="['fas', 'arrow-left']" size="sm"/> {{ currentCategory.name }}
             </router-link>
@@ -29,7 +25,6 @@
           </div>
         </div>
       </li>
-
       <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold mt-3" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
          <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-up']"  /> Preço
