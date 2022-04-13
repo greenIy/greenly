@@ -71,15 +71,14 @@ export default {
   },
   created() {
     this.getProducts();
-    console.log(this.$route);
+    //console.log(this.$route);
   },
   methods: {
-    getProducts(page=this.currentPage, limit=this.limit) {
-      http.get("/store/products?page=" + page + "&limit="+limit).then((response) => {
-        this.products = response.data.products;
-        this.productAmount = response.data.total_products;
-        console.log(response.data);
-      });
+    async getProducts(page=this.currentPage, limit=this.limit) {
+      var response = await http.get("/store/products?page=" + page + "&limit="+limit);
+      this.products = response.data.products;
+      this.productAmount = response.data.total_products;
+      //console.log(response.data);
       window.scrollTo(0, 0);
     },
     getCurrentPage: function(params) {
@@ -120,7 +119,7 @@ export default {
           id: product.category.id, 
           name: product.category.name
           })).filter((value, index, self) =>
-                self.findIndex(value2=>(value2.id === value.id)) === index).sort();
+                self.findIndex(value2=>(value2.id === value.id)) === index);
     },
     getMaxPrice: function () {
       var maxPrices = this.products.map(product =>

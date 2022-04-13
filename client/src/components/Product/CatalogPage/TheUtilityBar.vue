@@ -8,8 +8,8 @@
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end pt-1">
-                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
-                <ul class="dropdown-menu" aria-labelledby="order-by">
+                <a class="dropdown-toggle  btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
+                <ul class="dropdown-menu drop" aria-labelledby="order-by">
                     <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
                     <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
                     <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
@@ -18,10 +18,10 @@
             <div class="dropdown col-4 align-self-start justify-content-end pt-1">
                 <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
                 <ul class="dropdown-menu" aria-labelledby="order-by">
-                    <li><a class="dropdown-item" href="#">Nome</a></li>
-                    <li><a class="dropdown-item" href="#">Novidade</a></li>
-                    <li><a class="dropdown-item" href="#">Preço Ascendente</a></li>
-                    <li><a class="dropdown-item" href="#">Preço Descendente</a></li>
+                    <li><a class="dropdown-item" @click='orderByName()'>Nome</a></li>
+                    <li><a class="dropdown-item" @click='orderById()'>Novidade</a></li>
+                    <li><a class="dropdown-item" @click='orderByPriceMin()'>Preço Ascendente</a></li>
+                    <li><a class="dropdown-item" @click='orderByPriceMax()'>Preço Descendente</a></li>
                 </ul>
             </div>
         </div>
@@ -54,6 +54,18 @@ import http from "../../../../http-common";
         productsPerPage: function (amount) {
             this.$emit("sendProductsPerPage", amount);
         },
+        orderByName: function () {
+        },
+   
+        orderById: function () {
+
+        },
+        orderByPriceMin: function () {
+
+        },
+        orderByPriceMax: function () {
+
+        },
     }
   }
 </script>
@@ -69,8 +81,8 @@ import http from "../../../../http-common";
   border-radius: 10px;
   box-shadow: none;
 }
-.dropdown-menu{
-    min-width: 90%!important
+.drop{
+    min-width: 80%!important
 }
 
 </style>

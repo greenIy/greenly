@@ -36,13 +36,13 @@
                     </div>
                     <div class="row ">
                       <div class="col-3 text-center">
-                        Quantidade
+                        3 Fornecedores
                       </div>
                       <div class="col-5 text-center">
-                        Quantidade
+                        3 kWh por Produto
                       </div>
                       <div class="col-4 text-center">
-                        Quantidade
+                        3 kg de CO₂ por Produto
                       </div>
                     </div>
                   </div>
@@ -53,14 +53,9 @@
                         <span> Quantidade: </span>
                       </div>
                       <div class="col">
-                        <div class="dropdown justify-content-end">
-                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
-                          <ul class="dropdown-menu max" aria-labelledby="order-by">
-                              <li><a class="dropdown-item " href="#">1</a></li>
-                              <li><a class="dropdown-item" href="#">2</a></li>
-                              <li><a class="dropdown-item" href="#">3</a></li>
-                          </ul>
-                      </div>
+                        <div class="input-group">
+                          <input type="number" class="form-control max" min="1" max="5">
+                        </div>
                       </div>
                     </div>
                     <div class="row align-items-center mt-2">
@@ -68,14 +63,11 @@
                         <span> Fornecedores: </span>
                       </div>
                       <div class="col ">
-                        <div class="dropdown justify-content-end">
-                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
-                          <ul class="dropdown-menu max" aria-labelledby="order-by">
-                              <li><a class="dropdown-item " href="#">1</a></li>
-                              <li><a class="dropdown-item" href="#">2</a></li>
-                              <li><a class="dropdown-item" href="#">3</a></li>
-                          </ul>
-                      </div>
+                        <select class="form-select max" aria-label="Default select example">
+                          <option value selected="1">X</option>
+                          <option value="2">Y</option>
+                          <option value="3">Z</option>
+                        </select>
                       </div>
                     </div>
                     <div class="row align-items-center  mt-2">
@@ -83,14 +75,11 @@
                         <span> Transportadores: </span>
                       </div>
                       <div class="col">
-                        <div class="dropdown justify-content-end">
-                          <a class="dropdown-toggle btn btn-secondary rounded text-decoration-none max" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">1</a>
-                          <ul class="dropdown-menu max" aria-labelledby="order-by">
-                              <li><a class="dropdown-item " href="#">1</a></li>
-                              <li><a class="dropdown-item" href="#">2</a></li>
-                              <li><a class="dropdown-item" href="#">3</a></li>
-                          </ul>
-                      </div>
+                        <select class="form-select max" >
+                          <option value selected="1">X</option>
+                          <option value="2">Y</option>
+                          <option value="3">Z</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -100,9 +89,8 @@
                     <div class="row align-items-center justify-content-center">
                       <div class="d-inline-block p-0 col-md-7">
                         <h4 class="my-0 fs-5 ">
-                            Preço
-                            {{ product.lowest_price }}€ - {{ product.highest_price }}€
-                          </h4>
+                             Preço {{ product.lowest_price }}€ - Preço {{ product.highest_price }}€
+                        </h4>
                       </div>
                       <div class="d-inline-block text-end col-md-4">
                         <button class="btnS p-2">
@@ -167,7 +155,7 @@ export default {
     getInfo() {
       http.get("/store/products/" + this.$route.params.id).then((response) => {
         this.product = response.data;
-        console.log(response.data);
+        //console.log(response.data);
       });
       window.scrollTo(0, 0);
     },

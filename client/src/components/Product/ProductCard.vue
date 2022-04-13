@@ -10,7 +10,6 @@
           <h5 class="card-title">{{ product.category.name }}</h5>
           <div>
             <h4 class="card-title">
-              <!-- eslint-disable max-len -->
               {{ product.name }}
             </h4>
           </div>
@@ -43,7 +42,7 @@
   </div>
 </template>
 <script>
-/* eslint-disable */
+
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
