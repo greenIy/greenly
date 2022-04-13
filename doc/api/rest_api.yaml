@@ -576,7 +576,7 @@ paths:
         description: Identificador da categoria de produtos a devolver
         schema:
           type: integer
-      - name: keyword
+      - name: keywords
         in: query
         description: Palavas-chave a incluir na pesquisa
         style: form
@@ -1511,6 +1511,9 @@ components:
         email:
           type: string
           description: E-mail do utilizador
+        password:
+          type: string
+          description: Palavra-passe do utilizador 
         phone:
           type: string
           description: Número de telefone do utilizador
@@ -1808,45 +1811,51 @@ components:
       description: Objeto utilizado para devolver informação detalhada sobre um único
         produto
     Products:
-      type: array
-      description: Objeto utilizado para devolver informação sobre vários produtos
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: O código identificador do produto
-          name:
-            type: string
-            description: O nome do produto
-          description:
-            type: string
-            description: A descrição do produto
-          complement_name:
-            type: string
-            description: O nome de um produto adicional que seja necessário para o
-              uso deste produto (e.g. pilhas)
-          complement_amount:
-            type: integer
-            description: A quantidade do produto adicional requerido
-          category:
+      type: object
+      properties:
+        total_products:
+          type: integer
+          description: A quantidade de produtos disponíveis considerando os filtros específicados
+        products:
+          type: array
+          description: Objeto utilizado para devolver informação sobre vários produtos
+          items:
             type: object
             properties:
               id:
-                type: string
-                description: O código identificador da categoria à qual o produto
-                  pertence
+                type: integer
+                description: O código identificador do produto
               name:
                 type: string
-                description: O nome da categoria à qual o produto pertence
-          lowest_price:
-            type: integer
-            description: O preço mais baixo a que o produto é vendido, de entre todos
-              os seus fornecedores
-          highest_price:
-            type: integer
-            description: O preço mais alto a que o produto é vendido, de entre todos
-              os seus fornecedores
+                description: O nome do produto
+              description:
+                type: string
+                description: A descrição do produto
+              complement_name:
+                type: string
+                description: O nome de um produto adicional que seja necessário para o
+                  uso deste produto (e.g. pilhas)
+              complement_amount:
+                type: integer
+                description: A quantidade do produto adicional requerido
+              category:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador da categoria à qual o produto
+                      pertence
+                  name:
+                    type: string
+                    description: O nome da categoria à qual o produto pertence
+              lowest_price:
+                type: integer
+                description: O preço mais baixo a que o produto é vendido, de entre todos
+                  os seus fornecedores
+              highest_price:
+                type: integer
+                description: O preço mais alto a que o produto é vendido, de entre todos
+                  os seus fornecedores
     WishlistProduct:
       type: object
       properties:

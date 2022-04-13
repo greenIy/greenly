@@ -16,8 +16,8 @@ from rich.table import Table
 from rich.live import Live
 
 # Constants
-API_BASE_URL = "http://localhost"
-PORT = 8080
+API_BASE_URL = "http://api.greenly.pt"
+PORT = 80
 USER_CREATION_ENDPOINT = "/user"
 q = Queue()
 table = Table(title="Added Users", show_lines=True)

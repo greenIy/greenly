@@ -11,6 +11,10 @@ const argv = require('../server').argv
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
 
+// Round coordinates to 6 decimal places
+const coordinateRound = 6;
+
+
 const prisma = new PrismaClient({ 
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
@@ -43,13 +47,14 @@ async function createUser(params) {
                 }
             })
 
-            lat = geocoded.data.results[0].geometry.location.lat;
-            lng = geocoded.data.results[0].geometry.location.lng;
+            lat = round(geocoded.data.results[0].geometry.location.lat, coordinateRound);
+            lng = round(geocoded.data.results[0].geometry.location.lng, coordinateRound);
         } catch {
             lat = 0;
             lng = 0;
         }
 
+        // TODO: Rewrite this with prisma's nested writes!
         const newAddress = await prisma.address.create({
             data: {
                 street: params.address.street,
@@ -343,17 +348,42 @@ async function checkUserConflict(attribute, value) {
 
 /* Product Functions */
 
+/**
+ * 
+ * @param {Number} limit 
+ * @param {Number} page 
+ * @param {String} category 
+ * @param {String[]} keywords 
+ * @returns An object composed of the total number of pages for the included filters and an array of product objects.
+ */
 async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
                               keywords) {
+    /* TODO: Since sorting by minimum in a relationship isn't support by Prisma, and views are barely viable,
+     this entire function may have to be rewritten in raw SQL, as well as the corresponding route logic over at 
+     api/store.js GET /store/products
+     */
 
     let filterSelection = {}
+
+    if (category) {
+        // Initialize OR search between name, description and exact search for categories
+        filterSelection.AND = []
+
+        // Prisma doesn't support nested queries, this query is required to find all sub-categories of the mentioned category
+        let subCategories = await prisma.$queryRaw`WITH RECURSIVE CTE (id, name, parent_id) AS (SELECT id, name, parent_category FROM Category WHERE parent_category = ${category} UNION ALL SELECT p.id, p.name, p.parent_category FROM Category p INNER JOIN CTE ON p.parent_category = CTE.id) SELECT * FROM CTE;`
+
+        // Adding all subcategory IDs to search
+        // This piece of code produces objects such as {OR:[category:x, category:y, ...]}, which allow us to obtain every product belonging to the requested
+        // category and its subcategories
+        filterSelection.AND.push({OR:[{category:category}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]})
+    }
 
     if (keywords) {
         // The following code searches the keywords on both name and description of the products
 
-        // Initialize OR search between name and description
+        // Initialize OR for exact search of parent and child categories
         filterSelection.OR = []
 
         // Initializing filter objects
@@ -371,11 +401,13 @@ async function getAllProducts(limit = 50,
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
 
-    if (category) {
-        filterSelection.category = category
-    }
+    // Get total product count
+    let totalProducts = await prisma.product.count({
+        where: filterSelection
+    })
 
-    return users = await prisma.product.findMany({
+    // Get products based on provided filters
+    let products = await prisma.product.findMany({
         skip: (page-1)*limit,
         take: limit,
         select: {
@@ -396,8 +428,10 @@ async function getAllProducts(limit = 50,
                 }
             }
         },
-        where: filterSelection
+        where: filterSelection,
     });
+
+    return {total_products: totalProducts, products}
 }
 
 async function getProductByID(id){

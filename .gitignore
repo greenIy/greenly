@@ -1,6 +1,9 @@
 # Utility scripts
 regen_db.sh
 
+# Population script 
+mock.sql
+
 # Logs
 logs
 *.log
