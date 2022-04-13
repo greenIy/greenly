@@ -23,4 +23,4 @@ myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
 myApp.use(router).mount('#app');
 
-window.document.title = "GREENLY";
+window.document.title = "Greenly";
