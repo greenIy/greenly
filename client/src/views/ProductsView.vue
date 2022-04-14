@@ -1,5 +1,6 @@
 <template>
 <body>
+ 
   <div class="page-container">
      <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
