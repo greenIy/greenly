@@ -11,7 +11,7 @@
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
             <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
-              <font-awesome-icon :icon="['fas', 'arrow-left']" size="sm"/> {{ currentCategory.name }}
+              {{ currentCategory.name }}
             </router-link>
             
             <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
@@ -35,6 +35,22 @@
               <label for="price-max">Máximo: &nbsp;</label>
               <input v-model.number:value="maxPrice" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number">
             </span>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
+        <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
+        </div>   
+        <div class="collapse show" id="categories-collapse">
+          <div class="list-group list-group-flush">
+            <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
+              {{ currentCategory.name }}
+            </router-link>
+            
+            <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+              {{ category.name }}
+            </router-link>
           </div>
         </div>
       </li>
@@ -103,6 +119,12 @@ library.add(faArrowLeft);
         document.getElementById("iconP").style.transform = "rotate("+deg+"deg)";
         return this.countP;
       },
+      transformF() {
+        this.countF++;
+        var deg=this.countP*180;
+        document.getElementById("iconF").style.transform = "rotate("+deg+"deg)";
+        return this.countF;
+      },
     },
     computed: {
       showCategories: function () {
@@ -131,5 +153,7 @@ library.add(faArrowLeft);
 #iconP{
   color:#608072;
 }
-
+#iconF{
+  color:#608072;
+}
 </style>

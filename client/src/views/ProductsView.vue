@@ -4,7 +4,8 @@
      <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"/>
+        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
+              :product="products"/>
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
@@ -71,7 +72,7 @@ export default {
   },
   created() {
     this.getProducts();
-    //console.log(this.$route);
+    console.log(this.$route);
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit) {

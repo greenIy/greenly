@@ -38,6 +38,7 @@ import http from "../../../../http-common";
         pageAmount: Number,
         currentPage: Number,
         limit: Number,
+        product: Object,
     },
     data() {
         return {
@@ -55,10 +56,24 @@ import http from "../../../../http-common";
             this.$emit("sendProductsPerPage", amount);
         },
         orderByName: function () {
+
+            // let ArrayOrd = [];
+            // for (let i = 0; i < this.product.length; i++) {
+            //    this.product[i].name;
+            //    console.log(this.product[i].name);
+            //    ArrayOrd.push(this.product[i]);
+            //    console.log(this.product[i].name);
+            // }
+
+           
+          
         },
    
         orderById: function () {
-
+            for (let i = 0; i < this.product.length; i++) {
+               this.product[i].id;
+            }
+            console.log(product.id)
         },
         orderByPriceMin: function () {
 
