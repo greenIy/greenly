@@ -84,5 +84,4 @@ import http from "../../../../http-common";
 .drop{
     min-width: 80%!important
 }
-
 </style>

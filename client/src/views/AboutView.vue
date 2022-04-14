@@ -1,5 +1,4 @@
 <template>
- <!-- eslint-disable max-len -->
 <div class="page-container">
   <body>
     <div class="content-wrap">
@@ -80,6 +79,7 @@
 </div>
 
 </template>
+
 <script>
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
@@ -101,25 +101,20 @@ export default {
    margin: 0 auto;
 
 }
-
 .card:hover{
      box-shadow: 1px 10px 12px #d9d9d9;
 }
-
 .container {
   padding: 0 16px;
 }
-
 .title {
   color: grey;
 }
-
 .img-fluid {
     max-width: 50%;
     height: auto;
     margin: auto;
 }
-
 .row{
   margin: 0 auto;
   text-align: center;
@@ -127,7 +122,6 @@ export default {
   margin-right:15%;
   justify-content: center;
 }
-
 .col {
   padding: 0 8px;
 }

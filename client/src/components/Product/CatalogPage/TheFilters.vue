@@ -17,11 +17,6 @@
             <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
               {{ category.name }}
             </router-link>
-            
-            <!-- Existing categories within the current category -->      
-            <!-- <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
-              {{ category.name }} {{$route.params.id}}
-            </a>  -->
           </div>
         </div>
       </li>
@@ -96,7 +91,6 @@ library.add(faArrowLeft);
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.$emit("sendGoBack", this.currentCategory);
       },
-      
       transformC() {
         this.countC++;
         var deg=this.countC*180;
