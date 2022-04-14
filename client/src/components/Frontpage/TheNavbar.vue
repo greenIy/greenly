@@ -1,5 +1,4 @@
 <template>
-<!-- eslint-disable max-len -->
 <nav>
         <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
             <div class="align-self-center mt-2 mb-2">
@@ -128,12 +127,19 @@ export default {
         background-color: #dce5e1;
         border: 0px;
         color: #608072;
+        box-shadow: none;
     }
 
     button:hover {
         background-color: #dce5e1;
         border: 0px;
         color: #608072;
+    }
+    .btn-outline-success{
+        box-shadow:none;
+    }
+    .form-control{
+        box-shadow:none;
     }
 
     .router-link-exact-active {
