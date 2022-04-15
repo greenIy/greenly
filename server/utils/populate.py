@@ -7,6 +7,7 @@ from pick import pick
 import requests
 import time
 import sys
+import os
 from faker import Faker
 import faker_commerce
 from random import randint, choice, randrange, sample
@@ -14,11 +15,13 @@ from queue import Queue
 from threading import Thread
 from rich.table import Table
 from rich.live import Live
+from requests.exceptions import ConnectionError
 
 # Constants
 API_BASE_URL = "http://api.greenly.pt"
-PORT = 80
+API_PORT = 80
 USER_CREATION_ENDPOINT = "/user"
+LOGIN_ENDPOINT = "/auth/login"
 q = Queue()
 table = Table(title="Added Users", show_lines=True)
 
@@ -29,7 +32,7 @@ def worker():
         user = q.get()
         result = sendUser(user)
         q.task_done()
-        table.add_row(f"{user.firstName} {user.lastName}", user.email, user.phone, str(user.nif), "✅" if result == 201 else "❌")
+        table.add_row(f"{user.firstName} {user.lastName}", user.email, user.phone, "✅" if result else "❌")
 
 def genRandomDate():
     start_date = datetime.date(2018, 12, 12)
@@ -92,24 +95,46 @@ def genUsers(amount):
     return users
     
 def sendUser(user):
-    payload = {"first_name":    user.firstName,
-               "last_name":     user.lastName,
-               "password":      user.password,
-               "nif":           user.nif,
-               "email":         user.email,
-               "phone":         user.phone,
-               "type":          user.type,
-               "address":   {"street":      user.street,
-                             "city":        user.city,
-                             "country":     user.country,
-                             "postal_code": user.postalCode},
-               "company":  {"name":         user.companyName,
-                            "email":        user.companyEmail,
-                            "bio":          user.companyBio}}
+    global API_BASE_URL
+    global API_PORT
 
-    r = requests.post(f"{API_BASE_URL}:{PORT}{USER_CREATION_ENDPOINT}", json=payload)
+    userDataPayload = {'first_name':    user.firstName,
+               'last_name':     user.lastName,
+               'password':      user.password,
+               'email':         user.email,
+               'phone':         user.phone,
+               'type':          user.type}
 
-    return r.status_code
+    if (user.type in ['SUPPLIER', 'TRANSPORTER']):
+        userDataPayload['company'] = {'name':     user.companyName,
+                                      'email':    user.companyEmail,
+                                      'bio':      user.companyBio}
+
+    addressDataPayload = {'street':      user.street,
+                          'city':        user.city,
+                          'country':     user.country,
+                          'postal_code': user.postalCode,
+                          'nif': user.nif}
+
+    authPayload = {'email': user.email,
+                   'password': user.password}
+
+    
+    try:
+        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload)
+
+        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload)
+
+        authenticatedHeaders = {'Authorization': f'Bearer {authResponse.json()["token"]}'}
+
+        # Address creation requires authentication
+        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders)
+    except ConnectionError:
+        os.system('clear')
+        print(f"{API_BASE_URL}:{API_PORT} didn't respond.")
+        os._exit(1)
+
+    return userResponse.status_code == 201 and addressResponse.status_code == 201
 
 def genProductsSQL(amount, usersInDB):
     # FIXME: Mentioned Suppliers and Transporters may not be of types Supplier and Transporter
@@ -192,6 +217,7 @@ def genProductsSQL(amount, usersInDB):
 
             transportsRegistered.add((product, supplier, warehouse, randomTransporter))
 
+            #TODO: Generate a transporting cost (per km because you don't know distance yet) here!!
             lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter});")
 
     f = open("mock.sql", "w")
@@ -200,14 +226,22 @@ def genProductsSQL(amount, usersInDB):
     print("SQL generated to 'mock.sql'")
 
 def main():
+    global API_BASE_URL
+    global API_PORT
 
-    title = 'Choose what to generate: '
-    options = ["Users", "Products"]
+    generationOptions = ["Users", "Products"]
+    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)"]
 
-    option, index = pick(options, title, indicator='->', default_index=0)
+    generationOption, index = pick(generationOptions, 'Choose what to generate: ', indicator='->', default_index=0)
+    APIOption, APIIndex = pick(APIOptions, 'Choose which API to use: ', indicator='->', default_index=0)
 
+    if (APIIndex == 1):
+        API_BASE_URL = "http://localhost"
+        API_PORT = 8080
 
-    if (option == "Users"):
+    if (generationOption == "Users"):
+        print(f"Requesting at {API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}\n")
+
         start = time.time()
         [q.put(user) for user in genUsers(int(input("How many users to generate? ")))]
 
@@ -219,7 +253,7 @@ def main():
         table.add_column("User Name", style="blue")
         table.add_column("E-mail", style="blue")
         table.add_column("Phone", style="blue")
-        table.add_column("NIF", style="blue")
+        # table.add_column("NIF", style="blue")
         table.add_column("Status", justify="right", style="green")
 
         with Live(table, refresh_per_second=10, vertical_overflow="visible") as live:  # update 4 times a second to feel fluid
@@ -231,7 +265,7 @@ def main():
         end = time.time()
 
         print("Time elapsed: ", end-start)
-    elif (option == "Products"):
+    elif (generationOption == "Products"):
         print("Temporarily generating only SQL.\n")
         usersInDB = int(input("How many users are currently registed in the database? "))
         amount = int(input("How many products would you like to generate? "))
