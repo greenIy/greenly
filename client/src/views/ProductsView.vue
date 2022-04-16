@@ -82,6 +82,12 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
+    async getAllProducts() {
+      var response = await http.get("/store/products");
+      this.products = response.data.products;
+      //console.log(response.data);
+      window.scrollTo(0, 0);
+    },
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();

@@ -46,7 +46,6 @@
                                   <p><b>Stock:</b> 30 produtos</p>
                                   <p><b>Preço:</b> 32€</p>
                                   </div>
-                                  <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                               </a>
                             </li>
@@ -61,7 +60,6 @@
                                   <p><b>Gastos:</b> 32kg de kWh por Armazenamento</p>
                                   <p><b>Stock:</b> 30 produtos</p>
                                   <p><b>Preço:</b> 32€</p>
-                                  <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                               </a>
                             </li>
@@ -90,7 +88,6 @@
                                   </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                  <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                               </a>
                             </li>
@@ -105,7 +102,6 @@
                                   </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                  <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                               </a>
                             </li>
@@ -120,7 +116,6 @@
                                   </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                  <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                               </a>
                             </li>
@@ -142,28 +137,28 @@
                   <div class="container">
                     <h4 class="mt-5 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
-                      <div class="col-6 text-center">
+                      <div class="col-6 text-left">
                         <b>Fornecedor</b>
                       </div>
-                      <div class="col-6 text-center">
+                      <div class="col-6 text-left">
                         <b>Transportador</b>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-center">Fornecedor X</div>
-                      <div class="col-6 text-center">Transportador Y</div>
+                      <div class="col-6 text-left">Fornecedor X</div>
+                      <div class="col-6 text-left">Transportador Y</div>
                     </div>
                     <div class="row mt-4">
-                      <div class="col-6 text-center">
+                      <div class="col-6 text-left">
                         <b>Gastos Médios em Armazenamento</b>
                       </div>
-                      <div class="col-6 text-center">
+                      <div class="col-6 text-left">
                         <b>Gastos Médios em Transporte</b>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-center">3 kWh por Produto</div>
-                      <div class="col-6 text-center">3 kg de CO₂ por Produto</div>
+                      <div class="col-6 text-left">3 kWh por Produto</div>
+                      <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
                     </div>
                   </div>
                 </div>

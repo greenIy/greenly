@@ -56,24 +56,13 @@ import http from "../../../../http-common";
             this.$emit("sendProductsPerPage", amount);
         },
         orderByName: function () {
-
-            // let ArrayOrd = [];
-            // for (let i = 0; i < this.product.length; i++) {
-            //    this.product[i].name;
-            //    console.log(this.product[i].name);
-            //    ArrayOrd.push(this.product[i]);
-            //    console.log(this.product[i].name);
-            // }
-
-           
-          
+        var res = this.product.sort((a, b) => a.name > b.name ? 1 : -1); 
+        //console.log(res)    
         },
    
         orderById: function () {
-        /*     for (let i = 0; i < this.product.length; i++) {
-               this.product[i].id;
-            }
-            console.log(product.id) */
+        var res = this.product.sort(({id:a}, {id:b}) => b-a);
+         console.log(res)  
         },
         orderByPriceMin: function () {
 
