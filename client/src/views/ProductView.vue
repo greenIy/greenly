@@ -23,103 +23,68 @@
                     {{ product.description }}
                   </p>
                   <div class="container">
-                    <div class="row align-items-center mt-4">
-                      <div class="col">
-                        <span> Fornecedor: </span>
-                      </div>
-                      <div class="col">
-                        <div class="dropdown max">
-                          <button
-                            class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton1"  data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown button
-                          </button>
-                          <ul class="dropdown-menu max" aria-labelledby="dropdownMenuButton1" >
-                            <li>
-                               <a class="dropdown-item">
-                                <div >
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p>
-                                  <div class="progress">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
-                                  <div class="mt-1">
-                                  <p><b>Gastos:</b> 32kg de kWh por Armazenamento</p>
-                                  <p><b>Stock:</b> 30 produtos</p>
-                                  <p><b>Preço:</b> 32€</p>
-                                  </div>
-                                </div>
-                              </a>
-                            </li>
-                            <hr/>
-                            <li>
-                              <a class="dropdown-item">
-                                <div >
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p>
-                                  <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
-                                  <p><b>Gastos:</b> 32kg de kWh por Armazenamento</p>
-                                  <p><b>Stock:</b> 30 produtos</p>
-                                  <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </a>
-                            </li>
-                          </ul>
+                    <div class="mt-4">
+                        <span> Selecione um Fornecedor: </span>
+                      <div class="card-group mt-2">
+                        <div class="card">
+                          <div class="card-body">
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p>
+                            <div class="progress">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                             <p><b>Gastos:</b> 32 de kWh/kg</p>
+                             <p><b>Stock:</b> 30 produtos</p>
+                             <p><b>Preço:</b> 32€</p>
+                          </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p>
+                            <div class="progress">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                             <p><b>Gastos:</b> 32kg de kWh por Armazenamento</p>
+                             <p><b>Stock:</b> 30 produtos</p>
+                             <p><b>Preço:</b> 32€</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="row align-items-center mt-4">
-                      <div class="col">
-                        <span> Transportador: </span>
-                      </div>
-                      <div class="col">
-                        <div class="dropdown max">
-                          <button
-                            class="btn btn-secondary dropdown-toggle max" type="button" id="dropdownMenuButton2"  data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown button
-                          </button>
-                          <ul class="dropdown-menu max" aria-labelledby="dropdownMenuButton2" >
-                            <li>
-                               <a class="dropdown-item">
-                                <div >
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
-                                  <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
+                    <div class="mt-4">
+                        <span> Selecione um Transportador: </span>
+                        <div class="card-group mt-2">
+                        <div class="card">
+                          <div class="card-body">
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </a>
-                            </li>
-                            <hr/>
-                            <li>
-                              <a class="dropdown-item">
-                                <div >
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador B </p>
-                                  <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador B </p>
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </a>
-                            </li>
-                            <hr/>
-                             <li>
-                              <a class="dropdown-item">
-                                <div >
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor B </p>
-                                  <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
-                                  <div class="progress">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                          <div class="card-body">
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor B </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                                   <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
                                   <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </a>
-                            </li>
-                          </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -302,7 +267,11 @@ h5 {
   width: 45px;
   height: 45px;
 }
-.btnF {
-  justify-content: end;
+.dot {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background-color: #5cb85c;
+  display: inline-block;
 }
 </style>
