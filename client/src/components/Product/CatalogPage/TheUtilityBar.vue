@@ -70,10 +70,10 @@ import http from "../../../../http-common";
         },
    
         orderById: function () {
-            for (let i = 0; i < this.product.length; i++) {
+        /*     for (let i = 0; i < this.product.length; i++) {
                this.product[i].id;
             }
-            console.log(product.id)
+            console.log(product.id) */
         },
         orderByPriceMin: function () {
 

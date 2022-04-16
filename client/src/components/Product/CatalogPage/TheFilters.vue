@@ -60,10 +60,9 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowLeft, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import {faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faAngleUp);
-library.add(faArrowLeft);
 
   export default {
     name: "ProductsView",
