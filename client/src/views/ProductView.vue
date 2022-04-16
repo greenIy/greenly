@@ -140,21 +140,30 @@
                     </div>
                   </div>
                   <div class="container">
-                    <h4 class="mt-5 mb-4" ><b>Sumário da Cadeia Logística</b></h4>
-                    <p>Fornecedor: Fornecedor X </p>  
-                    <p>Transportador: Transportador X </p>
+                    <h4 class="mt-5 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
                       <div class="col-6 text-center">
-                        <b>Gastos Médios em Transporte</b>
+                        <b>Fornecedor</b>
                       </div>
                       <div class="col-6 text-center">
-                        <b>Gastos Médios em Armazenamento</b>
+                        <b>Transportador</b>
                       </div>
                     </div>
                     <div class="row">
-                      
-                      <div class="col-6 text-center">3 kg de CO₂ por Produto</div>
+                      <div class="col-6 text-center">Fornecedor X</div>
+                      <div class="col-6 text-center">Transportador Y</div>
+                    </div>
+                    <div class="row mt-4">
+                      <div class="col-6 text-center">
+                        <b>Gastos Médios em Armazenamento</b>
+                      </div>
+                      <div class="col-6 text-center">
+                        <b>Gastos Médios em Transporte</b>
+                      </div>
+                    </div>
+                    <div class="row">
                       <div class="col-6 text-center">3 kWh por Produto</div>
+                      <div class="col-6 text-center">3 kg de CO₂ por Produto</div>
                     </div>
                   </div>
                 </div>
