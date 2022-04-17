@@ -12,7 +12,12 @@ const argv = require('../server').argv
 const saltRounds = 10;
 
 // Round coordinates to 6 decimal places
-const coordinateRound = 6;
+const roundingPrecision = 6;
+
+// Proper rounding function as oposed to JS Math
+function roundCoordinates(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}   
 
 
 const prisma = new PrismaClient({ 
@@ -31,47 +36,12 @@ async function createUser(params) {
             data: {
                 first_name: params.first_name,
                 last_name: params.last_name,
-                nif: params.nif,
                 email: params.email,
-                phone: params.phone,
                 password: bcrypt.hashSync(params.password, saltRounds),
-                type: params.type
+                phone: params.phone,
+                type: params.type,
             }
         })
-
-        try {
-            const geocoded = await maps.geocode({
-                params: {
-                    address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
-                    key: process.env.GOOGLE_API_KEY
-                }
-            })
-
-            lat = round(geocoded.data.results[0].geometry.location.lat, coordinateRound);
-            lng = round(geocoded.data.results[0].geometry.location.lng, coordinateRound);
-        } catch {
-            lat = 0;
-            lng = 0;
-        }
-
-        // TODO: Rewrite this with prisma's nested writes!
-        const newAddress = await prisma.address.create({
-            data: {
-                street: params.address.street,
-                country: params.address.country,
-                city: params.address.city,
-                // Using dummy values for testing. Use this for API call:
-                // geocoded.data.results[0].geometry.location.lat
-                // geocoded.data.results[0].geometry.location.lng
-                latitude: lat,
-                longitude: lng,
-                postal_code: params.address.postal_code
-            }
-        })
-
-        let updateDataSelection = {
-            address: newAddress.id
-        }
 
         // Create a new company if the user is a transporter or a supplier
         if (["TRANSPORTER", "SUPPLIER"].includes(newUser.type)) {
@@ -83,19 +53,19 @@ async function createUser(params) {
                 }
             })
 
-            updateDataSelection.company = newCompany.id
+            // Updating the user's company after we're sure user creation didn't go wrong.
+            newUser = await prisma.user.update({
+                where: {
+                    id: newUser.id
+                },
+                data: {
+                    company: newCompany.id
+                }
+            })
         }
 
-        // Updating the user's address and company after we're sure user creation didn't go wrong.
-
-        newUser = await prisma.user.update({
-            where: {
-                id: newUser.id
-            },
-            data: updateDataSelection
-        })
-
         return {id: newUser.id};
+
     } catch (e) {
         console.log(e)
         return null;
@@ -114,22 +84,20 @@ async function updateUser(id, params) {
     const userKeyMap = {
         first_name: "first_name",
         last_name: "last_name",
-        nif: "nif",
         email: "email",
         phone: "phone",
         type: "type",
         new_password: "password"
     }
 
-    const addressKeyMap = {
-        street: "street",
-        city: "city",
-        postal_code: "postal_code",
-        country: "country"
+    const companyKeyMap = {
+        name: "name",
+        bio: "bio",
+        email: "email"
     }
 
     const userDataSelection = {}
-    const addressDataSelection = {}
+    
 
     // Mapping user data
 
@@ -143,15 +111,17 @@ async function updateUser(id, params) {
             }
         }
     }
-    
-    // If address data is included, map address data
 
-    if (params.hasOwnProperty("address")) {
-        for (const [key, value] of Object.entries(params.address)) {
-            if (key in addressKeyMap) {
-                addressDataSelection[addressKeyMap[key]] = value
+    // If the user is a transporter/supplier, allow them to edit company info
+
+    if (params.hasOwnProperty("company")) {
+        companyDataSelection = {}
+        for (const [key, value] of Object.entries(params.company)) {
+            if (key in companyKeyMap) {
+                companyDataSelection[companyKeyMap[key]] = value
             }
         }
+        userDataSelection.Company = {update: companyDataSelection}
     }
 
     try {
@@ -162,13 +132,6 @@ async function updateUser(id, params) {
             data: userDataSelection
         }).then((result) => {
             return result;
-        })
-
-        const updatedAddress = await prisma.address.update({
-            where: {
-                id: updatedUser.address
-            },
-            data: addressDataSelection
         })
 
         return updatedUser;
@@ -196,19 +159,22 @@ async function deleteUser(id) {
                 }
             })
 
-            // Delete the user's address
-            const deletedAddress = await prisma.address.delete({
+            // Delete the all user addresses
+            await prisma.address.deleteMany({
                 where: {
-                    id: deletedUser.address
+                    user: id
                 }
             })
+
+            
 
             return true
         } else {
             return false
         }
 
-    } catch {
+    } catch (e) {
+        console.log(e)
         return false;
     }
 
@@ -218,20 +184,11 @@ async function getAllUsers() {
     return users = await prisma.user.findMany({
         select: {
             id: true,
-            nif: true,
             first_name: true,
             last_name: true,
             email: true,
             phone: true,
             type: true,
-            Address: {
-                select: {
-                    street: true,
-                    city: true,
-                    postal_code: true,
-                    country: true
-                }
-            },
         }
     });
 }
@@ -244,7 +201,6 @@ async function getUserByID(id, withPassword=false) {
             },
             select: {
                 id: true,
-                nif: true,
                 first_name: true,
                 last_name: true,
                 email: true,
@@ -253,10 +209,16 @@ async function getUserByID(id, withPassword=false) {
                 password: withPassword,
                 Address: {
                     select: {
+                        id: true,
                         street: true,
                         city: true,
+                        country: true,
                         postal_code: true,
-                        country: true
+                        nif: true,
+                        latitude: true,
+                        longitude: true,
+                        is_shipping: true,
+                        is_billing: true,   
                     }
                 },
                 Company: {
@@ -282,7 +244,6 @@ async function getUserByEmail(email, withPassword=false) {
             },
             select: {
                 id: true,
-                nif: true,
                 first_name: true,
                 last_name: true,
                 email: true,
@@ -291,10 +252,16 @@ async function getUserByEmail(email, withPassword=false) {
                 password: withPassword,
                 Address: {
                     select: {
+                        id: true,
                         street: true,
                         city: true,
+                        country: true,
                         postal_code: true,
-                        country: true
+                        nif: true,
+                        latitude: true,
+                        longitude: true,
+                        is_shipping: true,
+                        is_billing: true,   
                     }
                 },
                 Company: {
@@ -314,7 +281,7 @@ async function getUserByEmail(email, withPassword=false) {
 
 async function checkUserConflict(attribute, value) {
     // Checks if a user attribute is already in use.
-    // Should be used for email, phone and NIF
+    // Should be used for email and phone
     // Returns boolean representing the existance of conflict.
 
     let result;
@@ -332,17 +299,165 @@ async function checkUserConflict(attribute, value) {
                     email: value
                 }
             })
-        } else if (attribute == "nif") {
-            result = await prisma.user.findUnique({
-                'where': {
-                    nif: value
-                }
-            })
         }
     
         return result;
     } catch (e) {
         return null;
+    }
+}
+
+/* Address Functions */
+
+async function createAddress(userID,
+                             street,
+                             city,
+                             country,
+                             postal_code,
+                             nif) {
+
+    // Obtaining data from Google Geocoding API
+
+    try {
+        const geocoded = await maps.geocode({
+            params: {
+                address: `${street}, ${city}, ${country}`,
+                key: process.env.GOOGLE_API_KEY
+            }
+        })
+    
+        lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+        lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+    } catch (e) {
+        lat = 0;
+        lng = 0;
+    }
+
+    try {
+        let newAddress = await prisma.address.create({
+            data: {
+                user: userID,
+                nif: nif,
+                street: street,
+                city: city,
+                country: country,
+                postal_code: postal_code,
+                latitude: lat,
+                longitude: lng
+            }
+        })
+
+        return {id: newAddress.id}
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function updateAddress(userId, addressId, params) {
+    const addressKeyMap = {
+        street: "street",
+        city: "city",
+        postal_code: "postal_code",
+        country: "country",
+        nif: "nif",
+        is_shipping: "is_shipping",
+        is_billing: "is_billing"
+    }
+
+    const addressDataSelection = {}
+
+    // Map only selected address data
+
+    for (const [key, value] of Object.entries(params)) {
+        if (key in addressKeyMap) {
+            addressDataSelection[addressKeyMap[key]] = value
+        }
+    }
+
+    try {
+
+        // Set all other user addresses to false if new address is  default billing or shipping
+
+        if (addressDataSelection["is_shipping"]) {
+            await prisma.address.updateMany({
+                where: {
+                    user: userId
+                },
+                data: {
+                    is_shipping: false
+                }
+            })
+        }
+        if (addressDataSelection["is_billing"]) {
+            await prisma.address.updateMany({
+                where: {
+                    user: userId
+                },
+                data: {
+                    is_billing: false
+                }
+            })
+        }
+
+        let updatedAddress = await prisma.address.update({
+            where: {
+                id: addressId
+            },
+            data: addressDataSelection
+        })
+
+        // Now that all the information is up to date, we can re-calculate lat and lng, and reinsert
+
+        let lat = 0;
+        let lng = 0;
+
+        try {
+            const geocoded = await maps.geocode({
+                params: {
+                    address: `${updatedAddress.street}, ${updatedAddress.city}, ${updatedAddress.country}`,
+                    key: process.env.GOOGLE_API_KEY
+                }
+            })
+            lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+            lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+    
+        } catch (e) {
+            console.log(e)
+        }
+
+        updatedAddress = await prisma.address.update({
+            where: {
+                id: addressId
+            },
+            data: {
+                latitude: lat,
+                longitude: lng
+            }
+        })
+
+
+        return updateAddress;
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function deleteAddress(id) {
+    try {
+        await prisma.address.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return true;
+
+    } catch (e) {
+        // If it doesn't exist, prisma throws "RecordNotFound"
+        console.log(e)
+        return false
     }
 }
 
@@ -505,6 +620,11 @@ module.exports = {
     getUserByEmail,
     getAllUsers,
     checkUserConflict,
+
+    // Address functions
+    createAddress,
+    updateAddress,
+    deleteAddress,
 
     // Product Functions
     getAllProducts,
