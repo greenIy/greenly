@@ -23,12 +23,12 @@
                     {{ product.description }}
                   </p>
                   <div class="container">
-                    <div class="mt-4">
+                    <div class="mt-4" >
                         <span> Selecione um Fornecedor: </span>
                       <div class="card-group mt-2">
                         <div class="card">
                          <label>
-                            <input type="radio" name="fornecedor" class="card-input-element" />
+                            <input type="radio" active-class="active" name="fornecedor" class="card-input-element" />
                              <div class="panel panel-default card-input">
                                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
                                 <div class="panel-body">
@@ -44,7 +44,7 @@
                         </div>
                         <div class="card">
                           <label>
-                            <input type="radio" name="fornecedor" class="card-input-element" />
+                            <input type="radio" active-class="active" name="fornecedor" class="card-input-element" />
                              <div class="panel panel-default card-input">
                                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p></div>
                                 <div class="panel-body">
@@ -60,7 +60,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4" id="transportador">
                         <span> Selecione um Transportador: </span>
                         <div class="card-group mt-2">
                         <div class="card">
@@ -208,6 +208,7 @@ export default {
       product: {},
       isActiveT: false,
       isActiveF: false,
+      selected: null
     };
   },
   async created() {
@@ -221,10 +222,6 @@ export default {
       } else {
         svg.classList.add("red");
       }
-    },
-    showDropDownTransportador() {
-      var element = document.getElementById("transportador");
-      element.classList.add("show");
     },
     async getInfo() {
       this.loading = true;
@@ -307,6 +304,10 @@ label {
 
 .card-input:hover {
     cursor: pointer;
+}
+
+#transportador{
+  display:none;
 }
 
 </style>

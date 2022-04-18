@@ -72,7 +72,8 @@ export default {
   },
   created() {
     this.getProducts();
-    console.log(this.$route);
+    //this.getAllProducts();
+    //console.log(this.$route);
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit) {
