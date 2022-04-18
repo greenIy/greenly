@@ -230,7 +230,7 @@ function getProductsValidator() {
     return [
         query("sort")
             .optional()
-            .isIn(["price_asc", "price_desc"]),
+            .isIn(["newest", "oldest", "price_asc", "price_desc", "name_asc", "name_desc"]),
         query("limit")
             .optional()
             .isInt({min: 0, max: 250})

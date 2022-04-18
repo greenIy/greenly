@@ -19,12 +19,20 @@ function roundCoordinates(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }   
 
+/* Persistence Init */
 
 const prisma = new PrismaClient({ 
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
 const maps = new Client();
+
+/* Checking database availability */
+
+prisma.$connect().catch((reason) => {
+    console.log("📶❌ Database connection failed.")
+    process.exit(1)
+})
 
 
 /* User Functions */
@@ -474,13 +482,44 @@ async function deleteAddress(id) {
 async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
-                              keywords) {
+                              keywords,
+                              sort) {
     /* TODO: Since sorting by minimum in a relationship isn't support by Prisma, and views are barely viable,
      this entire function may have to be rewritten in raw SQL, as well as the corresponding route logic over at 
      api/store.js GET /store/products
      */
 
     let filterSelection = {}
+
+    let sortingMethod = {}
+    
+    /* Sorting */
+
+    // If no sorting method was specified
+    if (!sort) {
+        sort = "newest"
+    }
+
+    switch (sort) {
+        case "newest":
+            sortingMethod.id = "asc"
+            break;
+        case "oldest":
+            sortingMethod.id = "desc"
+            break;
+        case "price_asc":
+            // TODO: Rewrite this
+            break;
+        case "price_desc":
+            // TODO: Rewrite this
+            break;
+        case "name_asc":
+            sortingMethod.name = "asc"
+            break;
+        case "name_desc":
+            sortingMethod.name = "desc"
+            break;
+    }
 
     if (category) {
         // Initialize OR search between name, description and exact search for categories
@@ -544,6 +583,7 @@ async function getAllProducts(limit = 50,
             }
         },
         where: filterSelection,
+        orderBy: sortingMethod
     });
 
     return {total_products: totalProducts, products}

@@ -158,13 +158,12 @@ model Supply_History {
 }
 
 model Supply_Transporter {
-  product     Int     @db.UnsignedInt
-  supplier    Int     @db.UnsignedInt
-  warehouse   Int     @db.UnsignedInt
-  transporter Int     @db.UnsignedInt
-  cost        Decimal @db.Decimal(10, 2)
-  Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
-  User        User    @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
+  product     Int    @db.UnsignedInt
+  supplier    Int    @db.UnsignedInt
+  warehouse   Int    @db.UnsignedInt
+  transporter Int    @db.UnsignedInt
+  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
+  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
 
   @@id([product, supplier, warehouse, transporter])
   @@index([transporter], map: "transporter")

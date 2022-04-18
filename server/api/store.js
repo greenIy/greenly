@@ -14,7 +14,7 @@ const defaultErr    = require("../lib/error").defaultErr
 
 router.get('/products', getProductsValidator(), (req, res) => {
     try {
-        let productData = persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((productData) => {
+        let productData = persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords, req.query.sort).then((productData) => {
 
             if (productData) {
 
@@ -60,6 +60,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
                 // Sorting: has to be done here since Prisma does
                 // not support sorting over calculated attributes  
                 // such  as lowest_price)
+                // FIXME: This has to be rewritten inside persistence/getAllProducts since it has to come before pagination
                 if (req.query.sort == "price_asc") {
                     productData.products.sort((a, b) => a.lowest_price - b.lowest_price)
 
