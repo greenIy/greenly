@@ -4,7 +4,7 @@
      <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar :productAmount="productAmount" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
+        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
               :product="products"/>
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
@@ -56,6 +56,7 @@ export default {
     pageAmount: Number,
     currentPage: Number,
     limit: Number,
+    productsInPage: Number,
   },
   data() {
     return {
@@ -68,6 +69,7 @@ export default {
       pageAmount: 0,
       currentCategory: {id: "", name: ""},
       limit: 12,
+      productsInPage: 0,
     };
   },
   created() {
@@ -80,6 +82,7 @@ export default {
       var response = await http.get("/store/products?page=" + page + "&limit="+limit);
       this.products = response.data.products;
       this.productAmount = response.data.total_products;
+      this.productsInPage = this.products.length;
       //console.log(response.data);
       window.scrollTo(0, 0);
     },

@@ -13,8 +13,6 @@ import router from './router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
-require('../node_modules/jquery/dist/jquery.js')
-
 const myApp = createApp(App);
 
 myApp.use(VueAxios, axios);

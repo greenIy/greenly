@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
-                    {{ (productAmount * currentPage) - productAmount + 1 }} - {{ productAmount * currentPage }} de {{ productAmount }} produtos 
+                    {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end pt-1">
@@ -39,6 +39,7 @@ import http from "../../../../http-common";
         currentPage: Number,
         limit: Number,
         product: Object,
+        productsInPage: Number,
     },
     data() {
         return {
