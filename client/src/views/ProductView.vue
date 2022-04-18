@@ -27,26 +27,36 @@
                         <span> Selecione um Fornecedor: </span>
                       <div class="card-group mt-2">
                         <div class="card">
-                          <div class="card-body">
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p>
-                            <div class="progress">
-                              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                             <p><b>Gastos:</b> 32 de kWh/kg</p>
-                             <p><b>Stock:</b> 30 produtos</p>
-                             <p><b>Preço:</b> 32€</p>
-                          </div>
+                         <label>
+                            <input type="radio" name="fornecedor" class="card-input-element" />
+                             <div class="panel panel-default card-input">
+                               <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
+                                <div class="panel-body">
+                                  <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                  <p><b>Gastos:</b> 32 kWh/kg</p>
+                                  <p><b>Stock:</b> 30 produtos</p>
+                                  <p><b>Preço:</b> 32€</p>
+                                </div>
+                              </div>
+                        </label>
                         </div>
                         <div class="card">
-                            <div class="card-body">
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p>
-                            <div class="progress">
-                              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                             <p><b>Gastos:</b> 32kg de kWh por Armazenamento</p>
-                             <p><b>Stock:</b> 30 produtos</p>
-                             <p><b>Preço:</b> 32€</p>
-                          </div>
+                          <label>
+                            <input type="radio" name="fornecedor" class="card-input-element" />
+                             <div class="panel panel-default card-input">
+                               <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p></div>
+                                <div class="panel-body">
+                                  <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                  <p><b>Gastos:</b> 32 kWh/kg</p>
+                                  <p><b>Stock:</b> 30 produtos</p>
+                                  <p><b>Preço:</b> 32€</p>
+                                </div>
+                              </div>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -54,37 +64,52 @@
                         <span> Selecione um Transportador: </span>
                         <div class="card-group mt-2">
                         <div class="card">
-                          <div class="card-body">
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                                  <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
+                          <label>
+                            <input type="radio" name="transportador" class="card-input-element" />
+                             <div class="panel panel-default card-input">
+                               <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p></div>
+                                <div class="panel-body">
+                                  <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                  <p><b>Gastos:</b> 32 CO₂/Kg</p>
                                   <p><b>Preço:</b> 32€</p>
-                          </div>
+                                </div>
+                              </div>
+                          </label>
                         </div>
                         <div class="card">
-                            <div class="card-body">
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador B </p>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                                  <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
+                          <label>
+                            <input type="radio" name="transportador" class="card-input-element" />
+                             <div class="panel panel-default card-input">
+                               <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador B </p></div>
+                                <div class="panel-body">
+                                  <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                  <p><b>Gastos:</b> 32 CO₂/Kg</p>
                                   <p><b>Preço:</b> 32€</p>
-                          </div>
+                                </div>
+                              </div>
+                          </label>
                         </div>
                         <div class="card">
-                          <div class="card-body">
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor B </p>
-                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                                  <p><b>Gastos:</b> 32kg de CO₂ por Transporte </p>
+                          <label>
+                            <input type="radio" name="transportador" class="card-input-element" />
+                             <div class="panel panel-default card-input">
+                               <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor B </p>
+                            <p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p></div>
+                                <div class="panel-body">
+                                  <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                  <p><b>Gastos:</b> 32 CO₂/Kg</p>
                                   <p><b>Preço:</b> 32€</p>
-                          </div>
+                                </div>
+                              </div>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -267,11 +292,21 @@ h5 {
   width: 45px;
   height: 45px;
 }
-.dot {
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
-  background-color: #5cb85c;
-  display: inline-block;
+label {
+    width: 100%;
 }
+
+.card-input-element {
+    margin-left: 10px;
+}
+
+.card-input {
+    margin: 10px;
+    padding: 00px;
+}
+
+.card-input:hover {
+    cursor: pointer;
+}
+
 </style>
