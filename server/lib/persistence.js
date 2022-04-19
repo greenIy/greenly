@@ -649,6 +649,46 @@ async function getProductByID(id){
     }
 }
 
+/* Category Functions */
+
+async function getAllCategories() {
+    try {
+        let categories = await prisma.category.findMany({})
+
+
+        for (category of categories) {
+
+            // Finding subcategories of current category
+            let subCategories = await prisma.$queryRaw`WITH RECURSIVE CTE (id, name, parent_id) AS (SELECT id, name, parent_category FROM Category WHERE parent_category = ${category.id} UNION ALL SELECT p.id, p.name, p.parent_category FROM Category p INNER JOIN CTE ON p.parent_category = CTE.id) SELECT * FROM CTE;`
+
+            // Counting products in each category
+            let categorySelection = {OR:[{category:category.id}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]}
+            
+            category.total_products = await prisma.product.count({
+                    where: categorySelection
+                    })
+            }
+
+        return categories
+        
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function createCategory() {
+
+}
+
+async function updateCategory() {
+
+}
+
+async function deleteCategory() {
+
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -668,5 +708,11 @@ module.exports = {
 
     // Product Functions
     getAllProducts,
-    getProductByID
+    getProductByID,
+
+    // Category Functions
+    getAllCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory
 }

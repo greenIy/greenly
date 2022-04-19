@@ -13,6 +13,7 @@ const express   = require('express');
 const path      = require('path');
 const glob      = require('glob');
 const argv      = require('yargs').argv;
+const swag      = require('figlet') 
 
 /* Exporting arguments for usage in other routers */
 exports.argv = argv;
@@ -91,6 +92,11 @@ app.use(errorHandler);
 
 const port = process.env.PORT || 4000
 
+console.log(swag.textSync('greenly-api', {
+  font: 'Ogre',
+  whitespaceBreak: true
+}))
+
 app.listen(port, () => {
     console.log(`🌿 Greenly server listening on port ${port} ${
     argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
@@ -111,6 +117,5 @@ app.listen(port, () => {
     }
     process.exit(1);
 });
-
 
 module.exports.app = app;

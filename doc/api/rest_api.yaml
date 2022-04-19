@@ -126,6 +126,7 @@ paths:
                       Notas:
                       * Qualquer outro campo não-essencial (_phone_, _company.bio_) poderá ser incluido, ou posteriormente preenchido através de [PUT /user/{userId}]().
                       * É possível atualizar qualquer atributo de um utilizador posteriormente, à excepção de _type_.
+                      * Apenas um admninistrador autenticado pode criar novos administradores. Para qualquer outro tipo de utilizador não é necessária autenticação.
 
         content:
           application/json:
@@ -149,6 +150,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/InsufficientPermissionsError'
       x-codegen-request-body-name: body
+      security:
+        - bearerAuth: []
+
+      
   /user/{userId}:
     get:
       tags:
@@ -1730,9 +1735,6 @@ components:
         id:
           type: integer
           description: Código identificador do utilizador
-        nif:
-          type: integer
-          description: Número de identificação fiscal do utilizador
         first_name:
           type: string
           description: Nome do utilizador

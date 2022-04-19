@@ -14,7 +14,13 @@ const defaultErr    = require("../lib/error").defaultErr
 
 router.get('/products', getProductsValidator(), (req, res) => {
     try {
-        let productData = persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords, req.query.sort).then((productData) => {
+        let productData = persistence.getAllProducts(
+            req.query.limit,
+            req.query.page,
+            req.query.category,
+            req.query.keywords,
+            req.query.sort).
+        then((productData) => {
 
             if (productData) {
 
@@ -133,6 +139,40 @@ router.get('/products/:productId', (req, res) => {
         res.status(500).send(defaultErr());
     }
 })
+/* Category Routes */
+// TODO: Build validators and authorization functions for each route
+
+/* GET /store/categories */
+
+router.get('/categories', (req, res) => {
+    try {
+        persistence.getAllCategories().then((categories) => {
+            res.status(200).json(categories)
+        })
+    } catch {
+        res.status(500).send(defaultErr());
+    }
+});
+
+/* POST /store/categories */
+
+router.post('/categories', (req, res) => {
+
+});
+
+/* PUT /store/categories/:categoryId */
+
+router.put('/categories/:categoryId', (req, res) => {
+
+});
+
+/* DELETE /store/categories/:categoryId */
+
+router.delete('/categories/:categoryId', (req, res) => {
+
+});
+
+
 
 
 module.exports = router;
