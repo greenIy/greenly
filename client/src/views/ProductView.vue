@@ -2,7 +2,7 @@
   <div class="page-container">
     <TheNavbar />
     <body>
-      <div class="content-wrap mw-0">
+      <div v-if="prod !=false" class="content-wrap mw-0">
         <div class="d-flex center w-75">
           <div class="card h-100 mt-4 mb-4">
             <div class="row g-0">
@@ -22,107 +22,62 @@
                   <p class="card-text about">
                     {{ product.description }}
                   </p>
-                  <div class="d-flex container">
-                    <div class="mt-4" >
-                        <span> Selecione um Fornecedor: </span>
-                      <div class="card-group mt-2">
-                        <div class="card product">
-                         <label>
-                            <input type="radio" v-model="fornecedor" name="fornecedor" active-class="active"  class="card-input-element" />
-                             <div class="panel panel-default card-input">
-                               <div class="row">
-                                <div class="col-10">
-                                  <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
-                                </div>
-                                <div class="col-2">
-                                    <span class="dot"></span>
-                                </div>
-                                </div>
-                                  <div class="panel-body">
-                                  <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                                  <p class="text-p"><b>Stock:</b> 30 produtos</p>
-                                  <p class="text-p"><b>Preço:</b> 32€</p>
-                                </div>
-                              </div>
-                        </label>
-                        </div>
-                        <div class="card product">
-                         <label>
-                            <input type="radio" active-class="active" v-model="fornecedor" name="fornecedor" class="card-input-element" />
-                             <div class="panel panel-default card-input">
-                               <div class="row">
-                                <div class="col-10">
-                                  <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor B</p></div>
-                                </div>
-                                <div class="col-2">
-                                    <span class="dot"></span>
-                                </div>
-                                </div>
-                                  <div class="panel-body">
-                                  <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                                  <p class="text-p"><b>Stock:</b> 30 produtos</p>
-                                  <p class="text-p"><b>Preço:</b> 32€</p>
-                                </div>
-                              </div>
-                        </label>
-                        </div>
+                  <div class="d-flex mt-4">  
+                       <div class="col-6 d-flex flex-column"> 
+                         <div class="d-flex flex-column flex-grow-1">
+                          <span> Fornecedor: </span>
+                                  <div class="d-flex mt-2 h-100 flex-column card product">
+                                                  <div class="d-flex card-input">
+                                                      <div class="col-10">
+                                                          <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A <span class="dot"></span></p></div>
+                                                      </div>
+                                                      <div class="col-2">
+                                                      </div>
+                                                  </div>
+                                                  <div class="d-flex flex-column card-input panel-body">
+                                                      <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
+                                                      <p class="text-p"><b>Stock:</b> 30 produtos</p>
+                                                      <p class="text-p"><b>Preço:</b> 32€</p>
+                                                  </div>
+                                      </div>
+                            </div>
+                       <div class="mt-4">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Fornecedor</button>
+                          </div>
+                    </div>
+                      <div class="col-6 d-flex flex-column" v-if="fornecedor != false" id="transportador">
+                      <div class="d-flex flex-column flex-grow-1">
+                          <span> Transportador: </span>
+                          <div class="d-flex mt-2 h-100 flex-column card product">
+                                <div class="d-flex card-input">
+                                  <div class="col-10">
+                                    <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A <span class="dot"></span></p></div>
+                                  </div>
+                                  <div class="col-2">     
+                                  </div>
+                                  </div>
+                                    <div class="d-flex flex-column card-input panel-body">
+                                    <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
+                                    <p class="text-p"><b>Preço:</b> 32€</p>
+                                  </div>
+                          </div>
+                          </div>
+                            <div class="mt-4">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Fornecedor</button>
+                          </div>
                       </div>
                     </div>
-                    <div class="mt-4" v-if="fornecedor != null" id="transportador">
-                        <span> Selecione um Transportador: </span>
-                         <div class="card-group mt-2">
-                        <div class="card product">
-                         <label>
-                            <input type="radio" active-class="active" name="transportador" class="card-input-element" />
-                             <div class="panel panel-default card-input">
-                               <div class="row">
-                                <div class="col-10">
-                                  <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A </p></div>
-                                </div>
-                                <div class="col-2">
-                                    <span class="dot"></span>
-                                </div>
-                                </div>
-                                  <div class="panel-body">
-                                  <p><b>Gastos:</b> 32 CO₂/Kg</p>
-                                  <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </div>
-                        </label>
-                        </div>
-                        <div class="card product">
-                         <label>
-                            <input type="radio" active-class="active" name="transportador" class="card-input-element" />
-                             <div class="panel panel-default card-input">
-                               <div class="row">
-                                <div class="col-10">
-                                   <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador B </p></div>
-                                </div>
-                                <div class="col-2">
-                                    <span class="dot"></span>
-                                </div>
-                                </div>
-                                  <div class="panel-body">
-                                   <p><b>Gastos:</b> 32 CO₂/Kg</p>
-                                   <p><b>Preço:</b> 32€</p>
-                                </div>
-                              </div>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    </div>
+                      
                     <div class="row align-items-center mt-4">
-                      <div class="col">
+                      <div class="col-6">
                         <span> Quantidade: </span>
                       </div>
-                      <div class="col">
+                      <div class="col-6 my-5">
                         <div class="input-group">
-                          <input type="number" class="form-control max" min="1" max="5" />
+                          <input type="number" class="form-control" min="1" max="5" />
                         </div>
                       </div>
                     </div>
-                  
                   <div class="container">
                     <h4 class="mt-5 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
@@ -172,6 +127,7 @@
           </div>
         </div>
       </div>
+      <ProductModal v-if="modal !=false"/>
     </body>
     <TheFooter />
   </div>
@@ -179,15 +135,15 @@
 <script>
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
+import ProductModal from "@/components/Product/ProductModal.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart, faCartPlus, faAngleDown, faCubes, faTruck} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faCartPlus, faAngleDown} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHeart);
 library.add(faCartPlus);
 library.add(faAngleDown);
-library.add(faCubes);
-library.add(faTruck);
+
 
 import http from "../../http-common";
 
@@ -196,6 +152,7 @@ export default {
   components: {
     TheNavbar,
     TheFooter,
+    ProductModal,
   },
   data() {
     return {
@@ -205,7 +162,8 @@ export default {
       product: {},
       isActiveT: false,
       isActiveF: false,
-      fornecedor: null,
+      modal: false,   
+      prod:true, 
     };
   },
   async created() {
@@ -224,10 +182,16 @@ export default {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
-      //console.log(this.product );
+      //console.log(this.product);
       this.loading = false;
       window.scrollTo(0, 0);
     },
+    showModal(){
+    this.modal=true;
+    this.prod=false;
+    console.log(this.modal);
+    console.log(this.prod);
+    }
   },
 };
 </script>
@@ -298,16 +262,12 @@ label {
 }
 .dot {
   height: 15px;
-  width: 15px;
+  width: 20px;
   background-color: #608072;
-  border-radius: 50%;
+  border-radius: 15%;
   display: inline-block;
-  margin:auto;
 }
 .product{
-  margin: auto;
-  margin-right: 10px;
-  width: 18rem;
   border: 1px solid #e5e5e5!important;
 }
 .card-input:hover {
