@@ -39,14 +39,12 @@
         </div>
       </li>
       <li>
-        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
-        <div class="collapse show" id="categories-collapse">
+        <div class="collapse show" id="fornecedores-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-if="categorySelected" class="list-group-item list-group-item-action border-0">
-              {{ currentCategory.name }}
-            </router-link>
+          
           </div>
         </div>
       </li>
