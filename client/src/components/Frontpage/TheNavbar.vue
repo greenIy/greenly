@@ -11,9 +11,14 @@
                 <input class="form-control" type="search" placeholder="" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </div>
-            <div class="p-2 align-self-center pt-4 text-uppercase nav-links">
+            <div v-if="!userIsLoggedIn" class="p-2 align-self-center pt-4 text-uppercase nav-links">
                 <router-link to="/login">
                     Iniciar Sessão
+                </router-link>
+            </div>
+            <div v-else class="p-2 align-self-center pt-4 text-uppercase nav-links">
+                <router-link to="/login">
+                    {{ user.first_name + " " + user.last_name }}
                 </router-link>
             </div>
             <div class="p-2 align-self-center pt-4 text-uppercase nav-links">
@@ -55,30 +60,47 @@ import http from "../../../http-commmon"
 library.add(faCartShopping);
 
 export default {
-  name: 'TheNavbar',
-  methods: {
-      isLoggedIn: function() {
-
-        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-
-        if (accessToken){
-            http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`} })
-            .then(response => {
-            if (response.status == 200) {
-                console.log("true");
-                console.log(response);
-                return true;
-            } else {
-                console.log("false");
-                return false;
-            }
-            })  
-        } else {
-            console.log("false");
-            return false;
+    name: 'TheNavbar',
+    mounted() {
+        this.isLoggedIn();
+        this.getUserInfo();
+    },
+    data() {
+        return {
+            userIsLoggedIn: false,
+            user: []
         }
-    }
-  },
+    },
+    methods: {
+        isLoggedIn() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            if (accessToken){
+                http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`} })
+                .then(response => {
+                if (response.status == 200) {
+                    return this.userIsLoggedIn = true;
+                } else {
+                    return this.userIsLoggedIn = false;
+                }
+                })  
+            } else {
+                return this.userIsLoggedIn = false;
+            }
+        },
+        getUserInfo() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            if (accessToken){
+                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
+                .then(response => {
+                if (response.status == 200) {
+                    this.user = response.data
+                    return this.user
+                }
+                })  
+            }
+        },
+    },
 };
 </script>
 

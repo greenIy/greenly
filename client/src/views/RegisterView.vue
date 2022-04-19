@@ -12,14 +12,14 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-import registerPills from '@/components/Register/registerPills.vue';
+import RegisterPills from '@/components/Register/RegisterPills.vue';
 
 export default {
   name: 'RegisterView',
   components: {
     TheNavbar,
     TheFooter,
-    registerPills,
+    RegisterPills,
   },
 };
 

@@ -192,9 +192,6 @@ export default {
         box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
         padding: 6%;
     }
-    .form-control, .register-btn {
-        border-radius: 2px;
-    }
     .social-btn .btn {
         border: none;
         margin: 10px 3px 0;

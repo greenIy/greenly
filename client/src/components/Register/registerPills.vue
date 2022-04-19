@@ -34,9 +34,9 @@
 
 <script>
 // @ is an alias to /src
-import registerConsumidor from '@/components/Register/registerConsumidor.vue';
-import registerTransportador from '@/components/Register/registerTransportador.vue';
-import registerFornecedor from '@/components/Register/registerFornecedor.vue';
+import RegisterConsumidor from '@/components/Register/RegisterConsumidor.vue';
+import RegisterTransportador from '@/components/Register/RegisterTransportador.vue';
+import RegisterFornecedor from '@/components/Register/RegisterFornecedor.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUser, faTruckFast, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
@@ -45,9 +45,9 @@ library.add(faUser, faTruckFast, faBoxOpen);
 export default {
   name: 'registerPills',
   components: {
-    registerConsumidor,
-    registerTransportador,
-    registerFornecedor,
+    RegisterConsumidor,
+    RegisterTransportador,
+    RegisterFornecedor,
   },
     data() {
        return {
