@@ -63,7 +63,7 @@
                           </div>
                           </div>
                             <div class="mt-4">
-                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Fornecedor</button>
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Transportador</button>
                           </div>
                       </div>
                     </div>
