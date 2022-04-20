@@ -103,19 +103,19 @@
                   <div class="row align-items-center justify-content-center">
                     <div class="d-inline-block p-0 col-md-5">
                       <div class="row">
-                        <div class="col-4 align-self-center">
+                        <div class="col-4 align-self-center p-1">
                           <span >Quantidade: </span>
                         </div>
                         <div class="col-md-4">
                           <div class="row">
                             <div class="col-md-3 p-1">
-                              <button type="button" class="decrement rounded" aria-label="remove um" data-direction="-1" disabled="disabled"><span>&#8722;</span></button>
+                              <button type="button" id="decrement" class="rounded" @click="quantity--; decrement()" aria-label="remove um" data-direction="-1" disabled><span>&#8722;</span></button>
                             </div>
                             <div class="col-md-5 p-1">
-                               <input class="w-100 text-center" data-min="1" data-max="0" type="text" name="quantity" value="1" readonly="true">
+                               <input class="w-100 text-center" min="1" max="5" type="text" name="quantity" :value="quantity" readonly="true"> 
                             </div>
                             <div class="col-md-3 p-1">
-                               <button type="button" class="increment rounded" aria-label="adiciona um" data-direction="1"><span>&#43;</span></button>
+                               <button type="button" class="increment rounded"  @click="quantity++; increment()" aria-label="adiciona um" data-direction="1"><span>&#43;</span></button>
                             </div>
                             <div class="col-md-1">
                             </div>
@@ -186,7 +186,8 @@ export default {
       isActiveT: false,
       isActiveF: false,
       modal: false,   
-      prod:true, 
+      prod:true,
+      quantity:1,
     };
   },
   async created() {
@@ -214,8 +215,24 @@ export default {
     this.prod=false;
     console.log(this.modal);
     console.log(this.prod);
-    }
+    },
+    increment(){
+      if (this.quantity > 1){
+        document.getElementById("decrement").disabled = false;
+        console.log(this.quantity);
+      }
+      else{
+        console.log(this.quantity)
+      }
+    },
+     decrement(){
+      if (this.quantity == 1){
+        document.getElementById("decrement").disabled = true;
+        console.log(this.quantity);
+      }
   },
+  },
+ 
 };
 </script>
 
