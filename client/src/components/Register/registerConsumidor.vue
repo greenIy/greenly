@@ -36,22 +36,21 @@
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword1 ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
                         <div class="input-group-append">
-                            <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
-                                    <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                            <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
+                                    <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                             </span>
                         </div>
                     </div>
                 </div>
                 <div class="col mb-3">
-
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword2 ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
                         <div class="input-group-append">
-                            <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
-                                    <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                            <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
+                                    <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                             </span>
                         </div>
                     </div>
@@ -134,7 +133,8 @@ export default {
         return {
             country: '',
             region: '',
-            showPassword: false,
+            showPassword1: false,
+            showPassword2: false,
             registerInfo: {
                 firstName: '',
                 lastName:'',

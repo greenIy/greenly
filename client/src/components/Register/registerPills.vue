@@ -43,12 +43,12 @@ import { faUser, faTruckFast, faBoxOpen } from '@fortawesome/free-solid-svg-icon
 library.add(faUser, faTruckFast, faBoxOpen);
 
 export default {
-  name: 'registerPills',
-  components: {
-    RegisterConsumidor,
-    RegisterTransportador,
-    RegisterFornecedor,
-  },
+    name: 'registerPills',
+    components: {
+        RegisterConsumidor,
+        RegisterTransportador,
+        RegisterFornecedor,
+    },
     data() {
        return {
            activeTab: 'consumidor'

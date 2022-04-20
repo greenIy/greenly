@@ -3,7 +3,7 @@
         <form @submit.prevent="loginUser" class="form-horizontal">
             <h2 class="text-center" style="margin: 0 0 4%;">Iniciar sessão</h2>
             <div class="mb-3">
-                <label for="inputEmail" class="form-label">Email</label>
+                <label for="inputEmail" class="form-label">E-mail</label>
                 <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="loginInfo.email" placeholder="Introduza email" required>
                 <div class="invalid-feedback">E-mail não se encontra registado.</div>
             </div>
