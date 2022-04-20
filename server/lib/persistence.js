@@ -653,7 +653,7 @@ async function getProductByID(id){
 
 async function getAllCategories() {
     try {
-        let categories = await prisma.category.findMany({})
+        let categories = await prisma.category.findMany({orderBy: {name: 'asc'}})
 
 
         for (category of categories) {

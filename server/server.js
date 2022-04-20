@@ -111,7 +111,7 @@ app.listen(port, () => {
     }
 }).on('error', function (err) {
     if (err.code == 'EADDRINUSE') {
-        console.log("🚫 Port already in use.");
+        console.log(`🚫 Port ${port} already in use.`);
     } else {
         console.log("🔥 Something went wrong.");
     }
