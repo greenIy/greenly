@@ -26,60 +26,59 @@
                        <div class="col-6 d-flex flex-column"> 
                          <div class="d-flex flex-column flex-grow-1">
                           <span> Fornecedor: </span>
-                                  <div class="d-flex mt-2 h-100 flex-column card product">
+                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                                  <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                                   <div class="d-flex card-input">
                                                       <div class="col-10">
-                                                          <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A <span class="dot"></span></p></div>
+                                                          <div class="card-title"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
                                                       </div>
                                                       <div class="col-2">
                                                       </div>
                                                   </div>
-                                                  <div class="d-flex flex-column card-input panel-body">
+                                                  <div class="d-flex flex-column card-input">
                                                       <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
                                                       <p class="text-p"><b>Stock:</b> 30 produtos</p>
                                                       <p class="text-p"><b>Preço:</b> 32€</p>
                                                   </div>
                                       </div>
                             </div>
-                       <div class="mt-4">
-                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Fornecedor</button>
+                       <div class="mt-4 mx-auto">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Fornecedor</button>
                           </div>
                     </div>
                       <div class="col-6 d-flex flex-column" v-if="fornecedor != false" id="transportador">
                       <div class="d-flex flex-column flex-grow-1">
                           <span> Transportador: </span>
-                          <div class="d-flex mt-2 h-100 flex-column card product">
+                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                          <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                 <div class="d-flex card-input">
                                   <div class="col-10">
-                                    <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A <span class="dot"></span></p></div>
+                                    <div class="card-title"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
                                   </div>
                                   <div class="col-2">     
                                   </div>
                                   </div>
-                                    <div class="d-flex flex-column card-input panel-body">
+                                    <div class="d-flex flex-column card-input">
                                     <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
                                     <p class="text-p"><b>Preço:</b> 32€</p>
                                   </div>
                           </div>
                           </div>
-                            <div class="mt-4">
-                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Selecionar Transportador</button>
+                            <div class="mt-4 mx-auto">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Transportador</button>
                           </div>
                       </div>
                     </div>
-                      
-                    <div class="row align-items-center mt-4">
-                      <div class="col-6">
-                        <span> Quantidade: </span>
-                      </div>
-                      <div class="col-6 my-5">
-                        <div class="input-group">
-                          <input type="number" class="form-control" min="1" max="5" />
-                        </div>
-                      </div>
+                    <div class="container mt-4">
+                          <span> Quantidade: </span>
+                        <div class="input-group marginr mt-2 w-50">
+                          <span class="input-group-text">€</span>
+                          <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                          <span class="input-group-text">90</span>
+                          </div>
                     </div>
-                  <div class="container">
-                    <h4 class="mt-5 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
+                  <div class="container mt-5">
+                    <h4 class="mt-2 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
                       <div class="col-6 text-left">
                         <b>Fornecedor</b>
@@ -221,6 +220,10 @@ h4 {
 h5 {
   font-size: 11px;
 }
+.recomendado{
+  font-size: 14px;
+  margin-bottom: 0;
+}
 .fa-cog {
   color: #b9bbb4;
 }
@@ -260,15 +263,11 @@ label {
     margin: 10px;
     padding: 00px;
 }
-.dot {
-  height: 15px;
-  width: 20px;
-  background-color: #608072;
-  border-radius: 15%;
-  display: inline-block;
-}
 .product{
   border: 1px solid #e5e5e5!important;
+}
+.marginr{
+  margin-right: 20px;
 }
 .card-input:hover {
     cursor: pointer;
