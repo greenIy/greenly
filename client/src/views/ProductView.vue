@@ -2,10 +2,10 @@
   <div class="page-container">
     <TheNavbar />
     <body>
-      <div v-if="prod !=false" class="content-wrap mw-0">
+      <div class="content-wrap mw-0">
         <div class="d-flex center w-75">
           <div class="card h-100 mt-4 mb-4">
-            <div class="row g-0">
+            <div class="d-flex g-0 mx-3">
               <div class="col-md-3">
                 <img  src="../assets/Team/daniela.jpg" class="rounded mt-4 mb-4 ms-4" alt="Imagem do produto" style="width:90%" />
               </div>
@@ -103,25 +103,20 @@
                 <hr class="center w-100" color="black" />
                 </div>
                 <div class="card-body">
-                  <div class="row align-items-center justify-content-center">
+                  <div class="row align-items-center justify-content-between">
                     <div class="d-inline-block p-0 col-md-5">
-                      <div class="row">
-                        <div class="col-md-4 align-self-center p-1">
-                          <span >Quantidade: </span>
-                        </div>
+                      <div class="d-flex gap-3 mx-2 align-items-center text-center align-content-center">
+                          <span class="fs-5">Quantidade:</span>
+          
                         <div class="col-md-4">
-                          <div class="row">
-                            <div class="col-md-3 p-1">
-                              <button type="button" id="decrement" class="rounded" @click="quantity--; decrement()" aria-label="remove um" data-direction="-1" disabled><span>&#8722;</span></button>
+                          <div class="d-flex justify-content-center align-items-center">
+                              <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
+                            <div class="w-50">
+                            <div class="mx-2">
+                               <input class="w-100 text-center align-self-center" min="1" max="5" type="text" name="quantity" :value="quantity" readonly="true"> 
                             </div>
-                            <div class="col-md-5 p-1">
-                               <input class="w-100 text-center" min="1" max="5" type="text" name="quantity" :value="quantity" readonly="true"> 
                             </div>
-                            <div class="col-md-3 p-1">
-                               <button type="button" class="increment rounded"  @click="quantity++; increment()" aria-label="adiciona um" data-direction="1"><span>&#43;</span></button>
-                            </div>
-                            <div class="col-md-1">
-                            </div>
+                              <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
                           </div>
                         </div>
                         <div class="col-md-4">
@@ -159,11 +154,14 @@ import FornecedorModal from "@/components/Product/FornecedorModal.vue";
 import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart, faCartPlus, faAngleDown} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHeart);
 library.add(faCartPlus);
 library.add(faAngleDown);
+library.add(faCirclePlus);
+library.add(faCircleMinus);
+
 
 
 import http from "../../http-common";
@@ -219,17 +217,22 @@ export default {
     console.log(this.modal);
     console.log(this.prod);
     },
-    increment(){
-      if (this.quantity > 1){
-        document.getElementById("decrement").disabled = false;
-        console.log(this.quantity);
+    clickAction(signal){
+
+      if(signal=='minus'){
+        if(this.quantity>1){
+          this.quantity--;
+          if(this.quantity==1){
+            document.getElementById("decrement").style.color="#ededed";
+          }
+        }
+      }else{
+        this.quantity++;
+        if(this.quantity==2){
+          document.getElementById("decrement").style.color="#7c9d8e";
+        }
       }
-    },
-     decrement(){
-      if (this.quantity == 1){
-        document.getElementById("decrement").disabled = true;
-        console.log(this.quantity);
-      }
+
   },
   },
  
@@ -318,5 +321,11 @@ label {
 }
 .text-p {
   margin-bottom: 5px;
+}
+#increment{
+  color:#7c9d8e;
+}
+#decrement{
+  color:#ededed;
 }
 </style>
