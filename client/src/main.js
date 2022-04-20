@@ -15,7 +15,7 @@ import VueAxios from 'vue-axios';
 
 const myApp = createApp(App);
 
-require('../node_modules/jquery/dist/jquery.js');
+//require('../node_modules/jquery/dist/jquery.js');
 
 myApp.use(VueAxios, axios);
 
