@@ -132,40 +132,33 @@ export default {
     },
     data(){
         return {
-            country: '',
-            region: '',
+            // country: '',
+            // region: '',
             showPassword: false,
             registerInfo: {
                 firstName: '',
                 lastName:'',
                 email:'',
-                nif:'',
-                phoneNumber:'',
+                // nif:'',
+                //phoneNumber:'',
                 password:'',
                 passwordConfirm:'',
-                street:'',
-                city:'',
-                postalCode:'',
-                country:''
+                //street:'',
+                //city:'',
+                //postalCode:'',
+                //country:''
             }
         }
     },
     methods: {
         registerConsumer() {
             http.post("/user", JSON.stringify({
-                nif: this.registerInfo.nif,
                 first_name: this.registerInfo.firstName,
                 last_name: this.registerInfo.lastName,
                 email: this.registerInfo.email,
-                phone: this.registerInfo.phoneNumber.toString(),
                 password: this.registerInfo.password.toString(),
                 type: "CONSUMER",
-                address:{
-                    street: this.registerInfo.street.toString(),
-                    city: this.registerInfo.city.toString(),
-                    postal_code: this.registerInfo.postalCode.toString(),
-                    country: this.registerInfo.country.toString()}})
-                ).then((response) => {
+                })).then((response) => {
                     if (response.status == 201) {
                         console.log(response.data.token)
                         alert('Account registered successfully!')
