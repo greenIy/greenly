@@ -21,6 +21,13 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
+  {
+    path: '/profile',
+    name: 'profile',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
+    },
+  },
 
 ];
 

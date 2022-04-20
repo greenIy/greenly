@@ -67,7 +67,7 @@
                 </div>
                 <div class="col mb-3">
                     <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                     <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
+                    <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
                     <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade" required>
                 </div>
             </div>

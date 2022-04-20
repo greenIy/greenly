@@ -17,7 +17,7 @@
                 </router-link>
             </div>
             <div v-else class="p-2 align-self-center pt-4 text-uppercase nav-links">
-                <router-link to="/login">
+                <router-link to="/profile">
                     {{ user.first_name + " " + user.last_name }}
                 </router-link>
             </div>
@@ -56,8 +56,9 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
-import http from "../../../http-commmon"
 library.add(faCartShopping);
+
+import http from "../../../http-commmon"
 
 export default {
     name: 'TheNavbar',
