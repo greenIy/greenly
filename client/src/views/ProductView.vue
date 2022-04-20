@@ -69,9 +69,10 @@
                           </div>
                       </div>
                     </div>
-                    <hr style="width: 100%" class="center mt-5" color="black" />
+                  
                   <div class="container mt-3">
-                    <h4 class="mt-2 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
+                    <hr class="center mt-3 w-100 " color="black" />
+                    <h4 class="mt-3 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
                       <div class="col-6 text-left">
                         <b>Fornecedor</b>
@@ -98,12 +99,14 @@
                     </div>
                   </div>
                 </div>
-                <hr style="width:96%" class="center" color="black" />
-                <div class="card-body my-1">
+                <div class="card-body mt-1">
+                <hr class="center w-100" color="black" />
+                </div>
+                <div class="card-body">
                   <div class="row align-items-center justify-content-center">
                     <div class="d-inline-block p-0 col-md-5">
                       <div class="row">
-                        <div class="col-4 align-self-center p-1">
+                        <div class="col-md-4 align-self-center p-1">
                           <span >Quantidade: </span>
                         </div>
                         <div class="col-md-4">
@@ -220,9 +223,6 @@ export default {
       if (this.quantity > 1){
         document.getElementById("decrement").disabled = false;
         console.log(this.quantity);
-      }
-      else{
-        console.log(this.quantity)
       }
     },
      decrement(){
