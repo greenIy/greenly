@@ -9,7 +9,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
+              <TheFilters :categories="categories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9 ">
@@ -57,6 +57,7 @@ export default {
     currentPage: Number,
     limit: Number,
     productsInPage: Number,
+    categories: Array,
   },
   data() {
     return {
@@ -74,7 +75,7 @@ export default {
   },
   created() {
     this.getProducts();
-    //this.getAllProducts();
+    this.getCategories();
     //console.log(this.$route);
   },
   methods: {
@@ -86,15 +87,14 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
-    async getAllProducts() {
-      var response = await http.get("/store/products");
-      this.products = response.data.products;
-      //console.log(response.data);
-      window.scrollTo(0, 0);
-    },
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();
+    },
+    async getCategories() {
+      var response = await http.get("/store/categories");
+      this.categories = response.data.filter(category => category.parent_category == null);
+      console.log(this.categories);
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
@@ -125,13 +125,6 @@ export default {
     }
   },
   computed: {
-    getCategories: function () {
-      return this.products.map(product => ({
-          id: product.category.id, 
-          name: product.category.name
-          })).filter((value, index, self) =>
-                self.findIndex(value2=>(value2.id === value.id)) === index);
-    },
     getMaxPrice: function () {
       var maxPrices = this.products.map(product =>
           product.highest_price
