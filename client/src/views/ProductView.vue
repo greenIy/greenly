@@ -77,7 +77,8 @@
                           <span class="input-group-text">90</span>
                           </div>
                     </div>
-                  <div class="container mt-5">
+                    <hr style="width: 100%" class="center mt-5" color="black" />
+                  <div class="container mt-3">
                     <h4 class="mt-2 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
                     <div class="row mt-4">
                       <div class="col-6 text-left">
@@ -105,11 +106,31 @@
                     </div>
                   </div>
                 </div>
-                <hr style="width: 97%" class="center mt-3" color="black" />
+                <hr style="width:96%" class="center mt-3" color="black" />
                 <div class="card-body my-1">
                   <div class="row align-items-center justify-content-center">
-                    <div class="d-inline-block p-0 col-md-7">
+                    <div class="d-inline-block p-0 col-md-2">
                       <h4 class="my-0 fs-5">Preço €</h4>
+                    </div>
+                    <div class="d-inline-block p-0 col-md-5">
+                      <div class="row">
+                        <div class="col-5">
+                          <span>Quantidade</span>
+                        </div>
+                        <div class="col-7">
+                          <div class="row">
+                            <div class="col-2">
+                              <button type="button" class="decrement" aria-label="remove um" data-direction="-1" disabled="disabled"><span>&#8722;</span></button>
+                            </div>
+                            <div class="col-8">
+                               <input class="w-50 text-center" data-min="1" data-max="0" type="text" name="quantity" value="1" readonly="true">
+                            </div>
+                            <div class="col-2">
+                               <button type="button" class="increment" aria-label="adiciona um" data-direction="1"><span>&#43;</span></button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="d-inline-block text-end col-md-4">
                       <button class="btnS p-2">
@@ -126,7 +147,8 @@
           </div>
         </div>
       </div>
-      <ProductModal v-if="modal !=false"/>
+      <FornecedorModal  v-if="modal !=false"/>
+      <TransportadorModal  v-if="modal !=false"/>
     </body>
     <TheFooter />
   </div>
@@ -134,7 +156,8 @@
 <script>
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
-import ProductModal from "@/components/Product/ProductModal.vue";
+import FornecedorModal from "@/components/Product/FornecedorModal.vue";
+import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart, faCartPlus, faAngleDown} from "@fortawesome/free-solid-svg-icons";
@@ -151,7 +174,12 @@ export default {
   components: {
     TheNavbar,
     TheFooter,
-    ProductModal,
+    FornecedorModal,
+    TransportadorModal,
+  },
+  props: {
+    modal:Boolean,
+    prod:Boolean,
   },
   data() {
     return {
