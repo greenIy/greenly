@@ -98,7 +98,7 @@
                     </div>
                   </div>
                 </div>
-                <hr style="width:96%" class="center mt-3" color="black" />
+                <hr style="width:96%" class="center" color="black" />
                 <div class="card-body my-1">
                   <div class="row align-items-center justify-content-center">
                     <div class="d-inline-block p-0 col-md-5">
