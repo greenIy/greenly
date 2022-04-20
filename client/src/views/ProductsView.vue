@@ -93,8 +93,8 @@ export default {
     },
     async getCategories() {
       var response = await http.get("/store/categories");
-      this.categories = response.data.filter(category => category.parent_category == null);
-      console.log(this.categories);
+      this.categories = response.data;
+      //console.log(response.data);
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
@@ -116,7 +116,7 @@ export default {
       this.getProducts(this.currentPage, params);
     },
     searchInformation: function (params) {
-      console.log(this.$route.name);
+      //console.log(this.$route.name);
       http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;

@@ -123,9 +123,11 @@ library.add(faAngleUp);
     computed: {
       showCategories: function () {
         if (this.categorySelected) {
-          return this.categories.filter(category => this.categoryList.some(c => c.id != category.id));
+          var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category);
+          return filteredCategory;
         }
-        return this.categories;
+        // show highest level of categories
+        return this.categories.filter(category => category.parent_category == null);
       },
     },
   }
