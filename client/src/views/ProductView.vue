@@ -103,25 +103,25 @@
                   <div class="row align-items-center justify-content-center">
                     <div class="d-inline-block p-0 col-md-5">
                       <div class="row">
-                        <div class="col-4">
-                          <span>Quantidade: </span>
+                        <div class="col-4 align-self-center">
+                          <span >Quantidade: </span>
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-4">
                           <div class="row">
-                            <div class="col-3">
+                            <div class="col-md-3 p-1">
                               <button type="button" class="decrement rounded" aria-label="remove um" data-direction="-1" disabled="disabled"><span>&#8722;</span></button>
                             </div>
-                            <div class="col-5">
+                            <div class="col-md-5 p-1">
                                <input class="w-100 text-center" data-min="1" data-max="0" type="text" name="quantity" value="1" readonly="true">
                             </div>
-                            <div class="col-3">
+                            <div class="col-md-3 p-1">
                                <button type="button" class="increment rounded" aria-label="adiciona um" data-direction="1"><span>&#43;</span></button>
                             </div>
-                            <div class="col-1">
+                            <div class="col-md-1">
                             </div>
                           </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-4">
                         </div>
                       </div>
                     </div>
