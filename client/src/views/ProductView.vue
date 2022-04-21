@@ -71,19 +71,19 @@
                     </div>
                   <div class="container mt-3">
                     <hr class="center mt-3 w-100 " color="black" />
-                    <ul class="nav nav-tabs mt-4">
+                    <ul class="nav nav-tabs mt-4" id='navList'>
                         <li class="nav-item">
-                          <a class="nav-link active" href="#">Cadeia Logística</a>
+                          <a class="nav-link" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="#">Informação Histórica</a>
+                          <a class="nav-link" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="#">Mais detalhes</a>
+                          <a class="nav-link" @click="activate(3)" :class="{ active : active_el == 3 }">Mais detalhes</a>
                         </li>
                       </ul>
                   </div>
-                  <div class="container mt-3" id="sumario">
+                  <div class="container mt-3" id="sumario" v-if="active_el==1">
                     <div class="row mt-4">
                       <div class="col-6 text-left">
                         <b>Fornecedor</b>
@@ -108,6 +108,12 @@
                       <div class="col-6 text-left">3 kWh por Produto</div>
                       <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
                     </div>
+                  </div>
+                  <div class="container mt-3" id="info" v-if="active_el==2" >
+                   <p> INFOOOO </p>
+                  </div>
+                  <div class="container mt-3" id="detalhe" v-if="active_el==3" >
+                   <p> DETALHEEE </p>
                   </div>
                 </div>
                 <div class="card-body mt-1">
@@ -200,6 +206,7 @@ export default {
       modal: false,   
       prod:true,
       quantity:1,
+      active_el:1,
     };
   },
   async created() {
@@ -227,6 +234,18 @@ export default {
     this.prod=false;
     console.log(this.modal);
     console.log(this.prod);
+    },
+    activate:function(el){
+      if(this.active_el == 2 || this.active_el == 3 ){
+        document.getElementById("cd").classList.remove("active");
+        this.active_el = el;
+        console.log("2 ou 3")
+      }
+      else{
+        console.log("1")
+        this.active_el = el;
+      }
+        
     },
     clickAction(signal){
 
