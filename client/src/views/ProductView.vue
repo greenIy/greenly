@@ -69,10 +69,21 @@
                           </div>
                       </div>
                     </div>
-                  
                   <div class="container mt-3">
                     <hr class="center mt-3 w-100 " color="black" />
-                    <h4 class="mt-3 mb-4" ><b>Sumário da Cadeia Logística:</b></h4>
+                    <ul class="nav nav-tabs mt-4">
+                        <li class="nav-item">
+                          <a class="nav-link active" href="#">Cadeia Logística</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Informação Histórica</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Mais detalhes</a>
+                        </li>
+                      </ul>
+                  </div>
+                  <div class="container mt-3" id="sumario">
                     <div class="row mt-4">
                       <div class="col-6 text-left">
                         <b>Fornecedor</b>
