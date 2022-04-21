@@ -73,13 +73,13 @@
                     <hr class="center mt-3 w-100 " color="black" />
                     <ul class="nav nav-tabs mt-4" id='navList'>
                         <li class="nav-item">
-                          <a class="nav-link" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
+                          <a class="nav-link text-dark" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
+                          <a class="nav-link text-dark" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" @click="activate(3)" :class="{ active : active_el == 3 }">Mais detalhes</a>
+                          <a class="nav-link text-dark" @click="activate(3)" :class="{ active : active_el == 3 }">Mais Detalhes</a>
                         </li>
                       </ul>
                   </div>
