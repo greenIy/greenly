@@ -15,7 +15,8 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
+                    <input type="email" v-on:click="removeIsInvalid" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
+                    <div class="invalid-feedback">E-mail não tem o formato correto ou E-mail já em uso</div>
                 </div>
             </div>
 
@@ -23,7 +24,8 @@
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
+                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres</div>    
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -35,7 +37,8 @@
 
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
+                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres</div>    
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -52,7 +55,8 @@
                 </div>
                 <div class="col mb-3">
                     <label for="inputComapnyEmail" class="form-label">Email empresa <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="companyEmail" v-model="registerInfo.companyEmail" placeholder="Introduza email" required>
+                    <input type="name" class="form-control" v-on:click="removeIsInvalid" id="companyEmail" v-model="registerInfo.companyEmail" placeholder="Introduza email" required>
+                    <div class="invalid-feedback">E-mail não tem o formato correto ou E-mail já em uso</div>
                 </div>
             </div>
             
@@ -81,15 +85,27 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 library.add(faFacebookSquare, faGoogle);
 function wrongRegister(message) {
+    console.log(message)
     document.getElementById("registerButton").style = "background-color: #a32c2c; width: 100%;";
     document.getElementById("registerButton").innerHTML = message;
     document.getElementById("registerButton").disabled = true;
     document.getElementById("password").value = "";
+    document.getElementById("passwordConfirm").value = "";
     setTimeout(function(){
         document.getElementById("registerButton").style = "background-color: #608072; width: 100%;";
         document.getElementById("registerButton").innerHTML = "Registar como consumidor";
         document.getElementById("registerButton").disabled = false;
    }, 3000);
+   if (message.msg == "Invalid value") {
+        if (message.param == "email") {
+            document.getElementById("email").classList.add("is-invalid")
+        } else if (message.param == "password") {
+            document.getElementById("password").classList.add("is-invalid")
+            document.getElementById("passwordConfirm").classList.add("is-invalid")
+        }
+    } else if (message.msg == "E-mail already in use.") {
+        document.getElementById("email").classList.add("is-invalid")
+    }
 }
 export default {
     name: 'registerSupllier',
@@ -121,12 +137,17 @@ export default {
                 }
             })).then((response) => {
                 if (response.status == 201) {
-                    console.log(response.data.token)
+                    console.log(response.data)
                     alert('Account registered successfully!')
                     this.$router.push({path: '/login'});
                 }
             })
             .catch(error => wrongRegister(error.response.data.errors[0].msg));
+        },
+        removeIsInvalid() {
+            document.getElementById("email").classList.remove("is-invalid");
+            document.getElementById("password").classList.remove("is-invalid");
+            document.getElementById("passwordConfirm").classList.remove("is-invalid");
         }
     }
 };
