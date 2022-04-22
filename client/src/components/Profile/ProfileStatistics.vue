@@ -21,7 +21,7 @@ import http from "../../../http-commmon"
 
 
 export default({
-    name: 'ProfileAchievements',
+    name: 'ProfileStatistics',
     mounted() {
         this.getUserInfo();
     },

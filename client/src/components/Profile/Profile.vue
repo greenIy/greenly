@@ -22,10 +22,10 @@
                         <font-awesome-icon :icon="['fa', 'user']" size=""/>&nbsp; Informações pessoais
                     </a>
                 </li>
-                <li class="nav-item" @click="activeTab = 'achievements'">
-                    <a class="nav-link link-dark" :class="(activeTab === 'achievements') ? 'nav-link active' : ''">
+                <li class="nav-item" @click="activeTab = 'orders'">
+                    <a class="nav-link link-dark" :class="(activeTab === 'orders') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'trophy']" size=""/>&nbsp; Conquistas
+                        <font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas
                     </a>
                 </li>
                 <li class="nav-item" @click="activeTab = 'addresses'">
@@ -40,6 +40,12 @@
                         <font-awesome-icon :icon="['fa', 'gear']" size=""/>&nbsp; Segurança
                     </a>
                 </li>
+                <li class="nav-item" @click="activeTab = 'statistics'">
+                    <a class="nav-link link-dark" :class="(activeTab === 'statistics') ? 'nav-link active' : ''">
+                    <svg class="bi me-0" width="16" height="16"></svg>
+                        <font-awesome-icon :icon="['fa', 'chart-line']" size=""/>&nbsp; Estatísticas
+                    </a>
+                </li>
 
             </ul>
         </nav>
@@ -50,7 +56,7 @@
             </transition>
 
             <transition name="fade">
-                <profile-achievements v-if="activeTab === 'achievements'"/>
+                <profile-orders v-if="activeTab === 'orders'"/>
             </transition>
 
             <transition name="fade">
@@ -59,6 +65,10 @@
 
             <transition name="fade">
                 <profile-security v-if="activeTab === 'security'"/>
+            </transition>
+
+            <transition name="fade">
+                <profile-statistics v-if="activeTab === 'statistics'"/>
             </transition>
         </div> 
     </div>
@@ -71,13 +81,14 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import ProfilePersonalInfo from '@/components/Profile/ProfilePersonalInfo.vue'
-import ProfileAchievements from '@/components/Profile/ProfileAchievements.vue'
+import ProfileOrders from '@/components/Profile/ProfileOrders.vue'
 import ProfileAddresses from '@/components/Profile/ProfileAddresses.vue'
 import ProfileSecurity from '@/components/Profile/ProfileSecurity.vue'
+import ProfileStatistics from '@/components/Profile/ProfileStatistics.vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUserAstronaut, faUser, faTrophy, faMap, faGear} from '@fortawesome/free-solid-svg-icons';
-library.add(faUserAstronaut, faUser, faTrophy, faMap, faGear);
+import { faUserAstronaut, faUser, faBoxArchive, faMap, faGear, faChartLine } from '@fortawesome/free-solid-svg-icons';
+library.add(faUserAstronaut, faUser, faBoxArchive, faMap, faGear, faChartLine);
 
 import http from "../../../http-commmon"
 
@@ -87,9 +98,10 @@ export default {
         TheNavbar,
         TheFooter,
         ProfilePersonalInfo,
-        ProfileAchievements,
+        ProfileOrders,
         ProfileAddresses,
-        ProfileSecurity
+        ProfileSecurity,
+        ProfileStatistics
     },
     mounted() {
         this.getUserInfo();

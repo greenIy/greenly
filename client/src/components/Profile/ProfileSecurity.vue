@@ -20,10 +20,10 @@
             <div class="col mb-3">
                 <label for="inputNewPassword" class="form-label">Nova palavra-passe</label>
                 <div class="input-group">
-                <input :type="showPassword1 ? 'text' : 'password'" class="form-control" id="newPassword" placeholder="Introduza palavra-passe" required>
+                <input :type="showPassword2 ? 'text' : 'password'" class="form-control" id="newPassword" placeholder="Introduza palavra-passe" required>
                     <div class="input-group-append">
-                        <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
-                                <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                        <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
+                                <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                         </span>
                     </div>
                 </div>
@@ -31,10 +31,10 @@
             <div class="col mb-3">
                 <label for="inputNewPasswordConfirm" class="form-label">Repetir nova palavra-passe</label>
                 <div class="input-group">
-                <input :type="showPassword2 ? 'text' : 'password'" class="form-control" id="newPasswordConfirm" placeholder="Introduza palavra-passe" required>
+                <input :type="showPassword3 ? 'text' : 'password'" class="form-control" id="newPasswordConfirm" placeholder="Introduza palavra-passe" required>
                     <div class="input-group-append">
-                        <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
-                                <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                        <span class="input-group-text" @click="showPassword3 = !showPassword3" style="height: 100%">
+                                <font-awesome-icon :icon="showPassword3 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                         </span>
                     </div>
                 </div>
@@ -64,6 +64,7 @@ export default({
             user: [],
             showPassword1: false,
             showPassword2: false,
+            showPassword3: false,
         }
     },
     methods: {

@@ -70,7 +70,6 @@ export default({
             document.getElementById("password").value = "";
         },
         loginUser() {
-
             http.post("/auth/login", JSON.stringify({
                     email: this.loginInfo.email,
                     password: this.loginInfo.password }))
