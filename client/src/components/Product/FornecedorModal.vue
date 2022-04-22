@@ -12,7 +12,7 @@
          <div class="container">
         <div class="mt-4" >
           <div class=" card-group mt-2">
-            <CardFornecedor />
+            <CardFornecedor  />
         </div>
       </div>
       </div>
@@ -45,7 +45,11 @@ export default {
   },
   data() {
     return { 
+      product: [],
     }
+  },
+   props: {
+    product:Object,
   },
   methods:{
     // closeModal(){

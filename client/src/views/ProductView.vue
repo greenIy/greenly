@@ -225,7 +225,7 @@ export default {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
-      //console.log(this.product);
+      console.log(this.product);
       this.loading = false;
       window.scrollTo(0, 0);
     },

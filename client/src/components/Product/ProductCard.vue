@@ -27,13 +27,7 @@
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" for="accept">
-                <input
-                  type="checkbox"
-                  v-model="user.accept"
-                  id="accept"
-                  class="form-check-input checkbox"
-                />Comparar Produto</label
-              >
+                <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox" />Comparar Produto</label>
             </div>
           </form>
         </div>
