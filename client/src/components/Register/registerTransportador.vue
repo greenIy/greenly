@@ -79,6 +79,8 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
+import http from "../../../http-commmon";
+
 library.add(faFacebookSquare, faGoogle);
 function wrongRegister(message) {
     document.getElementById("registerButton").style = "background-color: #a32c2c; width: 100%;";
