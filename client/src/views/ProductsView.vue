@@ -23,7 +23,7 @@
             </div>
           </div>
       </div>
-      <TheNextPage @sendCurrentPage="getCurrentPage"/>
+      <TheNextPage @sendCurrentPage="getCurrentPage "/>
     </div>
     <TheFooter />
   </div>
@@ -60,6 +60,9 @@ export default {
     productsInPage: Number,
     categories: Array,
     order:String,
+    params:String,
+    p:String
+
     
   },
   data() {
@@ -76,63 +79,73 @@ export default {
       productsInPage: 0,
       order:"name",
       newProducts: this.product,
+      p:String
     };
   },
   created() {
     this.getProducts();
     this.getCategories();
-    
     //console.log(this.$route);
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit) {
+      this.p = "id";
       var response = await http.get("/store/products?page=" + page + "&limit="+limit);
       this.products = response.data.products;
       this.productAmount = response.data.total_products;
       this.productsInPage = this.products.length;
       //console.log(response.data);
       window.scrollTo(0, 0);
+      return this.p
     },
     async getProductsByChild(params) {
       this.order = params;
       console.log(params)
       if( params == "name"){
-        console.log("entrei")
         await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=name_asc").then((response) => {
                 this.newProducts = response.data.products;
-                console.log(this.newProducts)
-
             });
       this.products = Object.assign([], this.newProducts);
+      this.p = "name";
+      console.log("name")
       }
       else if( params == "id"){
         await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=newest").then((response) => {
                 this.newProducts = response.data.products;
-                console.log(this.newProducts)
-
             });
       this.products = Object.assign([], this.newProducts);
+      this.p = "id";
+      console.log("id")
       }
       else if( params == "priceMin"){
         await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_asc").then((response) => {
                 this.newProducts = response.data.products;
-                console.log(this.newProducts)
-
             });
       this.products = Object.assign([], this.newProducts);
+      this.p = "priceMin";
+      console.log("min")
       }
       else {
         await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_desc").then((response) => {
                 this.newProducts = response.data.products;
-                console.log(this.newProducts)
-
             });
       this.products = Object.assign([], this.newProducts);
+      this.p = "priceMax";
+      console.log("max")
       }
+      return this.p
     },
     getCurrentPage: function(params) {
       this.currentPage = params;
-      this.getProducts();
+      //console.log(this.p)
+      if (this.p == "id"){
+        this.getProducts();
+        console.log("id");
+      }else {
+        this.getProductsByChild();
+        console.log("outros");
+      }
+      
     },
     async getCategories() {
       var response = await http.get("/store/categories");
