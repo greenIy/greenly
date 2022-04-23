@@ -18,10 +18,10 @@
             <div class="dropdown col-4 align-self-start justify-content-end pt-1">
                 <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
                 <ul class="dropdown-menu" aria-labelledby="order-by">
-                    <li><a class="dropdown-item" @click='orderByName()'>Nome</a></li>
-                    <li><a class="dropdown-item" @click='orderById()'>Novidade</a></li>
-                    <li><a class="dropdown-item" @click='orderByPriceMin()'>Preço Ascendente</a></li>
-                    <li><a class="dropdown-item" @click='orderByPriceMax()'>Preço Descendente</a></li>
+                    <li><a class="dropdown-item" @click='order("name")'>Nome</a></li>
+                    <li><a class="dropdown-item" @click='order("id")'>Novidade</a></li>
+                    <li><a class="dropdown-item" @click='order("priceMin")'>Preço Ascendente</a></li>
+                    <li><a class="dropdown-item" @click='order("priceMax")'>Preço Descendente</a></li>
                 </ul>
             </div>
         </div>
@@ -38,7 +38,7 @@ import http from "../../../../http-common";
         pageAmount: Number,
         currentPage: Number,
         limit: Number,
-        product: Object,
+        product:Object,
         productsInPage: Number,
     },
     data() {
@@ -56,20 +56,8 @@ import http from "../../../../http-common";
         productsPerPage: function (amount) {
             this.$emit("sendProductsPerPage", amount);
         },
-        orderByName: function () {
-        var res = this.product.sort((a, b) => a.name > b.name ? 1 : -1); 
-        //console.log(res)    
-        },
-   
-        orderById: function () {
-        var res = this.product.sort(({id:a}, {id:b}) => b-a);
-         console.log(res)  
-        },
-        orderByPriceMin: function () {
-
-        },
-        orderByPriceMax: function () {
-
+        order: function(params) {
+            this.$emit("sendProduct",params);
         },
     }
   }

@@ -139,7 +139,7 @@
                     </div>
                     <div class="d-inline-block text-end col-md-4">
                       <button class="btnS p-2">
-                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho
+                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
                     <button class="d-inline-block text-start col-md-1 btnH p-8 fav">
@@ -152,7 +152,7 @@
           </div>
         </div>
       </div>
-      <FornecedorModal  v-if="modal !=false"/>
+      <FornecedorModal  v-if="modal !=false" @changeProd="prod" :changeModal="modal" />
       <TransportadorModal  v-if="modal !=false"/>
     </body>
     <TheFooter />
@@ -172,8 +172,6 @@ library.add(faCartPlus);
 library.add(faAngleDown);
 library.add(faCirclePlus);
 library.add(faCircleMinus);
-
-
 
 import http from "../../http-common";
 
@@ -219,24 +217,20 @@ export default {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
-      console.log(this.product);
+      //console.log(this.product);
       this.loading = false;
       window.scrollTo(0, 0);
     },
     showModal(){
     this.modal=true;
     this.prod=false;
-    console.log(this.modal);
-    console.log(this.prod);
     },
     activate:function(el){
       if(this.active_el == 2 || this.active_el == 3 ){
         document.getElementById("cd").classList.remove("active");
         this.active_el = el;
-        console.log("2 ou 3")
       }
       else{
-        console.log("1")
         this.active_el = el;
       }
         
@@ -256,10 +250,8 @@ export default {
           document.getElementById("decrement").style.color="#7c9d8e";
         }
       }
-
   },
   },
- 
 };
 </script>
 

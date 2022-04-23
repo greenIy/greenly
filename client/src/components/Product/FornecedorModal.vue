@@ -1,10 +1,10 @@
 <template>
-<div class="modal" role="dialog">
+<div class="modal" role="dialog" id="fornModal">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Fornecedor</h5> 
-        <div id="close" >
+        <div @click="closeModal()" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
       </div>
@@ -19,7 +19,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Guardar Alterações</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-secondary" @click="closeModal()" data-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>
@@ -48,16 +48,16 @@ export default {
       product: [],
     }
   },
+   modal: false,   
+   prod:true,
    props: {
     product:Object,
   },
   methods:{
-    // closeModal(){
-    //   this.modal=false;
-    //   this.prod=true;
-    //   console.log(this.modal);
-    //   console.log(this.prod);
-    // }
+    closeModal(){
+      this.$emit('changeProd', this.prod);
+      this.$emit('changeModal', this.modal);
+    }
   }
 };
 </script>

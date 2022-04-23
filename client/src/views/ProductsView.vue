@@ -5,7 +5,7 @@
     <div class="content-wrap mw-0">
       <div class="container">
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
-              :product="products"/>
+              :product="products" @sendProduct="getProductsByChild" />
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
@@ -53,11 +53,14 @@ export default {
   props: {
     product: Object,
     productAmount: Number,
+    newProducts: Object,
     pageAmount: Number,
     currentPage: Number,
     limit: Number,
     productsInPage: Number,
     categories: Array,
+    order:String,
+    
   },
   data() {
     return {
@@ -71,11 +74,14 @@ export default {
       currentCategory: {id: "", name: ""},
       limit: 12,
       productsInPage: 0,
+      order:"name",
+      newProducts: this.product,
     };
   },
   created() {
     this.getProducts();
     this.getCategories();
+    
     //console.log(this.$route);
   },
   methods: {
@@ -86,6 +92,43 @@ export default {
       this.productsInPage = this.products.length;
       //console.log(response.data);
       window.scrollTo(0, 0);
+    },
+    async getProductsByChild(params) {
+      this.order = params;
+      console.log(params)
+      if( params == "name"){
+        console.log("entrei")
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=name_asc").then((response) => {
+                this.newProducts = response.data.products;
+                console.log(this.newProducts)
+
+            });
+      this.products = Object.assign([], this.newProducts);
+      }
+      else if( params == "id"){
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=newest").then((response) => {
+                this.newProducts = response.data.products;
+                console.log(this.newProducts)
+
+            });
+      this.products = Object.assign([], this.newProducts);
+      }
+      else if( params == "priceMin"){
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_asc").then((response) => {
+                this.newProducts = response.data.products;
+                console.log(this.newProducts)
+
+            });
+      this.products = Object.assign([], this.newProducts);
+      }
+      else {
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_desc").then((response) => {
+                this.newProducts = response.data.products;
+                console.log(this.newProducts)
+
+            });
+      this.products = Object.assign([], this.newProducts);
+      }
     },
     getCurrentPage: function(params) {
       this.currentPage = params;

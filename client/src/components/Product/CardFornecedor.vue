@@ -3,7 +3,7 @@
     <label>
         <input type="radio" v-model="fornecedor" name="fornecedor" active-class="active"  class="card-input-element" />
             <div class="card-input">
-                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor: {{products.supplies.supplier}} <span class="dot"></span></p></div>
+                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor: <span class="dot"></span></p></div>
                       <div class="panel-body">
                         <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
                         <p class="text-p"><b>Stock:</b> 30 produtos</p>
