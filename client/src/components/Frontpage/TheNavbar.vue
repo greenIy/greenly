@@ -23,14 +23,12 @@
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
                         <li><h6 class="dropdown-header"> {{ user.first_name + " " + user.last_name }}</h6></li>
                         <li><hr class="dropdown-divider"></li>
-                        <router-link to="/profile">
-                            <li><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></li>
-                        </router-link>
-                        <li><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</a></li>
-                        <li><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></li>
-                        <li><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</a></li>
+                        <li><a class="dropdown-item ms-0"><router-link to="/profile" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</router-link></a></li>
+                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</router-link></a></li>
+                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</router-link></a></li>
+                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</router-link></a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" style="color: red !important">Terminar sessão</a></li>
+                        <li><a class="dropdown-item"><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0; color: red !important">Terminar sessão</router-link></a></li>
                     </ul>
                 </div>
                 <router-link  to="/login">
@@ -121,6 +119,10 @@ export default {
                 })  
             }
         },
+        logoutUser() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userId');
+        }
     }
 };
 </script>
@@ -187,10 +189,7 @@ export default {
     .form-control{
         box-shadow:none;
     }
-    .router-link-exact-active {
-       text-decoration: underline!important;
-    }
-    .dropdown-header, .dropdown-item {
+    .dropdown-header, .dropdown-item, .dropdown-item a {
         color: black !important;
     }
     

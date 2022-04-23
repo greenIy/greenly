@@ -19,31 +19,31 @@
                 <li class="nav-item" @click="activeTab = 'personalInfo'">
                     <a class="nav-link link-dark" :class="(activeTab === 'personalInfo') ? 'nav-link active' : ''" aria-current="page">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'user']" size=""/>&nbsp; Informações pessoais
+                        <font-awesome-icon :icon="['fa', 'user']" size="lg"/>&nbsp; Informações Pessoais
                     </a>
                 </li>
                 <li class="nav-item" @click="activeTab = 'orders'">
                     <a class="nav-link link-dark" :class="(activeTab === 'orders') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas
+                        <font-awesome-icon :icon="['fa', 'box-archive']" size="lg"/>&nbsp; Encomendas
                     </a>
                 </li>
                 <li class="nav-item" @click="activeTab = 'addresses'">
                     <a class="nav-link link-dark" :class="(activeTab === 'addresses') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'map']" size=""/>&nbsp; Moradas
+                        <font-awesome-icon :icon="['fa', 'map']" size="lg"/>&nbsp; Moradas
                     </a>
                 </li>
                 <li class="nav-item" @click="activeTab = 'security'">
                     <a class="nav-link link-dark" :class="(activeTab === 'security') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'gear']" size=""/>&nbsp; Segurança
+                        <font-awesome-icon :icon="['fa', 'gear']" size="lg"/>&nbsp; Segurança
                     </a>
                 </li>
                 <li class="nav-item" @click="activeTab = 'statistics'">
                     <a class="nav-link link-dark" :class="(activeTab === 'statistics') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
-                        <font-awesome-icon :icon="['fa', 'chart-line']" size=""/>&nbsp; Estatísticas
+                        <font-awesome-icon :icon="['fa', 'chart-line']" size="lg"/>&nbsp; Estatísticas
                     </a>
                 </li>
 

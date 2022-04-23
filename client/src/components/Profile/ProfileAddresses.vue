@@ -17,6 +17,10 @@
                     <address>
                         <strong>NIF</strong><br>
                         <a>967 712 361</a>
+                        <div class="position-absolute bottom-0 end-0 p-2 pe-3">
+                            <a class="text-decoration: none;"><font-awesome-icon style="color: black; cursor: pointer;" :icon="['fa', 'pen']" size=""/></a>&nbsp;
+                            <a class="text-decoration: none;"><font-awesome-icon style="color: black; cursor: pointer;" :icon="['fa', 'trash-can']" size=""/></a>
+                        </div>
                     </address>              
             </div>
         </div>
@@ -32,8 +36,8 @@
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-library.add(faPlus);
+import { faPlus, faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
+library.add(faPlus, faTrashCan, faPen);
 
 import http from "../../../http-commmon"
 
