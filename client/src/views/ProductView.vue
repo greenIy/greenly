@@ -27,38 +27,32 @@
                          <div class="d-flex flex-column flex-grow-1">
                           <span> Fornecedor: </span>
                           <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
-                                  <div class="d-flex mt-2 h-100 flex-column card product marginr">
-                                                  <div class="d-flex card-input">
-                                                      <div class="col-10">
-                                                          <div class="card-title"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
-                                                      </div>
-                                                      <div class="col-2">
-                                                      </div>
-                                                  </div>
-                                                  <div class="d-flex flex-column card-input">
-                                                      <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                                                      <p class="text-p"><b>Stock:</b> 30 produtos</p>
-                                                      <p class="text-p"><b>Preço:</b> 32€</p>
-                                                  </div>
-                                      </div>
-                            </div>
+                          <div class="d-flex mt-2 h-100 flex-column card product marginr">
+                                <div class="d-flex justify-content-between card-input">
+                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
+                                    <div class="mx-2"><input type="radio" v-model="fornecedor" name="fornecedor" active-class="active"  class="card-input-element"  /></div>
+                                  </div>
+                              <div class="d-flex flex-column card-input mt-0">
+                                <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
+                                <p class="text-p"><b>Stock:</b> 30 produtos</p>
+                                <p class="text-p"><b>Preço:</b> 32€</p>
+                              </div>
+                          </div>
+                        </div>
                        <div class="mt-4 mx-auto">
                             <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Fornecedor</button>
-                          </div>
-                    </div>
-                      <div class="col-6 d-flex flex-column" v-if="fornecedor != false" id="transportador">
-                      <div class="d-flex flex-column flex-grow-1">
+                        </div>
+                        </div>
+                      <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
+                        <div class="d-flex flex-column flex-grow-1">
                           <span> Transportador: </span>
                           <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
-                                <div class="d-flex card-input">
-                                  <div class="col-10">
-                                    <div class="card-title"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
-                                  </div>
-                                  <div class="col-2">     
-                                  </div>
-                                  </div>
-                                    <div class="d-flex flex-column card-input">
+                                    <div class="d-flex justify-content-between card-input">
+                                      <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
+                                      <div class="mx-2"><input type="radio"  v-model="transportador" name="transportador" active-class="active"  class="card-input-element"  /></div>
+                                    </div>
+                                    <div class="d-flex flex-column card-input mt-0">
                                     <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
                                     <p class="text-p"><b>Preço:</b> 32€</p>
                                   </div>
@@ -346,7 +340,7 @@ label {
 .card-input:hover {
     cursor: pointer;
 }
-.card:hover {
+.card {
   box-shadow: 1px 8px 10px #d9d9d9;
 }
 .text-p {
