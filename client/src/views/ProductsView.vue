@@ -160,7 +160,11 @@ export default {
     },
     productsPerPage: function (params) {
       this.limit = params;
-      this.getProducts(this.currentPage, params);
+       if (this.nameFilter == "id"){
+        this.getProducts(this.currentPage, params);
+      }else {
+        this.getProductsByChild(this.nameFilter);
+      }
     },
     searchInformation: function (params) {
       //console.log(this.$route.name);

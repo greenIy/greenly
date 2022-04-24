@@ -10,7 +10,7 @@
     <div class="col-1 text-end mx-3">
         <div class="dropdown">
             <a class="btn rounded text-decoration-none" id="order-by-numbers" data-bs-toggle="dropdown" aria-expanded="false"> {{ limit }} 
-                <font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" />
+                <font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" />
             </a>
             <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
                 <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
@@ -23,7 +23,7 @@
         <div class="dropdown" >
             <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:11rem;text-align:left;">
                 <span id="orderBy">Ordenar por</span>
-                <span  style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" /></span>
+                <span style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" /></span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
                 <li><a class="dropdown-item" @click='order("name")' style="width: 11rem;">Nome</a></li>
