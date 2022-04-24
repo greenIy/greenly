@@ -38,7 +38,7 @@
           </div>
         </div>
       </li>
-      <li>
+  <!--     <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
@@ -47,7 +47,7 @@
           
           </div>
         </div>
-      </li>
+      </li> -->
     </ul>
   </div>
 </template>
@@ -64,16 +64,13 @@ library.add(faAngleUp);
       categories: Array,
       minPrice: Number,
       maxPrice: Number,
-      //'switchCurrentCategory',
       page: {
         type: String
       },
       category: {
         type: String
       },
-      //'parentCategory',
-      //'absoluteMaxPrice',
-      //'switchPriceRange'
+
     },
     data () { 
       return {
@@ -83,9 +80,6 @@ library.add(faAngleUp);
         countC: 0,
         countP: 0,
         countF: 0,
-        //currentMinPrice,
-        //currentMaxPrice,
-        //parentCategory
       }
     },
     methods: {

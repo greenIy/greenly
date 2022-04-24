@@ -8,16 +8,16 @@
                 </p>
             </div>
              <div class="dropdown col-2 justify-content-end pt-1">
-                <a class="dropdown-toggle  btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
-                <ul class="dropdown-menu drop" aria-labelledby="order-by">
+                <a class="dropdown-toggle  btn rounded text-decoration-none" href="#" id="order-by-numbers" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
+                <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
                     <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
                     <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
                     <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
                 </ul>
             </div>
             <div class="dropdown col-4 align-self-start justify-content-end pt-1">
-                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
-                <ul class="dropdown-menu" aria-labelledby="order-by">
+                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
+                <ul class="dropdown-menu" aria-labelledby="order-by-filters">
                     <li><a class="dropdown-item" @click='order("name")'>Nome</a></li>
                     <li><a class="dropdown-item" @click='order("id")'>Novidade</a></li>
                     <li><a class="dropdown-item" @click='order("priceMin")'>Preço Ascendente</a></li>
@@ -58,6 +58,19 @@ import http from "../../../../http-common";
         },
         order: function(params) {
             this.$emit("sendProduct",params);
+            if(params == "name"){
+                document.getElementById("order-by-filters").innerHTML = "Nome"
+            }
+            else if(params == "id"){
+                document.getElementById("order-by-filters").innerHTML = "Novidade"
+            }
+            else if(params == "priceMin"){
+                document.getElementById("order-by-filters").innerHTML = "Preço Ascendente"
+            }
+            else{
+                document.getElementById("order-by-filters").innerHTML = "Preço Descendente"
+            }
+            
         },
     }
   }
