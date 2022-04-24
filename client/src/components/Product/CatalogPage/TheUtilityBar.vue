@@ -1,36 +1,50 @@
 <template>
-<div class="container size">
-<div class="d-flex justify-content-end mt-3">
-        <div class="row">
-            <div class="col-6 pt-2">
-                <p class="text-secondary fs-6">
-                    {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
-                </p>
-            </div>
-             <div class="dropdown col-2 justify-content-end pt-1">
-                <a class="dropdown-toggle  btn rounded text-decoration-none" href="#" id="order-by-numbers" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
-                <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
-                    <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
-                    <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
-                    <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
-                </ul>
-            </div>
-            <div class="dropdown col-4 align-self-start justify-content-end pt-1">
-                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
-                <ul class="dropdown-menu" aria-labelledby="order-by-filters">
-                    <li><a class="dropdown-item" @click='order("name")'>Nome</a></li>
-                    <li><a class="dropdown-item" @click='order("id")'>Novidade</a></li>
-                    <li><a class="dropdown-item" @click='order("priceMin")'>Preço Ascendente</a></li>
-                    <li><a class="dropdown-item" @click='order("priceMax")'>Preço Descendente</a></li>
-                </ul>
-            </div>
+<div class="d-flex align-items-center my-3" style="width:89.5%">
+    <div class="col-6">
+    </div>
+    <div class="col-3 text-end mx-1">
+        <span class="text-secondary fs-6">
+            {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
+        </span>
+    </div>
+    <div class="col-1 text-end mx-3">
+        <div class="dropdown">
+            <a class="btn rounded text-decoration-none" id="order-by-numbers" data-bs-toggle="dropdown" aria-expanded="false"> {{ limit }} 
+                <font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" />
+            </a>
+            <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
+                <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
+                <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
+                <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
+            </ul>
         </div>
-</div>
+    </div>
+    <div class="col-2 text-end">
+        <div class="dropdown" >
+            <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:11rem;text-align:left">Ordenar por
+                <font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" />
+            </a>
+        
+
+            <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
+                <li><a class="dropdown-item" @click='order("name")' style="width: 11rem;">Nome</a></li>
+                <li><a class="dropdown-item" @click='order("id")' style="width: 11rem;">Novidade</a></li>
+                <li><a class="dropdown-item" @click='order("priceMin")' style="width: 11rem;">Preço Ascendente</a></li>
+                <li><a class="dropdown-item" @click='order("priceMax")' style="width: 11rem;">Preço Descendente</a></li>
+            </ul>
+        </div>
+    </div>
+   
+ 
 </div>
 </template>
 
 <script>
 import http from "../../../../http-common";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faCaretDown);
 
   export default {
     props: {
