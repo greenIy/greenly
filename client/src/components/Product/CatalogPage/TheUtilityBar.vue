@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex align-items-center my-3" style="width:89.5%">
+<div class="d-flex align-items-end my-3" style="width:91%">
     <div class="col-6">
     </div>
     <div class="col-3 text-end mx-1">
@@ -19,13 +19,12 @@
             </ul>
         </div>
     </div>
-    <div class="col-2 text-end">
+    <div class="col-2">
         <div class="dropdown" >
-            <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:11rem;text-align:left">Ordenar por
-                <font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" />
+            <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:11rem;text-align:left;">
+                <span id="orderBy">Ordenar por</span>
+                <span  style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1" :icon="['fa', 'caret-down']" size="xs" /></span>
             </a>
-        
-
             <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
                 <li><a class="dropdown-item" @click='order("name")' style="width: 11rem;">Nome</a></li>
                 <li><a class="dropdown-item" @click='order("id")' style="width: 11rem;">Novidade</a></li>
@@ -73,16 +72,16 @@ library.add(faCaretDown);
         order: function(params) {
             this.$emit("sendProduct",params);
             if(params == "name"){
-                document.getElementById("order-by-filters").innerHTML = "Nome"
+                document.getElementById("orderBy").innerHTML = "Nome"
             }
             else if(params == "id"){
-                document.getElementById("order-by-filters").innerHTML = "Novidade"
+                document.getElementById("orderBy").innerHTML = "Novidade"
             }
             else if(params == "priceMin"){
-                document.getElementById("order-by-filters").innerHTML = "Preço Ascendente"
+                document.getElementById("orderBy").innerHTML = "Preço Ascendente"
             }
             else{
-                document.getElementById("order-by-filters").innerHTML = "Preço Descendente"
+                document.getElementById("orderBy").innerHTML = "Preço Descendente"
             }
             
         },
