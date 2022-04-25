@@ -130,7 +130,6 @@ export default {
     },
     getCurrentPage: function(params) {
       this.currentPage = params;
-      //console.log(this.p)
       if (this.nameFilter == "id"){
         this.getProducts();
       }else {
@@ -160,7 +159,7 @@ export default {
     },
     productsPerPage: function (params) {
       this.limit = params;
-       if (this.nameFilter == "id"){
+      if (this.nameFilter == "id"){
         this.getProducts(this.currentPage, params);
       }else {
         this.getProductsByChild(this.nameFilter);

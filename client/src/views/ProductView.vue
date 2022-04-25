@@ -40,7 +40,7 @@
                           </div>
                         </div>
                        <div class="mt-4 mx-auto">
-                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Fornecedor</button>
+                            <button type="button" class="btn btn-secondary" @click="showModalF()" :modal="false">Escolher outro Fornecedor</button>
                         </div>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
@@ -59,7 +59,7 @@
                           </div>
                           </div>
                             <div class="mt-4 mx-auto">
-                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Transportador</button>
+                            <button type="button" class="btn btn-secondary" @click="showModalT()" :modal="false">Escolher outro Transportador</button>
                           </div>
                       </div>
                     </div>
@@ -152,8 +152,8 @@
           </div>
         </div>
       </div>
-      <FornecedorModal  v-if="modal !=false" @changeProd="prod" :changeModal="modal" />
-      <TransportadorModal  v-if="modal !=false"/>
+      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" />
+      <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT"/>
     </body>
     <TheFooter />
   </div>
@@ -184,7 +184,8 @@ export default {
     TransportadorModal,
   },
   props: {
-    modal:Boolean,
+    modalT:Boolean,
+    modalF:Boolean,
     prod:Boolean,
   },
   data() {
@@ -195,7 +196,8 @@ export default {
       product: {},
       isActiveT: false,
       isActiveF: false,
-      modal: false,   
+      modalF: false,
+      modalT: false,      
       prod:true,
       quantity:1,
       active_el:1,
@@ -221,9 +223,25 @@ export default {
       this.loading = false;
       window.scrollTo(0, 0);
     },
-    showModal(){
-    this.modal=true;
+    showModalF(){
+    this.modalF=true;
     this.prod=false;
+    },
+      showModalT(){
+    this.modalT=true;
+    this.prod=false;
+    },
+    getModalF(params){
+    if(params == "fecha"){
+      this.modalF=false;
+      this.prod=true;
+    }
+    },
+    getModalT(params){
+    if(params == "fecha"){
+      this.modalT=false;
+      this.prod=true;
+    }
     },
     activate:function(el){
       if(this.active_el == 2 || this.active_el == 3 ){

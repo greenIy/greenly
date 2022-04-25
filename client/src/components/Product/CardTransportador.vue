@@ -1,12 +1,11 @@
 <template>
 <div class="d-flex card product">
     <label>
-        <input type="radio" v-model="fornecedorCard" name="fornecedorCard" active-class="active"  class="card-input-element" />
+        <input type="radio" v-model="transportadorCard" name="transportadorCard" active-class="active"  class="card-input-element" />
             <div class="card-input">
-                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A <span class="dot"></span></p></div>
+                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor: <span class="dot"></span></p></div>
                       <div class="panel-body">
-                        <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                        <p class="text-p"><b>Stock:</b> 30 produtos</p>
+                        <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
                         <p class="text-p"><b>Preço:</b> 32€</p>
                       </div>
                 </div>
@@ -25,7 +24,7 @@ library.add(faXmark);
 
 
 export default {
-  name: "CardFornecedor",
+  name: "CardTransportador",
   data() {
     return { 
     }

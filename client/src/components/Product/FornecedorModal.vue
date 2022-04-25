@@ -4,7 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Fornecedor</h5> 
-        <div @click="closeModal()" >
+        <div @click="closeModal('fecha')" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
       </div>
@@ -19,12 +19,11 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Guardar Alterações</button>
-        <button type="button" class="btn btn-secondary" @click="closeModal()" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-secondary" @click="closeModal('fecha')" data-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>
 </div>
-   
 </template>
 <script>
 
@@ -48,15 +47,14 @@ export default {
       product: [],
     }
   },
-   modal: false,   
-   prod:true,
    props: {
     product:Object,
+    modal:Boolean,
+    prod:Boolean,
   },
   methods:{
-    closeModal(){
-      this.$emit('changeProd', this.prod);
-      this.$emit('changeModal', this.modal);
+    closeModal(params){
+      this.$emit('sendModalF',params);
     }
   }
 };

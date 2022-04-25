@@ -101,6 +101,6 @@ library.add(faCaretDown);
   box-shadow: none;
 }
 .drop{
-    min-width: 80%!important
+    min-width: 62%!important
 }
 </style>
