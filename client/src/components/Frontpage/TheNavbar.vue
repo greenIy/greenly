@@ -4,7 +4,7 @@
         <div class="container-fluid my-2">
             <div>
                 <!--Megamenu toggler-->
-                <button class="collapsed bg-transparent border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#megamenu" aria-controls="megamenu" aria-expanded="false" aria-label="Toggle megamenu">
+                <button class="btn bg-transparent border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#megamenu" aria-controls="megamenu">
                     <font-awesome-icon :icon="['fa', 'bars-staggered']" size="xl" inverse/>
                 </button>
 
@@ -79,19 +79,80 @@
                 </router-link>
             </div>
         </div-->
+    </nav>
     
-</nav>
-<!--old ends here-->
+
+<!--div class="row content justify-content-center">
+    <div class="col-sm-2 col-md-2 mb-2 filtros ">
+            <div class="content d-flex">
+              <megamenu
+    <div class="d-flex-shrink-0 pt-3 pl-3 mr-0"> 
+        <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
+        Filtros
+        </p>
+        <ul class="list-unstyled ">
+        <li>
+            <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
+            <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Categoria
+            </div>   
+            <div class="collapse show" id="categories-collapse">
+            <div class="list-group list-group-flush">
+                <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
+                &larr;  {{ currentCategory.name }}
+                </router-link>
+                
+                <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+                {{ category.name }}
+                </router-link>
+            </div>
+            </div>
+        </li>
+        <li>
+            <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
+            <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-up']"  /> Preço
+            </div>
+
+            <div class="collapse show" id="price-range-collapse">
+            <div class="list-group list-group-flush pb-3">
+                <span class="list-group-item border-0">
+                <label for="price-min">Mínimo: &nbsp;</label>
+                    <input v-model.number:value="minPrice" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number">
+                </span>
+                <span class="list-group-item border-0">
+                <label for="price-max">Máximo: &nbsp;</label>
+                <input v-model.number:value="maxPrice" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number">
+                </span>
+            </div>
+            </div>
+        </li>
+        <li>
+            <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
+            <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
+            </div>   
+            <div class="collapse show" id="fornecedores-collapse">
+            <div class="list-group list-group-flush">
+            
+            </div>
+            </div>
+        </li>
+        </ul>
+    </div>-->
+    <!--TheFilters :categories="categories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/
+        </div>
+    </div>
+</div>-->
+    
 </template>
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faBarsStaggered, faUser, faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faBarsStaggered, faUser, faMagnifyingGlass, faPercent} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faCartShopping);
 library.add(faBarsStaggered);
 library.add(faUser);
 library.add(faMagnifyingGlass);
+library.add(faPercent)
 
 export default {
   name: 'TheNavbar',
@@ -129,13 +190,18 @@ export default {
         background-color: #68b694;
     }
 
+    .input-group .btn {
+        z-index: 0;
+    }
+
     .fa-bars-staggered:hover,
     .fa-user:hover,
     .fa-cart-shopping:hover,
     .fa-bars-staggered:active,
     .fa-user:active,
     .fa-cart-shopping:active,
-    .fa-magnifying-glass {
+    .fa-magnifying-glass,
+    #promo {
         color: #483df6;
     }
      .fa-magnifying-glass:hover{
@@ -147,9 +213,10 @@ export default {
     }
 
     #cart-count {
-        right: 0.7px;
-        top: 1px;
-        width: 100%;
+        right: 3.1px;
+        top: 3px;
+        width: 70%;
+        font-family: 'Lucida Console',monospace;
     }
 
     #cart-leaf {

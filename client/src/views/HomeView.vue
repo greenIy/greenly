@@ -2,7 +2,13 @@
   <div class="page-container">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div class="content-wrap">
+      
       <TheNavbar />
+      
+      <TheMegamenu />
+
+      
+      
       <router-link to="/produtos">
         <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
@@ -15,12 +21,14 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
+import TheMegamenu from '@/components/Frontpage/TheMegamenu.vue';
 
 export default {
   name: 'HomeView',
   components: {
     TheNavbar,
     TheFooter,
+    TheMegamenu
   },
 };
 </script>
