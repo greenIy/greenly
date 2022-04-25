@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card ml-2 mr-2">
+  <div class="product-card ml-2 mb-2 mr-2">
     <div class="card-group card h-100 d-flex">
       <div class="card h-100 hover-shadow d-flex">
         <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
@@ -10,40 +10,33 @@
           <h5 class="card-title">{{ product.category.name }}</h5>
           <div>
             <h4 class="card-title">
-              <!-- eslint-disable max-len -->
               {{ product.name }}
             </h4>
           </div>
           <p class="card-text text-truncate">{{ product.description }}</p>
         </div>
         </router-link>
-        <div class="card-body py-0 position-relative mt-1 mb-1">
+        <div class="card-body py-0 position-relative mt-1 mb-2">
          <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
         </div>
-        <div class="div card-body py-0 position-relative mt-1 mb-3">
+        <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
           <button class="btnH fav">
             <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
             Favoritos
           </button>
-       <!--    <form>
+          <form>
             <div class="form-group form-check">
-              <label class="form-check-label ms-2 product" for="accept">
-                <input
-                  type="checkbox"
-                  v-model="user.accept"
-                  id="accept"
-                  class="form-check-input checkbox"
-                />Comparar Produto</label
-              >
+              <label class="form-check-label product" for="accept">
+                <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox" />Comparar Produto</label>
             </div>
-          </form> -->
+          </form>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-/* eslint-disable */
+
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";

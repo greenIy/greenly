@@ -1,5 +1,4 @@
 <template>
-<!-- eslint-disable max-len -->
 <nav>
         <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
             <div class="align-self-center mt-2 mb-2">
@@ -8,8 +7,8 @@
                 </router-link>
             </div>
             <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
-                <input class="form-control" type="search" placeholder="" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+                <input class="form-control" type="search" placeholder="" aria-label="Search" v-model="search">
+                <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
             </div>
             <div class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">
                 <router-link to="/login">
@@ -56,6 +55,16 @@ library.add(faCartShopping);
 
 export default {
   name: 'TheNavbar',
+  data () {
+    return {
+      search: '',
+    }
+  },
+  methods: {
+      submit(search) {
+        this.$emit('search-information', search);
+      }
+  }
 };
 </script>
 
@@ -118,12 +127,19 @@ export default {
         background-color: #dce5e1;
         border: 0px;
         color: #608072;
+        box-shadow: none;
     }
 
     button:hover {
         background-color: #dce5e1;
         border: 0px;
         color: #608072;
+    }
+    .btn-outline-success{
+        box-shadow:none;
+    }
+    .form-control{
+        box-shadow:none;
     }
 
     .router-link-exact-active {

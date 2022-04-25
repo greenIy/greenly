@@ -4,65 +4,156 @@
     <body>
       <div class="content-wrap mw-0">
         <div class="d-flex center w-75">
-          <div class="card h-100 mt-4 mb-3">
-            <div class="row g-0">
+          <div class="card h-100 mt-4 mb-4">
+            <div class="d-flex g-0 mx-3">
               <div class="col-md-3">
-                <img src="../assets/Team/daniela.jpg" class="rounded w-75 mt-4 mb-4 ms-4" alt="Imagem do produto"  />
+                <img  src="../assets/Team/daniela.jpg" class="rounded mt-4 mb-4 ms-4" alt="Imagem do produto" style="width:90%" />
               </div>
-              <div class="col-md-9">
+              <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
-                  <h5 class="card-title">
-                    Categoria
-                    <!-- {{ product.category.name }} -->
+                  <h5 v-if="!loading" class="card-title">
+                    {{ product.category.name }}
                   </h5>
                   <div>
                     <h4 class="card-title">
-                      Nome do Produto
-                      <!--  {{ product.name }} -->
+                      {{ product.name }}
                     </h4>
                   </div>
-                  <p class="card-text text-justify">
-                    Descrição : Lorem ipsum per netus ultricies bibendum tellus potenti platea curabitur porta scelerisque felis, 
-                    inceptos metus tortor condimentum etiam purus nisi interdum eros pretium. vulputate a arcu praesent vitae diam 
-                    ultricies feugiat aptent, tincidunt aliquam et sit aenean litora tempus a urna, praesent tempor accumsan lacus primis
-                    lacinia himenaeos. eget blandit eget fringilla pulvinar convallis fusce imperdiet platea feugiat risus molestie tristique 
-                    laoreet, orci taciti sociosqu tristique enim ut sagittis diam ad venenatis aliquam in, non quisque facilisis senectus egestas 
-                    hendrerit sem bibendum vivamus eget orci congue. dolor arcu vulputate purus gravida nunc libero posuere justo ut lacus,
-                    cubilia proin condimentum vivamus himenaeos aliquam nullam libero. 
-                    <!-- {{ product.description }} -->
+                  <p class="card-text about">
+                    {{ product.description }}
                   </p>
-                </div>
-                <hr style="width:96%" class="center mt-3" color="black"> 
-                <div class="card-body py-0 my-3">
-                    <div class="row align-items-center justify-content-center">
-                      <div class="d-inline-block my-auto col-md-6">
-                   <h4 class="my-0">
-                      Preço
-                      <!-- {{ product.lowest_price }}€ - {{ product.highest_price }}€ -->
-                    </h4>
+                  <div class="d-flex mt-4">  
+                       <div class="col-6 d-flex flex-column"> 
+                         <div class="d-flex flex-column flex-grow-1">
+                          <span> Fornecedor: </span>
+                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                          <div class="d-flex mt-2 h-100 flex-column card product marginr">
+                                <div class="d-flex justify-content-between card-input">
+                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
+                                    <div class="mx-2"><input type="radio" v-model="fornecedor" name="fornecedor" active-class="active"  class="card-input-element"  /></div>
+                                  </div>
+                              <div class="d-flex flex-column card-input mt-0">
+                                <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
+                                <p class="text-p"><b>Stock:</b> 30 produtos</p>
+                                <p class="text-p"><b>Preço:</b> 32€</p>
+                              </div>
+                          </div>
+                        </div>
+                       <div class="mt-4 mx-auto">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Fornecedor</button>
+                        </div>
+                        </div>
+                      <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
+                        <div class="d-flex flex-column flex-grow-1">
+                          <span> Transportador: </span>
+                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                          <div class="d-flex mt-2 h-100 flex-column card product marginr">
+                                    <div class="d-flex justify-content-between card-input">
+                                      <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
+                                      <div class="mx-2"><input type="radio"  v-model="transportador" name="transportador" active-class="active"  class="card-input-element"  /></div>
+                                    </div>
+                                    <div class="d-flex flex-column card-input mt-0">
+                                    <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
+                                    <p class="text-p"><b>Preço:</b> 32€</p>
+                                  </div>
+                          </div>
+                          </div>
+                            <div class="mt-4 mx-auto">
+                            <button type="button" class="btn btn-secondary" @click="showModal()" :modal="false">Escolher outro Transportador</button>
+                          </div>
+                      </div>
                     </div>
-                  <div class="d-inline-block text-end col-md-5">
-                    <button class="btnS">
-                      <font-awesome-icon class="icons " :icon="['fa', 'cart-plus']" size="lg"/> Adicionar ao Carrinho </button>
-                  </div >
-                   <button class="d-inline-block text-start col-md-1 btnH fav">
-                    <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
-                  </button>
-                  </div > 
-                 <!--      <form>
-                    <div class="form-group form-check">
-                      <label class="form-check-label ms-2 product" for="accept">
-                       <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox"
-                     />Comparar Fornecedores</label
-              >
-            </div>
-          </form>  -->
+                  <div class="container mt-3">
+                    <hr class="center mt-3 w-100 " color="black" />
+                    <ul class="nav nav-tabs mt-4" id='navList'>
+                        <li class="nav-item">
+                          <a class="nav-link text-dark" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link text-dark" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link text-dark" @click="activate(3)" :class="{ active : active_el == 3 }">Mais Detalhes</a>
+                        </li>
+                      </ul>
+                  </div>
+                  <div class="container mt-3" id="sumario" v-if="active_el==1">
+                    <div class="row mt-4">
+                      <div class="col-6 text-left">
+                        <b>Fornecedor</b>
+                      </div>
+                      <div class="col-6 text-left">
+                        <b>Transportador</b>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6 text-left">Fornecedor X</div>
+                      <div class="col-6 text-left">Transportador Y</div>
+                    </div>
+                    <div class="row mt-4">
+                      <div class="col-6 text-left">
+                        <b>Gastos Médios em Armazenamento</b>
+                      </div>
+                      <div class="col-6 text-left">
+                        <b>Gastos Médios em Transporte</b>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6 text-left">3 kWh por Produto</div>
+                      <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
+                    </div>
+                  </div>
+                  <div class="container mt-3" id="info" v-if="active_el==2" >
+                   <p> INFOOOO </p>
+                  </div>
+                  <div class="container mt-3" id="detalhe" v-if="active_el==3" >
+                   <p> DETALHEEE </p>
+                  </div>
+                </div>
+                <div class="card-body mt-1">
+                <hr class="center w-100" color="black" />
+                </div>
+                <div class="card-body">
+                  <div class="row align-items-center justify-content-between">
+                    <div class="d-inline-block p-0 col-md-5">
+                      <div class="d-flex gap-3 mx-2 align-items-center text-center align-content-center">
+                          <span class="fs-5">Quantidade:</span>
+          
+                        <div class="col-md-4">
+                          <div class="d-flex justify-content-center align-items-center">
+                              <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
+                            <div class="w-50">
+                            <div class="mx-2">
+                               <input class="w-100 text-center align-self-center" min="1" max="5" type="text" name="quantity" :value="quantity" readonly="true"> 
+                            </div>
+                            </div>
+                              <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="d-inline-block p-0 col-md-2">
+                      <h4 class="my-0 fs-5">Preço €</h4>
+                    </div>
+                    <div class="d-inline-block text-end col-md-4">
+                      <button class="btnS p-2">
+                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho
+                      </button>
+                    </div>
+                    <button class="d-inline-block text-start col-md-1 btnH p-8 fav">
+                      <font-awesome-icon @click="liked($event)" class="icons fa-cog"  :icon="['fa', 'heart']"  size="lg" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <FornecedorModal  v-if="modal !=false"/>
+      <TransportadorModal  v-if="modal !=false"/>
     </body>
     <TheFooter />
   </div>
@@ -70,36 +161,105 @@
 <script>
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
+import FornecedorModal from "@/components/Product/FornecedorModal.vue";
+import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart,faCartPlus } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHeart);
 library.add(faCartPlus);
+library.add(faAngleDown);
+library.add(faCirclePlus);
+library.add(faCircleMinus);
+
+
+
+import http from "../../http-common";
 
 export default {
   name: "ProductView",
   components: {
     TheNavbar,
     TheFooter,
+    FornecedorModal,
+    TransportadorModal,
+  },
+  props: {
+    modal:Boolean,
+    prod:Boolean,
   },
   data() {
     return {
       user: {
         accept: false,
       },
+      product: {},
+      isActiveT: false,
+      isActiveF: false,
+      modal: false,   
+      prod:true,
+      quantity:1,
+      active_el:1,
     };
   },
-    methods: {
-    liked(event){
-      const svg = event.path[1]
-      if (svg.classList.contains('red')) {
+  async created() {
+    await this.getInfo();
+  },
+  methods: {
+    liked(event) {
+      const svg = event.path[1];
+      if (svg.classList.contains("red")) {
         svg.classList.remove("red");
       } else {
         svg.classList.add("red");
-      } 
+      }
     },
-  }
+    async getInfo() {
+      this.loading = true;
+      var response = await http.get("/store/products/" + this.$route.params.id);
+      this.product = response.data;
+      console.log(this.product);
+      this.loading = false;
+      window.scrollTo(0, 0);
+    },
+    showModal(){
+    this.modal=true;
+    this.prod=false;
+    console.log(this.modal);
+    console.log(this.prod);
+    },
+    activate:function(el){
+      if(this.active_el == 2 || this.active_el == 3 ){
+        document.getElementById("cd").classList.remove("active");
+        this.active_el = el;
+        console.log("2 ou 3")
+      }
+      else{
+        console.log("1")
+        this.active_el = el;
+      }
+        
+    },
+    clickAction(signal){
+
+      if(signal=='minus'){
+        if(this.quantity>1){
+          this.quantity--;
+          if(this.quantity==1){
+            document.getElementById("decrement").style.color="#ededed";
+          }
+        }
+      }else{
+        this.quantity++;
+        if(this.quantity==2){
+          document.getElementById("decrement").style.color="#7c9d8e";
+        }
+      }
+
+  },
+  },
+ 
 };
 </script>
 
@@ -107,21 +267,17 @@ export default {
 .center {
   margin: 0 auto;
 }
- .btnS {
+.btnS {
   border: none;
   color: white;
   background-color: #7c9d8e;
-  padding: 8px;
   border-radius: 10px;
 }
 .btnS:hover {
   background-color: #89a799;
-} 
+}
 .btnH {
-  background: none;
   border: none;
-  display: inline;
-  padding:0!important;
 }
 .red {
   color: red !important;
@@ -132,15 +288,68 @@ h4 {
 h5 {
   font-size: 11px;
 }
+.recomendado{
+  font-size: 14px;
+  margin-bottom: 0;
+}
 .fa-cog {
   color: #b9bbb4;
 }
-.div{
+.div {
   padding: 1rem 1rem;
 }
-.center{
-  margin:0 auto;
+.center {
+  margin: 0 auto;
 }
-
-
+.about {
+  margin: 0;
+  text-align: justify;
+}
+.max {
+  width: 100%;
+}
+.btn {
+  border: none;
+  color: white;
+  background-color: #808080;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.fav {
+  background: #e6e6e6;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+}
+label {
+    width: 100%;
+}
+.card-input-element {
+    margin-left: 10px;
+}
+.card-input {
+    margin: 10px;
+    padding: 00px;
+}
+.product{
+  border: 1px solid #e5e5e5!important;
+}
+.marginr{
+  margin-right: 20px;
+}
+.card-input:hover {
+    cursor: pointer;
+}
+.card {
+  box-shadow: 1px 8px 10px #d9d9d9;
+}
+.text-p {
+  margin-bottom: 5px;
+}
+#increment{
+  color:#7c9d8e;
+}
+#decrement{
+  color:#ededed;
+}
 </style>

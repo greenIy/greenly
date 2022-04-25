@@ -1,45 +1,84 @@
 <template>
-<div class="d-flex justify-content-end size mt-3">
+<div class="container size">
+<div class="d-flex justify-content-end mt-3">
         <div class="row">
             <div class="col-6 pt-2">
                 <p class="text-secondary fs-6">
-                    1-12 de 96 produtos 
+                    {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
                 </p>
             </div>
-             <div class="dropdown col-2 justify-content-end">
-                <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ver</a>
-                <ul class="dropdown-menu" aria-labelledby="order-by">
-                    <li><a class="dropdown-item" href="#">12</a></li>
-                    <li><a class="dropdown-item" href="#">24</a></li>
-                    <li><a class="dropdown-item" href="#">48</a></li>
+             <div class="dropdown col-2 justify-content-end pt-1">
+                <a class="dropdown-toggle  btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">{{ limit }}</a>
+                <ul class="dropdown-menu drop" aria-labelledby="order-by">
+                    <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
+                    <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
+                    <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
                 </ul>
             </div>
-            <div class="dropdown col-4 align-self-start justify-content-end">
+            <div class="dropdown col-4 align-self-start justify-content-end pt-1">
                 <a class="dropdown-toggle btn rounded text-decoration-none" href="#" id="order-by" data-bs-toggle="dropdown" aria-expanded="false">Ordenar por</a>
                 <ul class="dropdown-menu" aria-labelledby="order-by">
-                    <li><a class="dropdown-item" href="#">Nome</a></li>
-                    <li><a class="dropdown-item" href="#">Novidade</a></li>
-                    <li><a class="dropdown-item" href="#">Preço Ascendente</a></li>
-                    <li><a class="dropdown-item" href="#">Preço Descendente</a></li>
+                    <li><a class="dropdown-item" @click='orderByName()'>Nome</a></li>
+                    <li><a class="dropdown-item" @click='orderById()'>Novidade</a></li>
+                    <li><a class="dropdown-item" @click='orderByPriceMin()'>Preço Ascendente</a></li>
+                    <li><a class="dropdown-item" @click='orderByPriceMax()'>Preço Descendente</a></li>
                 </ul>
             </div>
         </div>
 </div>
+</div>
 </template>
 
 <script>
+import http from "../../../../http-common";
+
   export default {
-    props: [
-        ''
-    ],
+    props: {
+        productAmount: Number,
+        pageAmount: Number,
+        currentPage: Number,
+        limit: Number,
+        product: Object,
+        productsInPage: Number,
+    },
+    data() {
+        return {
+            lastPageProducts: 0,
+            // totalProducts:0,
+        };
+    },
+    methods: {
+        getTotalProducts: function() {
+            http.get("/store/products?page=" + this.pageAmount + "&limit="+ this.limit).then((response) => {
+               this.lastPageProducts = response.data.products.length;
+            });
+        },
+        productsPerPage: function (amount) {
+            this.$emit("sendProductsPerPage", amount);
+        },
+        orderByName: function () {
+        var res = this.product.sort((a, b) => a.name > b.name ? 1 : -1); 
+        //console.log(res)    
+        },
+   
+        orderById: function () {
+        var res = this.product.sort(({id:a}, {id:b}) => b-a);
+         console.log(res)  
+        },
+        orderByPriceMin: function () {
+
+        },
+        orderByPriceMax: function () {
+
+        },
+    }
   }
 </script>
 
 <style scoped>
 .size{
-    width:91.3%;
+    width:85%;
 }
-
 .btn{
   border: none;
   color: white;
@@ -47,7 +86,7 @@
   border-radius: 10px;
   box-shadow: none;
 }
-.dropdown-menu{
-    min-width: 90%!important
+.drop{
+    min-width: 80%!important
 }
 </style>

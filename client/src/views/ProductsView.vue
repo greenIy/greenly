@@ -1,20 +1,21 @@
 <template>
 <body>
   <div class="page-container">
-     <TheNavbar />
+     <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar />
+        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
+              :product="products"/>
         <div class="row content justify-content-center">
-          <div class="col-sm-2 col-md-2 filtros mt-1">
+          <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="getCategories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory"/>
+              <TheFilters :categories="categories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
             </div>
           </div>
-          <div class="col-sm-10 col-md-9 mt-1">
+          <div class="col-sm-10 col-md-9 ">
             <div class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
-               v-for="p in products"
+              v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
@@ -51,6 +52,12 @@ export default {
   },
   props: {
     product: Object,
+    productAmount: Number,
+    pageAmount: Number,
+    currentPage: Number,
+    limit: Number,
+    productsInPage: Number,
+    categories: Array,
   },
   data() {
     return {
@@ -59,36 +66,65 @@ export default {
       categories: [],
       minPrice: Number,
       maxPrice: Number,
+      productAmount: 0,
+      pageAmount: 0,
       currentCategory: {id: "", name: ""},
+      limit: 12,
+      productsInPage: 0,
     };
   },
   created() {
     this.getProducts();
+    this.getCategories();
+    //console.log(this.$route);
   },
   methods: {
-    getProducts() {
-      http.get("/store/products?page=" + this.currentPage + "&limit=15").then((response) => {
-        this.products = response.data.products;
-        //console.log(response.data);
-      });
+    async getProducts(page=this.currentPage, limit=this.limit) {
+      var response = await http.get("/store/products?page=" + page + "&limit="+limit);
+      this.products = response.data.products;
+      this.productAmount = response.data.total_products;
+      this.productsInPage = this.products.length;
+      //console.log(response.data);
       window.scrollTo(0, 0);
     },
     getCurrentPage: function(params) {
       this.currentPage = params;
       this.getProducts();
     },
+    async getCategories() {
+      var response = await http.get("/store/categories");
+      this.categories = response.data;
+      //console.log(response.data);
+    },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
-      this.products = Object.assign([], this.products.filter(product => product.category.id === this.currentCategory.id));
+      var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=12").then((response) => {
+        this.products = response.data.products;
+      });
+      this.products = Object.assign([], productByCategory);
+    },
+    goBackPage: function(params) {
+      this.currentCategory = params;
+      if (Object.keys(params).length === 0) {
+        this.getProducts();
+      } else {
+        this.getCurrentCategory(this.currentCategory);
+      }
+    },
+    productsPerPage: function (params) {
+      this.limit = params;
+      this.getProducts(this.currentPage, params);
+    },
+    searchInformation: function (params) {
+      //console.log(this.$route.name);
+      http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
+        this.products = response.data.products;
+        this.productAmount = response.data.total_products;
+        //console.log(response.data);
+      });
     }
   },
   computed: {
-    getCategories: function () {
-      return this.products.map(product => ({
-          id: product.category.id, 
-          name: product.category.name
-          }));
-    },
     getMaxPrice: function () {
       var maxPrices = this.products.map(product =>
           product.highest_price

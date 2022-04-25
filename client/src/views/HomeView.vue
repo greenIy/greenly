@@ -24,6 +24,7 @@ export default {
   },
 };
 </script>
+
 <style>
   body {
     background:#ededed;
@@ -32,11 +33,9 @@ export default {
     position: relative;
     min-height: 100vh;
   }
-
   .content-wrap {
     padding-bottom: 7.5rem;
   }
-
   #front {
     width: 100%;
   }

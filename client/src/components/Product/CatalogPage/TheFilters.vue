@@ -3,37 +3,29 @@
     <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
       Filtros
     </p>
-
     <ul class="list-unstyled ">
       <li>
-        <!-- Current category being displayed -->
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
-          Categoria
-        </div>
-                
-        <div class="collapse" id="categories-collapse">
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
+        <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Categoria
+        </div>   
+        <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
-            <!-- Parent category of the current category (if applicable) -->
-            <a v-if="currentCategory" href="#" class="list-group-item list-group-item-action border-0">
-              &larr; {{ currentCategory.name }}
-            </a>
-
-            <!-- Existing categories within the current category -->      
-            <a v-for="category in categories" :key="category" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
-              {{ category.name }} {{$route.params.id}} <!-- POR CADA CATEGORIA NO SCRIPT + AO CLICAR VAI PARA PAGINA/MUDA PAGINA!! -->
-            </a> 
+            <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0">
+              &larr;  {{ currentCategory.name }}
+            </router-link>
+            
+            <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+              {{ category.name }}
+            </router-link>
           </div>
         </div>
       </li>
-
-      <li class="border-top my-3"></li>
-
       <li>
-        <div class="btn btn-toggle align-items-center rounded collapsed fs-6 fw-bold" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
-          Preço
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformP()" data-bs-toggle="collapse" data-bs-target="#price-range-collapse" aria-expanded="true">
+         <font-awesome-icon  id="iconP" class="fs-6 fa-fw"  :icon="['fas', 'angle-up']"  /> Preço
         </div>
 
-        <div class="collapse" id="price-range-collapse">
+        <div class="collapse show" id="price-range-collapse">
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
@@ -46,20 +38,33 @@
           </div>
         </div>
       </li>
-
-      <li class="border-top my-3"></li>
+      <li>
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
+        <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
+        </div>   
+        <div class="collapse show" id="fornecedores-collapse">
+          <div class="list-group list-group-flush">
+          
+          </div>
+        </div>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {faAngleUp } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faAngleUp);
+
   export default {
+    name: "ProductsView",
     props: {
       categories: Array,
       minPrice: Number,
       maxPrice: Number,
       //'switchCurrentCategory',
-      currentCategory: Object,
       page: {
         type: String
       },
@@ -72,7 +77,12 @@
     },
     data () { 
       return {
-        currentCategory: 0,
+        categoryList: [],
+        categorySelected: false,
+        currentCategory: {},
+        countC: 0,
+        countP: 0,
+        countF: 0,
         //currentMinPrice,
         //currentMaxPrice,
         //parentCategory
@@ -80,8 +90,44 @@
     },
     methods: {
       showProducts(category) {
+        this.categoryList.push(category);
         this.currentCategory = category;
+        this.categorySelected = true;
         this.$emit("sendCurrentCategory", this.currentCategory);
+      },
+      goBack() {
+        this.categoryList.pop();
+        this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {};
+        this.categorySelected = (this.categoryList.length) ? true : false;
+        this.$emit("sendGoBack", this.currentCategory);
+      },
+      transformC() {
+        this.countC++;
+        var deg=this.countC*180;
+        document.getElementById("iconC").style.transform = "rotate("+deg+"deg)";
+        return this.countC;
+      },
+      transformP() {
+        this.countP++;
+        var deg=this.countP*180;
+        document.getElementById("iconP").style.transform = "rotate("+deg+"deg)";
+        return this.countP;
+      },
+      transformF() {
+        this.countF++;
+        var deg=this.countF*180;
+        document.getElementById("iconF").style.transform = "rotate("+deg+"deg)";
+        return this.countF;
+      },
+    },
+    computed: {
+      showCategories: function () {
+        if (this.categorySelected) {
+          var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category);
+          return filteredCategory;
+        }
+        // show highest level of categories
+        return this.categories.filter(category => category.parent_category == null);
       },
     },
   }
@@ -91,12 +137,19 @@
 .list-group-item {
   font-size: 12px;
 }
-
 .list-group-item input {
   font-size: 12px;
 }
-
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
+}
+#iconC{
+  color:#608072;
+}
+#iconP{
+  color:#608072;
+}
+#iconF{
+  color:#608072;
 }
 </style>

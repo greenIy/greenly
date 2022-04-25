@@ -15,6 +15,8 @@ import VueAxios from 'vue-axios';
 
 const myApp = createApp(App);
 
+//require('../node_modules/jquery/dist/jquery.js');
+
 myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
@@ -22,3 +24,5 @@ myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
 myApp.use(router).mount('#app');
+
+window.document.title = "Greenly";
