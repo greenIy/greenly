@@ -30,8 +30,7 @@
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                 <div class="d-flex justify-content-between card-input">
                                   <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
-                                    <div class="mx-2"><input type="radio" v-model="fornecedor" name="fornecedor" active-class="active"  class="card-input-element"  /></div>
-                                  </div>
+                                </div>
                               <div class="d-flex flex-column card-input mt-0">
                                 <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
                                 <p class="text-p"><b>Stock:</b> 30 produtos</p>
@@ -50,7 +49,6 @@
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                     <div class="d-flex justify-content-between card-input">
                                       <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
-                                      <div class="mx-2"><input type="radio"  v-model="transportador" name="transportador" active-class="active"  class="card-input-element"  /></div>
                                     </div>
                                     <div class="d-flex flex-column card-input mt-0">
                                     <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
@@ -219,29 +217,28 @@ export default {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
-      //console.log(this.product);
       this.loading = false;
       window.scrollTo(0, 0);
     },
     showModalF(){
-    this.modalF=true;
-    this.prod=false;
+      this.modalF=true;
+      this.prod=false;
     },
-      showModalT(){
-    this.modalT=true;
-    this.prod=false;
+    showModalT(){
+      this.modalT=true;
+      this.prod=false;
     },
     getModalF(params){
-    if(params == "fecha"){
-      this.modalF=false;
-      this.prod=true;
-    }
+      if(params == "fecha"){
+        this.modalF=false;
+        this.prod=true;
+      }
     },
     getModalT(params){
-    if(params == "fecha"){
-      this.modalT=false;
-      this.prod=true;
-    }
+      if(params == "fecha"){
+        this.modalT=false;
+        this.prod=true;
+      }
     },
     activate:function(el){
       if(this.active_el == 2 || this.active_el == 3 ){
@@ -250,11 +247,10 @@ export default {
       }
       else{
         this.active_el = el;
-      }
-        
+      }   
     },
     clickAction(signal){
-
+      
       if(signal=='minus'){
         if(this.quantity>1){
           this.quantity--;
@@ -268,7 +264,7 @@ export default {
           document.getElementById("decrement").style.color="#7c9d8e";
         }
       }
-  },
+    },
   },
 };
 </script>

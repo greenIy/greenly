@@ -1,18 +1,15 @@
 <template>
-<div class="d-flex card product">
-    <label>
-        <input type="radio" v-model="fornecedorCard" name="fornecedorCard" active-class="active"  class="card-input-element" />
-            <div class="card-input">
-                <div class="panel-heading"><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A <span class="dot"></span></p></div>
-                      <div class="panel-body">
-                        <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                        <p class="text-p"><b>Stock:</b> 30 produtos</p>
-                        <p class="text-p"><b>Preço:</b> 32€</p>
-                      </div>
-                </div>
-    </label>
-</div>
-             
+<div class="d-flex mt-2 h-100 flex-column card product">
+  <div class="d-flex justify-content-between card-input">
+    <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" />Fornecedor A</p></div>
+      <div class="mx-2"><input type="radio"  v-model="fornecedorCard" name="fornecedorCard" active-class="active"  class="card-input-element"  /></div> 
+    </div>
+      <div class="d-flex flex-column card-input mt-0">
+        <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
+        <p class="text-p"><b>Stock:</b> 30 produtos</p>
+        <p class="text-p"><b>Preço:</b> 32€</p>
+      </div>
+</div>        
 </template>
 <script>
 
@@ -31,7 +28,6 @@ export default {
     }
   },
   methods:{
- 
   }
 };
 </script>

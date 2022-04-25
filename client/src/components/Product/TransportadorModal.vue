@@ -18,8 +18,7 @@
       </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Guardar Alterações</button>
-        <button type="button" class="btn btn-secondary" @click="closeModal('fecha')" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn save">Guardar Alterações</button>
       </div>
     </div>
   </div>
@@ -60,6 +59,10 @@ export default {
 <style scoped>
 .modal{
     display: flex;
+}
+.save{
+  background-color: #608072;
+  color:white;
 }
 
 </style>

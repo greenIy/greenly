@@ -4,7 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Fornecedor</h5> 
-        <div @click="closeModal('fecha')" >
+        <div class="mx-2" @click="closeModal('fecha')" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
       </div>
@@ -12,14 +12,14 @@
          <div class="container">
         <div class="mt-4" >
           <div class=" card-group mt-2">
-            <CardFornecedor  />
+            <CardFornecedor 
+              />
         </div>
       </div>
       </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Guardar Alterações</button>
-        <button type="button" class="btn btn-secondary" @click="closeModal('fecha')" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn save">Guardar Alterações</button>
       </div>
     </div>
   </div>
@@ -31,6 +31,8 @@ import CardFornecedor from "@/components/Product/CardFornecedor.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark} from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../../http-common";
 
 library.add(faCubes);
 library.add(faTruck);
@@ -44,18 +46,28 @@ export default {
   },
   data() {
     return { 
-      product: [],
+      products: [],
     }
+  },
+   created() {
+    this.getProducts();
   },
    props: {
     product:Object,
+    products:Object,
     modal:Boolean,
     prod:Boolean,
+    currentPage: Number,
   },
   methods:{
     closeModal(params){
       this.$emit('sendModalF',params);
-    }
+    },
+    async getProducts() {
+      var response = await http.get("/store/products?page=" + 1);
+      this.products = response.data.products;
+      console.log(this.products)
+    },
   }
 };
 </script>
@@ -63,15 +75,9 @@ export default {
 .modal{
     display: flex;
 }
-.card-input-element {
-    margin-left: 10px;
-}
-.card-input {
-    margin: 10px;
-    padding: 00px;
-}
-.product{
-  border: 1px solid #e5e5e5!important;
+.save{
+  background-color: #608072;
+  color:white;
 }
 
 </style>
