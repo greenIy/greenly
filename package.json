@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fortawesome/free-regular-svg-icons": "^6.1.1",
     "jquery": "^3.6.0"
   }
 }
