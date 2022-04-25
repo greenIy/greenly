@@ -1,14 +1,14 @@
 <template>
 <div class="d-flex">
-    <footer class="footer p-3 text-uppercase">
+    <footer class="footer px-3 text-uppercase text-light">
         <div class="row footer">
-            <div class="col-4">
+            <div class="col-4 pt-2">
                 <img class="pt-2 pb-2" alt="Logo do greenly" src="../../assets/logo_dark.png">
                 <p>
                     Projeto Final da Licenciatura de Tecnologias de Informação.
                 </p>
                 <div class="align-self-stretch">
-                    <p>© 2022 Greenly <br> Todos os Direitos Reservados</p>
+                    <p>Todos os Direitos Reservados © 2022 Greenly</p>
                 </div>
             </div>
             <div class="col-2 mt-4">
@@ -84,9 +84,8 @@ export default {
 
 <style scoped>
     .footer {
-        background-color: #608072;
-        color: #fcfaf9;
-        font-size: 9px;
+        background-color: #68b694;
+        font-size: 12px;
         width: 99.88%;
         position: absolute;
         bottom: 0;
@@ -99,7 +98,7 @@ export default {
     }
 
     a {
-        color: #fcfaf9;
+        color: #f8f9fa;
         text-decoration: none;
     }
 
