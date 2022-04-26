@@ -9,11 +9,13 @@
         </div>
       </div>
       <div class="modal-body">
-         <div class="container">
+         <div class=" d-flex container">
         <div class="mt-4" >
           <div class=" card-group mt-2">
             <CardFornecedor 
-              />
+             v-for="s in suppliers"
+              :key="s.supplier.id"
+              :supply="s" />
         </div>
       </div>
       </div>
@@ -46,15 +48,14 @@ export default {
   },
   data() {
     return { 
-      products: [],
+      suppliers: [],
     }
   },
-   created() {
-    this.getProducts();
+  created() {
+    this.getSuppliers();
   },
-   props: {
-    product:Object,
-    products:Object,
+  props: {
+    supply: Object,
     modal:Boolean,
     prod:Boolean,
     currentPage: Number,
@@ -63,10 +64,10 @@ export default {
     closeModal(params){
       this.$emit('sendModalF',params);
     },
-    async getProducts() {
-      var response = await http.get("/store/products?page=" + 1);
-      this.products = response.data.products;
-      console.log(this.products)
+    async getSuppliers() {
+      var response = await http.get("/store/products/" + this.$route.params.id);
+      this.suppliers = response.data.supplies;
+      console.log(this.suppliers)
     },
   }
 };

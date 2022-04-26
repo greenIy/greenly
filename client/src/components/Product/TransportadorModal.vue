@@ -9,10 +9,13 @@
         </div>
       </div>
       <div class="modal-body">
-         <div class="container">
+         <div class="d-flex container">
         <div class="mt-4" >
           <div class=" card-group mt-2">
-            <CardTransportador  />
+            <CardTransportador 
+             v-for="t in transporters"
+              :key="t.id"
+              :supply="t" />
         </div>
       </div>
       </div>
@@ -31,6 +34,8 @@ import CardTransportador from "@/components/Product/CardTransportador.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark} from "@fortawesome/free-solid-svg-icons";
 
+import http from "../../../http-common";
+
 library.add(faCubes);
 library.add(faTruck);
 library.add(faXmark);
@@ -42,8 +47,12 @@ export default {
   CardTransportador,
   },
   data() {
-    return { 
+    return {
+      transporters: [], 
     }
+  },
+  created() {
+    this.getTransporters();
   },
   props: {
     modal:Boolean,
@@ -52,7 +61,12 @@ export default {
   methods:{
     closeModal(params){
       this.$emit('sendModalT',params);
-    }
+    },
+    async getTransporters() {
+      var response = await http.get("/store/products/" + this.$route.params.id);
+      this.transporters = response.data.supplies[0].transporters;
+      console.log(this.transporters)
+    },
   }
 };
 </script>
