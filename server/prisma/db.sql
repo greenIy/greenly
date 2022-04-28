@@ -38,6 +38,18 @@ CREATE TABLE Product (
     FULLTEXT (name, description)
 );
 
+CREATE TABLE ProductAttributes (
+    id              INT UNSIGNED AUTO_INCREMENT,
+    product         INT UNSIGNED NOT NULL,
+    title           VARCHAR(255) NOT NULL,
+    content         VARCHAR(500) NOT NULL,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id),
+
+    PRIMARY KEY (id, product)
+);
+
 # USER TABLES
 
 CREATE TABLE Company (
@@ -55,7 +67,7 @@ CREATE TABLE User (
     email       VARCHAR(255) UNIQUE NOT NULL,
     phone       VARCHAR(20),
     company     INT UNSIGNED,
-    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
+    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER') NOT NULL,
 
     FOREIGN KEY (company)
         REFERENCES Company(id)

@@ -20,46 +20,18 @@ model Category {
 }
 
 model Product {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  name              String    @db.VarChar(255)
-  description       String    @db.VarChar(1000)
-  category          Int?      @db.UnsignedInt
-  complement_name   String?   @db.VarChar(50)
-  complement_amount Decimal?  @db.Decimal(2, 0)
-  Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String              @db.VarChar(255)
+  description       String              @db.VarChar(1000)
+  category          Int?                @db.UnsignedInt
+  complement_name   String?             @db.VarChar(50)
+  complement_amount Decimal?            @db.Decimal(2, 0)
+  Category          Category?           @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  ProductAttributes ProductAttributes[]
   Supply            Supply[]
 
   @@index([category], map: "category")
   @@fulltext([name, description], map: "name")
-}
-
-model Company {
-  id    Int     @id @default(autoincrement()) @db.UnsignedInt
-  name  String  @db.VarChar(50)
-  email String  @db.VarChar(255)
-  bio   String? @db.VarChar(255)
-  User  User[]
-}
-
-model User {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  password            String?               @db.VarChar(60)
-  first_name          String                @db.VarChar(255)
-  last_name           String                @db.VarChar(255)
-  email               String                @unique(map: "email") @db.VarChar(255)
-  phone               String?               @db.VarChar(20)
-  company             Int?                  @db.UnsignedInt
-  type                User_type?
-  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
-  Address             Address[]
-  Distribution_Center Distribution_Center[]
-  Order               Order[]
-  Supply              Supply[]
-  Supply_Transporter  Supply_Transporter[]
-  Vehicle             Vehicle[]
-  Warehouse           Warehouse[]
-
-  @@index([company], map: "company")
 }
 
 model Address {
@@ -79,6 +51,14 @@ model Address {
   Warehouse           Warehouse[]
 
   @@index([user], map: "user")
+}
+
+model Company {
+  id    Int     @id @default(autoincrement()) @db.UnsignedInt
+  name  String  @db.VarChar(50)
+  email String  @db.VarChar(255)
+  bio   String? @db.VarChar(255)
+  User  User[]
 }
 
 model Distribution_Center {
@@ -123,6 +103,17 @@ model Order_Item {
   @@index([order], map: "order")
   @@index([product, supplier, warehouse], map: "product")
   @@index([transporter, vehicle], map: "transporter")
+}
+
+model ProductAttributes {
+  id      Int     @default(autoincrement()) @db.UnsignedInt
+  product Int     @db.UnsignedInt
+  title   String  @db.VarChar(255)
+  content String  @db.VarChar(500)
+  Product Product @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ProductAttributes_ibfk_1")
+
+  @@id([id, product])
+  @@index([product], map: "product")
 }
 
 model Supply {
@@ -170,6 +161,27 @@ model Supply_Transporter {
   @@index([transporter], map: "transporter")
 }
 
+model User {
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
+  password            String?               @db.VarChar(60)
+  first_name          String                @db.VarChar(255)
+  last_name           String                @db.VarChar(255)
+  email               String                @unique(map: "email") @db.VarChar(255)
+  phone               String?               @db.VarChar(20)
+  company             Int?                  @db.UnsignedInt
+  type                User_type
+  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Address             Address[]
+  Distribution_Center Distribution_Center[]
+  Order               Order[]
+  Supply              Supply[]
+  Supply_Transporter  Supply_Transporter[]
+  Vehicle             Vehicle[]
+  Warehouse           Warehouse[]
+
+  @@index([company], map: "company")
+}
+
 model Vehicle {
   id                  Int                 @default(autoincrement()) @db.UnsignedInt
   resource_usage      Int                 @db.UnsignedInt
@@ -204,13 +216,6 @@ model Warehouse {
   @@index([supplier], map: "supplier")
 }
 
-enum User_type {
-  ADMINISTRATOR
-  CONSUMER
-  SUPPLIER
-  TRANSPORTER
-}
-
 enum Order_Item_status {
   AWAITING_PAYMENT
   PROCESSING
@@ -219,6 +224,13 @@ enum Order_Item_status {
   COMPLETE
   FAILURE
   CANCELED
+}
+
+enum User_type {
+  ADMINISTRATOR
+  CONSUMER
+  SUPPLIER
+  TRANSPORTER
 }
 
 enum Vehicle_fuel_type {
