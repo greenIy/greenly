@@ -4,9 +4,11 @@ const express   = require('express');
 const router    = express.Router();
 
 /* Greenly libraries */
-const { getProductsValidator } = require('../lib/validation.js');
-const persistence   = require('../lib/persistence.js')
-const defaultErr    = require("../lib/error").defaultErr
+const { getProductsValidator, createCategoryValidator, updateCategoryValidator } = require('../lib/validation.js');
+const persistence       = require('../lib/persistence.js')
+const authentication    = require("../lib/authentication")
+const authorization     = require("../lib/authorization")
+const defaultErr        = require("../lib/error").defaultErr
 
 /* Product Routes */
 
@@ -140,7 +142,6 @@ router.get('/products/:productId', (req, res) => {
     }
 })
 /* Category Routes */
-// TODO: Build validators and authorization functions for each route
 
 /* GET /store/categories */
 
@@ -155,21 +156,51 @@ router.get('/categories', (req, res) => {
 });
 
 /* POST /store/categories */
-
-router.post('/categories', (req, res) => {
-
+router.post('/categories', authentication.check, authorization.check, createCategoryValidator(), (req, res) => {
+    try {
+        persistence.createCategory(
+            req.body.name,
+            req.body.parent_category
+        ).then((newCategoryID) => {
+            if (newCategoryID) {
+                res.status(200).json({id: newCategoryID})
+            }
+        })
+    } catch {
+        res.status(500).send(defaultErr());
+    }
 });
 
 /* PUT /store/categories/:categoryId */
 
-router.put('/categories/:categoryId', (req, res) => {
-
+router.put('/categories/:categoryId', authentication.check, authorization.check, updateCategoryValidator(),  (req, res) => {
+    try {
+        persistence.updateCategory(Number(req.params.categoryId), req.body).then((success) => {
+            if (success) {
+                console.log(success)
+                res.status(200).send({message: "Category updated successfully."})
+            } else {
+                res.status(500).send(defaultErr())
+            }
+        })
+    } catch (e) {
+        res.status(500).send(defaultErr())
+    }
 });
 
 /* DELETE /store/categories/:categoryId */
 
-router.delete('/categories/:categoryId', (req, res) => {
+router.delete('/categories/:categoryId', authentication.check, authorization.check, (req, res) => {
+    persistence.deleteCategory(Number(req.params.categoryId)).then((success) => {
 
+        if (success == 409) {
+            return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories"})
+        } else if (success) {
+            return res.status(202).send({message: "Category deleted successfully."})
+        } else {
+            return res.status(404).send({message: "Category not found."})
+        }
+    })
 });
 
 

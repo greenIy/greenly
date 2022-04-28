@@ -1,6 +1,6 @@
 /* Parameter Validation Package */
 const { body, param, query, validationResult, matchedData } = require('express-validator');
-const { checkUserConflict, getUserByID } = require('./persistence');
+const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -70,7 +70,7 @@ function createUserValidator() {
 
 function updateUserValidator() {
     return [
-        param('userId').toInt().custom(value => {
+        param('userId').isInt().toInt().custom(value => {
                     return getUserByID(value).then(user => {
                         if (!user) {
                             return Promise.reject(`User with ID ${value} doesn't exist.`)
@@ -256,6 +256,69 @@ function getProductsValidator() {
     ]
 }
 
+/* Category Validation Functions */
+
+
+function createCategoryValidator() {
+    return [
+        body("name")
+            .notEmpty()
+            .isString(),
+        body("parent_category")
+            .optional()
+            .toInt()
+            .custom(async value => {
+                let currentCategories = await getAllCategories();
+
+                // If the parent_category isn't valid
+        
+                if (!currentCategories.map((category) => category.id).includes(value)) {
+                    return Promise.reject("Invalid parent category.");
+                }
+
+                return true;
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateCategoryValidator() {
+    return [
+        body("name")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("parent_category")
+            .optional()
+            .notEmpty()
+            .toInt()
+            .custom(async value => {
+                let currentCategories = await getAllCategories();
+
+                // If the parent_category isn't valid
+        
+                if (!currentCategories.map((category) => category.id).includes(value)) {
+                    return Promise.reject("Parent category not found.");
+                }
+
+                return true;
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 /* Login Validation */
 
 function loginValidator() {
@@ -290,5 +353,9 @@ module.exports = {
 
     // Product Validators
     getProductsValidator,
+
+    // Category Validators,
+    createCategoryValidator,
+    updateCategoryValidator,
 
 }

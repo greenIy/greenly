@@ -30,7 +30,7 @@ const maps = new Client();
 /* Checking database availability */
 
 prisma.$connect().catch((reason) => {
-    console.log("📶❌ Database connection failed.")
+    console.log("📶 Database connection failed.")
     process.exit(1)
 })
 
@@ -138,8 +138,6 @@ async function updateUser(id, params) {
                 id: id
             },
             data: userDataSelection
-        }).then((result) => {
-            return result;
         })
 
         return updatedUser;
@@ -157,24 +155,27 @@ async function deleteUser(id) {
         /* TODO: Eventually also delete: 
                 * All orders by user, in case of consumer
                 * Company
+                * All supplies being supplied by supplier
+                * All transports by transporter
         */
 
         if (getUserByID(id)) {
-            // Delete user
+            // Delete user and all his addresses
             const deletedUser = await prisma.user.delete({
                 where: {
                     id: id
+                },
+                include: {
+                    Address: true
                 }
             })
 
-            // Delete the all user addresses
             await prisma.address.deleteMany({
                 where: {
                     user: id
                 }
             })
 
-            
 
             return true
         } else {
@@ -677,16 +678,66 @@ async function getAllCategories() {
     }
 }
 
-async function createCategory() {
+async function createCategory(name, parent_category) {
+    try {
+
+        let newCategory = await prisma.category.create({
+            data: {
+                name: name,
+                parent_category: parent_category
+            }
+        })
+
+        return newCategory.id;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function updateCategory(id, params) {
+    let categoryKeyMap = {
+        "name": "name",
+        "parent_category": "parent_category"
+    }
+
+    let categoryDataSelection = {}
+
+    for (const [key, value] of Object.entries(params)) {
+        if (key in categoryKeyMap) {
+            categoryDataSelection[categoryKeyMap[key]] = value
+        }
+    }
+
+    try {
+        const updatedCategory = await prisma.category.update({
+            where: {
+                id: id
+            },
+            data: categoryDataSelection
+        })
+
+        return updatedCategory
+    } catch (e) {
+        return null;
+    }
 
 }
 
-async function updateCategory() {
+async function deleteCategory(id) {
+    try {
+        await prisma.category.delete({
+            where: {
+                id: id
+            }
+        })
 
-}
-
-async function deleteCategory() {
-
+        return true;
+    } catch (e) {
+        if (e.code == "P2003") {
+            return 409;
+        }
+        return false;
+    }
 }
 
 /* All functions to be made available to the rest of the project should be listed here */

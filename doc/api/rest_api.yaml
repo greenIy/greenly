@@ -295,7 +295,6 @@ paths:
     post:
       tags:
         - user
-        - address
       summary: Adicionar nova morada à coleção de moradas do utilizador
       description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
         um administrador)
@@ -346,7 +345,6 @@ paths:
     put:
       tags:
         - user
-        - address
       summary: Atualizar uma morada do utilizador
       description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
         um administrador)
@@ -406,7 +404,6 @@ paths:
     delete:
       tags:
         - user
-        - address
       summary: Apagar uma morada do utilizador
       description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
         um administrador)
@@ -766,6 +763,9 @@ paths:
           enum:
           - price_asc
           - price_desc
+          - name_desc
+          - newest
+          - oldest
       - name: limit
         in: query
         description: Limite de produtos a devolver
@@ -909,6 +909,162 @@ paths:
         404:
           description: Produto não encontrado
           content: {}
+  ## Category Routes
+  /store/categories:
+    get:
+      tags:
+      - store
+      summary: Obter todas as categorias de produtos
+      description: "Devolve informação sobre todas as categorias de produtos existentes"
+      operationId: getCategories
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedCategory'
+    post:
+      tags:
+      - store
+      summary: Criar uma nova categoria de produtos
+      description: "Permite criar uma nova categoria (operação limitada a administradores)"
+      operationId: createCategory
+      requestBody:
+        description: "Informação correspondente à nova categoria a criar. Requer o nome da mesma e o código identificador da categoria mãe (opcional)"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SentCategory'
+      responses:
+        201:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador da nova categoria
+        400:
+          description: Informação fornecida é inválida. (e.g. parent_category inválida)
+          content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+      
+  /store/categories/{categoryId}:
+    put:
+      tags:
+      - store
+      summary: Atualizar uma categoria específica pelo respetivo categoryId
+      description: "Devolve uma mensagem de sucesso relativa à atualização da informação a categoria (operação limitada a administradores)"
+      operationId: updateCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: categoryId da categoria cuja informação se deseja atualizar
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Atualiza o objeto Category, apenas os campos que se deseja atualizar têm que ser incluidos.
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SentCategory'
+        required: true
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category updated succcessfully"
+        400:
+          description: Informação fornecida é inválida. (e.g. parent_category inválida)
+          content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - store
+      summary: Apagar uma categoria de produtos
+      description: Permite apagar uma categoria de produtos, desde que esta não tenha produtos ou sub-categorias associadas (operação limitada a administradores)
+      operationId: deleteCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: categoryId da categoria que se pretende apagar
+        required: true
+        schema:
+          type: integer
+      responses:
+        201:
+          description: Categoria apagada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category deleted succcessfully"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        409:
+          description: Categoria não pode ser apagada pois tem sub-categorias ou produtos associados
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category can't be deleted, includes products or sub-categories."
+          
+      security:
+        - bearerAuth: []
+
   ## ORDER ROUTES
   /store/orders:
     get:
@@ -1961,14 +2117,10 @@ components:
         name:
           type: string
           description: Nome do produto
-        categories:
-          type: array
-          description: Categorias associadas ao produto
-          items:
-            type: object
-            properties:
-              category:
-                $ref: '#/components/schemas/Category'
+        category:
+          type: integer
+          description: A categoria em que o produto se insere
+
         complement:
           type: string
           description: productId do produto que serve de complemento a este
@@ -2131,22 +2283,31 @@ components:
       description: Envio do identificador do produto para a wishlist do utilizador
 
     ## CATEGORY DEFINITIONS
-    Category:
+    SentCategory:
       type: object
       properties:
-        categoryId:
+        name:
           type: string
+          description: Nome da categoria
+        parent_category:
+          type: integer
+          description: A categoria-mãe da categoria em questão 
+      description: Objeto utilizado para a criação de uma categoria de produtos
+      xml:
+        name: Category
+    ReceivedCategory:
+      type: object
+      properties:
+        id:
+          type: integer
           description: Código identificador da categoria
         name:
           type: string
           description: Nome da categoria
-        subtype:
-          type: string
-          description: Subtipo da categoria
-      description: Objeto utilizado para devolver informação sobre a categoria de
-        um produto
-      xml:
-        name: Category
+        parent_category:
+          type: integer
+          description: A categoria-mãe da categoria em questão 
+
 
     ## VEHICLE DEFINITIONS
     Vehicle:
