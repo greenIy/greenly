@@ -592,7 +592,7 @@ async function getAllProducts(limit = 50,
 
 async function getProductByID(id){
     try {
-        return product = await prisma.product.findUnique({
+        let result =  product = await prisma.product.findUnique({
             where: {
                 id: id
             },
@@ -609,15 +609,16 @@ async function getProductByID(id){
                 complement_amount: true,
                 Supply: {
                     select: {
-                        product: true,
                         User: {
                             select: {
                                 Company: {
                                     select: {
-                                        id: true,
                                         name: true
                                     }
                                 },
+                                id: true,
+                                first_name: true,
+                                last_name: true,
                             }
                         },
                         warehouse: true,
@@ -627,16 +628,20 @@ async function getProductByID(id){
                         expiration_date: true,
                         Supply_Transporter: {
                             select: {
-                                User: {
+                                User: { // Display company name if available
                                     select: {
                                         Company: {
                                             select: {
-                                                id: true,
                                                 name: true
                                             }
-                                        }
+                                        },
+                                        id: true,
+                                        first_name: true,
+                                        last_name: true,
+
                                     }
-                                }
+                                },
+                                price: true,
                             }
                         },
                         Supply_History: true
@@ -644,6 +649,43 @@ async function getProductByID(id){
                 }
                 },
         })
+
+        for (let i = 0; i < result.Supply.length; i++) {
+            // Gathering further warehouse info
+            let warehouse = await prisma.warehouse.findUnique({
+                where: {
+                    id_supplier: {id: result.Supply[i].warehouse, supplier: result.Supply[i].User.id},
+                },
+                select: {
+                    id: true,
+                    resource_usage: true,
+                    renewable_resources: true
+                }
+            })
+
+            result.Supply[i].warehouse = warehouse
+
+            // Gathering futher transport info
+            for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
+                // Gather average emissions based on all transporter vehicles
+                let vehicle_averages = await prisma.vehicle.aggregate({
+                    where: {
+                        transporter: result.Supply[i].Supply_Transporter[j].User.id
+                    },
+                    _avg: {
+                        average_emissions: true,
+                        resource_usage: true
+                      },
+                })
+
+                result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
+
+                result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
+            }
+        }
+
+        return result;
+
     } catch (e){
         console.log(e)
         return null;

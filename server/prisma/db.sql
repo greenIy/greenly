@@ -88,6 +88,7 @@ CREATE TABLE Warehouse (
     capacity        INT UNSIGNED NOT NULL,
     resource_usage  INT UNSIGNED NOT NULL,
     supplier        INT UNSIGNED NOT NULL,
+    renewable_resources INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, supplier), # Composite PK allows warehouse indexing per supplier. No use-case requires listing all known warehouses.
 
@@ -242,6 +243,9 @@ CREATE TABLE Supply_Transporter (
 
     # Transporter
     transporter INT UNSIGNED NOT NULL,
+
+    # Properties
+    price       NUMERIC (10, 2) NOT NULL,
 
     PRIMARY KEY (product, supplier, warehouse, transporter),
 

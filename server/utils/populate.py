@@ -160,8 +160,9 @@ def genProductsSQL(amount, usersInDB):
             randomAddress = randint(1, usersInDB)
             randomCapacity = randint(20, 50)
             randomResourceUsage = randint(20, 50)
+            renewableResources = randint(0, 100)
 
-            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j+1}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier});")
+            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j+1}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier}, {renewableResources});")
     
     # Generate parent categories
     lineBuffer.append("#Categories")
@@ -217,8 +218,12 @@ def genProductsSQL(amount, usersInDB):
 
             transportsRegistered.add((product, supplier, warehouse, randomTransporter))
 
-            #TODO: Generate a transporting cost (per km because you don't know distance yet) here!!
-            lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter});")
+            price = randint(5, 60)
+
+            lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter}, {price});")
+
+    #TODO: Add distribution centers and vehicles
+    
 
     f = open("mock.sql", "w")
     f.write("\n".join(lineBuffer))
@@ -270,13 +275,6 @@ def main():
         usersInDB = int(input("How many users are currently registed in the database? "))
         amount = int(input("How many products would you like to generate? "))
         genProductsSQL(amount, usersInDB)
-
-
-
-
-
-    
-
 
 if __name__ == "__main__":
     main()

@@ -158,12 +158,13 @@ model Supply_History {
 }
 
 model Supply_Transporter {
-  product     Int    @db.UnsignedInt
-  supplier    Int    @db.UnsignedInt
-  warehouse   Int    @db.UnsignedInt
-  transporter Int    @db.UnsignedInt
-  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
-  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
+  product     Int     @db.UnsignedInt
+  supplier    Int     @db.UnsignedInt
+  warehouse   Int     @db.UnsignedInt
+  transporter Int     @db.UnsignedInt
+  price       Decimal @db.Decimal(10, 2)
+  Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
+  User        User    @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
 
   @@id([product, supplier, warehouse, transporter])
   @@index([transporter], map: "transporter")
@@ -188,14 +189,15 @@ model Vehicle {
 }
 
 model Warehouse {
-  id             Int      @default(autoincrement()) @db.UnsignedInt
-  address        Int      @db.UnsignedInt
-  capacity       Int      @db.UnsignedInt
-  resource_usage Int      @db.UnsignedInt
-  supplier       Int      @db.UnsignedInt
-  Address        Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
-  User           User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
-  Supply         Supply[]
+  id                  Int      @default(autoincrement()) @db.UnsignedInt
+  address             Int      @db.UnsignedInt
+  capacity            Int      @db.UnsignedInt
+  resource_usage      Int      @db.UnsignedInt
+  supplier            Int      @db.UnsignedInt
+  renewable_resources Int      @db.UnsignedInt
+  Address             Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
+  User                User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
+  Supply              Supply[]
 
   @@id([id, supplier])
   @@index([address], map: "address")

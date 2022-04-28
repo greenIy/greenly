@@ -4,11 +4,14 @@ const express   = require('express');
 const router    = express.Router();
 
 /* Greenly libraries */
-const { getProductsValidator, createCategoryValidator, updateCategoryValidator } = require('../lib/validation.js');
-const persistence       = require('../lib/persistence.js')
-const authentication    = require("../lib/authentication")
-const authorization     = require("../lib/authorization")
-const defaultErr        = require("../lib/error").defaultErr
+const { 
+    getProductsValidator,
+    createCategoryValidator,              
+    updateCategoryValidator } = require('../lib/validation.js');
+const persistence       = require('../lib/persistence.js');
+const authentication    = require("../lib/authentication");
+const authorization     = require("../lib/authorization");
+const defaultErr        = require("../lib/error").defaultErr;
 
 /* Product Routes */
 
@@ -96,6 +99,8 @@ router.get('/products/:productId', (req, res) => {
     try {
         persistence.getProductByID(Number(req.params.productId)).then((product) => {
             if (product) {
+                console.log(JSON.stringify(product, undefined, 4))
+
                 // Renaming Category key
                 delete Object.assign(product, {["category"]: product["Category"] })["Category"];
 
@@ -103,27 +108,47 @@ router.get('/products/:productId', (req, res) => {
                 // Renaming Supply key (Prisma limitation)
                 delete Object.assign(product, {["supplies"]: product["Supply"] })["Supply"];
 
-                /* TODO: WARNING: THIS RETURNS SUPPLIER AND TRANSPORTER COMPANY IDs, 
-                        AND NOT USER IDs, WHICH IS WHAT'S REQUIRED TO CREATE ORDERS. 
-                        WILL HAVE TO BE CHANGED UNLESS DATABASE STRUCTURE CHANGES TO 
-                        ACCOMODATE SUPPLIERS AND TRANSPORTERS AS COMPANIES INSTEAD OF USERS */
+
                 for (let i = 0; i<product.supplies.length; i++) {
 
                     // Renaming Supplies>User>Company>Name to "supplier"
                     // Supplier is always present
-                    delete Object.assign(product.supplies[i], {["supplier"]: product.supplies[i].User.Company}).User
+                    product.supplies[i].supplier = {
+                        id: product.supplies[i].User.id,
+                        name: product.supplies[i].User.Company ? product.supplies[i].User.Company.name : `${product.supplies[i].User.first_name} ${product.supplies[i].User.last_name}`
+                    }
+
+                    delete product.supplies[i].User
+
 
                     // Renaming Supply_Transporter to transporters
-                    delete Object.assign(product.supplies[i], {["transporters"]: product.supplies[i].Supply_Transporter}).Supply_Transporter
+                    delete Object.assign(product.supplies[i], {["transports"]: product.supplies[i].Supply_Transporter}).Supply_Transporter
 
                     // Rearranging transporter details
 
-                    for (let j = 0; j < product.supplies[i].transporters.length; j++) {
+                    for (let j = 0; j < product.supplies[i].transports.length; j++) {
 
                         // Old version: useful if you want to change from getting company ID to eventually getting the userID
                         // delete Object.assign(product.supplies[i].transporters[j], {["name"]: product.supplies[i].transporters[j].User.Company.name}).User
 
-                        delete Object.assign(product.supplies[i].transporters[j], product.supplies[i].transporters[j].User.Company).User
+                        let transport = product.supplies[i].transports[j]
+                        
+                        let transporterId = transport.User.id
+                        let transporterName = transport.User.Company ? transport.User.Company.name : `${transport.User.first_name} ${transport.User.last_name}`;
+                        let transporterAverageEmissions = transport.average_emissions || 0;
+                        let transporterAverageResourceUsage = transport.average_average_resource_usage || 0;
+                        let transportPrice = transport.price
+
+                        let newTransport = {transporter: {
+                            id: transporterId,
+                            name: transporterName,
+                            average_emissions: transporterAverageEmissions,
+                            average_resource_usage: transporterAverageResourceUsage,
+                            },
+                            price: transportPrice}
+
+                        product.supplies[i].transports[j] = newTransport
+
                     }
 
                     // Renaming supply history details
