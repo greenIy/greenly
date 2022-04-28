@@ -39,7 +39,7 @@
                           </div>
                         </div>
                        <div class="mt-4 mx-auto">
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="modal" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                         </div>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
@@ -57,7 +57,7 @@
                           </div>
                           </div>
                             <div class="mt-4 mx-auto">
-                            <button type="button" class="btn btn-secondary" @click="showModalT()" :modalT="false">Escolher outro Transportador</button>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false">Escolher outro Transportador</button>
                           </div>
                       </div>
                     </div>

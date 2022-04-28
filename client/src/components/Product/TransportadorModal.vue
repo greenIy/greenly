@@ -1,7 +1,7 @@
 <template>
-<div class="modal" role="dialog" id="fornModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+<div class="modal transp-modal-lg" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class=" d-flex modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Transportador para o Fornecedor X</h5> 
         <div class="mx-2" @click="closeModal('fecha')" >
@@ -9,16 +9,12 @@
         </div>
       </div>
       <div class="modal-body">
-         <div class="d-flex container">
-        <div class="mt-4" >
-          <div class=" card-group mt-2">
+        <div class="card-group">
             <CardTransportador 
              v-for="t in transporters"
               :key="t.id"
               :supply="t" />
         </div>
-      </div>
-      </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn save">Guardar Alterações</button>

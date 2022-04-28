@@ -1,7 +1,7 @@
 <template>
-<div class="modal" role="dialog" id="fornModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+<div class="modal forn-modal-lg" role="dialog" id="fornModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="d-flex modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Fornecedor</h5> 
         <div class="mx-2" @click="closeModal('fecha')" >
@@ -9,19 +9,15 @@
         </div>
       </div>
       <div class="modal-body">
-         <div class=" d-flex container">
-        <div class="mt-4" >
-          <div class=" card-group mt-2">
+        <div class="card-group">
             <CardFornecedor 
              v-for="s in suppliers"
               :key="s.supplier.id"
               :supply="s" />
-        </div>
-      </div>
-      </div>
+        </div> 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn save">Guardar Alterações</button>
+        <button type="button" class="btn save">Guardar Alterações  </button>
       </div>
     </div>
   </div>
@@ -49,6 +45,7 @@ export default {
   data() {
     return { 
       suppliers: [],
+      fornecedorCard: '',
     }
   },
   created() {
@@ -67,14 +64,14 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      console.log(this.suppliers)
+      //console.log(this.suppliers)
     },
   }
 };
 </script>
 <style scoped>
 .modal{
-    display: flex;
+    display: block;
 }
 .save{
   background-color: #608072;
