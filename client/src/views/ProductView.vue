@@ -26,7 +26,7 @@
                        <div class="col-6 d-flex flex-column"> 
                          <div class="d-flex flex-column flex-grow-1">
                           <span> Fornecedor: </span>
-                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                          <h6 class="text-muted recomendado" id="txtF">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                 <div class="d-flex justify-content-between card-input">
                                   <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
@@ -38,14 +38,14 @@
                               </div>
                           </div>
                         </div>
-                       <div class="mt-4 mx-auto">
+                       <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                         </div>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">
                           <span> Transportador: </span>
-                          <h6 class="text-muted recomendado">(Recomendado por ser mais sustentável)</h6>
+                          <h6 class="text-muted recomendado" id="txtT">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                     <div class="d-flex justify-content-between card-input">
                                       <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
@@ -56,8 +56,8 @@
                                   </div>
                           </div>
                           </div>
-                            <div class="mt-4 mx-auto">
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false">Escolher outro Transportador</button>
+                            <div class="mt-4 mx-auto" >
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
                       </div>
                     </div>
@@ -185,6 +185,7 @@ export default {
     modalT:Boolean,
     modalF:Boolean,
     prod:Boolean,
+    numberSuppliers:Number,
   },
   data() {
     return {
@@ -199,10 +200,13 @@ export default {
       prod:true,
       quantity:1,
       active_el:1,
+      numberSuppliers:0,
+      
     };
   },
   async created() {
     await this.getInfo();
+    await this.getSuppliersNumber()
   },
   methods: {
     liked(event) {
@@ -219,6 +223,18 @@ export default {
       this.product = response.data;
       this.loading = false;
       window.scrollTo(0, 0);
+    },
+    async getSuppliersNumber() {
+      var response = await http.get("/store/products/" + this.$route.params.id);
+      this.numberSuppliers = response.data.supplies.length;
+
+      if(this.numberSuppliers <2){
+        document.getElementById("btnF").style.visibility = "hidden";
+        document.getElementById("txtF").style.visibility = "hidden";
+      }
+      //console.log(this.numberSuppliers);
+      
+      //console.log(this.suppliers)
     },
     showModalF(){
       this.modalF=true;
