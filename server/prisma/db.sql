@@ -38,7 +38,7 @@ CREATE TABLE Product (
     FULLTEXT (name, description)
 );
 
-CREATE TABLE ProductAttributes (
+CREATE TABLE ProductAttribute (
     id              INT UNSIGNED AUTO_INCREMENT,
     product         INT UNSIGNED NOT NULL,
     title           VARCHAR(255) NOT NULL,

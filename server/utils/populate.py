@@ -1,8 +1,10 @@
 # This script can be used to populate the database with dummy data
 
 # Imports
+from calendar import monthcalendar
 import datetime
 import math
+import string
 from pick import pick
 import requests
 import time
@@ -16,6 +18,9 @@ from threading import Thread
 from rich.table import Table
 from rich.live import Live
 from requests.exceptions import ConnectionError
+from dateutil.relativedelta import relativedelta
+from operator import add, sub, mul
+
 
 # Constants
 API_BASE_URL = "http://api.greenly.pt"
@@ -45,6 +50,14 @@ def genRandomDate():
 
     return str(random_date)
         
+def genDaySequence(monthsBack):
+    # Gera uma sequência de dias
+    today = datetime.datetime.today()
+    today = today.replace(hour=10, minute=0, second=0, microsecond=0)
+    startDate = today - relativedelta(months=monthsBack)
+    delta = today - startDate
+
+    return [startDate + relativedelta(days=n) for n in range(delta.days + 1)]
 
 class User:
     def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
@@ -153,16 +166,38 @@ def genProductsSQL(amount, usersInDB):
     # TODO: Eventually curate a list of category names instead of random names
     possibleCategories = [fake.words(nb=1)[0].capitalize() for i in range(math.ceil(amount/5))]
 
-    
+    # TODO: Warehouses and Distribution Centers should use the same address as User ID
+    # Generate warehouses
     lineBuffer.append("#Warehouses")
     for i, supplier in enumerate(possibleSuppliers):
-        for j in range(3):
+        for j in range(1, 4):
             randomAddress = randint(1, usersInDB)
             randomCapacity = randint(20, 50)
             randomResourceUsage = randint(20, 50)
             renewableResources = randint(0, 100)
 
-            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j+1}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier}, {renewableResources});")
+            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier}, {renewableResources});")
+
+    # Generate distribution centers
+    lineBuffer.append("#Distribution Centers")
+    for i, transporter in enumerate(possibleTransporters):
+        # Vehicles are indexed by transporter, not by warehouse
+        vehicleIDCounter = 1
+        for j in range(1, 4):
+            randomAddress = randint(1, usersInDB)
+            randomCapacity = randint(20, 50)
+
+            lineBuffer.append(f"INSERT INTO Distribution_Center VALUES ({j}, {randomAddress}, {randomCapacity}, {transporter});")
+
+            for n in range(1, randint(1, 6)):
+                randomResourceUsage = randint(5, 30)
+                licensePlate =  ''.join(sample(string.ascii_uppercase, 2) + sample(string.digits, 2) + sample(string.ascii_uppercase, 2))
+                fuelType = choice(["ELECTRICITY", "DIESEL", "PETROL"])
+                averageEmissions = fuelType == 0 if fuelType == "ELECTRICITY" else randint(90, 460);
+                payloadCapacity = randint(2, 20)
+
+                lineBuffer.append(f"INSERT INTO Vehicle (id, resource_usage, license_plate, average_emissions, fuel_type, payload_capacity, transporter, distribution_center) VALUES ({vehicleIDCounter}, {randomResourceUsage}, '{licensePlate}', {averageEmissions}, '{fuelType}', {payloadCapacity}, {transporter}, {j});")
+                vehicleIDCounter += 1
     
     # Generate parent categories
     lineBuffer.append("#Categories")
@@ -184,9 +219,17 @@ def genProductsSQL(amount, usersInDB):
         lineBuffer.append(
             f"INSERT INTO Product (id, name, description, category) VALUES ({i}, '{fake.ecommerce_name()}', '{fake.text(max_nb_chars=220)}', {randint(1, categoryIdCounter-1)});")
 
+    # Generate product attributes
+    for i in range(1, amount+1):
+        for j in range(1, randint(3,10)):
+            lineBuffer.append(
+                f"INSERT INTO ProductAttribute(id, product, title, content) VALUES ({j}, {i}, '{fake.words(nb=2)[0].capitalize()}', '{fake.text(max_nb_chars=220)}');"
+            )
+
     # Generate supplies
     lineBuffer.append("#Supplies")
     suppliesRegistered = set()
+    additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
 
@@ -201,7 +244,13 @@ def genProductsSQL(amount, usersInDB):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
-            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randint(1, 300)}, {randint(1, 3000)}, '{genRandomDate()}', '{genRandomDate()}');")
+            randomPrice = randint(1, 3000)
+            randomQuantity = randint(1, 300)
+
+            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")
+
+            # Keep price and quantity data to use for historical data
+            additionalSupplyData[(i, randomSupplier, randomWarehouse)] = (randomQuantity, randomPrice)
 
     # Add tranporters to Supply_Transporter for each supply created
     transportsRegistered = set()
@@ -222,7 +271,26 @@ def genProductsSQL(amount, usersInDB):
 
             lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter}, {price});")
 
-    #TODO: Add distribution centers and vehicles
+    # Generate historical data
+    for day in genDaySequence(int(input("How many months of historical data would you like to generate? "))):
+        for product, supplier, warehouse in suppliesRegistered:
+            quantity, price = additionalSupplyData[(product, supplier, warehouse)]
+
+            # Decice by how much price and quantity will oscilate
+            randomQuantityDelta = randint(0, 20)
+            randomPriceDelta = randint(0, 200)
+
+            # Randomize between addition and subtraction
+            ops = (add, sub)
+            op = choice(ops)
+
+            # Form new values, making sure they aren't negative
+            newQuantity = abs(op(quantity, randomQuantityDelta))
+            newPrice = abs(op(price, randomPriceDelta))
+
+            lineBuffer.append(f"INSERT INTO Supply_History (product, supplier, warehouse, moment, quantity, price) VALUES ({product}, {supplier}, {warehouse}, '{day}' , {newQuantity}, {newPrice});")
+
+
     
 
     f = open("mock.sql", "w")

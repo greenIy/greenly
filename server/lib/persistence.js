@@ -484,11 +484,13 @@ async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
                               keywords,
-                              sort) {
-    /* TODO: Since sorting by minimum in a relationship isn't support by Prisma, and views are barely viable,
-     this entire function may have to be rewritten in raw SQL, as well as the corresponding route logic over at 
-     api/store.js GET /store/products
-     */
+                              sort,
+                              price_range) {
+
+    // Helper function
+    const manualPagination = (array, page_size, page_number) => {
+        return array.slice((page_number - 1) * page_size, page_number * page_size);
+    }
 
     let filterSelection = {}
 
@@ -503,16 +505,10 @@ async function getAllProducts(limit = 50,
 
     switch (sort) {
         case "newest":
-            sortingMethod.id = "asc"
-            break;
-        case "oldest":
             sortingMethod.id = "desc"
             break;
-        case "price_asc":
-            // TODO: Rewrite this
-            break;
-        case "price_desc":
-            // TODO: Rewrite this
+        case "oldest":
+            sortingMethod.id = "asc"
             break;
         case "name_asc":
             sortingMethod.name = "asc"
@@ -555,37 +551,107 @@ async function getAllProducts(limit = 50,
         // Adding created filters to the filterSelection
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
+    
+    let products;
 
-    // Get total product count
-    let totalProducts = await prisma.product.count({
-        where: filterSelection
-    })
+    if (["price_asc", "price_desc"].includes(sort)) {
 
-    // Get products based on provided filters
-    let products = await prisma.product.findMany({
-        skip: (page-1)*limit,
-        take: limit,
-        select: {
-            id: true,
-            name: true,
-            description: true,
-            complement_name: true,
-            complement_amount: true,
-            Category: {
+        // Special price sorting against Prisma limitations
+        // A Zeval banger -> day 1238987 of wishing JS had list comprehension.
+        /* What follows is comparable to magic.
+           Please do not ever ask what this does or how it was created.
+           Ingredients include:
+           * Cocaine
+           * Adderall
+           * Alcohol
+           * Cocaine again
+        */
+
+        let sortedProductIDs;
+
+        if (sort == "price_asc") {
+            // Sort by absolute minimum
+            sortedProductIDs = await prisma.supply.groupBy({
+                by: ['product'],
+                orderBy: {
+                  _min: {
+                    price: 'asc'
+                  }
+                }
+              })
+        } else if (sort == "price_desc") {
+            // Sort by absolute maximum
+            sortedProductIDs = await prisma.supply.groupBy({
+                by: ['product'],
+                orderBy: {
+                  _max: {
+                    price: 'desc'
+                  }
+                }
+              })
+        }
+
+        products = await Promise.all(
+            sortedProductIDs.map((currentProduct) => prisma.product.findMany({ 
+                where: {id:currentProduct.product, ...filterSelection},
+
                 select: {
                     id: true,
-                    name: true
+                    name: true,
+                    description: true,
+                    complement_name: true,
+                    complement_amount: true,
+                    Category: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    Supply: {
+                        select: {
+                            price: true
+                        }
+                    }
+                } }))
+            )
+
+        // Unpack from findMany nested structure
+        products = products.map((product) => product[0])
+
+        // Remove bad results
+        products = products.filter((product) => product != undefined)
+
+    } else {
+        // Get products based on provided filters
+        products = await prisma.product.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                complement_name: true,
+                complement_amount: true,
+                Category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                Supply: {
+                    select: {
+                        price: true
+                    }
                 }
             },
-            Supply: {
-                select: {
-                    price: true
-                }
-            }
-        },
-        where: filterSelection,
-        orderBy: sortingMethod
-    });
+            where: filterSelection,
+            orderBy: sortingMethod
+        });
+    }
+
+    // Get total product count
+    let totalProducts = products.length
+
+    // Manual Pagination
+    products = manualPagination(products, limit, page)
 
     return {total_products: totalProducts, products}
 }
@@ -597,6 +663,7 @@ async function getProductByID(id){
                 id: id
             },
             select: {
+                id: true,
                 name: true,
                 description: true,
                 Category: {
@@ -607,6 +674,13 @@ async function getProductByID(id){
                 } ,
                 complement_name: true,
                 complement_amount: true,
+                ProductAttribute: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true
+                    }
+                },
                 Supply: {
                     select: {
                         User: {
@@ -644,45 +718,54 @@ async function getProductByID(id){
                                 price: true,
                             }
                         },
-                        Supply_History: true
+                        Supply_History: {
+                            select: {
+                                moment: true,
+                                quantity: true,
+                                price: true
+                            }
+                        }
                     }
                 }
                 },
         })
 
-        for (let i = 0; i < result.Supply.length; i++) {
-            // Gathering further warehouse info
-            let warehouse = await prisma.warehouse.findUnique({
-                where: {
-                    id_supplier: {id: result.Supply[i].warehouse, supplier: result.Supply[i].User.id},
-                },
-                select: {
-                    id: true,
-                    resource_usage: true,
-                    renewable_resources: true
-                }
-            })
-
-            result.Supply[i].warehouse = warehouse
-
-            // Gathering futher transport info
-            for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
-                // Gather average emissions based on all transporter vehicles
-                let vehicle_averages = await prisma.vehicle.aggregate({
+        if (result) {
+            for (let i = 0; i < result.Supply.length; i++) {
+                // Gathering further warehouse info
+                let warehouse = await prisma.warehouse.findUnique({
                     where: {
-                        transporter: result.Supply[i].Supply_Transporter[j].User.id
+                        id_supplier: {id: result.Supply[i].warehouse, supplier: result.Supply[i].User.id},
                     },
-                    _avg: {
-                        average_emissions: true,
-                        resource_usage: true
-                      },
+                    select: {
+                        id: true,
+                        resource_usage: true,
+                        renewable_resources: true
+                    }
                 })
-
-                result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
-
-                result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
-            }
+    
+                result.Supply[i].warehouse = warehouse
+    
+                // Gathering futher transport info
+                for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
+                    // Gather average emissions based on all transporter vehicles
+                    let vehicle_averages = await prisma.vehicle.aggregate({
+                        where: {
+                            transporter: result.Supply[i].Supply_Transporter[j].User.id
+                        },
+                        _avg: {
+                            average_emissions: true,
+                            resource_usage: true
+                          },
+                    })
+    
+                    // Adding vehicle averages to payload
+                    result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
+                    result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
+                }
+            }    
         }
+        
 
         return result;
 

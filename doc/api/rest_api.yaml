@@ -10,7 +10,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.2
+  version: 1.0.5
 servers:
 - url: https://greenly.pt/api
 - url: http://greenly.pt/api
@@ -2160,6 +2160,21 @@ components:
             name:
               type: string
               description: O nome da categoria à qual o produto pertence
+        attributes:
+          type: array
+          description: Lista de atributos do produto
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Indíce do atributo do produto
+              title:
+                type: string
+                description: Título do atributo do produto
+              content:
+                type: string
+                description: Conteúdo do atributo do produto
         supplies:
           type: array
           description: Informação detalhada sobre o fornecimento de cada fornecedor
@@ -2168,8 +2183,18 @@ components:
             type: object
             properties:
               warehouse:
-                type: integer
-                description: Código identificador do armazém em que o produto se encontra
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador do armazém em que o produto se encontra 
+                  resource_usage:
+                    type: integer
+                    description: Utilização média de recursos para o armazenamento de 1 item (em kWh)
+                  renewable_resources:
+                    type: integer
+                    description: Percentagem da energia utilizada em armazenamento proveniente de fontes renováveis
+              
               quantity:
                 type: integer
                 description: Quantidade em stock que o fornecedor tem deste produto
@@ -2193,19 +2218,32 @@ components:
                     type: string
                     description: Nome da empresa
                 description: Informação do fornecedor
-              transporters:
+              transports:
                 type: array
-                description: Informação sobre todos os transportadores que podem transportar
-                  este produto, quando vendido por este fornecedor
+                description: Informação sobre todos os transportadores que podem transportar este produto, quando vendido por este fornecedor
                 items:
                   type: object
                   properties:
-                    id:
-                      type: integer
-                      description: Código identificador da empresa do fornecedor
-                    name:
-                      type: string
-                      description: Nome da empresa
+                    transporter:
+                      type: object
+                      description: Informação sobre o transportador
+                      properties:
+                        id:
+                          type: integer
+                          description: Código identificador do transportador
+                        name:
+                          type: string
+                          description: Nome da empresa
+                        average_emissions:
+                          type: integer
+                          description: Média de emissões da frota do transportador (em g.CO2/Tonelada/km)
+                        average_resource_usage:
+                          type: integer
+                          description: Média de consumo de combustível da frota do transportador (em l/100km)
+                    price:
+                      type: number
+                      description: A preço do transporte
+                      format: float
               history:
                 type: array
                 description: Informação histórica sobre a venda deste produto por

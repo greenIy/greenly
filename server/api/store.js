@@ -67,18 +67,6 @@ router.get('/products', getProductsValidator(), (req, res) => {
                     // Removing unrequired keys
                     delete productData.products[i].Supply
                 }
-
-                // Sorting: has to be done here since Prisma does
-                // not support sorting over calculated attributes  
-                // such  as lowest_price)
-                // FIXME: This has to be rewritten inside persistence/getAllProducts since it has to come before pagination
-                if (req.query.sort == "price_asc") {
-                    productData.products.sort((a, b) => a.lowest_price - b.lowest_price)
-
-                } else if (req.query.sort == "price_desc") {
-                    productData.products.sort((a, b) => b.lowest_price - a.lowest_price)
-                }
-            
             }
 
             res.status(200).json(productData)
@@ -99,11 +87,12 @@ router.get('/products/:productId', (req, res) => {
     try {
         persistence.getProductByID(Number(req.params.productId)).then((product) => {
             if (product) {
-                console.log(JSON.stringify(product, undefined, 4))
 
                 // Renaming Category key
                 delete Object.assign(product, {["category"]: product["Category"] })["Category"];
 
+                // Renaming ProductAttributes key
+                delete Object.assign(product, {["attributes"]: product["ProductAttribute"] })["ProductAttribute"];
 
                 // Renaming Supply key (Prisma limitation)
                 delete Object.assign(product, {["supplies"]: product["Supply"] })["Supply"];
@@ -128,15 +117,12 @@ router.get('/products/:productId', (req, res) => {
 
                     for (let j = 0; j < product.supplies[i].transports.length; j++) {
 
-                        // Old version: useful if you want to change from getting company ID to eventually getting the userID
-                        // delete Object.assign(product.supplies[i].transporters[j], {["name"]: product.supplies[i].transporters[j].User.Company.name}).User
-
                         let transport = product.supplies[i].transports[j]
-                        
+
                         let transporterId = transport.User.id
                         let transporterName = transport.User.Company ? transport.User.Company.name : `${transport.User.first_name} ${transport.User.last_name}`;
                         let transporterAverageEmissions = transport.average_emissions || 0;
-                        let transporterAverageResourceUsage = transport.average_average_resource_usage || 0;
+                        let transporterAverageResourceUsage = transport.average_resource_usage || 0;
                         let transportPrice = transport.price
 
                         let newTransport = {transporter: {
@@ -202,7 +188,6 @@ router.put('/categories/:categoryId', authentication.check, authorization.check,
     try {
         persistence.updateCategory(Number(req.params.categoryId), req.body).then((success) => {
             if (success) {
-                console.log(success)
                 res.status(200).send({message: "Category updated successfully."})
             } else {
                 res.status(500).send(defaultErr())
