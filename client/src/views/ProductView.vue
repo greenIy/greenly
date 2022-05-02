@@ -41,7 +41,7 @@
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                       </div>
-                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" :suppliers="suppliers"/>
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @save="closeModalF" :suppliers="suppliers"/>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">
@@ -210,8 +210,8 @@ export default {
   },
   created() {
     this.getInfo();
-    this.getSuppliersandTransporterNumber();
     this.getSuppliers();
+    this.getSuppliersandTransporterNumber();
     this.showMostSustenaibleSuppliers();
     console.log(this.suppliers);
   },
@@ -264,6 +264,13 @@ export default {
     getModalT(params){
       if(params == "fecha"){
         this.modalT=false;
+        this.prod=true;
+      }
+    },
+    closeModalF(value){
+      if(value == "salva"){
+        console.log(value);
+        this.modalF=false;
         this.prod=true;
       }
     },

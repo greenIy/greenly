@@ -37,11 +37,12 @@ export default {
   methods:{
      sendSuppliersSelected(event){
       this.fornecedorCard = event.target.value;
-      //this.$emit('sendModalF',this.fornecedorCard);
+      this.$emit('sendSupplierSelected',this.fornecedorCard);
     },
   }
 };
 </script>
+
 <style scoped>
 .card-input-element {
     margin-left: 10px;

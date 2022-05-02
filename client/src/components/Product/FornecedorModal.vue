@@ -10,14 +10,14 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardFornecedor 
+            <CardFornecedor  @sendSupplierSelected="getSupplierSelected"
              v-for="s in suppliers"
               :key="s.supplier.id"
               :supply="s" />
         </div> 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn save">Guardar Alterações</button>
+        <button type="button" class="btn save" @click="saveChanges()">Guardar Alterações</button>
       </div>
     </div>
   </div>
@@ -57,6 +57,17 @@ export default {
     closeModal(params){
       this.$emit('sendModalF',params);
     },
+    getSupplierSelected(event){
+      var idSupplier = event;
+      console.log(idSupplier);
+    },
+    saveChanges(){
+      console.log("entrei no salvar ");
+      //this.getSupplierSelected();
+      //this.$emit('sendSupplierSelected',this.idSupplier);
+      this.$emit('save',"salva");
+      //this.$emit('sendModalF',params);
+    }, 
   }
 };
 </script>
