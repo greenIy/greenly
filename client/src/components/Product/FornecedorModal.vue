@@ -59,14 +59,12 @@ export default {
     },
     getSupplierSelected(event){
       var idSupplier = event;
-      console.log(idSupplier);
+      this.$emit('sendSupplierSelected', idSupplier);
+      
     },
     saveChanges(){
       console.log("entrei no salvar ");
-      //this.getSupplierSelected();
-      //this.$emit('sendSupplierSelected',this.idSupplier);
       this.$emit('save',"salva");
-      //this.$emit('sendModalF',params);
     }, 
   }
 };
