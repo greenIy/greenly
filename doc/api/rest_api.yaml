@@ -784,12 +784,24 @@ paths:
       - name: keywords
         in: query
         description: Palavas-chave a incluir na pesquisa
-        style: form
-        explode: false
         schema:
           type: array
           items:
             type: string
+      - name: min_price
+        in: query
+        description: Preço mínimo dos produtos a apresentar
+        required: false 
+        schema:
+          type: number
+          format: float
+      - name: max_price
+        in: query
+        description: Preço máximo dos produtos a apresentar
+        required: false
+        schema:
+          type: number
+          format: float
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -797,6 +809,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Products'
+        400:
+          description: Argumentos inválidos
     post:
       tags:
       - store

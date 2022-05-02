@@ -487,10 +487,32 @@ async function getAllProducts(limit = 50,
                               sort,
                               price_range) {
 
-    // Helper function
+    // Helper functions
     const manualPagination = (array, page_size, page_number) => {
         return array.slice((page_number - 1) * page_size, page_number * page_size);
     }
+
+    const calcLowestPrice = (supplies) => {
+        let min = Number.POSITIVE_INFINITY;
+        supplies.forEach((supply) => {
+            if (parseFloat(supply.price) < parseFloat(min)) {
+                min = supply.price
+            }
+        })
+
+        return min;
+    }; 
+
+    const calcHighestPrice = (supplies) => {
+        let max = Number.NEGATIVE_INFINITY;
+        supplies.forEach((supply) => {
+            if (parseFloat(supply.price) > parseFloat(max)) {
+                max = supply.price
+            }
+        })
+
+        return max;
+    }; 
 
     let filterSelection = {}
 
@@ -646,6 +668,23 @@ async function getAllProducts(limit = 50,
             orderBy: sortingMethod
         });
     }
+
+    // Calculating and defining lowest and highest prices for each product
+    products.forEach((product) => {
+        if (product.Supply.length > 0) {
+            product.lowest_price = parseFloat(calcLowestPrice(product.Supply).toFixed(2))
+            product.highest_price = parseFloat(calcHighestPrice(product.Supply).toFixed(2))
+        }
+    })
+
+    // Checking if price bounds have been set
+    const minPrice = price_range.min || 0;
+    const maxPrice = price_range.max || Number.POSITIVE_INFINITY;
+
+    // Filtering products based on price
+    products = products.filter((product) => 
+        product.lowest_price > Number(minPrice) && 
+        product.lowest_price < Number(maxPrice))
 
     // Get total product count
     let totalProducts = products.length

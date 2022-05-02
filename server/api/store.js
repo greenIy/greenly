@@ -24,45 +24,15 @@ router.get('/products', getProductsValidator(), (req, res) => {
             req.query.page,
             req.query.category,
             req.query.keywords,
-            req.query.sort).
+            req.query.sort,
+            {min: req.query.min_price, max: req.query.max_price}).
         then((productData) => {
 
             if (productData) {
 
-                // Defining quick helper functions
-                const calcLowestPrice = (supplies) => {
-                    let min = Number.POSITIVE_INFINITY;
-                    supplies.forEach((supply) => {
-                        if (parseFloat(supply.price) < parseFloat(min)) {
-                            min = supply.price
-                        }
-                    })
-
-                    return min;
-                }; 
-
-                const calcHighestPrice = (supplies) => {
-                    let max = Number.NEGATIVE_INFINITY;
-                    supplies.forEach((supply) => {
-                        if (parseFloat(supply.price) > parseFloat(max)) {
-                            max = supply.price
-                        }
-                    })
-
-                    return max;
-                }; 
-
-
                 for (let i = 0; i < productData.products.length; i++) {
                     // Renaming Category key -> category
                     delete Object.assign(productData.products[i], {["category"]: productData.products[i]["Category"] })["Category"];
-
-                    // Calculating lowest and highest price 
-                    if (productData.products[i].Supply.length > 0) {
-                        productData.products[i]["lowest_price"] = parseFloat(calcLowestPrice(productData.products[i].Supply).toFixed(2))
-                        productData.products[i]["highest_price"] = parseFloat(calcHighestPrice(productData.products[i].Supply).toFixed(2))
-                        
-                    }
 
                     // Removing unrequired keys
                     delete productData.products[i].Supply

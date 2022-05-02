@@ -246,6 +246,30 @@ function getProductsValidator() {
             .optional()
             .notEmpty()
             .isString(),
+        query("min_price")
+            .optional()
+            .isFloat({min: 0})
+            .toFloat()
+            .notEmpty()
+            .custom((value, {req}) => {
+                if (req.query.max_price) {
+                    return value < req.query.max_price
+                }
+                return true;
+            })
+            .withMessage("Minimum price has to be lower than maximum price.").bail(),
+        query("max_price")
+            .optional()
+            .isFloat({min: 0})
+            .toFloat()
+            .notEmpty()
+            .custom((value, {req}) => {
+                if (req.query.min_price) {
+                    return value > req.query.min_price
+                }
+                return true;
+            })
+            .withMessage("Maximum price has to be higher than minimum price.").bail(),
 
         (req, res, next) => {
             const errors = validationResult(req);
