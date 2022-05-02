@@ -2,7 +2,7 @@
    
     <div class="wrapper">
         
-        <nav class="d-flex flex-column flex-shrink-0 p-3" style="width: 22%">
+        <nav class="d-flex flex-column flex-shrink-0 p-3" style="width: 25%">
             <font-awesome-icon :icon="['fas', 'user-astronaut']" size="2xl" style="position: absolute; margin: 1.4%"/>
             <div style="margin-left: 20px">
             <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
@@ -90,8 +90,6 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserAstronaut, faUser, faBoxArchive, faMap, faGear, faChartLine } from '@fortawesome/free-solid-svg-icons';
 library.add(faUserAstronaut, faUser, faBoxArchive, faMap, faGear, faChartLine);
 
-import http from "../../../http-commmon"
-
 export default {
     name: 'Profile',
     components: {
@@ -103,29 +101,14 @@ export default {
         ProfileSecurity,
         ProfileStatistics
     },
-    mounted() {
-        this.getUserInfo();
-    },
     data() {
         return {
-            user: [],
+            user: this.$store.getters.getUser,
             activeTab: 'personalInfo'
         }
     },
     methods: {
-        getUserInfo() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    this.user = response.data
-                    return this.user
-                }
-                })  
-            }
-        },
+
     },
 };
 </script>
@@ -133,7 +116,6 @@ export default {
 <style>
     .wrapper {
         display: flex;
-        width: 100%;
         align-items: stretch;
     }
     .nav > .nav-item > .active {

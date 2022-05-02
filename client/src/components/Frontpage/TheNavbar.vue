@@ -23,12 +23,12 @@
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
                         <li><h6 class="dropdown-header"> {{ user.first_name + " " + user.last_name }}</h6></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item ms-0"><router-link to="/profile" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</router-link></a></li>
-                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</router-link></a></li>
-                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</router-link></a></li>
-                        <li><a class="dropdown-item ms-0"><router-link to="/" style="margin-left: 0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</router-link></a></li>
+                        <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></router-link></li>
+                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</a></router-link></li>
+                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></router-link></li>
+                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</a></router-link></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item"><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0; color: red !important">Terminar sessão</router-link></a></li>
+                        <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item" style="color: red !important; width: 85%">Terminar sessão</a></router-link></li>
                     </ul>
                 </div>
                 <router-link  to="/login">
@@ -70,59 +70,34 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import AuthService from '../../router/auth';
+
 library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket);
 
-import http from "../../../http-commmon"
 
 export default {
     name: 'TheNavbar',
-    mounted() {
-        this.isLoggedIn();
-        this.getUserInfo();
-    },
     data () {
         return {
         search: '',
-        userIsLoggedIn: false,
-        user: []
+        userIsLoggedIn: this.$store.getters.getState,
+        user: this.$store.getters.getUser
     }
     },
     methods: {
         submit(search) {
             this.$emit('search-information', search);
         },
-        isLoggedIn() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            if (accessToken){
-                http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    return this.userIsLoggedIn = true;
-                } else {
-                    return this.userIsLoggedIn = false;
-                }
-                })  
-            } else {
-                return this.userIsLoggedIn = false;
-            }
-        },
-        getUserInfo() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    this.user = response.data
-                    return this.user
-                }
-                })  
-            }
-        },
         logoutUser() {
+            // Apagar token e informação sobre o utilizador presente na VueX store
             localStorage.removeItem('accessToken');
             localStorage.removeItem('userId');
+            this.$store.dispatch('setUser', null)
+            this.$store.dispatch('setState', false);
+
+            // TODO: Eventualmente fazer um pedido a /auth/logout aqui
         }
+
     }
 };
 </script>

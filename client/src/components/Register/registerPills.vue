@@ -14,7 +14,7 @@
             </li>
         </ul>
       
-        <div class="tab-content register-form" id="register-content" style="width: 45%; margin-top: 1.5%">
+        <div class="tab-content register-form" id="register-content" style="width: 45%; margin-top: 1.5%;">
             <transition name="fade">
                 <register-consumidor v-if="activeTab === 'consumidor'"/>
             </transition>

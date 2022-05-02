@@ -5,18 +5,18 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Introduza nome" required>
+                    <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Nome" required>
                 </div>
                 <div class="col mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Introduza apelido" required>
+                    <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Apelido" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
-                    <div class="invalid-feedback">E-mail não apresenta formato correto ou e-mail já em uso.</div>
+                    <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="E-mail" required>
+                    <div class="invalid-feedback" id="invalidFeedbackEmail"></div>
                 </div>
             </div>
 
@@ -24,20 +24,19 @@
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
-                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres.</div>    
+                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Palavra-passe" required>    
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
                             </span>
                         </div>
+                        <div class="invalid-feedback" id="invalidFeedbackPassword"></div>
                     </div>
                 </div>
                 <div class="col mb-3">
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
-                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres.</div>    
+                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required>  
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -77,7 +76,7 @@
                 <br>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como consumidor</button>
+            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Consumidor&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
 
             <div class="or-seperator"><i>ou</i></div>
             <p class="text-center">Regista-te através de uma rede social</p>
@@ -92,49 +91,18 @@
 </template>
 
 <script>
-import countrySelect from '@/components/Register/country-select'
-import regionSelect from '@/components/Register/region-select'
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash);
-import http from "../../../http-commmon";
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
-library.add(faFacebookSquare, faGoogle);
+import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
+library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
-function wrongRegister(message) {
-    console.log(message)
-    document.getElementById("registerButton").style = "background-color: #a32c2c; width: 100%;";
-    document.getElementById("registerButton").innerHTML = message;
-    document.getElementById("registerButton").disabled = true;
-    document.getElementById("password").value = "";
-    document.getElementById("passwordConfirm").value = "";
-    setTimeout(function(){
-        document.getElementById("registerButton").style = "background-color: #608072; width: 100%;";
-        document.getElementById("registerButton").innerHTML = "Registar como consumidor";
-        document.getElementById("registerButton").disabled = false;
-    }, 3000);
-    if (message.msg == "Invalid value") {
-        if (message.param == "email") {
-            document.getElementById("email").classList.add("is-invalid")
-        } else if (message.param == "password") {
-            document.getElementById("password").classList.add("is-invalid")
-            document.getElementById("passwordConfirm").classList.add("is-invalid")
-        }
-    } else if (message.msg == "E-mail already in use.") {
-        document.getElementById("email").classList.add("is-invalid")
-    }
-}
+import http from "../../../http-commmon";
 
 export default {
     name: 'registerConsumer',
-    components: {
-        countrySelect,
-        regionSelect
-    },
     data(){
         return {
-            country: '',
-            region: '',
             showPassword1: false,
             showPassword2: false,
             registerInfo: {
@@ -147,21 +115,51 @@ export default {
         }
     },
     methods: {
-        registerConsumer() {
-            http.post("/user", JSON.stringify({
-                first_name: this.registerInfo.firstName,
-                last_name: this.registerInfo.lastName,
-                email: this.registerInfo.email,
-                password: this.registerInfo.password.toString(),
-                type: "CONSUMER",
-            })).then((response) => {
-                if (response.status == 201) {
-                    console.log(response.data)
-                    alert('Account registered successfully!')
-                    this.$router.push({path: '/login'});
+        checkPasswords() {
+            if(document.getElementById("password").value == document.getElementById("passwordConfirm").value) {
+                return true
+            } else {
+                return false
+            }
+        },
+        wrongRegister(message) {
+            if (message.msg == "Invalid value") {
+                if (message.param == "email") {
+                    document.getElementById("invalidFeedbackEmail").innerText = "E-mail não apresenta formato correto."
+                    document.getElementById("email").classList.add("is-invalid")
+                } else if (message.param == "password") {
+                    document.getElementById("invalidFeedbackPassword").innerText = "Tem de ter pelo menos 5 caracteres"
+                    document.getElementById("password").classList.add("is-invalid")
                 }
-            })
-            .catch(error => wrongRegister(error.response.data.errors[0]));
+            } else if (message.msg == "E-mail already in use.") {
+                document.getElementById("invalidFeedbackEmail").innerText = "Email já em uso."
+                document.getElementById("email").classList.add("is-invalid")
+                
+            }
+            document.getElementById("password").value = "";
+            document.getElementById("passwordConfirm").value = "";
+        },
+        registerConsumer() {
+            if(this.checkPasswords()) {
+                http.post("/user", JSON.stringify({
+                    first_name: this.registerInfo.firstName,
+                    last_name: this.registerInfo.lastName,
+                    email: this.registerInfo.email,
+                    password: this.registerInfo.password.toString(),
+                    type: "CONSUMER",
+                })).then((response) => {
+                    if (response.status == 201) {
+                        alert('Account registered successfully!')
+                        this.$router.push({path: '/login'});
+                    }
+                })
+                .catch(error => this.wrongRegister(error.response.data.errors[0]));
+            } else {
+                document.getElementById("invalidFeedbackPassword").innerText = "Palavras-passe não coincidem."
+                document.getElementById("password").classList.add("is-invalid")
+                document.getElementById("password").value = "";
+                document.getElementById("passwordConfirm").value = "";
+            }
         },
         removeIsInvalid() {
             document.getElementById("email").classList.remove("is-invalid");

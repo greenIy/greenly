@@ -45,6 +45,9 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
+import AuthService from '../../router/auth';
+
+
 library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
 import http from "../../../http-commmon";
@@ -73,12 +76,15 @@ export default({
             http.post("/auth/login", JSON.stringify({
                     email: this.loginInfo.email,
                     password: this.loginInfo.password }))
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status == 200) {
-                            console.log(response.data.token),
                             localStorage.setItem('accessToken', JSON.stringify(response.data.token));
                             localStorage.setItem('userId', JSON.stringify(response.data.id));
                             this.$router.push({path: '/'})
+
+                            // Modificar a store do VueX de forma a refletir o estado de autenticação
+                            this.$store.dispatch('setUser', await AuthService.getUser())
+                            this.$store.dispatch('setState', true);
                         }
                     })
                     .catch(error => this.wrongCredentials(error.response.data.message));
