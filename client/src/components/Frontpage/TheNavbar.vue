@@ -15,7 +15,7 @@
             </div>
 
             <!--Search bar-->
-            <div  class="input-group search-group align-self-center"> 
+            <div id="web-search" class="input-group search-group align-self-center"> 
                 <input class="form-control bg-light border-light" type="search" placeholder="Produtos, fornecedores, transportadores..." aria-label="Search" v-model="search" v-on:keyup.enter="submit(this.search)">
                 <button class="btn bg-light" type="submit" @click="submit(this.search)">
                     <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l"/>
@@ -41,8 +41,9 @@
                     </router-link>
 
                     <span id="cart-leaf" class="position-absolute"> 
-                        <img alt="Número itens carrinho" src="../../assets/leaf.png">
-                        <span id="cart-count" class="position-absolute text-light"> 
+                        <!--img alt="Número itens carrinho" src="../../assets/leaf.png"-->
+                        <font-awesome-icon :icon="['fas', 'circle']" size="2xl"/>
+                        <span id="cart-count" class="position-absolute "> 
                             10
                         </span>
                     </span>
@@ -50,7 +51,7 @@
             </div>
 
             <!--Mobile search bar-->
-            <div  class="input-group search-group align-self-center mt-3 d-none">
+            <div id="mobile-search" class="input-group search-group align-self-center mt-3">
                 <input class="form-control bg-light border-light" type="search" placeholder="Produtos, fornecedores, transportadores..." aria-label="Search" v-model="search" v-on:keyup.enter="submit(this.search)">
                 <button class="btn bg-light" type="submit" @click="submit(this.search)">
                     <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l"/>
@@ -62,13 +63,14 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faBars, faUser, faMagnifyingGlass, faPercent} from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faBars, faUser, faMagnifyingGlass, faPercent, faCircle} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faCartShopping);
 library.add(faBars);
 library.add(faUser);
 library.add(faMagnifyingGlass);
 library.add(faPercent)
+library.add(faCircle)
 
 export default {
   name: 'TheNavbar',
@@ -103,11 +105,15 @@ export default {
     }
     
     .navbar {
-        background-color: #68b694;
+        background-color: #608072;
     }
 
     .input-group .btn {
         z-index: 0;
+    }
+
+    .fa-circle {
+        color: #d0dcd7;
     }
 
     .fa-bars:hover,
@@ -118,10 +124,10 @@ export default {
     .fa-cart-shopping:active,
     .fa-magnifying-glass,
     #promo {
-        color: #483df6;
+        color: #c0c0c0;
     }
      .fa-magnifying-glass:hover{
-        color: #493df693;
+        color: #777777;
     }
 
     .dropdown-toggle::after {
@@ -130,7 +136,7 @@ export default {
 
     #cart-count {
         right: 3.1px;
-        top: 3px;
+        top: 5.4px;
         width: 70%;
         font-family: 'Lucida Console',monospace;
     }

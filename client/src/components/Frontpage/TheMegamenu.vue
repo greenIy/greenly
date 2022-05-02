@@ -88,12 +88,12 @@
 }
 
 .promo {
-    color: #483df6!important;
+    color: #464646!important;
 }
 
 
 .offcanvas p:hover {
-  color: #adadad;
+  color: #727272;
 }
 
 .promo:hover {
