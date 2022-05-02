@@ -6,11 +6,11 @@
         <!--Promos-->
         <p class="pt-1 ps-5 pb-4 text-uppercase promo">
             <font-awesome-icon :icon="['fas', 'percent']" />
-            &nbsp;Promoções
+            &nbsp;Destaques
         </p>
 
         <!--Products (main categories)-->
-        <p class="pt-1 ps-5 text-uppercase btn-toggle" data-bs-toggle="collapse" data-bs-target="#products-collapse" aria-expanded="false">Produtos</p>
+        <p class="pt-1 ps-5 text-uppercase btn-toggle" data-bs-toggle="collapse" data-bs-target="#products-collapse" aria-expanded="false">Categorias</p>
 
         <div class="collapse ps-5 pb-1 ms-3" id="products-collapse">
             <div class="list-group list-group-flush">
