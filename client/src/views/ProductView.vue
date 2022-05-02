@@ -265,8 +265,7 @@ export default {
         this.active_el = el;
       }   
     },
-    clickAction(signal){
-      
+    clickAction(signal) {
       if(signal=='minus'){
         if(this.quantity>1){
           this.quantity--;

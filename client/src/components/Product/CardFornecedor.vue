@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2 card mx-2">
-    <label  @click="sendSuppliersSelected()">
+    <label  @change="sendSuppliersSelected($event)">
       <div class="d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supply.supplier.name }}</p></div>
           <div class="mx-2"><input type="radio" name="fornecedorCard" v-model="fornecedorCard"  :value="supply.supplier.id" class="card-input-element"
@@ -28,16 +28,16 @@ export default {
   name: "CardFornecedor",
   props: {
     supply: Object,
-    fornecedorCard:String,
+    fornecedorCard: String,
   },
   data() {
     return { 
-      
+      fornecedorCard: "",
     }
   },
   methods:{
-     sendSuppliersSelected(){
-      console.log(this.fornecedorCard);
+     sendSuppliersSelected(event){
+      this.fornecedorCard = event.target.value;
       //this.$emit('sendModalF',this.fornecedorCard);
     },
   }
