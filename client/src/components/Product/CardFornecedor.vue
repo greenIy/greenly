@@ -38,7 +38,7 @@ export default {
   methods:{
      sendSuppliersSelected(){
       console.log(this.fornecedorCard);
-      //this.$emit('sendModalF',params);
+      //this.$emit('sendModalF',this.fornecedorCard);
     },
   }
 };

@@ -64,10 +64,9 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      //this.numberSuppliers = response.data.supplies.length;
-      //console.log(this.numberSuppliers);
+
       
-      //console.log(this.suppliers)
+      console.log(this.suppliers)
     },
   }
 };

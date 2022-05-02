@@ -56,7 +56,7 @@
                                   </div>
                           </div>
                           </div>
-                            <div class="mt-4 mx-auto" >
+                            <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
                       </div>
@@ -85,8 +85,8 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">Fornecedor X</div>
-                      <div class="col-6 text-left">Transportador Y</div>
+                      <div class="col-6 text-left">Fornecedor A</div>
+                      <div class="col-6 text-left">Transportador A</div>
                     </div>
                     <div class="row mt-4">
                       <div class="col-6 text-left">
