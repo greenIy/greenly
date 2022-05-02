@@ -127,6 +127,7 @@ export default {
     },
     methods: {
         registerSupllier() {
+            
             http.post("/user", JSON.stringify({
                 first_name: this.registerInfo.firstName,
                 last_name: this.registerInfo.lastName,
@@ -144,7 +145,7 @@ export default {
                     this.$router.push({path: '/login'});
                 }
             })
-            .catch(error => wrongRegister(error.response.data.errors[0].msg));
+            .catch(error => wrongRegister(error.response.data.errors[0]));
         },
         removeIsInvalid() {
             document.getElementById("email").classList.remove("is-invalid");

@@ -167,24 +167,20 @@ export default {
     },
     methods: {
         registerConsumer() {
-            if (this.registerInfo.password == this.registerInfo.passwordConfirm){
-                http.post("/user", JSON.stringify({
+            http.post("/user", JSON.stringify({
                 first_name: this.registerInfo.firstName,
                 last_name: this.registerInfo.lastName,
                 email: this.registerInfo.email,
                 password: this.registerInfo.password.toString(),
                 type: "CONSUMER",
-                })).then((response) => {
-                    if (response.status == 201) {
-                        console.log(response.data)
-                        alert('Account registered successfully!')
-                        this.$router.push({path: '/login'});
-                    }
-                })
-                .catch(error => wrongRegister(error.response.data.errors[0]));
-            } else {
-                alert("Passwords do not match")
-            }
+            })).then((response) => {
+                if (response.status == 201) {
+                    console.log(response.data)
+                    alert('Account registered successfully!')
+                    this.$router.push({path: '/login'});
+                }
+            })
+            .catch(error => wrongRegister(error.response.data.errors[0]));
         },
         removeIsInvalid() {
             document.getElementById("email").classList.remove("is-invalid");
