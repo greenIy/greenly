@@ -64,16 +64,12 @@ library.add(faAngleUp);
       categories: Array,
       minPrice: Number,
       maxPrice: Number,
-      //'switchCurrentCategory',
       page: {
         type: String
       },
       category: {
         type: String
       },
-      //'parentCategory',
-      //'absoluteMaxPrice',
-      //'switchPriceRange'
     },
     data () { 
       return {
@@ -83,9 +79,6 @@ library.add(faAngleUp);
         countC: 0,
         countP: 0,
         countF: 0,
-        //currentMinPrice,
-        //currentMaxPrice,
-        //parentCategory
       }
     },
     methods: {

@@ -1,91 +1,111 @@
 <template>
+    <div class="offcanvas offcanvas-start bg-light " id="megamenu" data-bs-scroll="true">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="offcanvas"></button>
+        <img class="brand-icon mb-5" alt="ícone do greenly" src="../../assets/logo.png">
 
-<div class="sidenav bg-light collapse collapse-horizontal" id="megamenu" data-bs-scroll="true">
-  <p class="closebtn" data-bs-toggle="offcanvas" href="#megamenu" aria-controls="megamenu">&times;</p>
-  <img id="brand-icon w-25" alt="ícone do greenly" src="../../assets/leaves.png">
-  <p >About</p>
-  <p>Services</p>
-  <p>Clients</p>
-  <p>Contact</p>
-</div>
+        <!--Promos-->
+        <p class="pt-1 ps-5 pb-4 text-uppercase promo">
+            <font-awesome-icon :icon="['fas', 'percent']" />
+            &nbsp;Promoções
+        </p>
 
-    <!--div class="d-flex flex-column flex-shrink-0 bg-white align-items-start collapse navbar-collapse overflow-auto" id="megamenu">
-            <ul class="list-unstyled mx-5 my-4 w-75">
-                <!-Promos->
-                <li class="mb-3">
-                    <button id="promo" class="rounded fs-6 fw-bold text-uppercase bg-transparent border-0">
-                        <font-awesome-icon :icon="['fas', 'percent']" size="l"/> Promoções
-                    </button> 
-                </li>
+        <!--Products (main categories)-->
+        <p class="pt-1 ps-5 text-uppercase btn-toggle" data-bs-toggle="collapse" data-bs-target="#products-collapse" aria-expanded="false">Produtos</p>
 
+        <div class="collapse ps-5 pb-1 ms-3" id="products-collapse">
+            <div class="list-group list-group-flush">
+                <router-link v-for="category in showMainCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }"  class="list-group-item px-0 py-1 list-group-item-action border-0 bg-transparent text-uppercase">
+                {{ category.name }}
+                </router-link>
+            </div>
+        </div>
 
-                <!-Products (main categories)->
-                <li>
-                    <button class="btn-toggle rounded fs-6 text-uppercase bg-transparent border-0" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#products-collapse" aria-expanded="false">
-                        <!-font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /-> Produtos
-                    </button>  
+        <!--Services-->
+        <p class="pt-4 ps-5 pb-4 text-uppercase">Serviços</p>
 
-                    <div class="collapse" id="products-collapse">
-                        <div class="list-group list-group-flush">
-                            <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item  list-group-item-action border-0">
-                                {{ category.name }}
-                            </router-link>
-                            <a class="list-group-item list-group-item-action border-0">categorias aki</a>
-                        </div>
-                    </div>
-                </li>
-
-                <!-Services->
-                <li>
-                    <button class="btn-toggle rounded fs-6 text-uppercase bg-transparent border-0" data-bs-toggle="collapse" data-bs-target="#services-collapse" aria-expanded="false">
-                        <!-font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /-> Serviços
-                    </button>  
-
-                    <div class="collapse" id="services-collapse">
-                        <div class="list-group list-group-flush">
-                            <a class="list-group-item list-group-item-action border-0">Serviço 1</a>
-                            <a class="list-group-item list-group-item-action border-0">Serviço 2</a>
-                            <a class="list-group-item list-group-item-action border-0">Serviço 3</a>
-                        </div>
-                    </div>
-                </li>
-
-                <!-Main suppliers
-                <li></li>
-            </ul>
-        </div>-->
+        <!--Suppliers (main)-->
+        <p class="pt-1 ps-5 pb-4 text-uppercase">Fornecedores</p>
+    </div>
 </template>
 
-<style>
-.sidenav {
-  height: 100%;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
+<script>
+    import http from "../../../http-common";
+
+    export default {
+        name: 'TheMegamenu',
+        data () {
+            return {
+                mainCategories: []
+            }
+        },
+        watch: {
+            '$route'() {
+                document.getElementById("megamenu").style.visibility = "hidden";
+                document.getElementsByClassName('offcanvas-backdrop')[0].remove();          
+            }
+        },
+        created() {
+            this.getCategories();
+            console.log("route da pag atual:");
+            console.log(this.$route);
+        },
+        methods: {
+            async getCategories() {
+                var response = await http.get("/store/categories");
+                this.mainCategories = response.data;
+                console.log("array de categorias do serv:");
+                console.log(response.data);
+
+                console.log("array de categorias no vue array:");
+                console.log(this.mainCategories);
+            }
+        },
+        computed: {
+            showMainCategories: function () {
+            // show highest level of categories (ARRAY) --> array de categorias principais
+            console.log("array de categorias sem pai:")
+            console.log(this.mainCategories.filter(category => category.parent_category == null))
+            return this.mainCategories.filter(category => category.parent_category == null);
+            },
+        }
+    };
+</script>
+
+<style scoped>
+.brand-icon {
+    margin-left: 38%;
+    width: 90px;
+    height: 35px;
+}
+
+.offcanvas {
   padding-top: 60px;
 }
 
-.sidenav p {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
+.offcanvas p {
+  cursor: pointer;
+  color: #686868;
 }
 
-.sidenav p:hover {
-  color: #f1f1f1;
+.promo {
+    color: #483df6!important;
 }
 
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
+
+.offcanvas p:hover {
+  color: #adadad;
+}
+
+.promo:hover {
+    color: #493df693;
+}
+
+.offcanvas-backdrop {
+    z-index: 1!important;
+}
+
+.list-group-item {
+    font-size: 12.5px;
 }
 
 @media only screen and (max-width: 575px) {

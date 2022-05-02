@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div class="content-wrap">
       
-      <TheNavbar />
+      <TheNavbar @search-information="searchInformation"/>
       
       <TheMegamenu />
 
@@ -30,6 +30,19 @@ export default {
     TheFooter,
     TheMegamenu
   },
+  methods: {
+    searchInformation: function (params) {
+      console.log(this.$route.name);
+
+      //current page??
+      //limit??
+      http.get("/store/products?page=1&limit=12&keywords=" + params).then((response) => {
+        this.products = response.data.products;
+        this.productAmount = response.data.total_products;
+        console.log(response.data);
+      });
+    }
+  }
 };
 </script>
 
