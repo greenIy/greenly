@@ -61,8 +61,6 @@ export default {
     categories: Array,
     params:String,
     nameFilter:String
-
-    
   },
   data() {
     return {
@@ -135,7 +133,6 @@ export default {
       }else {
         this.getProductsByChild(this.nameFilter);
       }
-      
     },
     async getCategories() {
       var response = await http.get("/store/categories");

@@ -29,12 +29,12 @@
                           <h6 class="text-muted recomendado" id="txtF">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                 <div class="d-flex justify-content-between card-input">
-                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> Fornecedor A</p></div>
+                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ suppliers[0].supplier.name }} </p></div>
                                 </div>
                               <div class="d-flex flex-column card-input mt-0">
-                                <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-                                <p class="text-p"><b>Stock:</b> 30 produtos</p>
-                                <p class="text-p"><b>Preço:</b> 32€</p>
+                                <p class="text-p"><b>Gastos:</b> {{ suppliers[0].warehouse.resource_usage }}  kWh/kg</p>
+                                <p class="text-p"><b>Stock:</b> {{ suppliers[0].quantity }} produtos</p>
+                                <p class="text-p"><b>Preço:</b> {{ suppliers[0].price }}€</p>
                               </div>
                           </div>
                         </div>
@@ -59,6 +59,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
+                          <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" :suppliers="suppliers"/>
                       </div>
                     </div>
                   <div class="container mt-3">
@@ -150,7 +151,6 @@
           </div>
         </div>
       </div>
-      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" />
       <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT"/>
     </body>
     <TheFooter />
@@ -186,6 +186,7 @@ export default {
     modalF:Boolean,
     prod:Boolean,
     numberSuppliers:Number,
+    suppliers: Array,
   },
   data() {
     return {
@@ -196,17 +197,20 @@ export default {
       isActiveT: false,
       isActiveF: false,
       modalF: false,
-      modalT: false,      
+      modalT: false,
       prod:true,
       quantity:1,
       active_el:1,
       numberSuppliers:0,
-      
+      suppliers: [],
     };
   },
-  async created() {
-    await this.getInfo();
-    await this.getSuppliersNumber()
+  created() {
+    this.getInfo();
+    this.getSuppliersNumber();
+    this.getSuppliers();
+    this.showMostSustenaibleSuppliers();
+    console.log(this.suppliers);
   },
   methods: {
     liked(event) {
@@ -280,6 +284,17 @@ export default {
         }
       }
     },
+    async getSuppliers() {
+      var response = await http.get("/store/products/" + this.$route.params.id);
+      this.suppliers = response.data.supplies;
+
+      //console.log(this.suppliers)
+    },
+    showMostSustenaibleSuppliers() {
+      this.suppliers.sort(function (x, y) {
+        return x.warehouse.resource_usage - y.warehouse.resource_usage;
+      });
+    }
   },
 };
 </script>

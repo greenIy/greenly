@@ -7,9 +7,9 @@
            /></div> 
       </div>
       <div class="card-input mt-0">
-        <p class="text-p"><b>Gastos:</b> 32 kWh/kg</p>
-        <p class="text-p"><b>Stock:</b> 30 produtos</p>
-        <p class="text-p"><b>Preço:</b> 32€</p>
+        <p class="text-p"><b>Gastos:</b> {{ supply.warehouse.resource_usage }} kWh/kg</p>
+        <p class="text-p"><b>Stock:</b> {{ supply.quantity }} produtos</p>
+        <p class="text-p"><b>Preço:</b> {{ supply.price }} €</p>
       </div>
     </label>
   </div>   

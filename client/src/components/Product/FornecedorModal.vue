@@ -48,10 +48,8 @@ export default {
       fornecedorCard: '',
     }
   },
-  created() {
-    this.getSuppliers();
-  },
   props: {
+    suppliers: Array,
     supply: Object,
     modal:Boolean,
     prod:Boolean,
@@ -60,15 +58,6 @@ export default {
   methods:{
     closeModal(params){
       this.$emit('sendModalF',params);
-    },
-    async getSuppliers() {
-      var response = await http.get("/store/products/" + this.$route.params.id);
-      var response2 = await http.get("/store/products");
-      console.log(response2.data);
-      this.suppliers = response.data.supplies;
-
-      
-      console.log(this.suppliers)
     },
   }
 };
