@@ -86,7 +86,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">Fornecedor A</div>
+                      <div class="col-6 text-left">{{ suppliers[0].supplier.name }}</div>
                       <div class="col-6 text-left">Transportador A</div>
                     </div>
                     <div class="row mt-4">
@@ -98,7 +98,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">3 kWh por Produto</div>
+                      <div class="col-6 text-left">{{ suppliers[0].warehouse.resource_usage }} kWh por Produto</div>
                       <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
                     </div>
                   </div>
@@ -123,7 +123,7 @@
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
                             <div class="w-50">
                             <div class="mx-2">
-                               <input class="w-100 text-center align-self-center" min="1" max="5" type="text" name="quantity" :value="quantity" readonly="true"> 
+                               <input class="w-100 text-center align-self-center" min="1" :max="suppliers[0].quantity" type="number" name="quantity" :value="quantity" readonly="true" > 
                             </div>
                             </div>
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
@@ -276,11 +276,21 @@ export default {
           if(this.quantity==1){
             document.getElementById("decrement").style.color="#ededed";
           }
-        }
+          if (this.quantity < this.suppliers[0].quantity ){
+            document.getElementById("increment").style.color="#7c9d8e";
+          }
+          
+          }
       }else{
-        this.quantity++;
-        if(this.quantity==2){
+        if(this.quantity < this.suppliers[0].quantity){
+          this.quantity++;
+          if(this.quantity==2){
           document.getElementById("decrement").style.color="#7c9d8e";
+        }
+         if (this.quantity== this.suppliers[0].quantity){
+          document.getElementById("increment").style.color="#ededed";
+
+        }
         }
       }
     },
@@ -387,5 +397,10 @@ label {
 }
 #decrement{
   color:#ededed;
+}
+input[type='number']::-webkit-inner-spin-button, 
+input[type='number']::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>
