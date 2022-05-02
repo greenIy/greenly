@@ -15,28 +15,17 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
+                    <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="Introduza e-mail" required>
+                    <div class="invalid-feedback">E-mail não apresenta formato correto ou e-mail já em uso.</div>
                 </div>
             </div>
-
-            <!--
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="inputNif" class="form-label">Identificador Fiscal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="nif" v-model="registerInfo.nif" placeholder="Introduza NIF" required minlength="9" maxlength="9">
-                </div>
-                <div class="col mb-3">
-                    <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="phoneNumber" v-model="registerInfo.phoneNumber" placeholder="Introduza telemóvel" required minlength="9" maxlength="9">
-                </div>
-            </div>
-            -->
 
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword1 ? 'text' : 'password'" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Introduza palavra-passe" required>
+                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres.</div>    
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -47,7 +36,8 @@
                 <div class="col mb-3">
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword2 ? 'text' : 'password'" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
+                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Introduza palavra-passe" required>
+                    <div class="invalid-feedback">Password tem de ter pelo menos 5 caracteres.</div>    
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -112,15 +102,27 @@ import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 library.add(faFacebookSquare, faGoogle);
 
 function wrongRegister(message) {
+    console.log(message)
     document.getElementById("registerButton").style = "background-color: #a32c2c; width: 100%;";
     document.getElementById("registerButton").innerHTML = message;
     document.getElementById("registerButton").disabled = true;
     document.getElementById("password").value = "";
+    document.getElementById("passwordConfirm").value = "";
     setTimeout(function(){
         document.getElementById("registerButton").style = "background-color: #608072; width: 100%;";
         document.getElementById("registerButton").innerHTML = "Registar como consumidor";
         document.getElementById("registerButton").disabled = false;
-   }, 3000);
+    }, 3000);
+    if (message.msg == "Invalid value") {
+        if (message.param == "email") {
+            document.getElementById("email").classList.add("is-invalid")
+        } else if (message.param == "password") {
+            document.getElementById("password").classList.add("is-invalid")
+            document.getElementById("passwordConfirm").classList.add("is-invalid")
+        }
+    } else if (message.msg == "E-mail already in use.") {
+        document.getElementById("email").classList.add("is-invalid")
+    }
 }
 
 export default {
@@ -139,40 +141,36 @@ export default {
                 firstName: '',
                 lastName:'',
                 email:'',
-                nif:'',
-                phoneNumber:'',
                 password:'',
                 passwordConfirm:'',
-                street:'',
-                city:'',
-                postalCode:'',
-                country:''
             }
         }
     },
     methods: {
         registerConsumer() {
-            http.post("/user", JSON.stringify({
-                nif: this.registerInfo.nif,
+            if (this.registerInfo.password == this.registerInfo.passwordConfirm){
+                http.post("/user", JSON.stringify({
                 first_name: this.registerInfo.firstName,
                 last_name: this.registerInfo.lastName,
                 email: this.registerInfo.email,
-                phone: this.registerInfo.phoneNumber.toString(),
                 password: this.registerInfo.password.toString(),
                 type: "CONSUMER",
-                address:{
-                    street: this.registerInfo.street.toString(),
-                    city: this.registerInfo.city.toString(),
-                    postal_code: this.registerInfo.postalCode.toString(),
-                    country: this.registerInfo.country.toString()}})
-                ).then((response) => {
+                })).then((response) => {
                     if (response.status == 201) {
-                        console.log(response.data.token)
+                        console.log(response.data)
                         alert('Account registered successfully!')
                         this.$router.push({path: '/login'});
                     }
                 })
-                .catch(error => wrongRegister(error.response.data.errors[0].msg));
+                .catch(error => wrongRegister(error.response.data.errors[0]));
+            } else {
+                alert("Passwords do not match")
+            }
+        },
+        removeIsInvalid() {
+            document.getElementById("email").classList.remove("is-invalid");
+            document.getElementById("password").classList.remove("is-invalid");
+            document.getElementById("passwordConfirm").classList.remove("is-invalid");
         }
     }
 };
