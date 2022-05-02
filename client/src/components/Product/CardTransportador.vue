@@ -2,7 +2,7 @@
   <div class="mt-2 card mx-2">
     <label>
       <div class=" d-flex justify-content-between card-input">
-        <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />Transportador A</p></div>
+        <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />{{ transporter.name }}</p></div>
           <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" class="card-input-element"  /></div> 
       </div>
       <div class="d-flex flex-column card-input mt-0">
@@ -24,6 +24,9 @@ library.add(faXmark);
 
 export default {
   name: "CardTransportador",
+  props:{
+  transporter: Object,
+  },
   data() {
     return { 
     }
@@ -44,6 +47,5 @@ export default {
 .card{
   border: 1px solid #e5e5e5!important;
   width:15rem!important;
-  flex: unset;
 }
 </style>

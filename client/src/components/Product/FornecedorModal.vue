@@ -17,7 +17,7 @@
         </div> 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn save">Guardar Alterações  </button>
+        <button type="button" class="btn save">Guardar Alterações</button>
       </div>
     </div>
   </div>
@@ -29,8 +29,6 @@ import CardFornecedor from "@/components/Product/CardFornecedor.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark} from "@fortawesome/free-solid-svg-icons";
-
-import http from "../../../http-common";
 
 library.add(faCubes);
 library.add(faTruck);
@@ -62,6 +60,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 .modal{
     display: block;
@@ -70,5 +69,4 @@ export default {
   background-color: #608072;
   color:white;
 }
-
 </style>

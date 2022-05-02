@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex align-items-end my-3" style="width:91%">
+<div class="d-flex align-items-end my-3" style="width:90%">
     <div class="col-6">
     </div>
     <div class="col-3 text-end mx-1">
@@ -21,15 +21,15 @@
     </div>
     <div class="col-2">
         <div class="dropdown" >
-            <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:11rem;text-align:left;">
+            <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:12rem;text-align:left;">
                 <span id="orderBy">Ordenar por</span>
                 <span style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" /></span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
-                <li><a class="dropdown-item" @click='order("name")' style="width: 11rem;">Nome</a></li>
-                <li><a class="dropdown-item" @click='order("id")' style="width: 11rem;">Novidade</a></li>
-                <li><a class="dropdown-item" @click='order("priceMin")' style="width: 11rem;">Preço Ascendente</a></li>
-                <li><a class="dropdown-item" @click='order("priceMax")' style="width: 11rem;">Preço Descendente</a></li>
+                <li><a class="dropdown-item" @click='order("name")' style="width: 12rem;">Nome</a></li>
+                <li><a class="dropdown-item" @click='order("id")' style="width: 12rem;">Novidade</a></li>
+                <li><a class="dropdown-item" @click='order("priceMin")' style="width: 12rem;">Preço Ascendente</a></li>
+                <li><a class="dropdown-item" @click='order("priceMax")' style="width: 12rem;">Preço Descendente</a></li>
             </ul>
         </div>
     </div>

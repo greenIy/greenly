@@ -40,7 +40,8 @@
                         </div>
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
-                        </div>
+                      </div>
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" :suppliers="suppliers"/>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">
@@ -59,7 +60,8 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" :suppliers="suppliers"/>
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT"/>
+                          
                       </div>
                     </div>
                   <div class="container mt-3">
@@ -123,7 +125,7 @@
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
                             <div class="w-50">
                             <div class="mx-2">
-                               <input class="w-100 text-center align-self-center" min="1" :max="suppliers[0].quantity" type="number" name="quantity" :value="quantity" readonly="true" > 
+                               <input class="w-100 text-center align-self-center" type="number" name="quantity" :value="quantity" readonly="true" > 
                             </div>
                             </div>
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
@@ -151,7 +153,6 @@
           </div>
         </div>
       </div>
-      <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT"/>
     </body>
     <TheFooter />
   </div>
@@ -186,6 +187,7 @@ export default {
     modalF:Boolean,
     prod:Boolean,
     numberSuppliers:Number,
+    numberTransporters:Number,
     suppliers: Array,
   },
   data() {
@@ -202,12 +204,13 @@ export default {
       quantity:1,
       active_el:1,
       numberSuppliers:0,
+      numberTransporters:0,
       suppliers: [],
     };
   },
   created() {
     this.getInfo();
-    this.getSuppliersNumber();
+    this.getSuppliersandTransporterNumber();
     this.getSuppliers();
     this.showMostSustenaibleSuppliers();
     console.log(this.suppliers);
@@ -228,17 +231,21 @@ export default {
       this.loading = false;
       window.scrollTo(0, 0);
     },
-    async getSuppliersNumber() {
+    async getSuppliersandTransporterNumber() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.numberSuppliers = response.data.supplies.length;
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + this.numberSuppliers);
+      //this.numberTransporters = response.data.supplies.transports.length;
+      //console.log(this.numberTransporters);
 
-      if(this.numberSuppliers <2){
+      if(this.numberSuppliers == 1){
         document.getElementById("btnF").style.visibility = "hidden";
         document.getElementById("txtF").style.visibility = "hidden";
       }
-      //console.log(this.numberSuppliers);
-      
-      //console.log(this.suppliers)
+     /*  if(this.numberTransporters <2){
+        document.getElementById("btnT").style.visibility = "hidden";
+        document.getElementById("txtT").style.visibility = "hidden";
+      } */
     },
     showModalF(){
       this.modalF=true;
@@ -281,16 +288,16 @@ export default {
           }
           
           }
-      }else{
+      }
+      else{
         if(this.quantity < this.suppliers[0].quantity){
           this.quantity++;
           if(this.quantity==2){
-          document.getElementById("decrement").style.color="#7c9d8e";
-        }
-         if (this.quantity== this.suppliers[0].quantity){
-          document.getElementById("increment").style.color="#ededed";
-
-        }
+            document.getElementById("decrement").style.color="#7c9d8e";
+          }
+          if (this.quantity== this.suppliers[0].quantity){
+            document.getElementById("increment").style.color="#ededed";
+          }
         }
       }
     },

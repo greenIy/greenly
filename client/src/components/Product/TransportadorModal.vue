@@ -13,7 +13,7 @@
             <CardTransportador 
              v-for="t in transporters"
               :key="t.id"
-              :supply="t" />
+              :transporter="t" />
         </div>
       </div>
       <div class="modal-footer">
@@ -42,6 +42,13 @@ export default {
   components: {
   CardTransportador,
   },
+  props: {
+    modal:Boolean,
+    prod:Boolean,
+    transporter: Object,
+    transporters: Array,
+
+  },
   data() {
     return {
       transporters: [], 
@@ -50,17 +57,13 @@ export default {
   created() {
     this.getTransporters();
   },
-  props: {
-    modal:Boolean,
-    prod:Boolean,
-  },
   methods:{
     closeModal(params){
       this.$emit('sendModalT',params);
     },
     async getTransporters() {
       var response = await http.get("/store/products/" + this.$route.params.id);
-      this.transporters = response.data.supplies[0].transporters;
+      this.transporters = response.data.supplies[0].transports;
       console.log(this.transporters)
     },
   }
