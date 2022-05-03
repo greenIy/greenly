@@ -6,7 +6,7 @@
           <div class="mx-2"><input type="radio" name="fornecedorCard" v-model="fornecedorCard"  :value="supply.supplier.id" class="card-input-element"/></div> 
       </div>
       <div class="card-input mt-0">
-        <p class="text-p"><b>Gastos:</b> {{ supply.warehouse.resource_usage }} kWh/kg</p>
+        <p class="text-p"><b>Recursos Gastos:</b> {{ supply.warehouse.resource_usage }} kWh/kg</p>
         <p class="text-p"><b>Stock:</b> {{ supply.quantity }} produtos</p>
         <p class="text-p"><b>Preço:</b> {{ supply.price }}€</p>
       </div>
@@ -35,7 +35,7 @@ export default {
     }
   },
   methods:{
-     sendSuppliersSelected(event){
+    sendSuppliersSelected(event){
       this.fornecedorCard = event.target.value;
       this.$emit('sendSupplierSelected',this.fornecedorCard);
     },

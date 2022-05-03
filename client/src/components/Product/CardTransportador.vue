@@ -3,7 +3,7 @@
     <label>
       <div class=" d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ transporter.transporter.name }}</p></div>
-          <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" class="card-input-element"  /></div> 
+          <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element"  /></div> 
       </div>
       <div class="d-flex flex-column card-input mt-0">
         <p class="text-p"><b>Emissões médias:</b> {{ transporter.transporter.average_emissions }} CO₂/Km</p>
@@ -26,14 +26,19 @@ library.add(faXmark);
 export default {
   name: "CardTransportador",
   props:{
-  transporter: Object,
+    transporter: Object,
+    transportadorCard: String,
   },
   data() {
     return { 
+      transportadorCard: "",
     }
   },
   methods:{
- 
+    sendTransporterSelected(event){
+      this.transportadorCard = event.target.value;
+      this.$emit('sendTransporterSelected', this.transportadorCard);
+    },
   }
 };
 </script>

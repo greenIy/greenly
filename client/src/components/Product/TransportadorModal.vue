@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardTransportador 
+            <CardTransportador @sendTransporterSelected="getTransporterSelected"
              v-for="t in transporters"
               :key="t.transporter.id"
               :transporter="t" />
@@ -54,16 +54,15 @@ export default {
     }
   },
   created() {
-    this.getTransporters();
   },
   methods:{
     closeModal(params){
       this.$emit('sendModalT',params);
+      console.log(this.transporters);
     },
-    async getTransporters() {
-      var response = await http.get("/store/products/" + this.$route.params.id);
-      this.transporters = response.data.supplies[0].transports;
-      console.log(this.transporters)
+    getTransporterSelected(event){
+      var idTransporter = event;
+      this.$emit('sendTransporterSelected', idTransporter);
     },
   }
 };

@@ -60,7 +60,6 @@ export default {
     getSupplierSelected(event){
       var idSupplier = event;
       this.$emit('sendSupplierSelected', idSupplier);
-      
     },
     saveChanges(){
       console.log("entrei no salvar ");
