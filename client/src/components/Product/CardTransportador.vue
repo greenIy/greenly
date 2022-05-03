@@ -6,8 +6,8 @@
           <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element"  /></div> 
       </div>
       <div class="d-flex flex-column card-input mt-0">
-        <p class="text-p"><b>Emissões médias:</b> {{ transporter.transporter.average_emissions }} CO₂/Km</p>
-        <p class="text-p"><b>Recursos gastos:</b> {{ transporter.transporter.average_resource_usage }} CO₂/Kg</p>
+        <p class="text-p"><b>Emissões Médias:</b> {{ transporter.transporter.average_emissions }} CO₂/Km</p>
+        <p class="text-p"><b>Recursos Gastos:</b> {{ transporter.transporter.average_resource_usage }} CO₂/Kg</p>
         <p class="text-p"><b>Preço:</b> {{ transporter.price }}€</p>
       </div>
     </label>

@@ -51,7 +51,6 @@ export default {
     supply: Object,
     modal:Boolean,
     prod:Boolean,
-    currentPage: Number,
   },
   methods:{
     closeModal(params){
@@ -63,7 +62,8 @@ export default {
     },
     saveChanges(){
       console.log("entrei no salvar ");
-      this.$emit('save',"salva");
+      this.$emit('saveF',"salva");
+      //this.getSupplierSelected();
     }, 
   }
 };

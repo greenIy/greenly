@@ -41,7 +41,7 @@
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                       </div>
-                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @save="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers"/>
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers"/>
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">
@@ -52,8 +52,8 @@
                                       <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ currentTransporter.name }}</p></div>
                                     </div>
                                     <div class="d-flex flex-column card-input mt-0">
-                                    <p class="text-p"><b>Emissões médias:</b> {{ currentTransporter.average_emissions }} CO₂/Km</p>
-                                    <p class="text-p"><b>Recursos gastos:</b> {{ currentTransporter.average_resource_usage }} CO₂/Kg</p>
+                                    <p class="text-p"><b>Emissões Médias:</b> {{ currentTransporter.average_emissions }} CO₂/Km</p>
+                                    <p class="text-p"><b>Recursos Gastos:</b> {{ currentTransporter.average_resource_usage }} CO₂/Kg</p>
                                     <p class="text-p"><b>Preço:</b> {{ currentTransporter.price }}€</p>
                                   </div>
                           </div>
@@ -61,7 +61,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" :transporters="currentSupplier.transporters" @sendTransporterSelected="getTransporterSelected"/>
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" @sendTransporterSelected="getTransporterSelected"/>
                           
                       </div>
                     </div>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="row">
                       <div class="col-6 text-left">{{ currentSupplier.name}}</div>
-                      <div class="col-6 text-left">Transportador A</div>
+                      <div class="col-6 text-left">{{ currentTransporter.name }}</div>
                     </div>
                     <div class="row mt-4">
                       <div class="col-6 text-left">
@@ -102,7 +102,7 @@
                     </div>
                     <div class="row">
                       <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh por Produto</div>
-                      <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
+                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage}} kg de CO₂ por Produto</div>
                     </div>
                   </div>
                   <div class="container mt-3" id="info" v-if="active_el==2" >
@@ -191,6 +191,7 @@ export default {
     numberTransporters:Number,
     suppliers: Array,
     idSupplier:Number,
+    idTransporter:Number,
     transporters: Array,
   },
   data() {
@@ -250,8 +251,10 @@ export default {
     async getSuppliersandTransporterNumber() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.numberSuppliers = response.data.supplies.length;
-      //this.numberTransporters = response.data.supplies.transports.length;
-      //console.log("EHHHHHHHHHHHHHH"+this.numberTransporters);
+     /*  
+      this.numberTransporters = response.data.supplies.transporters.length;
+      console.log("AHHHHHHHHHHHHHH"+this.numberTransporters);
+      console.log("EHHHHHHHHHHHHHH"+this.numberTransporters); */
 
       if(this.numberSuppliers == 1){
         document.getElementById("btnF").style.visibility = "hidden";
@@ -286,6 +289,13 @@ export default {
       if(value == "salva"){
         console.log(value);
         this.modalF=false;
+        this.prod=true;
+      }
+    },
+    closeModalT(value){
+      if(value == "salva"){
+        console.log(value);
+        this.modalT=false;
         this.prod=true;
       }
     },
@@ -329,18 +339,23 @@ export default {
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
-      //console.log(this.suppliers)
     },
+   /*  getTransporters(){
+      console.log(this.currentSupplier.transporters);
+      //this.transporters = this.currentSupplier.transporters;
+    }, */
     getSupplierSelected(event){
       var supplierSelected = event;
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
       this.showCurrentSupplier();
+     
       //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     },
     getTransporterSelected(event){
       var transporterSelected = event;
-      console.log(transporterSelected);
+      //console.log(transporterSelected);
       this.idTransporter = this.currentSupplier.transporters.findIndex((transporter) => transporter.id == transporterSelected);
+      //console.log(idTransporter)
       this.showCurrentTransporter();
       //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     }, 
@@ -348,6 +363,7 @@ export default {
       this.suppliers.sort(function (x, y) {
         return x.warehouse.resource_usage - y.warehouse.resource_usage;
       });
+      
     },
     showMostSusteinableTransporters() {
       this.currentSupplier.transporters.sort(function (x, y) {
@@ -360,14 +376,16 @@ export default {
       this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
+      //console.log(this.currentSupplier.transporters)
       //console.log(this.currentSupplier);
     },
     showCurrentTransporter() {
-      console.log(this.currentSupplier);
+      //console.log(this.currentTransporter);
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;
       this.currentTransporter.average_resource_usage = this.currentSupplier.transporters[this.idTransporter].transporter.average_resource_usage;
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
+      //console.log(this.currentSupplier.transporters)
       //console.log(this.currentSupplier);
     }
   },
