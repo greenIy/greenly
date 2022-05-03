@@ -31,14 +31,6 @@ const maps = new Client();
 
 /* Returns user object on creation, or null if invalid */
 async function createUser(params) {
-
-    const geocoded = await maps.geocode({
-        params: {
-            address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
-            key: process.env.GOOGLE_API_KEY
-        }
-    })
-
     try {
         let newUser = await prisma.user.create({
             data: {
@@ -75,6 +67,7 @@ async function createUser(params) {
         return {id: newUser.id};
 
     } catch (e) {
+        console.log(e)
         return null;
     }
 }

@@ -1,15 +1,16 @@
 # This script can be used to populate the database with dummy data
 
 # Imports
-import json
-from numpy import True_
+import datetime
+import math
+from pick import pick
 import requests
 import time
 import sys
 import os
 from faker import Faker
-from pprint import pprint
-from random import randint, choice
+import faker_commerce
+from random import randint, choice, randrange, sample
 from queue import Queue
 from threading import Thread
 from rich.table import Table
@@ -42,21 +43,25 @@ def genRandomDate():
     random_number_of_days = randrange(days_between_dates)
     random_date = start_date + datetime.timedelta(days=random_number_of_days)
 
-    return str(random_date)        
+    return str(random_date)
+        
 
 class User:
-    def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country):
-        self.firstName = firstName
-        self.lastName = lastName
-        self.password = password
-        self.nif = nif
-        self.email = email
-        self.phone = phone
-        self.type = type
-        self.street = street
-        self.city = city
-        self.postalCode = postalCode
-        self.country = country
+    def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
+        self.firstName      = firstName
+        self.lastName       = lastName
+        self.password       = password
+        self.nif            = nif
+        self.email          = email
+        self.phone          = phone
+        self.type           = type
+        self.street         = street
+        self.city           = city
+        self.postalCode     = postalCode
+        self.country        = country
+        self.companyName    = companyName
+        self.companyEmail   = companyEmail
+        self.companyBio     = companyBio
 
     def __str__(self):
         return f"\nFirst Name: {self.firstName}\
@@ -73,17 +78,21 @@ class User:
 
 def genUsers(amount):
     fake = Faker("pt_PT")
-    return [User(fake.first_name(),
+    users = [User(fake.first_name(),
                  fake.last_name(),
                  fake.password(length=9),
                  randint(333333333, 999999999),
                  fake.free_email(),
                  fake.phone_number(),
-                 choice(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
+                 choice(["SUPPLIER", "TRANSPORTER", "CONSUMER"]),
                  fake.street_address(),
                  fake.city(),
                  fake.postcode(),
-                 "Portugal") for i in range(amount)]
+                 fake.country(),
+                 fake.company(),
+                 fake.free_email(),
+                 fake.catch_phrase()) for i in range(amount)]
+    return users
     
 def sendUser(user):
     global API_BASE_URL
@@ -247,17 +256,14 @@ def main():
         # table.add_column("NIF", style="blue")
         table.add_column("Status", justify="right", style="green")
 
-    table.add_column("User Name", style="blue")
-    table.add_column("E-mail", style="blue")
-    table.add_column("Phone", style="blue")
-    table.add_column("NIF", style="blue")
-    table.add_column("Status", justify="right", style="green")
+        with Live(table, refresh_per_second=10, vertical_overflow="visible") as live:  # update 4 times a second to feel fluid
+            while not q.empty():
+                live.update(table)
 
-    with Live(table, refresh_per_second=10, vertical_overflow="visible") as live:  # update 4 times a second to feel fluid
-        while not q.empty():
-            live.update(table)
+        q.join()
 
-    q.join()
+        end = time.time()
+
         print("Time elapsed: ", end-start)
     elif (generationOption == "Products"):
         print("Temporarily generating only SQL.\n")
@@ -265,7 +271,6 @@ def main():
         amount = int(input("How many products would you like to generate? "))
         genProductsSQL(amount, usersInDB)
 
-    print("Time elapsed: ", end-start)
 
 
 
