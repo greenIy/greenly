@@ -47,7 +47,6 @@ export default {
     prod:Boolean,
     transporter: Object,
     transporters: Array,
-
   },
   data() {
     return {

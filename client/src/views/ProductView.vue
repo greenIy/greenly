@@ -29,12 +29,12 @@
                           <h6 class="text-muted recomendado" id="txtF">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
                                 <div class="d-flex justify-content-between card-input">
-                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ suppliers[this.idSupplier].supplier.name }} </p></div>
+                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ currentSupplier.name }} </p></div>
                                 </div>
                               <div class="d-flex flex-column card-input mt-0">
-                                <p class="text-p"><b>Gastos:</b> {{ suppliers[this.idSupplier].warehouse.resource_usage }}  kWh/kg</p>
-                                <p class="text-p"><b>Stock:</b> {{ suppliers[this.idSupplier].quantity }} produtos</p>
-                                <p class="text-p"><b>Preço:</b> {{ suppliers[this.idSupplier].price }}€</p>
+                                <p class="text-p"><b>Gastos:</b> {{ currentSupplier.resource_usage }}  kWh/kg</p>
+                                <p class="text-p"><b>Stock:</b> {{ currentSupplier.quantity }} produtos</p>
+                                <p class="text-p"><b>Preço:</b> {{ currentSupplier.price }}€</p>
                               </div>
                           </div>
                         </div>
@@ -88,7 +88,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">{{ suppliers[this.idSupplier].supplier.name }}</div>
+                      <div class="col-6 text-left">{{ currentSupplier.name}}</div>
                       <div class="col-6 text-left">Transportador A</div>
                     </div>
                     <div class="row mt-4">
@@ -100,7 +100,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">{{ suppliers[this.idSupplier].warehouse.resource_usage }} kWh por Produto</div>
+                      <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh por Produto</div>
                       <div class="col-6 text-left">3 kg de CO₂ por Produto</div>
                     </div>
                   </div>
@@ -207,14 +207,20 @@ export default {
       numberSuppliers:0,
       numberTransporters:0,
       suppliers: [],
-      idSupplier:0,
+      idSupplier: 0,
+      currentSupplier: {
+        name: "",
+        resource_usage: 0,
+        quantity: 0,
+        price: "",
+        transporters: []
+      }
     };
   },
   created() {
     this.getInfo();
     this.getSuppliers();
     this.getSuppliersandTransporterNumber();
-    this.showMostSustenaibleSuppliers();
   },
   methods: {
     liked(event) {
@@ -293,8 +299,7 @@ export default {
           if (this.quantity < this.suppliers[0].quantity ){
             document.getElementById("increment").style.color="#7c9d8e";
           }
-          
-          }
+        }
       }
       else{
         if(this.quantity < this.suppliers[0].quantity){
@@ -311,7 +316,9 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      console.log(this.suppliers)
+      this.showMostSustenaibleSuppliers();
+      this.showCurrentSupplier();
+      //console.log(this.suppliers)
     },
     async getTransporters() {
       var response = await http.get("/store/products/" + this.$route.params.id);
@@ -320,15 +327,22 @@ export default {
     },
     getSupplierSelected(event){
       var supplierSelected = event;
-      this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ); 
-     
-      console.log(this.suppliers[0]);
-      console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
+      this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
+      this.showCurrentSupplier();
+      //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     }, 
     showMostSustenaibleSuppliers() {
       this.suppliers.sort(function (x, y) {
         return x.warehouse.resource_usage - y.warehouse.resource_usage;
       });
+    },
+    showCurrentSupplier() {
+      this.currentSupplier.name = this.suppliers[this.idSupplier].supplier.name;
+      this.currentSupplier.resource_usage = this.suppliers[this.idSupplier].warehouse.resource_usage;
+      this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
+      this.currentSupplier.price = this.suppliers[this.idSupplier].price;
+      this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
+     console.log(this.currentSupplier);
     }
   },
 };
