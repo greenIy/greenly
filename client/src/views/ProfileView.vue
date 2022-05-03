@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="content-wrap">
-      <the-navbar/>
-      <register-pills/>
+      <the-navbar />
+      <profile />
     </div>
-    <the-footer/>
+    <the-footer />
   </div>
 </template>
 
@@ -12,15 +12,15 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-import RegisterPills from '@/components/Register/RegisterPills.vue';
+import Profile from '@/components/Profile/Profile.vue';
 
 export default {
-  name: 'RegisterView',
-  components: {
-    TheNavbar,
-    TheFooter,
-    RegisterPills,
-  },
+    name: 'ProfileView',
+    components: {
+        TheNavbar,
+        TheFooter,
+        Profile
+    },
 };
 
 </script>
