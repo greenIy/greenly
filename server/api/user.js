@@ -98,6 +98,8 @@ router.put('/:userId', authentication.check, authorization.check, updateUserVali
 
 /* DELETE /user/{userId} (User or Admin only) */
 
+// TODO: This has to be proofed against FK constraints (i.e. delete all of the user's things)
+
 router.delete('/:userId', authentication.check, authorization.check, (req, res) => {
 
     try {

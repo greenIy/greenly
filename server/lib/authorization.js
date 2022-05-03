@@ -12,13 +12,14 @@ async function check(req, res, next) {
                                     "/user/:userId/addresses/:addressId": "SINGLE_ADDRESS",
                                     "/store/products/:productId":   "SINGLE_PRODUCT",
                                     "/store/orders/":               "ALL_ORDERS",
-                                    "/store/orders/:orderId":       "SINGLE_ORDER"}
+                                    "/store/orders/:orderId":       "SINGLE_ORDER",
+                                    "/store/categories":            "ALL_CATEGORIES",
+                                    "/store/categories/:categoryId":    "SINGLE_CATEGORY"}
 
     const intent = req.method
 
     const incomingRoute = req.baseUrl + req.route.path
     const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
-    
 
     // Interpreting resource from path
     switch (resourceIdentification[incomingRoute]) {
@@ -100,6 +101,18 @@ async function check(req, res, next) {
                 return next();
             }
             break;
+
+        case "ALL_CATEGORIES":
+            // This is only valid for: POST
+            if ((isAdministrator(req.user))) {
+                return next();
+            }
+
+        case "SINGLE_CATEGORY":
+            // This is valid for PUT and DELETE
+            if ((isAdministrator(req.user))) {
+                return next();
+            }
 
         default:
             break;
