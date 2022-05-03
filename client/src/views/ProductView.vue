@@ -60,7 +60,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT"/>
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" :transporters="currentSupplier.transporters"/>
                           
                       </div>
                     </div>
@@ -190,6 +190,7 @@ export default {
     numberTransporters:Number,
     suppliers: Array,
     idSupplier:Number,
+    transporters: Array,
   },
   data() {
     return {
@@ -208,12 +209,19 @@ export default {
       numberTransporters:0,
       suppliers: [],
       idSupplier: 0,
+      idTransporter: 0,
       currentSupplier: {
         name: "",
         resource_usage: 0,
         quantity: 0,
         price: "",
         transporters: []
+      },
+      currentTransporter: {
+        name: "",
+        average_resource_usage: 0,
+        average_emissions: 0,
+        price: "",
       }
     };
   },
@@ -330,10 +338,21 @@ export default {
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
       this.showCurrentSupplier();
       //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
+    },
+    getTransporterSelected(event){
+      var supplierSelected = event;
+      this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
+      this.showCurrentSupplier();
+      //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     }, 
     showMostSustenaibleSuppliers() {
       this.suppliers.sort(function (x, y) {
         return x.warehouse.resource_usage - y.warehouse.resource_usage;
+      });
+    },
+    showMostSusteinableTransporters() {
+      this.currentSupplier.transporters.sort(function (x, y) {
+        return x.transporter.average_emissions - y.transporter.average_emissions;
       });
     },
     showCurrentSupplier() {
@@ -342,7 +361,14 @@ export default {
       this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
-     console.log(this.currentSupplier);
+      console.log(this.currentSupplier);
+    },
+    showCurrentTransporter() {
+      this.currentTransporter.name = this.currentSupplier[this.idSupplier].transporters[this.idTransporter].transporter.name;
+      this.currentTransporter.average_resource_usage = this.currentSupplier[this.idSupplier].transporters[this.idTransporter].transporter.average_resource_usage;
+      this.currentTransporter.average_emissions = this.currentSupplier[this.idSupplier].transporters[this.idTransporter].transporter.average_emissions;
+      this.currentTransporter.price = this.currentSupplier[this.idSupplier].transporters[this.idTransporter].price;
+      console.log(this.currentSupplier);
     }
   },
 };

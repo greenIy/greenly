@@ -12,7 +12,7 @@
         <div class="card-group">
             <CardTransportador 
              v-for="t in transporters"
-              :key="t.id"
+              :key="t.transporter.id"
               :transporter="t" />
         </div>
       </div>

@@ -2,15 +2,16 @@
   <div class="mt-2 card mx-2">
     <label>
       <div class=" d-flex justify-content-between card-input">
-        <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" />{{ transporter.transports.name }}</p></div>
+        <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ transporter.transporter.name }}</p></div>
           <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" class="card-input-element"  /></div> 
       </div>
       <div class="d-flex flex-column card-input mt-0">
-        <p class="text-p"><b>Gastos:</b> 32 CO₂/Kg</p>
-        <p class="text-p"><b>Preço:</b> 32€</p>
+        <p class="text-p"><b>Emissões médias:</b> {{ transporter.transporter.average_emissions }} CO₂/Km</p>
+        <p class="text-p"><b>Recursos gastos:</b> {{ transporter.transporter.average_resource_usage }} CO₂/Kg</p>
+        <p class="text-p"><b>Preço:</b> {{ transporter.price }}€</p>
       </div>
     </label>
-  </div>       
+  </div>
 </template>
 <script>
 
