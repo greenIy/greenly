@@ -6,10 +6,12 @@ const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
 
 /* Greenly libraries & required server data */
-const authentication = require("../lib/authentication")
-const persistence = require('../lib/persistence.js');
-const { createUserValidator, updateUserValidator } = require('../lib/validation.js');
-const defaultErr = require("../lib/error").defaultErr
+
+const authentication    = require("../lib/authentication")
+const authorization     = require("../lib/authorization")
+const persistence       = require('../lib/persistence');
+const defaultErr        = require("../lib/error").defaultErr
+const { createUserValidator, updateUserValidator, createAddressValidator, updateAddressValidator } = require('../lib/validation.js');
 
 /* GET /user (Admin only) */
 
@@ -55,7 +57,7 @@ router.get('/:userId', authentication.check, (req, res, next) => {
             if (user) {
 
                 // Renaming Address key (Prisma limitation)
-                delete Object.assign(user, {["address"]: user["Address"] })["Address"];
+                delete Object.assign(user, {["addresses"]: user["Address"] })["Address"];
                 
                 // Renaming or removing Company key. Company should only be displayed if
                 // user is either supplier or transporter.
@@ -104,6 +106,61 @@ router.delete('/:userId', authentication.check, (req, res) => {
                 res.status(202).send({message: "User deleted successfully."})
             } else {
                 res.status(404).send({message: "User not found."})
+            }
+        })
+        
+    } catch {
+        res.status(500).send(defaultErr())
+    }
+})
+
+
+/* Address routes */
+
+router.post('/:userId/addresses/', authentication.check, authorization.check, createAddressValidator(), (req, res) => {
+    try {
+        persistence.createAddress(Number(req.params.userId),
+                                  req.body.street,
+                                  req.body.city,
+                                  req.body.country,
+                                  req.body.postal_code,
+                                  req.body.nif)
+            .then((result) => {
+                if (result) {
+                    res.status(201).json(result);
+                }
+                else {
+                    res.status(500).send(defaultErr());
+                }
+            })
+    } catch (e) {
+        console.log(e)
+        res.status(400).send({message: "Invalid data. Make sure to include every field."});
+    }
+})
+
+router.put('/:userId/addresses/:addressId', authentication.check, authorization.check, updateAddressValidator(), (req, res) => {
+    try {
+        persistence.updateAddress(Number(req.params.userId), Number(req.params.addressId), req.body).then((success) => {
+            if (success) {
+                res.status(200).send({message: "Address updated successfully."})
+            } else {
+                res.status(500).send(defaultErr())
+            }
+        })
+    } catch {
+        res.status(500).send(defaultErr())
+    }
+
+})
+
+router.delete('/:userId/addresses/:addressId', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.deleteAddress(Number(req.params.addressId)).then((success) => {
+            if (success) {
+                res.status(202).send({message: "Address deleted successfully."})
+            } else {
+                res.status(404).send({message: "Address not found."})
             }
         })
         

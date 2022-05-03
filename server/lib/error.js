@@ -2,7 +2,7 @@
 
 function errorHandler(error, req, res, next) {
     if (error instanceof SyntaxError) {
-      res.status(500).send({message:"Badly formed JSON payload."});
+      res.status(422).send({message:"Badly formed JSON payload."});
     } else {
       next();
     }

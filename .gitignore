@@ -1,6 +1,9 @@
 # Utility scripts
 regen_db.sh
 
+# Population script 
+mock.sql
+
 # Logs
 logs
 *.log
@@ -72,7 +75,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+.env*
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
