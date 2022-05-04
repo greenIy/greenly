@@ -68,60 +68,34 @@
                 </div>
              </div>
             </div>
-            <div class="d-flex mx-3">
-              <div class="container">
+            <div class="d-flex">
+              <div class="w-100 mx-4">
                 <div class="card-body mt-1">
                   <hr class="center w-100" color="black" />
                 </div>
                 <div class="card-body">
                 <ul class="nav nav-tabs" id='navList'>
                   <li class="nav-item">
-                    <a class="nav-link text-dark" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
+                    <a class="nav-link text-dark" id="md" @click="activate(1)" :class="{ active : active_el == 1 }">Mais Detalhes</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link text-dark" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
+                    <a class="nav-link text-dark"  @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link text-dark" @click="activate(3)" :class="{ active : active_el == 3 }">Mais Detalhes</a>
-                  </li>
+                  
                 </ul>
               </div>
-              <div class="container mt-3" id="sumario" v-if="active_el==1">
-                <div class="row mt-4">
-                  <div class="col-6 text-left">
-                    <b>Fornecedor</b>
-                  </div>
-                  <div class="col-6 text-left">
-                    <b>Transportador</b>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-6 text-left">{{ currentSupplier.name}}</div>
-                    <div class="col-6 text-left">{{ currentTransporter.name }}</div>
-                </div>
-                <div class="row mt-4">
-                  <div class="col-6 text-left">
-                    <b>Gastos Médios em Armazenamento</b>
-                  </div>
-                  <div class="col-6 text-left">
-                    <b>Gastos Médios em Transporte</b>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh/kg</div>
-                    <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} l/100km</div>
-                </div>
+          
+              
+              <div class="container mt-3" id="detalhe" v-if="active_el==1" >
+                <p> DETALHEEE </p>
               </div>
               <div class="container mt-3" id="info" v-if="active_el==2" >
                 <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
               </div>
-              <div class="container mt-3" id="detalhe" v-if="active_el==3" >
-                <p> DETALHEEE </p>
-              </div>
               </div>
             </div>
-            <div class="d-flex mx-3">
-              <div class="container">
+            <div class="d-flex">
+              <div class="w-100 mx-4">
                 <div class="card-body mt-1">
                   <hr class="center w-100" color="black" />
                 </div>
@@ -308,8 +282,8 @@ export default {
       }
     },
     activate:function(el){
-      if(this.active_el == 2 || this.active_el == 3 ){
-        document.getElementById("cd").classList.remove("active");
+      if(this.active_el == 2 ){
+        document.getElementById("md").classList.remove("active");
         this.active_el = el;
       }
       else{
@@ -323,18 +297,18 @@ export default {
           if(this.quantity==1){
             document.getElementById("decrement").style.color="#ededed";
           }
-          if (this.quantity < this.suppliers[0].quantity ){
+          if (this.quantity < this.suppliers[this.idSupplier].quantity ){
             document.getElementById("increment").style.color="#7c9d8e";
           }
         }
       }
       else{
-        if(this.quantity < this.suppliers[0].quantity){
+        if(this.quantity < this.suppliers[this.idSupplier].quantity){
           this.quantity++;
           if(this.quantity==2){
             document.getElementById("decrement").style.color="#7c9d8e";
           }
-          if (this.quantity== this.suppliers[0].quantity){
+          if (this.quantity== this.suppliers[this.idSupplier].quantity){
             document.getElementById("increment").style.color="#ededed";
           }
         }
@@ -377,12 +351,14 @@ export default {
       this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
+      this.getTotalPrice();
     },
     showCurrentTransporter() {
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;
       this.currentTransporter.average_resource_usage = this.currentSupplier.transporters[this.idTransporter].transporter.average_resource_usage;
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
+      this.getTotalPrice();
     },
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);

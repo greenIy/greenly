@@ -1,10 +1,18 @@
 <template>
 <div>
-    <div>
-        <canvas id="priceChart"></canvas>
-    </div>
-    <div>
-        <canvas id="stockChart"></canvas>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div>
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div>
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
                 
