@@ -98,7 +98,7 @@ export default {
                     },
                     title: {
                         display: true,
-                        text: 'Variações no stock produto do fornecedor selecionado'
+                        text: 'Variações no stock do produto do fornecedor selecionado'
                     }
                 }
             }

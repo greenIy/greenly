@@ -41,7 +41,7 @@
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                       </div>
-                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers"/>
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers" :idSupplier="idSupplier" />
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">

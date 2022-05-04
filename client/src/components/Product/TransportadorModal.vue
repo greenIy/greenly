@@ -3,21 +3,21 @@
    <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class=" d-flex modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Selecionar Transportador para o Fornecedor X</h5> 
+        <h5 class="modal-title">Selecionar Transportador</h5> 
         <div class="mx-2" @click="closeModal('fecha')" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardTransportador @sendTransporterSelected="getTransporterSelected"
+            <CardTransportador @sendTransporterSelected="getTransporter"
              v-for="t in transporters"
               :key="t.id"
               :transporter="t" />
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn save"  @click="saveChanges()">Guardar Alterações</button>
+        <button type="button" class="btn save" @click="saveChanges()">Guardar Alterações</button>
       </div>
     </div>
   </div>
@@ -48,10 +48,12 @@ export default {
     idSupplier:Number,
     transporter: Object,
     transporters: Array,
+    t:Number
   },
   data() {
     return {
       transporters: [], 
+      t:0,
     }
   },
   created() {
@@ -65,12 +67,12 @@ export default {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.transporters = response.data.supplies[this.idSupplier].transports;
     },
-    getTransporterSelected(event){
-      var idTransporter = event;
-      this.$emit('sendTransporterSelected', idTransporter);
+    getTransporter(event){
+      this.t = event;
     },
     saveChanges(){
-      this.$emit('saveT',"salva");
+    this.$emit('sendTransporterSelected', this.t);
+    this.$emit('saveT',"salva");
     }, 
   }
 };

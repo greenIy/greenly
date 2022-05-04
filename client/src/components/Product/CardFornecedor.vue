@@ -39,6 +39,7 @@ export default {
       this.fornecedorCard = event.target.value;
       this.$emit('sendSupplierSelected',this.fornecedorCard);
     },
+ 
   }
 };
 </script>

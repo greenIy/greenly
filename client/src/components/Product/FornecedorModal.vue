@@ -44,6 +44,7 @@ export default {
     return { 
       suppliers: [],
       fornecedorCard: '',
+      s:0,
     }
   },
   props: {
@@ -51,18 +52,20 @@ export default {
     supply: Object,
     modal:Boolean,
     prod:Boolean,
+    s:Number,
   },
   methods:{
     closeModal(params){
       this.$emit('sendModalF',params);
     },
     getSupplierSelected(event){
-      var idSupplier = event;
-      this.$emit('sendSupplierSelected', idSupplier);
+      this.s = event;
     },
     saveChanges(){
-      this.$emit('saveF',"salva");
-    }, 
+    this.$emit('sendSupplierSelected', this.s);
+    this.$emit('saveF',"salva");
+    },  
+    
   }
 };
 </script>
