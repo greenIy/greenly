@@ -52,15 +52,7 @@ export default {
   },
   props: {
     product: Object,
-    productAmount: Number,
-    newProducts: Object,
-    pageAmount: Number,
-    currentPage: Number,
-    limit: Number,
-    productsInPage: Number,
-    categories: Array,
     params:String,
-    nameFilter:String
   },
   data() {
     return {
