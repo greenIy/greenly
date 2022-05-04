@@ -83,7 +83,6 @@ library.add(faCaretDown);
     computed: {
         getInitialAmountOfProducts: function () {
             if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
-                console.log("ultima pagina");
                 return this.limit * (this.currentPage - 1) + 1;
             }
             return (this.productsInPage * this.currentPage) - this.productsInPage + 1;

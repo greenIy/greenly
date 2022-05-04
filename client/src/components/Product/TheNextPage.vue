@@ -49,7 +49,7 @@ export default {
       }
     },
     nextPage() {
-      if (this.currentPage < 5) { // ajeitar
+      if (this.currentPage < this.pageAmount) {
         var page = document.getElementById("page-" + this.currentPage);
         page.classList.remove("active");
         this.currentPage++;
