@@ -8,7 +8,7 @@
           <span class="sr-only">Anterior</span>
         </button>
       </li>
-      <li class="page-item" v-for="n in this.pages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
+      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
       <li class="page-item" id="next">
         <button class="page-link" @click='nextPage()'>
           <span aria-hidden="true">&raquo;</span>
@@ -31,10 +31,6 @@ export default {
       currentPage: 1,
       pages: this.pageAmount,
     };
-  },
-  mounted() {
-    this.pages = this.pageAmount;
-    console.log(this.pages)
   },
   methods: {
     prevPage() {
@@ -91,6 +87,12 @@ export default {
       initialPage.classList.add("active");
     },
   },
+  computed: {
+    getPages: function () {
+      this.pages = this.pageAmount;
+      return this.pages;
+    }
+  }
 };
 </script>
 
