@@ -11,31 +11,39 @@ const argv = require('../server').argv
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
 
-const prisma = new PrismaClient({ 
+// Round coordinates to 6 decimal places
+const roundingPrecision = 6;
+
+// Proper rounding function as oposed to JS Math
+function roundCoordinates(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}
+
+/* Persistence Init */
+
+const prisma = new PrismaClient({
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
 const maps = new Client();
+
+/* Checking database availability */
+
+prisma.$connect().catch((reason) => {
+    console.log("📶 Database connection failed.")
+    process.exit(1)
+})
 
 
 /* User Functions */
 
 /* Returns user object on creation, or null if invalid */
 async function createUser(params) {
-
-    const geocoded = await maps.geocode({
-        params: {
-            address: `${params.address.street}, ${params.address.city}, ${params.address.country}`,
-            key: process.env.GOOGLE_API_KEY
-        }
-    })
-
     try {
         let newUser = await prisma.user.create({
             data: {
                 first_name: params.first_name,
                 last_name: params.last_name,
-                nif: params.nif,
                 email: params.email,
                 phone: params.phone,
                 type: params.type
@@ -64,10 +72,6 @@ async function createUser(params) {
             }
         })
 
-        let updateDataSelection = {
-            address: newAddress.id
-        }
-
         // Create a new company if the user is a transporter or a supplier
         if (["TRANSPORTER", "SUPPLIER"].includes(newUser.type)) {
             const newCompany = await prisma.company.create({
@@ -78,20 +82,21 @@ async function createUser(params) {
                 }
             })
 
-            updateDataSelection.company = newCompany.id
+            // Updating the user's company after we're sure user creation didn't go wrong.
+            newUser = await prisma.user.update({
+                where: {
+                    id: newUser.id
+                },
+                data: {
+                    company: newCompany.id
+                }
+            })
         }
 
-        // Updating the user's address and company after we're sure user creation didn't go wrong.
-
-        newUser = await prisma.user.update({
-            where: {
-                id: newUser.id
-            },
-            data: updateDataSelection
-        })
-
         return {id: newUser.id};
+
     } catch (e) {
+        console.log(e)
         return null;
     }
 }
@@ -108,22 +113,20 @@ async function updateUser(id, params) {
     const userKeyMap = {
         first_name: "first_name",
         last_name: "last_name",
-        nif: "nif",
         email: "email",
         phone: "phone",
         type: "type",
         new_password: "password"
     }
 
-    const addressKeyMap = {
-        street: "street",
-        city: "city",
-        postal_code: "postal_code",
-        country: "country"
+    const companyKeyMap = {
+        name: "name",
+        bio: "bio",
+        email: "email"
     }
 
     const userDataSelection = {}
-    const addressDataSelection = {}
+
 
     // Mapping user data
 
@@ -137,15 +140,17 @@ async function updateUser(id, params) {
             }
         }
     }
-    
-    // If address data is included, map address data
 
-    if (params.hasOwnProperty("address")) {
-        for (const [key, value] of Object.entries(params.address)) {
-            if (key in addressKeyMap) {
-                addressDataSelection[addressKeyMap[key]] = value
+    // If the user is a transporter/supplier, allow them to edit company info
+
+    if (params.hasOwnProperty("company")) {
+        companyDataSelection = {}
+        for (const [key, value] of Object.entries(params.company)) {
+            if (key in companyKeyMap) {
+                companyDataSelection[companyKeyMap[key]] = value
             }
         }
+        userDataSelection.Company = {update: companyDataSelection}
     }
 
     try {
@@ -154,15 +159,6 @@ async function updateUser(id, params) {
                 id: id
             },
             data: userDataSelection
-        }).then((result) => {
-            return result;
-        })
-
-        const updatedAddress = await prisma.address.update({
-            where: {
-                id: updatedUser.address
-            },
-            data: addressDataSelection
         })
 
         return updatedUser;
@@ -180,29 +176,35 @@ async function deleteUser(id) {
         /* TODO: Eventually also delete: 
                 * All orders by user, in case of consumer
                 * Company
+                * All supplies being supplied by supplier
+                * All transports by transporter
         */
 
         if (getUserByID(id)) {
-            // Delete user
+            // Delete user and all his addresses
             const deletedUser = await prisma.user.delete({
                 where: {
                     id: id
+                },
+                include: {
+                    Address: true
                 }
             })
 
-            // Delete the user's address
-            const deletedAddress = await prisma.address.delete({
+            await prisma.address.deleteMany({
                 where: {
-                    id: deletedUser.address
+                    user: id
                 }
             })
+
 
             return true
         } else {
             return false
         }
 
-    } catch {
+    } catch (e) {
+        console.log(e)
         return false;
     }
 
@@ -212,20 +214,11 @@ async function getAllUsers() {
     return users = await prisma.user.findMany({
         select: {
             id: true,
-            nif: true,
             first_name: true,
             last_name: true,
             email: true,
             phone: true,
             type: true,
-            Address: {
-                select: {
-                    street: true,
-                    city: true,
-                    postal_code: true,
-                    country: true
-                }
-            },
         }
     });
 }
@@ -238,7 +231,6 @@ async function getUserByID(id, withPassword=false) {
             },
             select: {
                 id: true,
-                nif: true,
                 first_name: true,
                 last_name: true,
                 email: true,
@@ -252,10 +244,16 @@ async function getUserByID(id, withPassword=false) {
                 } : withPassword,
                 Address: {
                     select: {
+                        id: true,
                         street: true,
                         city: true,
+                        country: true,
                         postal_code: true,
-                        country: true
+                        nif: true,
+                        latitude: true,
+                        longitude: true,
+                        is_shipping: true,
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -282,7 +280,6 @@ async function getUserByEmail(email, withPassword=false) {
             },
             select: {
                 id: true,
-                nif: true,
                 first_name: true,
                 last_name: true,
                 email: true,
@@ -296,10 +293,16 @@ async function getUserByEmail(email, withPassword=false) {
                 type: true,
                 Address: {
                     select: {
+                        id: true,
                         street: true,
                         city: true,
+                        country: true,
                         postal_code: true,
-                        country: true
+                        nif: true,
+                        latitude: true,
+                        longitude: true,
+                        is_shipping: true,
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -319,7 +322,7 @@ async function getUserByEmail(email, withPassword=false) {
 
 async function checkUserConflict(attribute, value) {
     // Checks if a user attribute is already in use.
-    // Should be used for email, phone and NIF
+    // Should be used for email and phone
     // Returns boolean representing the existance of conflict.
 
     let result;
@@ -337,12 +340,6 @@ async function checkUserConflict(attribute, value) {
                     email: value
                 }
             })
-        } else if (attribute == "nif") {
-            result = await prisma.user.findUnique({
-                'where': {
-                    nif: value
-                }
-            })
         }
     
         return result;
@@ -351,19 +348,247 @@ async function checkUserConflict(attribute, value) {
     }
 }
 
+/* Address Functions */
+
+async function createAddress(userID,
+                             street,
+                             city,
+                             country,
+                             postal_code,
+                             nif) {
+
+    // Obtaining data from Google Geocoding API
+
+    try {
+        const geocoded = await maps.geocode({
+            params: {
+                address: `${street}, ${city}, ${country}`,
+                key: process.env.GOOGLE_API_KEY
+            }
+        })
+
+        lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+        lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+    } catch (e) {
+        lat = 0;
+        lng = 0;
+    }
+
+    try {
+        let newAddress = await prisma.address.create({
+            data: {
+                user: userID,
+                nif: nif,
+                street: street,
+                city: city,
+                country: country,
+                postal_code: postal_code,
+                latitude: lat,
+                longitude: lng
+            }
+        })
+
+        return {id: newAddress.id}
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function updateAddress(userId, addressId, params) {
+    const addressKeyMap = {
+        street: "street",
+        city: "city",
+        postal_code: "postal_code",
+        country: "country",
+        nif: "nif",
+        is_shipping: "is_shipping",
+        is_billing: "is_billing"
+    }
+
+    const addressDataSelection = {}
+
+    // Map only selected address data
+
+    for (const [key, value] of Object.entries(params)) {
+        if (key in addressKeyMap) {
+            addressDataSelection[addressKeyMap[key]] = value
+        }
+    }
+
+    try {
+
+        // Set all other user addresses to false if new address is  default billing or shipping
+
+        if (addressDataSelection["is_shipping"]) {
+            await prisma.address.updateMany({
+                where: {
+                    user: userId
+                },
+                data: {
+                    is_shipping: false
+                }
+            })
+        }
+        if (addressDataSelection["is_billing"]) {
+            await prisma.address.updateMany({
+                where: {
+                    user: userId
+                },
+                data: {
+                    is_billing: false
+                }
+            })
+        }
+
+        let updatedAddress = await prisma.address.update({
+            where: {
+                id: addressId
+            },
+            data: addressDataSelection
+        })
+
+        // Now that all the information is up to date, we can re-calculate lat and lng, and reinsert
+
+        let lat = 0;
+        let lng = 0;
+
+        try {
+            const geocoded = await maps.geocode({
+                params: {
+                    address: `${updatedAddress.street}, ${updatedAddress.city}, ${updatedAddress.country}`,
+                    key: process.env.GOOGLE_API_KEY
+                }
+            })
+            lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+            lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+
+        } catch (e) {
+            console.log(e)
+        }
+
+        updatedAddress = await prisma.address.update({
+            where: {
+                id: addressId
+            },
+            data: {
+                latitude: lat,
+                longitude: lng
+            }
+        })
+
+
+        return updateAddress;
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function deleteAddress(id) {
+    try {
+        await prisma.address.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return true;
+
+    } catch (e) {
+        // If it doesn't exist, prisma throws "RecordNotFound"
+        console.log(e)
+        return false
+    }
+}
+
 /* Product Functions */
 
+/**
+ *
+ * @param {Number} limit
+ * @param {Number} page
+ * @param {String} category
+ * @param {String[]} keywords
+ * @returns An object composed of the total number of pages for the included filters and an array of product objects.
+ */
 async function getAllProducts(limit = 50,
                               page = 1, 
                               category, 
-                              keywords) {
+                              keywords,
+                              sort,
+                              price_range) {
+
+    // Helper functions
+    const manualPagination = (array, page_size, page_number) => {
+        return array.slice((page_number - 1) * page_size, page_number * page_size);
+    }
+
+    const calcLowestPrice = (supplies) => {
+        let min = Number.POSITIVE_INFINITY;
+        supplies.forEach((supply) => {
+            if (parseFloat(supply.price) < parseFloat(min)) {
+                min = supply.price
+            }
+        })
+
+        return min;
+    };
+
+    const calcHighestPrice = (supplies) => {
+        let max = Number.NEGATIVE_INFINITY;
+        supplies.forEach((supply) => {
+            if (parseFloat(supply.price) > parseFloat(max)) {
+                max = supply.price
+            }
+        })
+
+        return max;
+    };
 
     let filterSelection = {}
+
+    let sortingMethod = {}
+
+    /* Sorting */
+
+    // If no sorting method was specified
+    if (!sort) {
+        sort = "newest"
+    }
+
+    switch (sort) {
+        case "newest":
+            sortingMethod.id = "desc"
+            break;
+        case "oldest":
+            sortingMethod.id = "asc"
+            break;
+        case "name_asc":
+            sortingMethod.name = "asc"
+            break;
+        case "name_desc":
+            sortingMethod.name = "desc"
+            break;
+    }
+
+    if (category) {
+        // Initialize OR search between name, description and exact search for categories
+        filterSelection.AND = []
+
+        // Prisma doesn't support nested queries, this query is required to find all sub-categories of the mentioned category
+        let subCategories = await prisma.$queryRaw`WITH RECURSIVE CTE (id, name, parent_id) AS (SELECT id, name, parent_category FROM Category WHERE parent_category = ${category} UNION ALL SELECT p.id, p.name, p.parent_category FROM Category p INNER JOIN CTE ON p.parent_category = CTE.id) SELECT * FROM CTE;`
+
+        // Adding all subcategory IDs to search
+        // This piece of code produces objects such as {OR:[category:x, category:y, ...]}, which allow us to obtain every product belonging to the requested
+        // category and its subcategories
+        filterSelection.AND.push({OR:[{category:category}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]})
+    }
 
     if (keywords) {
         // The following code searches the keywords on both name and description of the products
 
-        // Initialize OR search between name and description
+        // Initialize OR for exact search of parent and child categories
         filterSelection.OR = []
 
         // Initializing filter objects
@@ -381,42 +606,135 @@ async function getAllProducts(limit = 50,
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
 
-    if (category) {
-        filterSelection.category = category
-    }
+    let products;
 
-    return users = await prisma.product.findMany({
-        skip: (page-1)*limit,
-        take: limit,
-        select: {
-            id: true,
-            name: true,
-            description: true,
-            complement_name: true,
-            complement_amount: true,
-            Category: {
+    if (["price_asc", "price_desc"].includes(sort)) {
+
+        // Special price sorting against Prisma limitations
+        // A Zeval banger -> day 1238987 of wishing JS had list comprehension.
+        /* What follows is comparable to magic.
+           Please do not ever ask what this does or how it was created.
+           Ingredients include:
+           * Cocaine
+           * Adderall
+           * Alcohol
+           * Cocaine again
+        */
+
+        let sortedProductIDs;
+
+        if (sort == "price_asc") {
+            // Sort by absolute minimum
+            sortedProductIDs = await prisma.supply.groupBy({
+                by: ['product'],
+                orderBy: {
+                  _min: {
+                    price: 'asc'
+                  }
+                }
+              })
+        } else if (sort == "price_desc") {
+            // Sort by absolute maximum
+            sortedProductIDs = await prisma.supply.groupBy({
+                by: ['product'],
+                orderBy: {
+                  _max: {
+                    price: 'desc'
+                  }
+                }
+              })
+        }
+
+        products = await Promise.all(
+            sortedProductIDs.map((currentProduct) => prisma.product.findMany({
+                where: {id:currentProduct.product, ...filterSelection},
+
                 select: {
                     id: true,
-                    name: true
+                    name: true,
+                    description: true,
+                    complement_name: true,
+                    complement_amount: true,
+                    Category: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    Supply: {
+                        select: {
+                            price: true
+                        }
+                    }
+                } }))
+            )
+
+        // Unpack from findMany nested structure
+        products = products.map((product) => product[0])
+
+        // Remove bad results
+        products = products.filter((product) => product != undefined)
+
+    } else {
+        // Get products based on provided filters
+        products = await prisma.product.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                complement_name: true,
+                complement_amount: true,
+                Category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                Supply: {
+                    select: {
+                        price: true
+                    }
                 }
             },
-            Supply: {
-                select: {
-                    price: true
-                }
-            }
-        },
-        where: filterSelection
-    });
+            where: filterSelection,
+            orderBy: sortingMethod
+        });
+    }
+
+    // Calculating and defining lowest and highest prices for each product
+    products.forEach((product) => {
+        if (product.Supply.length > 0) {
+            product.lowest_price = parseFloat(calcLowestPrice(product.Supply).toFixed(2))
+            product.highest_price = parseFloat(calcHighestPrice(product.Supply).toFixed(2))
+        }
+    })
+
+    // Checking if price bounds have been set
+    const minPrice = price_range.min || 0;
+    const maxPrice = price_range.max || Number.POSITIVE_INFINITY;
+
+    // Filtering products based on price
+    products = products.filter((product) =>
+        product.lowest_price > Number(minPrice) &&
+        product.lowest_price < Number(maxPrice))
+
+    // Get total product count
+    let totalProducts = products.length
+
+    // Manual Pagination
+    products = manualPagination(products, limit, page)
+
+    return {total_products: totalProducts, products}
 }
 
 async function getProductByID(id){
     try {
-        return product = await prisma.product.findUnique({
+        let result =  product = await prisma.product.findUnique({
             where: {
                 id: id
             },
             select: {
+                id: true,
                 name: true,
                 description: true,
                 Category: {
@@ -427,17 +745,25 @@ async function getProductByID(id){
                 } ,
                 complement_name: true,
                 complement_amount: true,
+                ProductAttribute: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true
+                    }
+                },
                 Supply: {
                     select: {
-                        product: true,
                         User: {
                             select: {
                                 Company: {
                                     select: {
-                                        id: true,
                                         name: true
                                     }
                                 },
+                                id: true,
+                                first_name: true,
+                                last_name: true,
                             }
                         },
                         warehouse: true,
@@ -447,26 +773,166 @@ async function getProductByID(id){
                         expiration_date: true,
                         Supply_Transporter: {
                             select: {
-                                User: {
+                                User: { // Display company name if available
                                     select: {
                                         Company: {
                                             select: {
-                                                id: true,
                                                 name: true
                                             }
-                                        }
+                                        },
+                                        id: true,
+                                        first_name: true,
+                                        last_name: true,
+
                                     }
-                                }
+                                },
+                                price: true,
                             }
                         },
-                        Supply_History: true
+                        Supply_History: {
+                            select: {
+                                moment: true,
+                                quantity: true,
+                                price: true
+                            }
+                        }
                     }
                 }
                 },
         })
+
+        if (result) {
+            for (let i = 0; i < result.Supply.length; i++) {
+                // Gathering further warehouse info
+                let warehouse = await prisma.warehouse.findUnique({
+                    where: {
+                        id_supplier: {id: result.Supply[i].warehouse, supplier: result.Supply[i].User.id},
+                    },
+                    select: {
+                        id: true,
+                        resource_usage: true,
+                        renewable_resources: true
+                    }
+                })
+
+                result.Supply[i].warehouse = warehouse
+
+                // Gathering futher transport info
+                for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
+                    // Gather average emissions based on all transporter vehicles
+                    let vehicle_averages = await prisma.vehicle.aggregate({
+                        where: {
+                            transporter: result.Supply[i].Supply_Transporter[j].User.id
+                        },
+                        _avg: {
+                            average_emissions: true,
+                            resource_usage: true
+                          },
+                    })
+
+                    // Adding vehicle averages to payload
+                    result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
+                    result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
+                }
+            }
+        }
+
+
+        return result;
+
     } catch (e){
         console.log(e)
         return null;
+    }
+}
+
+/* Category Functions */
+
+async function getAllCategories() {
+    try {
+        let categories = await prisma.category.findMany({orderBy: {name: 'asc'}})
+
+
+        for (category of categories) {
+
+            // Finding subcategories of current category
+            let subCategories = await prisma.$queryRaw`WITH RECURSIVE CTE (id, name, parent_id) AS (SELECT id, name, parent_category FROM Category WHERE parent_category = ${category.id} UNION ALL SELECT p.id, p.name, p.parent_category FROM Category p INNER JOIN CTE ON p.parent_category = CTE.id) SELECT * FROM CTE;`
+
+            // Counting products in each category
+            let categorySelection = {OR:[{category:category.id}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]}
+
+            category.total_products = await prisma.product.count({
+                    where: categorySelection
+                    })
+            }
+
+        return categories
+
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function createCategory(name, parent_category) {
+    try {
+
+        let newCategory = await prisma.category.create({
+            data: {
+                name: name,
+                parent_category: parent_category
+            }
+        })
+
+        return newCategory.id;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function updateCategory(id, params) {
+    let categoryKeyMap = {
+        "name": "name",
+        "parent_category": "parent_category"
+    }
+
+    let categoryDataSelection = {}
+
+    for (const [key, value] of Object.entries(params)) {
+        if (key in categoryKeyMap) {
+            categoryDataSelection[categoryKeyMap[key]] = value
+        }
+    }
+
+    try {
+        const updatedCategory = await prisma.category.update({
+            where: {
+                id: id
+            },
+            data: categoryDataSelection
+        })
+
+        return updatedCategory
+    } catch (e) {
+        return null;
+    }
+
+}
+
+async function deleteCategory(id) {
+    try {
+        await prisma.category.delete({
+            where: {
+                id: id
+            }
+        })
+
+        return true;
+    } catch (e) {
+        if (e.code == "P2003") {
+            return 409;
+        }
+        return false;
     }
 }
 
@@ -482,7 +948,18 @@ module.exports = {
     getAllUsers,
     checkUserConflict,
 
+    // Address functions
+    createAddress,
+    updateAddress,
+    deleteAddress,
+
     // Product Functions
     getAllProducts,
-    getProductByID
+    getProductByID,
+
+    // Category Functions
+    getAllCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory
 }

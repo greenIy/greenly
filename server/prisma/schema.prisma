@@ -8,19 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Address {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  street              String                @db.VarChar(255)
-  country             String                @db.VarChar(50)
-  city                String                @db.VarChar(50)
-  latitude            Decimal               @db.Decimal(8, 6)
-  longitude           Decimal               @db.Decimal(8, 6)
-  postal_code         String                @db.VarChar(10)
-  Distribution_Center Distribution_Center[]
-  User                User[]
-  Warehouse           Warehouse[]
-}
-
 model Category {
   id              Int        @id @default(autoincrement()) @db.UnsignedInt
   name            String     @db.VarChar(50)
@@ -33,17 +20,37 @@ model Category {
 }
 
 model Product {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  name              String    @db.VarChar(255)
-  description       String    @db.VarChar(1000)
-  category          Int?      @db.UnsignedInt
-  complement_name   String?   @db.VarChar(50)
-  complement_amount Decimal?  @db.Decimal(2, 0)
-  Category          Category? @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  id                Int                @id @default(autoincrement()) @db.UnsignedInt
+  name              String             @db.VarChar(255)
+  description       String             @db.VarChar(1000)
+  category          Int?               @db.UnsignedInt
+  complement_name   String?            @db.VarChar(50)
+  complement_amount Decimal?           @db.Decimal(2, 0)
+  Category          Category?          @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  ProductAttribute  ProductAttribute[]
   Supply            Supply[]
 
   @@index([category], map: "category")
   @@fulltext([name, description], map: "name")
+}
+
+model Address {
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
+  street              String                @db.VarChar(255)
+  country             String                @db.VarChar(50)
+  city                String                @db.VarChar(50)
+  latitude            Decimal               @db.Decimal(8, 6)
+  longitude           Decimal               @db.Decimal(9, 6)
+  postal_code         String                @db.VarChar(10)
+  nif                 Int                   @db.UnsignedInt
+  is_shipping         Boolean               @default(false)
+  is_billing          Boolean               @default(false)
+  user                Int                   @db.UnsignedInt
+  User                User                  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Address_ibfk_1")
+  Distribution_Center Distribution_Center[]
+  Warehouse           Warehouse[]
+
+  @@index([user], map: "user")
 }
 
 model Company {
@@ -130,19 +137,30 @@ model Supply_History {
   @@id([product, supplier, warehouse, moment])
 }
 
+model Supply_Transporter {
+  product     Int     @db.UnsignedInt
+  supplier    Int     @db.UnsignedInt
+  warehouse   Int     @db.UnsignedInt
+  transporter Int     @db.UnsignedInt
+  price       Decimal @db.Decimal(10, 2)
+  Supply      Supply  @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
+  User        User    @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
+
+  @@id([product, supplier, warehouse, transporter])
+  @@index([transporter], map: "transporter")
+}
+
 model User {
   id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
   first_name          String                @db.VarChar(255)
   last_name           String                @db.VarChar(255)
-  nif                 Int                   @unique(map: "nif")
   email               String                @unique(map: "email") @db.VarChar(255)
-  phone               String                @db.VarChar(20)
-  address             Int?                  @db.UnsignedInt
+  phone               String?               @db.VarChar(20)
   company             Int?                  @db.UnsignedInt
-  type                User_type?
-  Address             Address?              @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
-  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_2")
   Credentials         Credentials?
+  type                User_type
+  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Address             Address[]
   Distribution_Center Distribution_Center[]
   Order               Order[]
   Supply              Supply[]
@@ -150,7 +168,6 @@ model User {
   Vehicle             Vehicle[]
   Warehouse           Warehouse[]
 
-  @@index([address], map: "address")
   @@index([company], map: "company")
 }
 
@@ -173,30 +190,30 @@ model Vehicle {
 }
 
 model Warehouse {
-  id             Int      @default(autoincrement()) @db.UnsignedInt
-  address        Int      @db.UnsignedInt
-  capacity       Int      @db.UnsignedInt
-  resource_usage Int      @db.UnsignedInt
-  supplier       Int      @db.UnsignedInt
-  Address        Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
-  User           User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
-  Supply         Supply[]
+  id                  Int      @default(autoincrement()) @db.UnsignedInt
+  address             Int      @db.UnsignedInt
+  capacity            Int      @db.UnsignedInt
+  resource_usage      Int      @db.UnsignedInt
+  supplier            Int      @db.UnsignedInt
+  renewable_resources Int      @db.UnsignedInt
+  Address             Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
+  User                User     @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Warehouse_ibfk_2")
+  Supply              Supply[]
 
   @@id([id, supplier])
   @@index([address], map: "address")
   @@index([supplier], map: "supplier")
 }
 
-model Supply_Transporter {
-  product     Int    @db.UnsignedInt
-  supplier    Int    @db.UnsignedInt
-  warehouse   Int    @db.UnsignedInt
-  transporter Int    @db.UnsignedInt
-  Supply      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_1")
-  User        User   @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_Transporter_ibfk_2")
+model ProductAttribute {
+  id      Int     @default(autoincrement()) @db.UnsignedInt
+  product Int     @db.UnsignedInt
+  title   String  @db.VarChar(255)
+  content String  @db.VarChar(500)
+  Product Product @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ProductAttribute_ibfk_1")
 
-  @@id([product, supplier, warehouse, transporter])
-  @@index([transporter], map: "transporter")
+  @@id([id, product])
+  @@index([product], map: "product")
 }
 
 model Credentials {
