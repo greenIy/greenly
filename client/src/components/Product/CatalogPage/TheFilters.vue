@@ -11,7 +11,7 @@
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
             <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
-              {{ currentCategory.name }}
+              <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
             
             <router-link v-for="category in showCategories" :key="category" :to="{ name: 'categoria', params: { categoria : category.name } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
@@ -55,8 +55,10 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import {faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faAngleUp);
+library.add(faAngleLeft);
 
   export default {
     name: "ProductsView",

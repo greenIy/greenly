@@ -52,15 +52,7 @@ export default {
   },
   props: {
     product: Object,
-    productAmount: Number,
-    newProducts: Object,
-    pageAmount: Number,
-    currentPage: Number,
-    limit: Number,
-    productsInPage: Number,
-    categories: Array,
     params:String,
-    nameFilter:String
   },
   data() {
     return {
@@ -81,7 +73,6 @@ export default {
   created() {
     this.getProducts();
     this.getCategories();
-    //console.log(this.$route);
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit) {
@@ -143,6 +134,8 @@ export default {
       this.currentCategory = params;
       var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=12").then((response) => {
         this.products = response.data.products;
+        this.productAmount = response.data.total_products;
+        this.productsInPage = this.products.length;
       });
       this.products = Object.assign([], productByCategory);
     },
@@ -167,6 +160,7 @@ export default {
       http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;
+        this.productsInPage = this.products.length;
         //console.log(response.data);
       });
     }

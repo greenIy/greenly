@@ -4,7 +4,7 @@
     </div>
     <div class="col-3 text-end mx-1">
         <span class="text-secondary fs-6">
-            {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
+            {{ getInitialAmountOfProducts }} - {{ getFinalAmountOfProducts }} de {{ productAmount }} produtos 
         </span>
     </div>
     <div class="col-1 text-end mx-3">
@@ -57,33 +57,41 @@ library.add(faCaretDown);
     data() {
         return {
             lastPageProducts: 0,
-            // totalProducts:0,
         };
     },
     methods: {
-        getTotalProducts: function() {
-            http.get("/store/products?page=" + this.pageAmount + "&limit="+ this.limit).then((response) => {
-               this.lastPageProducts = response.data.products.length;
-            });
-        },
         productsPerPage: function (amount) {
             this.$emit("sendProductsPerPage", amount);
         },
         order: function(params) {
             this.$emit("sendProduct",params);
-            if(params == "name"){
-                document.getElementById("orderBy").innerHTML = "Nome"
+            if (params == "name") {
+                document.getElementById("orderBy").innerHTML = "Nome";
             }
-            else if(params == "id"){
-                document.getElementById("orderBy").innerHTML = "Novidade"
+            else if (params == "id") {
+                document.getElementById("orderBy").innerHTML = "Novidade";
             }
-            else if(params == "priceMin"){
-                document.getElementById("orderBy").innerHTML = "Preço Ascendente"
+            else if (params == "priceMin") {
+                document.getElementById("orderBy").innerHTML = "Preço Ascendente";
             }
-            else{
-                document.getElementById("orderBy").innerHTML = "Preço Descendente"
+            else {
+                document.getElementById("orderBy").innerHTML = "Preço Descendente";
             }
             
+        },
+    },
+    computed: {
+        getInitialAmountOfProducts: function () {
+            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
+                return this.limit * (this.currentPage - 1) + 1;
+            }
+            return (this.productsInPage * this.currentPage) - this.productsInPage + 1;
+        },
+        getFinalAmountOfProducts: function () {
+            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
+                return this.productAmount;
+            }
+            return this.productsInPage * this.currentPage;
         },
     }
   }
