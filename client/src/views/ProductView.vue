@@ -61,7 +61,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" :idSupplier="idSupplier" @sendTransporterSelected="getTransporterSelected"/>
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" :idTransporter="idTransporter" :idSupplier="idSupplier" @sendTransporterSelected="getTransporterSelected"/>
                           
                       </div>
                     </div>

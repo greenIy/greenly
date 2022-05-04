@@ -53,6 +53,7 @@ export default {
     modal:Boolean,
     prod:Boolean,
     s:Number,
+    
   },
   methods:{
     closeModal(params){
@@ -64,7 +65,8 @@ export default {
     saveChanges(){
     this.$emit('sendSupplierSelected', this.s);
     this.$emit('saveF',"salva");
-    },  
+    }, 
+   
     
   }
 };

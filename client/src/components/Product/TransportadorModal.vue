@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardTransportador @sendTransporterSelected="getTransporter"
+            <CardTransportador @sendTransporterSelected="getTransporter" :idTransporter="idTransporter"
              v-for="t in transporters"
               :key="t.id"
               :transporter="t" />
@@ -46,9 +46,11 @@ export default {
     modal:Boolean,
     prod:Boolean,
     idSupplier:Number,
+    idTransporter:Number,
     transporter: Object,
     transporters: Array,
-    t:Number
+    t:Number,
+    
   },
   data() {
     return {
@@ -58,6 +60,7 @@ export default {
   },
   created() {
     this.getTransporters();
+    this.addSelected();
   },
   methods:{
     closeModal(params){
@@ -74,6 +77,9 @@ export default {
     this.$emit('sendTransporterSelected', this.t);
     this.$emit('saveT',"salva");
     }, 
+    addSelected(){
+      console.log(this.idTransporter);
+    } 
   }
 };
 </script>
