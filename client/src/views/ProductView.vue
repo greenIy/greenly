@@ -65,7 +65,10 @@
                           
                       </div>
                     </div>
-                  <div class="container mt-3">
+                  
+                </div>
+              </div>
+              <div class="container mt-3">
                     <hr class="center mt-3 w-100 " color="black" />
                     <ul class="nav nav-tabs mt-4" id='navList'>
                         <li class="nav-item">
@@ -137,7 +140,7 @@
                       </div>
                     </div>
                     <div class="d-inline-block p-0 col-md-2">
-                      <h4 class="my-0 fs-5">Preço €</h4>
+                      <h4 class="my-0 fs-5">{{ this.totalPrice }} €</h4>
                     </div>
                     <div class="d-inline-block text-end col-md-4">
                       <button class="btnS p-2">
@@ -148,8 +151,6 @@
                       <font-awesome-icon @click="liked($event)" class="icons fa-cog"  :icon="['fa', 'heart']"  size="lg" />
                     </button>
                   </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -194,6 +195,7 @@ export default {
     idSupplier:Number,
     idTransporter:Number,
     transporters: Array,
+    totalPrice:Number,
   },
   data() {
     return {
@@ -213,6 +215,7 @@ export default {
       suppliers: [],
       idSupplier: 0,
       idTransporter: 0,
+      totalPrice:0,
       currentSupplier: {
         name: "",
         resource_usage: 0,
@@ -232,6 +235,7 @@ export default {
     this.getInfo();
     this.getSuppliers();
     this.getSuppliersandTransporterNumber();
+    
   },
   methods: {
     liked(event) {
@@ -336,7 +340,7 @@ export default {
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
-      //this.showCharts();
+      this.getTotalPrice();
     },
     getSupplierSelected(event){
       var supplierSelected = event;
@@ -373,6 +377,10 @@ export default {
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
     },
+    getTotalPrice(){
+      this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
+    }
+    
   
   },
 };
@@ -474,4 +482,5 @@ input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
 </style>
