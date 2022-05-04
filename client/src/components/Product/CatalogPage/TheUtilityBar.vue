@@ -57,31 +57,25 @@ library.add(faCaretDown);
     data() {
         return {
             lastPageProducts: 0,
-            // totalProducts:0,
         };
     },
     methods: {
-        getTotalProducts: function() {
-            http.get("/store/products?page=" + this.pageAmount + "&limit="+ this.limit).then((response) => {
-               this.lastPageProducts = response.data.products.length;
-            });
-        },
         productsPerPage: function (amount) {
             this.$emit("sendProductsPerPage", amount);
         },
         order: function(params) {
             this.$emit("sendProduct",params);
-            if(params == "name"){
-                document.getElementById("orderBy").innerHTML = "Nome"
+            if (params == "name") {
+                document.getElementById("orderBy").innerHTML = "Nome";
             }
-            else if(params == "id"){
-                document.getElementById("orderBy").innerHTML = "Novidade"
+            else if (params == "id") {
+                document.getElementById("orderBy").innerHTML = "Novidade";
             }
-            else if(params == "priceMin"){
-                document.getElementById("orderBy").innerHTML = "Preço Ascendente"
+            else if (params == "priceMin") {
+                document.getElementById("orderBy").innerHTML = "Preço Ascendente";
             }
-            else{
-                document.getElementById("orderBy").innerHTML = "Preço Descendente"
+            else {
+                document.getElementById("orderBy").innerHTML = "Preço Descendente";
             }
             
         },

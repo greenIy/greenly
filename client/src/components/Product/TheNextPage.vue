@@ -32,6 +32,9 @@ export default {
       pages: this.pageAmount,
     };
   },
+  updated() {
+    this.setPageActive();
+  },
   methods: {
     prevPage() {
       if (this.currentPage > 1) {
@@ -46,7 +49,7 @@ export default {
       }
     },
     nextPage() {
-      if (this.currentPage < 5) {
+      if (this.currentPage < 5) { // ajeitar
         var page = document.getElementById("page-" + this.currentPage);
         page.classList.remove("active");
         this.currentPage++;
@@ -83,8 +86,7 @@ export default {
       }
     },
     setPageActive() {
-      var initialPage = document.getElementById("page-1");
-      initialPage.classList.add("active");
+      document.getElementById("page-1").classList.add("active");
     },
   },
   computed: {
