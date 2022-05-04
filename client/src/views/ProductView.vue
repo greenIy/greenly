@@ -52,8 +52,8 @@
                                       <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ currentTransporter.name }}</p></div>
                                     </div>
                                     <div class="d-flex flex-column card-input mt-0">
-                                    <p class="text-p"><b>Emissões Médias:</b> {{ currentTransporter.average_emissions.toFixed(1) }} CO₂/Km</p>
-                                    <p class="text-p"><b>Recursos Gastos:</b> {{ currentTransporter.average_resource_usage.toFixed(1) }} CO₂/Kg</p>
+                                    <p class="text-p"><b>Emissões Médias:</b> {{ currentTransporter.average_emissions.toFixed(1) }} CO₂ g/km/t</p>
+                                    <p class="text-p"><b>Recursos Gastos:</b> {{ currentTransporter.average_resource_usage.toFixed(1) }} l/100km</p>
                                     <p class="text-p"><b>Preço:</b> {{ currentTransporter.price }}€</p>
                                   </div>
                           </div>
@@ -101,12 +101,12 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh por Produto</div>
-                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} kg de CO₂ por Produto</div>
+                      <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh/kg</div>
+                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} l/100km</div>
                     </div>
                   </div>
                   <div class="container mt-3" id="info" v-if="active_el==2" >
-                   <p> INFOOOO </p>
+                    <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
                   </div>
                   <div class="container mt-3" id="detalhe" v-if="active_el==3" >
                    <p> DETALHEEE </p>
@@ -163,7 +163,7 @@ import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import FornecedorModal from "@/components/Product/FornecedorModal.vue";
 import TransportadorModal from "@/components/Product/TransportadorModal.vue";
-
+import Chart from "@/components/Product/Chart.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus} from "@fortawesome/free-solid-svg-icons";
 
@@ -182,6 +182,7 @@ export default {
     TheFooter,
     FornecedorModal,
     TransportadorModal,
+    Chart,
   },
   props: {
     modalT:Boolean,
@@ -335,6 +336,7 @@ export default {
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
+      //this.showCharts();
     },
     getSupplierSelected(event){
       var supplierSelected = event;
@@ -370,9 +372,12 @@ export default {
       this.currentTransporter.average_resource_usage = this.currentSupplier.transporters[this.idTransporter].transporter.average_resource_usage;
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
-    }
+    },
+  
   },
 };
+
+
 </script>
 
 <style scoped>
