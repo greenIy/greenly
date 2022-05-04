@@ -4,7 +4,7 @@
     </div>
     <div class="col-3 text-end mx-1">
         <span class="text-secondary fs-6">
-            {{ (productsInPage * currentPage) - productsInPage + 1 }} - {{ productsInPage * currentPage }} de {{ productAmount }} produtos 
+            {{ getInitialAmountOfProducts }} - {{ getFinalAmountOfProducts }} de {{ productAmount }} produtos 
         </span>
     </div>
     <div class="col-1 text-end mx-3">
@@ -84,6 +84,21 @@ library.add(faCaretDown);
                 document.getElementById("orderBy").innerHTML = "Preço Descendente"
             }
             
+        },
+    },
+    computed: {
+        getInitialAmountOfProducts: function () {
+            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
+                console.log("ultima pagina");
+                return this.limit * (this.currentPage - 1) + 1;
+            }
+            return (this.productsInPage * this.currentPage) - this.productsInPage + 1;
+        },
+        getFinalAmountOfProducts: function () {
+            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
+                return this.productAmount;
+            }
+            return this.productsInPage * this.currentPage;
         },
     }
   }
