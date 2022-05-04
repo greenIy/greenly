@@ -23,14 +23,14 @@
                     {{ product.description }}
                   </p>
                   <div class="d-flex mt-4">  
-                       <div class="col-6 d-flex flex-column"> 
-                         <div class="d-flex flex-column flex-grow-1">
-                          <span> Fornecedor: </span>
+                    <div class="col-6 d-flex flex-column"> 
+                      <div class="d-flex flex-column flex-grow-1">
+                        <span> Fornecedor: </span>
                           <h6 class="text-muted recomendado" id="txtF">(Recomendado por ser mais sustentável)</h6>
                           <div class="d-flex mt-2 h-100 flex-column card product marginr">
-                                <div class="d-flex justify-content-between card-input">
-                                  <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ currentSupplier.name }} </p></div>
-                                </div>
+                              <div class="d-flex justify-content-between card-input">
+                                <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ currentSupplier.name }} </p></div>
+                              </div>
                               <div class="d-flex flex-column card-input mt-0">
                                 <p class="text-p"><b>Recursos Gastos:</b> {{ currentSupplier.resource_usage.toFixed(1) }}  kWh/kg</p>
                                 <p class="text-p"><b>Stock:</b> {{ currentSupplier.quantity }} produtos</p>
@@ -65,78 +65,83 @@
                           
                       </div>
                     </div>
-                  
+                </div>
+             </div>
+            </div>
+            <div class="d-flex mx-3">
+              <div class="container">
+                <div class="card-body mt-1">
+                  <hr class="center w-100" color="black" />
+                </div>
+                <div class="card-body">
+                <ul class="nav nav-tabs" id='navList'>
+                  <li class="nav-item">
+                    <a class="nav-link text-dark" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link text-dark" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link text-dark" @click="activate(3)" :class="{ active : active_el == 3 }">Mais Detalhes</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="container mt-3" id="sumario" v-if="active_el==1">
+                <div class="row mt-4">
+                  <div class="col-6 text-left">
+                    <b>Fornecedor</b>
+                  </div>
+                  <div class="col-6 text-left">
+                    <b>Transportador</b>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 text-left">{{ currentSupplier.name}}</div>
+                    <div class="col-6 text-left">{{ currentTransporter.name }}</div>
+                </div>
+                <div class="row mt-4">
+                  <div class="col-6 text-left">
+                    <b>Gastos Médios em Armazenamento</b>
+                  </div>
+                  <div class="col-6 text-left">
+                    <b>Gastos Médios em Transporte</b>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh/kg</div>
+                    <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} l/100km</div>
                 </div>
               </div>
-              <div class="container mt-3">
-                    <hr class="center mt-3 w-100 " color="black" />
-                    <ul class="nav nav-tabs mt-4" id='navList'>
-                        <li class="nav-item">
-                          <a class="nav-link text-dark" id="cd" @click="activate(1)" :class="{ active : active_el == 1 }">Cadeia Logística</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link text-dark" @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link text-dark" @click="activate(3)" :class="{ active : active_el == 3 }">Mais Detalhes</a>
-                        </li>
-                      </ul>
-                  </div>
-                  <div class="container mt-3" id="sumario" v-if="active_el==1">
-                    <div class="row mt-4">
-                      <div class="col-6 text-left">
-                        <b>Fornecedor</b>
-                      </div>
-                      <div class="col-6 text-left">
-                        <b>Transportador</b>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-6 text-left">{{ currentSupplier.name}}</div>
-                      <div class="col-6 text-left">{{ currentTransporter.name }}</div>
-                    </div>
-                    <div class="row mt-4">
-                      <div class="col-6 text-left">
-                        <b>Gastos Médios em Armazenamento</b>
-                      </div>
-                      <div class="col-6 text-left">
-                        <b>Gastos Médios em Transporte</b>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh/kg</div>
-                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} l/100km</div>
-                    </div>
-                  </div>
-                  <div class="container mt-3" id="info" v-if="active_el==2" >
-                    <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
-                  </div>
-                  <div class="container mt-3" id="detalhe" v-if="active_el==3" >
-                   <p> DETALHEEE </p>
-                  </div>
-                </div>
+              <div class="container mt-3" id="info" v-if="active_el==2" >
+                <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
+              </div>
+              <div class="container mt-3" id="detalhe" v-if="active_el==3" >
+                <p> DETALHEEE </p>
+              </div>
+              </div>
+            </div>
+            <div class="d-flex mx-3">
+              <div class="container">
                 <div class="card-body mt-1">
-                <hr class="center w-100" color="black" />
+                  <hr class="center w-100" color="black" />
                 </div>
                 <div class="card-body">
                   <div class="row align-items-center justify-content-between">
                     <div class="d-inline-block p-0 col-md-5">
                       <div class="d-flex gap-3 mx-2 align-items-center text-center align-content-center">
-                          <span class="fs-5">Quantidade:</span>
-          
-                        <div class="col-md-4">
-                          <div class="d-flex justify-content-center align-items-center">
+                        <span class="fs-5">Quantidade:</span>
+                          <div class="col-md-4">
+                            <div class="d-flex justify-content-center align-items-center">
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
-                            <div class="w-50">
-                            <div class="mx-2">
-                               <input class="w-100 text-center align-self-center" type="number" name="quantity" :value="quantity" readonly="true" > 
+                                <div class="w-50">
+                                  <div class="mx-2">
+                                    <input class="w-100 text-center align-self-center" type="number" name="quantity" :value="quantity" readonly="true" > 
+                                  </div>
+                                </div>
+                                <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
                             </div>
-                            </div>
-                              <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
                           </div>
-                        </div>
-                        <div class="col-md-4">
-                        </div>
+                          <div class="col-md-4"></div>
                       </div>
                     </div>
                     <div class="d-inline-block p-0 col-md-2">
@@ -151,7 +156,9 @@
                       <font-awesome-icon @click="liked($event)" class="icons fa-cog"  :icon="['fa', 'heart']"  size="lg" />
                     </button>
                   </div>
+                </div>
             </div>
+           </div>
           </div>
         </div>
       </div>
