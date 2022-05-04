@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardTransportador @sendTransporterSelected="getTransporter" :idTransporter="idTransporter"
+            <CardTransportador @sendTransporterSelected="getTransporter" :idTransporter="idTransporter" :supplier="supplier" :targetTransporter="transporters[idTransporter]"
              v-for="t in transporters"
               :key="t.id"
               :transporter="t" />
@@ -30,8 +30,6 @@ import CardTransportador from "@/components/Product/CardTransportador.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark} from "@fortawesome/free-solid-svg-icons";
 
-import http from "../../../http-common";
-
 library.add(faCubes);
 library.add(faTruck);
 library.add(faXmark);
@@ -49,37 +47,26 @@ export default {
     idTransporter:Number,
     transporter: Object,
     transporters: Array,
-    t:Number,
+    idT:Number,
     
   },
   data() {
     return {
-      transporters: [], 
-      t:0,
+      transporters: this.transporters, 
+      idT:0,
     }
-  },
-  created() {
-    this.getTransporters();
-    this.addSelected();
   },
   methods:{
     closeModal(params){
       this.$emit('sendModalT',params);
     },
-    async getTransporters() {
-      var response = await http.get("/store/products/" + this.$route.params.id);
-      this.transporters = response.data.supplies[this.idSupplier].transports;
-    },
     getTransporter(event){
-      this.t = event;
+      this.idT = event;
     },
     saveChanges(){
-    this.$emit('sendTransporterSelected', this.t);
+    this.$emit('sendTransporterSelected', this.idT);
     this.$emit('saveT',"salva");
     }, 
-    addSelected(){
-      console.log(this.idTransporter);
-    } 
   }
 };
 </script>

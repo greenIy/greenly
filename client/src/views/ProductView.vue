@@ -327,6 +327,7 @@ export default {
       var supplierSelected = event;
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
       this.showCurrentSupplier();
+      this.showCurrentTransporter();
      
     },
     getTransporterSelected(event){

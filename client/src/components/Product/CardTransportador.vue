@@ -3,7 +3,7 @@
     <label @change="sendTransporterSelected($event)">
       <div class=" d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw"  :icon="['fas', 'truck']" /> {{ transporter.transporter.name }}</p></div>
-          <div class="mx-2"><input type="radio"  id="transp" v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element"  /></div> 
+          <div class="mx-2"><input type="radio" :id="'t-'+transporter.transporter.id" v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element transp"  /></div> 
       </div>
       <div class="d-flex flex-column card-input mt-0">
         <p class="text-p"><b>Emissões Médias:</b> {{ transporter.transporter.average_emissions.toFixed(1) }} CO₂ g/km/t</p>
@@ -18,6 +18,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark} from "@fortawesome/free-solid-svg-icons";
 
+
 library.add(faCubes);
 library.add(faTruck);
 library.add(faXmark);
@@ -26,6 +27,7 @@ library.add(faXmark);
 export default {
   name: "CardTransportador",
   props:{
+    targetTransporter: Number,
     transporter: Object,
     transportadorCard: String,
     idTransporter:Number,
@@ -35,7 +37,7 @@ export default {
       transportadorCard: "",
     }
   },
-  created() {
+  mounted() {
     this.addSelected();
   },
   methods:{
@@ -44,10 +46,10 @@ export default {
       this.$emit('sendTransporterSelected', this.transportadorCard);
     },
     addSelected(){
-      /* var valueT = getElementsByName("transportadorCard").value ;
-      if(valueT == this.idTransporter ){
-        console.log("match");
-      } */
+      if(this.targetTransporter == this.transporter ){
+        let a = "t-"+this.transporter.transporter.id.toString()
+        document.getElementById(a).checked = true;
+      } 
       
     }
   }

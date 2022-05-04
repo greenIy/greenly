@@ -10,10 +10,10 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardFornecedor  @sendSupplierSelected="getSupplierSelected"
+            <CardFornecedor  @sendSupplierSelected="getSupplierSelected"  :targetSupplier="suppliers[idSupplier]"
              v-for="s in suppliers"
               :key="s.supplier.id"
-              :supply="s" />
+              :supplier="s" />
         </div> 
       </div>
       <div class="modal-footer">
@@ -49,7 +49,8 @@ export default {
   },
   props: {
     suppliers: Array,
-    supply: Object,
+    supplier: Object,
+    idSupplier:Number,
     modal:Boolean,
     prod:Boolean,
     s:Number,
@@ -66,8 +67,6 @@ export default {
     this.$emit('sendSupplierSelected', this.s);
     this.$emit('saveF',"salva");
     }, 
-   
-    
   }
 };
 </script>

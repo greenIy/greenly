@@ -2,13 +2,13 @@
   <div class="mt-2 card mx-2">
     <label  @change="sendSuppliersSelected($event)">
       <div class="d-flex justify-content-between card-input">
-        <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supply.supplier.name }}</p></div>
-          <div class="mx-2"><input type="radio" name="fornecedorCard" v-model="fornecedorCard"  :value="supply.supplier.id" class="card-input-element"/></div> 
+        <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supplier.supplier.name }}</p></div>
+          <div class="mx-2"><input type="radio" :id="'s-'+supplier.supplier.id" name="fornecedorCard" v-model="fornecedorCard"  :value="supplier.supplier.id" class="card-input-element"/></div> 
       </div>
       <div class="card-input mt-0">
-        <p class="text-p"><b>Recursos Gastos:</b> {{ supply.warehouse.resource_usage.toFixed(1) }} kWh/kg</p>
-        <p class="text-p"><b>Stock:</b> {{ supply.quantity }} produtos</p>
-        <p class="text-p"><b>Preço:</b> {{ supply.price }}€</p>
+        <p class="text-p"><b>Recursos Gastos:</b> {{ supplier.warehouse.resource_usage.toFixed(1) }} kWh/kg</p>
+        <p class="text-p"><b>Stock:</b> {{ supplier.quantity }} produtos</p>
+        <p class="text-p"><b>Preço:</b> {{ supplier.price }}€</p>
       </div>
     </label>
   </div>   
@@ -26,19 +26,31 @@ library.add(faXmark);
 export default {
   name: "CardFornecedor",
   props: {
-    supply: Object,
+    supplier: Object,
     fornecedorCard: String,
+    targetSupplier: Number,
+    supplier: Object,
   },
   data() {
     return { 
       fornecedorCard: "",
     }
   },
+   mounted() {
+    this.addSelected();
+  },
   methods:{
     sendSuppliersSelected(event){
       this.fornecedorCard = event.target.value;
       this.$emit('sendSupplierSelected',this.fornecedorCard);
     },
+    addSelected(){
+      if(this.targetSupplier == this.supplier ){
+        let a = "s-"+this.supplier.supplier.id.toString()
+        document.getElementById(a).checked = true;
+      } 
+      
+    }
  
   }
 };
