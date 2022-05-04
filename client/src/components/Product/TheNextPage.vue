@@ -8,7 +8,7 @@
           <span class="sr-only">Anterior</span>
         </button>
       </li>
-      <li class="page-item" v-for="n in 5" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
+      <li class="page-item" v-for="n in this.pages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
       <li class="page-item" id="next">
         <button class="page-link" @click='nextPage()'>
           <span aria-hidden="true">&raquo;</span>
@@ -23,13 +23,18 @@
 
 export default {
   name: 'TheNextPage',
+  props: {
+    pageAmount: Number,
+  },
   data() {
     return {
       currentPage: 1,
+      pages: this.pageAmount,
     };
   },
   mounted() {
-    this.setPageActive();
+    this.pages = this.pageAmount;
+    console.log(this.pages)
   },
   methods: {
     prevPage() {

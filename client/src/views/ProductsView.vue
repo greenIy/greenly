@@ -4,7 +4,7 @@
      <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
+        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
               :product="products" @sendProduct="getProductsByChild" />
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
@@ -23,7 +23,7 @@
             </div>
           </div>
       </div>
-      <TheNextPage @sendCurrentPage="getCurrentPage "/>
+      <TheNextPage @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/>
     </div>
     <TheFooter />
   </div>
@@ -183,6 +183,9 @@ export default {
           product.lowest_price
       );
       return minPrices.reduce((a, b) => Math.min(a,b), 30000);
+    },
+    getPageAmount: function () {
+      return Math.ceil(this.productAmount / this.limit);
     },
   },
 };
