@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2 card mx-2">
-    <label>
+    <label @change="sendTransporterSelected($event)">
       <div class=" d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ transporter.transporter.name }}</p></div>
           <div class="mx-2"><input type="radio"  v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element"  /></div> 

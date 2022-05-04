@@ -61,7 +61,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" @sendTransporterSelected="getTransporterSelected"/>
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" :idSupplier="idSupplier" @sendTransporterSelected="getTransporterSelected"/>
                           
                       </div>
                     </div>
@@ -250,20 +250,18 @@ export default {
     },
     async getSuppliersandTransporterNumber() {
       var response = await http.get("/store/products/" + this.$route.params.id);
-      this.numberSuppliers = response.data.supplies.length;
-     /*  
-      this.numberTransporters = response.data.supplies.transporters.length;
-      console.log("AHHHHHHHHHHHHHH"+this.numberTransporters);
-      console.log("EHHHHHHHHHHHHHH"+this.numberTransporters); */
+      this.numberSuppliers = response.data.supplies.length; 
+      this.numberTransporters = response.data.supplies[this.idSupplier].transports.length;
+    
 
       if(this.numberSuppliers == 1){
         document.getElementById("btnF").style.visibility = "hidden";
         document.getElementById("txtF").style.visibility = "hidden";
       }
-     /*  if(this.numberTransporters <2){
+      if(this.numberTransporters <2){
         document.getElementById("btnT").style.visibility = "hidden";
         document.getElementById("txtT").style.visibility = "hidden";
-      } */
+      } 
     },
     showModalF(){
       this.modalF=true;
@@ -287,14 +285,12 @@ export default {
     },
     closeModalF(value){
       if(value == "salva"){
-        console.log(value);
         this.modalF=false;
         this.prod=true;
       }
     },
     closeModalT(value){
       if(value == "salva"){
-        console.log(value);
         this.modalT=false;
         this.prod=true;
       }
@@ -340,24 +336,16 @@ export default {
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
     },
-   /*  getTransporters(){
-      console.log(this.currentSupplier.transporters);
-      //this.transporters = this.currentSupplier.transporters;
-    }, */
     getSupplierSelected(event){
       var supplierSelected = event;
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
       this.showCurrentSupplier();
      
-      //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     },
     getTransporterSelected(event){
       var transporterSelected = event;
-      //console.log(transporterSelected);
-      this.idTransporter = this.currentSupplier.transporters.findIndex((transporter) => transporter.id == transporterSelected);
-      //console.log(idTransporter)
+      this.idTransporter = this.currentSupplier.transporters.findIndex((transporter) => transporter.transporter.id == transporterSelected);
       this.showCurrentTransporter();
-      //console.log(this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected ));
     }, 
     showMostSustenaibleSuppliers() {
       this.suppliers.sort(function (x, y) {
@@ -376,17 +364,12 @@ export default {
       this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
-      //console.log(this.currentSupplier.transporters)
-      //console.log(this.currentSupplier);
     },
     showCurrentTransporter() {
-      //console.log(this.currentTransporter);
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;
       this.currentTransporter.average_resource_usage = this.currentSupplier.transporters[this.idTransporter].transporter.average_resource_usage;
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
-      //console.log(this.currentSupplier.transporters)
-      //console.log(this.currentSupplier);
     }
   },
 };

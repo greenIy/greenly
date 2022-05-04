@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardTransportador 
+            <CardTransportador @sendTransporterSelected="getTransporterSelected"
              v-for="t in transporters"
               :key="t.id"
               :transporter="t" />
@@ -45,9 +45,9 @@ export default {
   props: {
     modal:Boolean,
     prod:Boolean,
+    idSupplier:Number,
     transporter: Object,
     transporters: Array,
-
   },
   data() {
     return {
@@ -63,17 +63,14 @@ export default {
     },
     async getTransporters() {
       var response = await http.get("/store/products/" + this.$route.params.id);
-      this.transporters = response.data.supplies[0].transports;
-      console.log(this.transporters)
+      this.transporters = response.data.supplies[this.idSupplier].transports;
     },
     getTransporterSelected(event){
       var idTransporter = event;
       this.$emit('sendTransporterSelected', idTransporter);
     },
     saveChanges(){
-      console.log("entrei no salvar ");
       this.$emit('saveT',"salva");
-      //this.getTransporterSelected();
     }, 
   }
 };

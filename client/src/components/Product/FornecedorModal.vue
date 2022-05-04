@@ -61,9 +61,7 @@ export default {
       this.$emit('sendSupplierSelected', idSupplier);
     },
     saveChanges(){
-      console.log("entrei no salvar ");
       this.$emit('saveF',"salva");
-      //this.getSupplierSelected();
     }, 
   }
 };
