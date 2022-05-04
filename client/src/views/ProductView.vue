@@ -32,7 +32,7 @@
                                   <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'cubes']" /> {{ currentSupplier.name }} </p></div>
                                 </div>
                               <div class="d-flex flex-column card-input mt-0">
-                                <p class="text-p"><b>Recursos Gastos:</b> {{ currentSupplier.resource_usage }}  kWh/kg</p>
+                                <p class="text-p"><b>Recursos Gastos:</b> {{ currentSupplier.resource_usage.toFixed(1) }}  kWh/kg</p>
                                 <p class="text-p"><b>Stock:</b> {{ currentSupplier.quantity }} produtos</p>
                                 <p class="text-p"><b>Preço:</b> {{ currentSupplier.price }}€</p>
                               </div>
@@ -52,8 +52,8 @@
                                       <div><p><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'truck']" /> {{ currentTransporter.name }}</p></div>
                                     </div>
                                     <div class="d-flex flex-column card-input mt-0">
-                                    <p class="text-p"><b>Emissões Médias:</b> {{ currentTransporter.average_emissions }} CO₂/Km</p>
-                                    <p class="text-p"><b>Recursos Gastos:</b> {{ currentTransporter.average_resource_usage }} CO₂/Kg</p>
+                                    <p class="text-p"><b>Emissões Médias:</b> {{ currentTransporter.average_emissions.toFixed(1) }} CO₂/Km</p>
+                                    <p class="text-p"><b>Recursos Gastos:</b> {{ currentTransporter.average_resource_usage.toFixed(1) }} CO₂/Kg</p>
                                     <p class="text-p"><b>Preço:</b> {{ currentTransporter.price }}€</p>
                                   </div>
                           </div>
@@ -102,7 +102,7 @@
                     </div>
                     <div class="row">
                       <div class="col-6 text-left">{{ currentSupplier.resource_usage }} kWh por Produto</div>
-                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage}} kg de CO₂ por Produto</div>
+                      <div class="col-6 text-left"> {{ currentTransporter.average_resource_usage.toFixed(1)}} kg de CO₂ por Produto</div>
                     </div>
                   </div>
                   <div class="container mt-3" id="info" v-if="active_el==2" >
