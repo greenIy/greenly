@@ -29,11 +29,11 @@
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
-                <input v-model.number:value="minPrice" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number">
+                <input v-model="priceMin" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number" @click="updateProductsByMinPrice(this.priceMin)">
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
-              <input v-model.number:value="maxPrice" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number">
+              <input v-model="priceMax" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number" @click="updateProductsByMaxPrice(this.priceMax)">
             </span>
           </div>
         </div>
@@ -79,9 +79,25 @@ library.add(faAngleLeft);
         categoryList: [],
         categorySelected: false,
         currentCategory: {},
+        priceMin: 0,
+        priceMax: 0,
         countC: 0,
         countP: 0,
         countF: 0,
+        currentMinPrice: this.minPrice,
+        currentMaxPrice: this.maxPrice,
+      }
+    },
+    mounted() {
+      this.getMinPrice();
+      this.getMaxPrice();
+    },
+    watch: {
+      minPrice() {
+        this.getMinPrice();
+      },
+      maxPrice() {
+        this.getMaxPrice();
       }
     },
     methods: {
@@ -115,12 +131,26 @@ library.add(faAngleLeft);
         document.getElementById("iconF").style.transform = "rotate("+deg+"deg)";
         return this.countF;
       },
+      updateProductsByMinPrice(minPrice) {
+        this.currentMinPrice = minPrice;
+        console.log(this.currentMinPrice);
+        //this.$emit("sendGoBack", this.currentCategory);
+      },
+      updateProductsByMaxPrice() {
+        this.currentMinPrice = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {};
+        this.$emit("sendGoBack", this.currentCategory);
+      },
+      getMinPrice() {
+        this.priceMin = this.minPrice;
+      },
+      getMaxPrice() {
+        this.priceMax = this.maxPrice;
+      }
     },
     computed: {
       showCategories: function () {
         if (this.categorySelected) {
           var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category && category.total_products > 0);
-          console.log(filteredCategory);
           return filteredCategory;
         }
         // show highest level of categories
