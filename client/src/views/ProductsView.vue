@@ -70,7 +70,7 @@ export default {
       nameFilter:String
     };
   },
-  created() {
+  mounted() {
     this.getProducts();
     this.getCategories();
   },
@@ -167,16 +167,18 @@ export default {
   },
   computed: {
     getMaxPrice: function () {
-      var maxPrices = this.products.map(product =>
+      var maxPrice = this.products.map(product =>
           product.highest_price
       );
-      return maxPrices.reduce((a, b) => Math.max(a,b), 0);
+
+      return Math.max(...maxPrice);
     },
     getMinPrice: function () {
-      var minPrices = this.products.map(product =>
+      var minPrice = this.products.map(product =>
           product.lowest_price
       );
-      return minPrices.reduce((a, b) => Math.min(a,b), 30000);
+
+      return Math.min(...minPrice);
     },
     getPageAmount: function () {
       return Math.ceil(this.productAmount / this.limit);
