@@ -80,14 +80,19 @@
                   </li>
                   <li class="nav-item">
                     <a class="nav-link text-dark"  @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
-                  </li>
-                  
+                  </li>   
                 </ul>
               </div>
-          
-              
               <div class="container mt-3" id="detalhe" v-if="active_el==1" >
-                <p> DETALHEEE </p>
+                <table class="table table-striped">
+                  <tbody>
+                    <tr v-for="a in attributes" :key="a.id">
+                      <th scope="col">{{a.title}}</th>
+                      <td scope="row">{{a.content}}</td>
+                    </tr>
+               
+                  </tbody>
+                </table>
               </div>
               <div class="container mt-3" id="info" v-if="active_el==2" >
                 <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
@@ -115,13 +120,13 @@
                                 <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
                             </div>
                           </div>
-                          <div class="col-md-4"></div>
+                          <div class="col-md-5"></div>
                       </div>
                     </div>
-                    <div class="d-inline-block p-0 col-md-2">
-                      <h4 class="my-0 fs-5">{{ this.totalPrice }} €</h4>
+                    <div class="d-inline-block p-0 col-md-3" style="text-align:end">
+                      <h4 class="my-0 fs-3">{{ this.totalPrice }} €</h4>
                     </div>
-                    <div class="d-inline-block text-end col-md-4">
+                    <div class="d-inline-block text-end col-md-3">
                       <button class="btnS p-2">
                         <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
@@ -177,6 +182,7 @@ export default {
     idTransporter:Number,
     transporters: Array,
     totalPrice:Number,
+    attributes:Array,
   },
   data() {
     return {
@@ -197,6 +203,7 @@ export default {
       idSupplier: 0,
       idTransporter: 0,
       totalPrice:0,
+      attributes:[],
       currentSupplier: {
         name: "",
         resource_usage: 0,
@@ -231,6 +238,8 @@ export default {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
+      this.attributes = this.product.attributes;
+      console.log(this.attributes)
       this.loading = false;
       window.scrollTo(0, 0);
     },
@@ -317,6 +326,7 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
+      //console.log(this.suppliers);
       this.showMostSustenaibleSuppliers();
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
@@ -363,8 +373,7 @@ export default {
     },
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
-    }
-    
+    },
   
   },
 };
