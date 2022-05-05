@@ -1,6 +1,6 @@
 <template>
-<div class="modal transp-modal-lg" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
-   <div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal transp-modal-xl" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
+   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class=" d-flex modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Transportador</h5> 

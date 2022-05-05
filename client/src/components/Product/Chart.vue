@@ -66,7 +66,8 @@ export default {
                 tension: 0.3,
                 plugins: {
                     legend: {
-                        position: 'top'
+                        position: 'bottom',
+                        align:'end'
                     },
                     title: {
                         display: true,
@@ -94,7 +95,8 @@ export default {
                 tension: 0.3,
                 plugins: {
                     legend: {
-                        position: 'top'
+                        position: 'bottom',
+                        align:'end'
                     },
                     title: {
                         display: true,

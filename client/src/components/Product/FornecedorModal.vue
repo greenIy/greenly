@@ -1,6 +1,6 @@
 <template>
-<div class="modal forn-modal-lg" role="dialog" id="fornModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal forn-modal-xl" role="dialog" id="fornModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="d-flex modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Selecionar Fornecedor</h5> 
@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
-            <CardFornecedor  @sendSupplierSelected="getSupplierSelected"  :targetSupplier="suppliers[idSupplier]"
+            <CardFornecedor  @sendSupplierSelected="getSupplierSelected"  :targetSupplier="suppliers[idSupplier]" :suppliers="suppliers" :idSupplier="idSupplier"
              v-for="s in suppliers"
               :key="s.supplier.id"
               :supplier="s" />
@@ -43,7 +43,6 @@ export default {
   data() {
     return { 
       suppliers: [],
-      fornecedorCard: '',
       idS:0,
     }
   },

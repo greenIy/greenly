@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2 card mx-2">
-    <label  @change="sendSuppliersSelected($event)">
+    <label  @click="sendSuppliersSelected($event)">
       <div class="d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supplier.supplier.name }}</p></div>
           <div class="mx-2"><input type="radio" :id="'s-'+supplier.supplier.id" name="fornecedorCard" v-model="fornecedorCard"  :value="supplier.supplier.id" class="card-input-element"/></div> 
@@ -26,14 +26,15 @@ library.add(faXmark);
 export default {
   name: "CardFornecedor",
   props: {
-    supplier: Object,
-    fornecedorCard: String,
+    fornecedorCard: Number,
     targetSupplier: Number,
     supplier: Object,
+    suppliers:Array,
+    idSupplier:Number,
   },
   data() {
     return { 
-      fornecedorCard: "",
+      fornecedorCard:'',
     }
   },
    mounted() {
@@ -41,7 +42,8 @@ export default {
   },
   methods:{
     sendSuppliersSelected(event){
-      this.fornecedorCard = event.target.value;
+      this.fornecedorCard = event.target.getAttribute('value');
+      console.log(this.fornecedorCard)
       this.$emit('sendSupplierSelected',this.fornecedorCard);
     },
     addSelected(){
