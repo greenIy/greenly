@@ -1,13 +1,13 @@
 <template>
-<div>
+<div class="d-flex">
     <div class="container">
         <div class="row">
-            <div class="col-sm">
+            <div class="col-sm-6">
                 <div>
                     <canvas id="priceChart"></canvas>
                 </div>
             </div>
-            <div class="col-sm">
+            <div class="col-sm-6">
                 <div>
                     <canvas id="stockChart"></canvas>
                 </div>
