@@ -83,8 +83,8 @@
                   </li>   
                 </ul>
               </div>
-              <div class="container mt-3" id="detalhe" v-if="active_el==1" >
-                <table class="table table-striped">
+              <div class="mx-3 mt-3 " id="detalhe" v-if="active_el==1" style="text-items:left" >
+                <table class="table table-striped table-responsive">
                   <tbody>
                     <tr v-for="a in attributes" :key="a.id">
                       <th scope="col">{{a.title}}</th>
