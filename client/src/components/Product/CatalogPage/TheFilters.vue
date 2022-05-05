@@ -119,7 +119,8 @@ library.add(faAngleLeft);
     computed: {
       showCategories: function () {
         if (this.categorySelected) {
-          var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category);
+          var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category && category.total_products > 0);
+          console.log(filteredCategory);
           return filteredCategory;
         }
         // show highest level of categories
