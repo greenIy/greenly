@@ -317,13 +317,12 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      //console.log(this.suppliers);
+      console.log(this.suppliers);
       this.showMostSustenaibleSuppliers();
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
       this.getTotalPrice();
-      this.getSuppliersandTransporterNumber();
     },
     getSupplierSelected(event){
       var supplierSelected = event;
@@ -339,10 +338,11 @@ export default {
       this.showCurrentTransporter();
     }, 
     getSuppliersandTransporterNumber() {
+      //console.log(this.suppliers[this.idSupplier] =! this.suppliers[0])
       this.numberSuppliers = this.suppliers.length; 
       this.numberTransporters = this.suppliers[this.idSupplier].transports.length;
       //console.log(this.numberSuppliers)
-      //console.log(this.numberTransporters)
+      
     
       if(this.numberSuppliers == 1){
         document.getElementById("btnF").style.visibility = "hidden";
@@ -350,16 +350,28 @@ export default {
       }
       else{
         document.getElementById("btnF").style.visibility = "visible";
-        document.getElementById("txtF").style.visibility = "visible";
-      }
+        if(this.suppliers[this.idSupplier] == this.suppliers[0]){
+          document.getElementById("txtF").style.visibility = "visible";
+        }
+        else{
+        document.getElementById("txtF").style.visibility = "hidden";
+        } 
+      } 
+
       if(this.numberTransporters == 1){
         document.getElementById("btnT").style.visibility = "hidden";
         document.getElementById("txtT").style.visibility = "hidden";
       }
       else{
         document.getElementById("btnT").style.visibility = "visible";
-        document.getElementById("txtT").style.visibility = "visible";
-      }  
+        if(this.suppliers[this.idSupplier].transports[this.idTransporter] == this.suppliers[this.idSupplier].transports[0]){
+          document.getElementById("txtT").style.visibility = "visible";
+        }
+        else{
+        document.getElementById("txtT").style.visibility = "hidden";
+        } 
+      }
+
     },
     showMostSustenaibleSuppliers() {
       this.suppliers.sort(function (x, y) {
@@ -377,7 +389,7 @@ export default {
       this.currentSupplier.resource_usage = this.suppliers[this.idSupplier].warehouse.resource_usage;
       this.currentSupplier.quantity = this.suppliers[this.idSupplier].quantity;
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
-      this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
+      this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;  
       this.getTotalPrice();
       this.getSuppliersandTransporterNumber();
     },
