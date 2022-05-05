@@ -4,14 +4,14 @@
     <ul class="pagination">
       <li class="page-item disabled" id="previous">
         <button type="button" class="page-link" @click='prevPage()'>
-          <span aria-hidden="true">&laquo;</span>
+          <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /></span>
           <span class="sr-only">Anterior</span>
         </button>
       </li>
       <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
       <li class="page-item" id="next">
         <button class="page-link" @click='nextPage()'>
-          <span aria-hidden="true">&raquo;</span>
+          <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-right']" /></span>
           <span class="sr-only">Seguinte</span>
         </button>
       </li>
@@ -20,6 +20,11 @@
 </div>
 </template>
 <script>
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {faAngleLeft, faAngleRight  } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faAngleLeft);
+library.add(faAngleRight);
 
 export default {
   name: 'TheNextPage',
@@ -44,7 +49,6 @@ export default {
         page = document.getElementById("page-" + this.currentPage);
         page.classList.add("active");
         this.$emit("sendCurrentPage", this.currentPage);
-
         this.manageDisable();
       }
     },
@@ -56,7 +60,6 @@ export default {
         page = document.getElementById("page-" + this.currentPage);
         page.classList.add("active");
         this.$emit("sendCurrentPage", this.currentPage);
-
         this.manageDisable();
       }
     },
@@ -66,7 +69,6 @@ export default {
         this.currentPage = num;
         page = document.getElementById("page-" + this.currentPage);
         page.classList.add("active");
-
         this.$emit("sendCurrentPage", this.currentPage);
         this.manageDisable();
     },
