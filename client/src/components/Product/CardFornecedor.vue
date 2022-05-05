@@ -50,6 +50,8 @@ export default {
       if(this.targetSupplier == this.supplier ){
         let a = "s-"+this.supplier.supplier.id.toString()
         document.getElementById(a).checked = true;
+        this.fornecedorCard=this.supplier.supplier.id;
+        this.$emit('sendSupplierSelected',this.fornecedorCard);
       } 
       
     }

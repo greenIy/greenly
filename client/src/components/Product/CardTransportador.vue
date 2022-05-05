@@ -49,6 +49,8 @@ export default {
       if(this.targetTransporter == this.transporter ){
         let a = "t-"+this.transporter.transporter.id.toString()
         document.getElementById(a).checked = true;
+        this.transportadorCard=this.transporter.transporter.id;
+        this.$emit('sendTransporterSelected',this.transportadorCard);
       } 
       
     }

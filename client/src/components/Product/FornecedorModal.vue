@@ -64,6 +64,7 @@ export default {
     },
     saveChanges(){
     console.log(this.idS)
+    
     this.$emit('sendSupplierSelected', this.idS);
     this.$emit('saveF',"salva");
     }, 
