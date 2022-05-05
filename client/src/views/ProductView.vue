@@ -61,8 +61,7 @@
                             <div class="mt-4 mx-auto" id="btnT">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".transp-modal-lg" @click="showModalT()" :modalT="false" >Escolher outro Transportador</button>
                           </div>
-                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" :idTransporter="idTransporter" :idSupplier="idSupplier" @sendTransporterSelected="getTransporterSelected"/>
-                          
+                          <TransportadorModal  v-if="modalT !=false" @sendModalT="getModalT" @saveT="closeModalT" :transporters="currentSupplier.transporters" :idTransporter="idTransporter" :idSupplier="idSupplier" @sendTransporterSelected="getTransporterSelected"/> 
                       </div>
                     </div>
                 </div>
@@ -76,10 +75,16 @@
                 <div class="card-body">
                 <ul class="nav nav-tabs" id='navList'>
                   <li class="nav-item">
-                    <a class="nav-link text-dark" id="md" @click="activate(1)" :class="{ active : active_el == 1 }">Mais Detalhes</a>
+                    <a class="nav-link text-dark" id="md" @click="activate(1)" :class="{ active : active_el == 1 }">
+                      <font-awesome-icon class="icons mx-1"  :icon="['fas', 'list']" /> 
+                      Mais Detalhes 
+                    </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link text-dark"  @click="activate(2)" :class="{ active : active_el == 2 }">Informação Histórica</a>
+                    <a class="nav-link text-dark"  @click="activate(2)" :class="{ active : active_el == 2 }">
+                      <font-awesome-icon class="icons mx-1"  :icon="['fas', 'clock-rotate-left']" />
+                      Informação Histórica
+                    </a>
                   </li>   
                 </ul>
               </div>
@@ -152,13 +157,15 @@ import FornecedorModal from "@/components/Product/FornecedorModal.vue";
 import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 import Chart from "@/components/Product/Chart.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus, faList, faClockRotateLeft} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHeart);
 library.add(faCartPlus);
 library.add(faAngleDown);
 library.add(faCirclePlus);
 library.add(faCircleMinus);
+library.add(faList);
+library.add(faClockRotateLeft);
 
 import http from "../../http-common";
 
@@ -222,7 +229,6 @@ export default {
   created() {
     this.getInfo();
     this.getSuppliers();
-    this.getSuppliersandTransporterNumber();
     
   },
   methods: {
@@ -239,24 +245,9 @@ export default {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
       this.attributes = this.product.attributes;
-      console.log(this.attributes)
+      //console.log(this.attributes)
       this.loading = false;
       window.scrollTo(0, 0);
-    },
-    async getSuppliersandTransporterNumber() {
-      var response = await http.get("/store/products/" + this.$route.params.id);
-      this.numberSuppliers = response.data.supplies.length; 
-      this.numberTransporters = response.data.supplies[this.idSupplier].transports.length;
-    
-
-      if(this.numberSuppliers == 1){
-        document.getElementById("btnF").style.visibility = "hidden";
-        document.getElementById("txtF").style.visibility = "hidden";
-      }
-      if(this.numberTransporters <2){
-        document.getElementById("btnT").style.visibility = "hidden";
-        document.getElementById("txtT").style.visibility = "hidden";
-      } 
     },
     showModalF(){
       this.modalF=true;
@@ -332,12 +323,14 @@ export default {
       this.showMostSusteinableTransporters();
       this.showCurrentTransporter();
       this.getTotalPrice();
+      this.getSuppliersandTransporterNumber();
     },
     getSupplierSelected(event){
       var supplierSelected = event;
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
       this.showCurrentSupplier();
       this.showCurrentTransporter();
+      
      
     },
     getTransporterSelected(event){
@@ -345,6 +338,29 @@ export default {
       this.idTransporter = this.currentSupplier.transporters.findIndex((transporter) => transporter.transporter.id == transporterSelected);
       this.showCurrentTransporter();
     }, 
+    getSuppliersandTransporterNumber() {
+      this.numberSuppliers = this.suppliers.length; 
+      this.numberTransporters = this.suppliers[this.idSupplier].transports.length;
+      //console.log(this.numberSuppliers)
+      //console.log(this.numberTransporters)
+    
+      if(this.numberSuppliers == 1){
+        document.getElementById("btnF").style.visibility = "hidden";
+        document.getElementById("txtF").style.visibility = "hidden";
+      }
+      else{
+        document.getElementById("btnF").style.visibility = "visible";
+        document.getElementById("txtF").style.visibility = "visible";
+      }
+      if(this.numberTransporters == 1){
+        document.getElementById("btnT").style.visibility = "hidden";
+        document.getElementById("txtT").style.visibility = "hidden";
+      }
+      else{
+        document.getElementById("btnT").style.visibility = "visible";
+        document.getElementById("txtT").style.visibility = "visible";
+      }  
+    },
     showMostSustenaibleSuppliers() {
       this.suppliers.sort(function (x, y) {
         return x.warehouse.resource_usage - y.warehouse.resource_usage;
@@ -363,6 +379,7 @@ export default {
       this.currentSupplier.price = this.suppliers[this.idSupplier].price;
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;
       this.getTotalPrice();
+      this.getSuppliersandTransporterNumber();
     },
     showCurrentTransporter() {
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;
@@ -370,6 +387,7 @@ export default {
       this.currentTransporter.average_emissions = this.currentSupplier.transporters[this.idTransporter].transporter.average_emissions;
       this.currentTransporter.price = this.currentSupplier.transporters[this.idTransporter].price;
       this.getTotalPrice();
+      this.getSuppliersandTransporterNumber();
     },
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
