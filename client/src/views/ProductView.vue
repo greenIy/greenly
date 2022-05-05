@@ -245,7 +245,6 @@ export default {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.product = response.data;
       this.attributes = this.product.attributes;
-      //console.log(this.attributes)
       this.loading = false;
       window.scrollTo(0, 0);
     },
@@ -327,10 +326,9 @@ export default {
     getSupplierSelected(event){
       var supplierSelected = event;
       this.idSupplier = this.suppliers.findIndex((supplier) => supplier.supplier.id == supplierSelected);
+      this.idTransporter = 0;
       this.showCurrentSupplier();
       this.showCurrentTransporter();
-      
-     
     },
     getTransporterSelected(event){
       var transporterSelected = event;
@@ -338,11 +336,8 @@ export default {
       this.showCurrentTransporter();
     }, 
     getSuppliersandTransporterNumber() {
-      //console.log(this.suppliers[this.idSupplier] =! this.suppliers[0])
       this.numberSuppliers = this.suppliers.length; 
       this.numberTransporters = this.suppliers[this.idSupplier].transports.length;
-      //console.log(this.numberSuppliers)
-      
     
       if(this.numberSuppliers == 1){
         document.getElementById("btnF").style.visibility = "hidden";
@@ -377,7 +372,6 @@ export default {
       this.suppliers.sort(function (x, y) {
         return x.warehouse.resource_usage - y.warehouse.resource_usage;
       });
-      
     },
     showMostSusteinableTransporters() {
       this.currentSupplier.transporters.sort(function (x, y) {
@@ -404,11 +398,8 @@ export default {
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
     },
-  
   },
 };
-
-
 </script>
 
 <style scoped>
