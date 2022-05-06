@@ -363,23 +363,62 @@ function loginValidator() {
     ]
 }
 
+function addToCartValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("supplier")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("warehouse")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("transporter")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
-    // User Validators
+    // User validators
     createUserValidator,
     updateUserValidator,
 
-    // Address Validators
+    // Address validators
     createAddressValidator,
     updateAddressValidator,
 
     // Authentication validators
     loginValidator,
 
-    // Product Validators
+    // Product validators
     getProductsValidator,
 
-    // Category Validators,
+    // Category validators,
     createCategoryValidator,
     updateCategoryValidator,
+
+    // Cart validators,
+    addToCartValidator,
 
 }

@@ -303,7 +303,7 @@ def main():
     global API_PORT
 
     generationOptions = ["Users", "Products"]
-    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)"]
+    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)", "Development (dev.greenly.pt)"]
 
     generationOption, index = pick(generationOptions, 'Choose what to generate: ', indicator='->', default_index=0)
     APIOption, APIIndex = pick(APIOptions, 'Choose which API to use: ', indicator='->', default_index=0)
@@ -311,6 +311,11 @@ def main():
     if (APIIndex == 1):
         API_BASE_URL = "http://localhost"
         API_PORT = 8080
+
+    if (APIIndex == 2):
+        API_BASE_URL = "http://dev.greenly.pt"
+        API_PORT = 80
+
 
     if (generationOption == "Users"):
         print(f"Requesting at {API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}\n")

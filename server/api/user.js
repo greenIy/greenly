@@ -1,8 +1,6 @@
 /* Keep in mind, the path for each route in this file is prepended with /user */
 
-const { defaultUrl } = require('@googlemaps/google-maps-services-js/dist/directions');
 const express = require('express');
-const { isAuthenticated } = require('../lib/authentication.js');
 const router = express.Router();
 
 /* Greenly libraries & required server data */
@@ -10,7 +8,13 @@ const authentication    = require("../lib/authentication")
 const authorization     = require("../lib/authorization")
 const persistence       = require('../lib/persistence');
 const defaultErr        = require("../lib/error").defaultErr
-const { createUserValidator, updateUserValidator, createAddressValidator, updateAddressValidator } = require('../lib/validation.js');
+const { 
+    createUserValidator, 
+    updateUserValidator, 
+    createAddressValidator, 
+    updateAddressValidator,
+    addToCartValidator 
+} = require('../lib/validation.js');
 
 
 /* GET /user (Admin only) */
@@ -176,7 +180,7 @@ router.delete('/:userId/addresses/:addressId', authentication.check, authorizati
 // TODO: Complete validation and authorization for each of these routes
 // TODO: Maybe find an alternative for index, possibly a unique ID which is inserted manually in POST (so, an index, but saved in the DB) even though that involves resetting all IDs when deleting one. Possibly decreasing by one all IDs where id > deletedId?
 
-router.get('/:userId/cart', (req, res) => {
+router.get('/:userId/cart', authentication.check, authorization.check, (req, res) => {
     try {
         persistence.getCart(Number(req.params.userId)).then((result) => {
             res.status(200).json(result)
@@ -187,8 +191,29 @@ router.get('/:userId/cart', (req, res) => {
     }
 })
 
-router.post('/:userId/cart', (req, res) => {
-    
+router.post('/:userId/cart', authentication.check, authorization.check, addToCartValidator(), (req, res) => {
+    persistence.addItemToCart(
+        req.params.userId, 
+        req.body.product, 
+        req.body.supplier, 
+        req.body.warehouse, 
+        req.body.transporter, 
+        req.body.quantity,
+    ).then((result) => {        
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "NO_STOCK":
+                return res.status(400).send({message: "Requested quantity is higher than available stock."})
+            case "INVALID_COMBINATION":
+                return res.status(400).send({message: "Invalid combination of product, supplier and transport."})
+            case "ALREADY_PRESENT":
+                return res.status(400).send({message: "Specified item is already in cart."})
+            default:
+                return res.status(200).send({message: "Item successfully added to cart."})
+        }
+    })
+
 })
 
 router.delete('/:userId/cart', (req, res) => {

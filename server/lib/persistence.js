@@ -5,7 +5,6 @@
 const { PrismaClient, Prisma, } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
-const { check, boolean } = require('yargs');
 const argv = require('../server').argv
 
 // Use 10 salt rounds for each hash
@@ -897,6 +896,7 @@ async function deleteCategory(id) {
 
         return true;
     } catch (e) {
+        // In case category can't be deleted
         if (e.code == "P2003") {
             return 409;
         }
@@ -965,7 +965,7 @@ async function getCart(userID) {
 
             item.supplier = {
                 id: item.supplier,
-                name: supplier.Company.name || supplier.first_name + supplier.last_name
+                name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
             }
 
             // Additional transporter info
@@ -998,7 +998,64 @@ async function getCart(userID) {
     }
 }
 
-async function addItemToCart(userId, /* Add supply identifiers */) {
+async function addItemToCart(
+    userId, 
+    product, 
+    supplier, 
+    warehouse, 
+    transporter, 
+    quantity) {
+
+    try {
+        let correspondingSupply = await prisma.supply_Transporter.findUnique({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: product,
+                    supplier: supplier,
+                    warehouse: warehouse,
+                    transporter: transporter,
+                }
+            },
+            select: {
+                Supply: true
+            }
+        })
+
+        if (!correspondingSupply) {
+            // In case the specified product/supplier/transporter combination isn't available
+            return "INVALID_COMBINATION";
+        }
+
+        if (correspondingSupply.Supply.quantity < quantity) {
+            // In case the user's order is larger than the available stock
+            return "NO_STOCK";
+        }
+
+        try {
+            let newItem = await prisma.cart.create({
+                data: {
+                    consumer: Number(userId),
+                    product: Number(product),
+                    supplier: Number(supplier),
+                    warehouse: Number(warehouse),
+                    transporter: Number(transporter),
+                    quantity: Number(quantity),
+                }
+            })
+        } catch (e) {
+            if (e.code == "P2002") {
+                return "ALREADY_PRESENT"
+            } else {
+                return null;
+            }
+        }
+
+        return "SUCCESSFULLY_ADDED"
+
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
 
 }
 
