@@ -171,4 +171,39 @@ router.delete('/:userId/addresses/:addressId', authentication.check, authorizati
     }
 })
 
+
+/* Cart routes */
+// TODO: Complete validation and authorization for each of these routes
+// TODO: Maybe find an alternative for index, possibly a unique ID which is inserted manually in POST (so, an index, but saved in the DB) even though that involves resetting all IDs when deleting one. Possibly decreasing by one all IDs where id > deletedId?
+
+router.get('/:userId/cart', (req, res) => {
+    try {
+        persistence.getCart(Number(req.params.userId)).then((result) => {
+            res.status(200).json(result)
+        })
+
+    } catch {
+        res.status(500).send(defaultErr())
+    }
+})
+
+router.post('/:userId/cart', (req, res) => {
+    
+})
+
+router.delete('/:userId/cart', (req, res) => {
+    
+})
+
+router.put('/:userId/cart/:index', (req, res) => {
+    
+})
+
+router.delete('/:userId/cart/:index', (req, res) => {
+    
+})
+
+
+
+
 module.exports = router;

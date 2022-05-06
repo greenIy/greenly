@@ -904,6 +904,116 @@ async function deleteCategory(id) {
     }
 }
 
+
+/* Cart Functions */
+
+async function getCart(userID) {
+    try {
+        let cartItems = await prisma.cart.findMany({
+            where: {
+                consumer: userID
+            },
+            select: {
+                product: true,
+                supplier: true,
+                warehouse: true,
+                transporter: true,
+                quantity: true
+            }
+        })
+
+        let totalPrice = 0;
+
+        // Update each cart item with calculated properties: (shipping price and product price)
+        await Promise.all(cartItems.map(async (item) => {
+
+            // TODO: Include supplier name, product name, transporter name
+            // Obtaining additional data regarding cart item
+            let correspondingSupply = await prisma.supply.findUnique({
+                where: {
+                    product_supplier_warehouse: {
+                        product: item.product, supplier: item.supplier, warehouse: item.warehouse 
+                    }
+                },
+                select: {
+                    price: true,
+                    Supply_Transporter: {
+                        where:  {
+                            transporter: item.transporter
+                        },
+                        select: {
+                            price: true,
+                        }
+                    }
+                }
+            })
+
+            // Updating cart item with additional information
+            item.price = Number(correspondingSupply.price)
+            item.transport_price = Number(correspondingSupply.Supply_Transporter[0].price)
+
+            // Additional supplier info
+
+            let supplier = await prisma.user.findUnique({
+                where: {
+                    id: item.supplier
+                },
+                include: {
+                    Company: true
+                }
+            })
+
+            item.supplier = {
+                id: item.supplier,
+                name: supplier.Company.name || supplier.first_name + supplier.last_name
+            }
+
+            // Additional transporter info
+
+            let transporter = await prisma.user.findUnique({
+                where: {
+                    id: item.transporter
+                },
+                include: {
+                    Company: true
+                }
+            })
+
+            item.transporter = {
+                id: item.transporter,
+                name: transporter.Company.name || transporter.first_name + transporter.last_name
+            }
+
+            // Incrementing the total cart price
+            totalPrice += item.price + item.transport_price
+
+            return item
+        }))
+
+        return {items: cartItems, total_price: totalPrice}
+
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+
+async function addItemToCart(userId, /* Add supply identifiers */) {
+
+}
+
+async function updateCartItem(userID, itemID) {
+
+}
+
+async function removeCartItem(userID, itemID) {
+
+}
+
+async function clearCart(userID, itemID) {
+    
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -916,7 +1026,7 @@ module.exports = {
     getAllUsers,
     checkUserConflict,
 
-    // Address functions
+    // Address Functions
     createAddress,
     updateAddress,
     deleteAddress,
@@ -929,5 +1039,12 @@ module.exports = {
     getAllCategories,
     createCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+
+    // Cart Functions
+    getCart,
+    addItemToCart,
+    updateCartItem,
+    removeCartItem,
+    clearCart
 }

@@ -407,7 +407,7 @@ paths:
       summary: Apagar uma morada do utilizador
       description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
         um administrador)
-      operationId: deleteUser
+      operationId: deleteAddress
       parameters:
       - name: userId
         in: path
