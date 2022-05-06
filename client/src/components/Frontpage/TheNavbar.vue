@@ -28,7 +28,7 @@
                 </router-link>
             </div>
             <div class="pt-2">
-                <router-link to="/produtos" class="mb-2 mr-2">
+                <router-link to="/produtos" :key="$route.fullPath" class="mb-2 mr-2">
                     produtos <span class="ms-3"> | </span> 
                 </router-link>
             </div>
@@ -61,9 +61,12 @@ export default {
     }
   },
   methods: {
-      submit(search) {
+    submit(search) {
         this.$emit('search-information', search);
-      }
+    },
+    reloadPage() {
+        this.$router.go();
+    },
   }
 };
 </script>
