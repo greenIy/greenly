@@ -94,11 +94,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="removeAddressLabel">Remover morada</h5>
+                <h5 class="modal-title" id="removeAddressLabel">Atenção!</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Tem a certeza que pretende remover esta morada da sua conta?
+                Tem a certeza que deseja remover esta morada da sua conta?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -159,6 +159,8 @@ export default({
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
+            console.log(accessToken)
+            console.log(`Bearer ${accessToken}`)
             if (accessToken){
                 http.post(`/user/${userId}/addresses`, { headers: {"Authorization" : `Bearer ${accessToken}`} },
                 JSON.stringify({
@@ -168,7 +170,8 @@ export default({
                     country: this.newAddressInfo.country.toString(),
                     nif: this.newAddressInfo.nif,
                     }))
-                .then(response => {
+                .then((response, request) => {
+                console.log(request)
                 if (response.status == 201) {
                     console.log("Success")
                 } else {

@@ -119,7 +119,7 @@ export default {
         align-items: stretch;
     }
     .nav > .nav-item > .active {
-        background-color: #608072;
+        background-color: #309C76;
     }
     .nav-item {
         margin-bottom: 5px;

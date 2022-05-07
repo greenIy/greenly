@@ -53,7 +53,7 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 import http from "../../../http-common";
 
 export default({
-    name: 'loginForm',
+  name: 'loginForm',
     data(){
         return {
             showPassword: false,
@@ -100,7 +100,7 @@ export default({
 
 <style scoped>
     .btn-primary {
-        background-color: #608072;
+        background-color: #309C76;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {

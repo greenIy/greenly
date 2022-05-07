@@ -166,7 +166,7 @@ export default {
 
 <style scoped>
     .btn-primary {
-        background-color: #608072;
+        background-color: #309C76;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {

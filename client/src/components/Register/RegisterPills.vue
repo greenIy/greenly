@@ -71,7 +71,7 @@ export default {
     }
     .nav-link-active {
         color: white;
-        background-color: #608072;
+        background-color: #309C76;
     }
     .fade-enter-active,
     .fade-leave-active {
