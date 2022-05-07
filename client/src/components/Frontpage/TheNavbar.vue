@@ -24,11 +24,11 @@
         <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
             <div class="pt-2">
                 <router-link to="/promocoes" class="mb-2 pr-2">
-                    promoções <span class="ms-3"> | </span>            
+                    promoções <span class="ms-3"> | </span>
                 </router-link>
             </div>
             <div class="pt-2">
-                <router-link to="/produtos" :key="$route.fullPath" class="mb-2 mr-2">
+                <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
                     produtos <span class="ms-3"> | </span> 
                 </router-link>
             </div>
@@ -65,7 +65,11 @@ export default {
         this.$emit('search-information', search);
     },
     reloadPage() {
-        this.$router.go();
+        console.log("eu to aqui");
+        console.log(this.$route.name);
+        if(this.$route.name != "home") {
+            this.$router.go();
+        }
     },
   }
 };
