@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex justify-content-center mt-5">
-  <nav aria-label="page navigation example" >
+  <nav aria-label="page navigation example" v-if="getPages != 0">
     <ul class="pagination">
       <li class="page-item disabled" id="previous">
         <button type="button" class="page-link" @click='prevPage()'>
@@ -81,7 +81,7 @@ export default {
         previous.classList.add("disabled");
       }
 
-      if (this.currentPage == 5) {
+      if (this.currentPage == this.pages) {
         next.classList.add("disabled");
       } else {
         next.classList.remove("disabled");

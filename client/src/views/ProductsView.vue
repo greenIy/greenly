@@ -12,13 +12,16 @@
               <TheFilters :categories="categories" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
             </div>
           </div>
-          <div class="col-sm-10 col-md-9 ">
-            <div class="content d-flex w-100 " @currentPage="getCurrentPage">
+          <div class="col-sm-10 col-md-9">
+            <div v-if="products.length" class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
               v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
+             </div>
+             <div v-else class="content d-flex w-100 ">
+               <TheNoProduct></TheNoProduct>
              </div>
             </div>
           </div>
@@ -37,6 +40,7 @@ import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
+import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 
 import http from "../../http-common";
 
@@ -49,6 +53,7 @@ export default {
     TheFooter,
     TheFilters,
     TheUtilityBar,
+    TheNoProduct
   },
   props: {
     product: Object,

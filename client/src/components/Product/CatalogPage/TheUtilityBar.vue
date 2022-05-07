@@ -84,6 +84,8 @@ library.add(faCaretDown);
         getInitialAmountOfProducts: function () {
             if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
                 return this.limit * (this.currentPage - 1) + 1;
+            } else if (this.productAmount === 0) {
+                return 0;
             }
             return (this.productsInPage * this.currentPage) - this.productsInPage + 1;
         },

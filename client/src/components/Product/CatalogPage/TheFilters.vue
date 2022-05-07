@@ -61,7 +61,7 @@ library.add(faAngleUp);
 library.add(faAngleLeft);
 
   export default {
-    name: "ProductsView",
+    name: "TheFilters",
     props: {
       categories: Array,
       minPrice: Number,
