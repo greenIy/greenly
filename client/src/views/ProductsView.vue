@@ -9,7 +9,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="categories" :maxPrice="getMaxPrice" :minPrice="getMinPrice" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage"/>
+              <TheFilters :categories="categories" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9 ">
@@ -75,7 +75,7 @@ export default {
     this.getCategories();
   },
   methods: {
-    async getProducts(page=this.currentPage, limit=this.limit) {
+    async getProducts(page=this.currentPage, limit=this.limit, minPrice=0, maxPrice=50000000) {
       this.nameFilter = "id";
       var response = await http.get("/store/products?page=" + page + "&limit="+limit);
       this.products = response.data.products;
@@ -163,6 +163,9 @@ export default {
         this.productsInPage = this.products.length;
         //console.log(response.data);
       });
+    },
+    showProductsByMinPrice: function (params) {
+
     }
   },
   computed: {

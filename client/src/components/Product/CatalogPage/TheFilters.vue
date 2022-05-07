@@ -88,7 +88,7 @@ library.add(faAngleLeft);
         currentMaxPrice: this.maxPrice,
       }
     },
-    mounted() {
+    /* mounted() {
       this.getMinPrice();
       this.getMaxPrice();
     },
@@ -99,7 +99,7 @@ library.add(faAngleLeft);
       maxPrice() {
         this.getMaxPrice();
       }
-    },
+    }, */
     methods: {
       showProducts(category) {
         this.categoryList.push(category);
@@ -132,13 +132,14 @@ library.add(faAngleLeft);
         return this.countF;
       },
       updateProductsByMinPrice(minPrice) {
-        this.currentMinPrice = minPrice;
-        console.log(this.currentMinPrice);
-        //this.$emit("sendGoBack", this.currentCategory);
+        //this.currentMinPrice = minPrice;
+        //console.log(this.currentMinPrice);
+        console.log(minPrice);
+        this.$emit("sendMinPrice", minPrice);
       },
-      updateProductsByMaxPrice() {
-        this.currentMinPrice = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {};
-        this.$emit("sendGoBack", this.currentCategory);
+      updateProductsByMaxPrice(maxPrice) {
+        //this.currentMaxPrice = maxPrice;
+        this.$emit("sendMaxPrice", maxPrice);
       },
       getMinPrice() {
         this.priceMin = this.minPrice;
