@@ -1,10 +1,10 @@
 <template>
     <div class="p-5" style="margin-top: 2px">
         
-        <h3>Encomendas</h3>
+        <h4>Encomendas</h4>
         <hr>
         
-        <h2>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" size=""/></h2>
+        <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" size=""/></h4>
 
 
     </div>

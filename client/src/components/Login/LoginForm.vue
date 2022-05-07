@@ -53,7 +53,7 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 import http from "../../../http-common";
 
 export default({
-  name: 'loginForm',
+    name: 'loginForm',
     data(){
         return {
             showPassword: false,

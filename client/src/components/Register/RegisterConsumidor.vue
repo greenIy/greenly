@@ -45,31 +45,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- p class="text-left" style="margin-bottom: -2%">Morada</p><hr/>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                    <country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/>
-                    <input type="name" class="form-control" id="country" v-model="registerInfo.country" placeholder="Introduza país" required>
-                </div>
-                <div class="col mb-3">
-                    <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                    <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
-                    <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="inputStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="street" v-model="registerInfo.street" placeholder="Introduza rua" required>
-                </div>
-                <div class="col mb-3">
-                    <label for="postalCode" class="form-label">Código Postal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="postalCode" v-model="registerInfo.postalCode" placeholder="Introduza código postal" required>
-                </div>
-            </div> -->
-
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsConditons" required>
                 <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>

@@ -15,14 +15,13 @@
                     <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                 </router-link>
             </div>
-            <div v-else class="align-self-center nav-links mt-3 mb-0 ml-2 ms-2">
+            <div v-else class="align-self-center nav-links mt-3 mb-0 ml-0 ms-2">
+                <h6>{{ user.first_name + " " + user.last_name }}</h6>
                 <div class="dropdown">
                     <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
-                        <li><h6 class="dropdown-header"> {{ user.first_name + " " + user.last_name }}</h6></li>
-                        <li><hr class="dropdown-divider"></li>
                         <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></router-link></li>
                         <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</a></router-link></li>
                         <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></router-link></li>
@@ -70,7 +69,6 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import AuthService from '../../router/auth';
 
 library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket);
 
