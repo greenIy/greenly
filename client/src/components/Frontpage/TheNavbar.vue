@@ -7,7 +7,7 @@
                 </router-link>
             </div>
             <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
-                <input class="form-control" type="search" placeholder="" aria-label="Search" v-model="search">
+                <input class="form-control" type="search" placeholder="" aria-label="Search" v-model="search" @keyup.enter="submit(this.search)">
                 <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
             </div>
             <div class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">

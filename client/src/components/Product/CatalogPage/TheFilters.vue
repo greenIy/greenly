@@ -29,11 +29,11 @@
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
-                <input v-model="priceMin" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number" @click="updateProductsByMinPrice(this.priceMin)">
+                <input v-model="priceMin" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)">
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
-              <input v-model="priceMax" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number" @click="updateProductsByMaxPrice(this.priceMax)">
+              <input v-model="priceMax" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number" @keyup.enter="updateProductsByMaxPrice(this.priceMax)">
             </span>
           </div>
         </div>
@@ -132,17 +132,22 @@ library.add(faAngleLeft);
         return this.countF;
       },
       updateProductsByMinPrice(minPrice) {
-        //this.currentMinPrice = minPrice;
-        //console.log(this.currentMinPrice);
-        console.log(minPrice);
+        if(minPrice === "") {
+          minPrice = 0;
+        }
+        
         this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
-        //this.currentMaxPrice = maxPrice;
+        if(maxPrice === "") {
+          maxPrice = 0;
+        }
+
         this.$emit("sendMaxPrice", maxPrice);
       },
       getMinPrice() {
         this.priceMin = this.minPrice;
+        console.log()
       },
       getMaxPrice() {
         this.priceMax = this.maxPrice;

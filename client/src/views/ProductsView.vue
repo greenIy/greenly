@@ -59,8 +59,8 @@ export default {
       products: [],
       currentPage: 1,
       categories: [],
-      minPrice: Number,
-      maxPrice: Number,
+      minPrice: 0,
+      maxPrice: 50000000,
       productAmount: 0,
       pageAmount: 0,
       currentCategory: {id: "", name: ""},
@@ -75,9 +75,9 @@ export default {
     this.getCategories();
   },
   methods: {
-    async getProducts(page=this.currentPage, limit=this.limit, minPrice=0, maxPrice=50000000) {
+    async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {
       this.nameFilter = "id";
-      var response = await http.get("/store/products?page=" + page + "&limit="+limit);
+      var response = await http.get("/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice);
       this.products = response.data.products;
       this.productAmount = response.data.total_products;
       this.productsInPage = this.products.length;
@@ -87,21 +87,21 @@ export default {
     },
     async getProductsByChild(params) {
       if( params == "name"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=name_asc").then((response) => {
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=name_asc").then((response) => {
                 this.newProducts = response.data.products;
             });
       this.products = Object.assign([], this.newProducts);
       this.nameFilter = "name";
       }
       else if( params == "id"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=newest").then((response) => {
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=newest").then((response) => {
                 this.newProducts = response.data.products;
             });
       this.products = Object.assign([], this.newProducts);
       this.nameFilter = "id";
       }
       else if( params == "priceMin"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_asc").then((response) => {
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=price_asc").then((response) => {
                 this.newProducts = response.data.products;
             });
       this.products = Object.assign([], this.newProducts);
@@ -109,7 +109,7 @@ export default {
   
       }
       else {
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+this.limit + "&sort=price_desc").then((response) => {
+        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=price_desc").then((response) => {
                 this.newProducts = response.data.products;
             });
       this.products = Object.assign([], this.newProducts);
@@ -157,7 +157,7 @@ export default {
     },
     searchInformation: function (params) {
       //console.log(this.$route.name);
-      http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&keywords=" + params).then((response) => {
+      http.get("/store/products?page=" + this.currentPage + "&limit=" + this.limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;
         this.productsInPage = this.products.length;
@@ -165,24 +165,16 @@ export default {
       });
     },
     showProductsByMinPrice: function (params) {
-
-    }
+      this.minPrice = params;
+      this.getProducts();
+    },
+    showProductsByMaxPrice: function (params) {
+      this.maxPrice = params;
+      this.getProducts();
+      console.log(this.products);
+    },
   },
   computed: {
-    getMaxPrice: function () {
-      var maxPrice = this.products.map(product =>
-          product.highest_price
-      );
-
-      return Math.max(...maxPrice);
-    },
-    getMinPrice: function () {
-      var minPrice = this.products.map(product =>
-          product.lowest_price
-      );
-
-      return Math.min(...minPrice);
-    },
     getPageAmount: function () {
       return Math.ceil(this.productAmount / this.limit);
     },
