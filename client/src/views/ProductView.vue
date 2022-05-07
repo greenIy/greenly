@@ -119,7 +119,7 @@
                               <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-minus']" @click="clickAction('minus')" id="decrement" />
                                 <div class="w-50">
                                   <div class="mx-2">
-                                    <input class="w-100 text-center align-self-center" type="number" name="quantity" :value="quantity" readonly="true" > 
+                                    <input class="w-100 text-center align-self-center" name="quantity" :value="quantity" readonly="true"> 
                                   </div>
                                 </div>
                                 <font-awesome-icon class="fs-5 fa-fw" :icon="['fas', 'circle-plus']" @click="clickAction('plus')" id="increment" />
@@ -316,7 +316,7 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      console.log(this.suppliers);
+      //console.log(this.suppliers);
       this.showMostSustenaibleSuppliers();
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
