@@ -389,7 +389,27 @@ function addToCartValidator() {
             .notEmpty()
             .bail()
             .isInt()
-            .toInt(),
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateCartItemValidator() {
+    return [
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
@@ -420,5 +440,6 @@ module.exports = {
 
     // Cart validators,
     addToCartValidator,
+    updateCartItemValidator
 
 }

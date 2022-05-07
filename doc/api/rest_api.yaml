@@ -635,20 +635,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cart'
-        400:
-          description: userId inválido
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
+                $ref: '#/components/schemas/ReceivedCart'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
     post:
       tags:
       - user
       summary: Adicionar item ao cesto de compras
-      description: "Adicionar item com identificador itemId ao cesto de compras do\
+      description: "Adicionar item ao cesto de compras do\
         \ utilizador userId\n A quantidade deverá ser menor ou igual que o stock atual\
-        \ do produto \nLimita-se a utilizadores autenticados, o funcionamento para\
+        \ do produto. \nLimita-se a utilizadores autenticados, o funcionamento para\
         \ utilizadores não autenticados é session-based"
       operationId: addToCart
       parameters:
@@ -660,26 +668,44 @@ paths:
         schema:
           type: integer
       requestBody:
-        description: itemId do item a ser adicionado ao cesto de compras e respetiva
-          quantidade
+        description: Informação do item a adicionar ao carrinho
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CartItem'
+              $ref: '#/components/schemas/SentCartItem'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
         400:
-          description: userId ou itemId inválidos
-          content: {}
+          description: Parâmetros inválidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Requested quantity is higher than available stock."
+                    - "Specified item is already in cart."
+                    - "Requested quantity is higher than available stock."
+                    - "Minimum quantity is 1."
+
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-        404:
-          description: Utilizador ou item não encontrados
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
       x-codegen-request-body-name: body
     delete:
       tags:
@@ -697,27 +723,30 @@ paths:
         schema:
           type: integer
       responses:
-        204:
-          description: Items removidos com sucesso
-          content: {}
-        400:
-          description: userId inválido
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-        404:
-          description: Utilizador encontrado
-          content: {}
-  /user/{userId}/cart/{itemId}:
-    delete:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+  /user/{userId}/cart/{index}:
+    put:
       tags:
       - user
-      summary: Remover item do cesto de compras
-      description: "Remover item itemId do cesto de compras do utilizador userId \n\
-        Limita-se a utilizadores autenticados, o funcionamento para utilizadores nã\
-        o autenticados é session-based"
-      operationId: removeFromCart
+      summary: Atualizar a quantidade de um item no carrinho
+      description: "Permite alterar a quantidade de um item que se quer no carrinho. Este parâmetro tem um mínimo de 1, estando limitado ao stock atual do fornecedor em questão."
+      operationId: updateItemInCart
       parameters:
       - name: userId
         in: path
@@ -727,24 +756,91 @@ paths:
           type: integer
       - name: itemId
         in: path
-        description: "itemId do item a remover do cesto de compras \nDeve corresponder\
-          \ a um item atualmente no cesto de compras do utilizador"
+        description: |-
+          Indíce do item a remover do cesto de compras. Deve corresponder a um item atualmente no cesto de compras do utilizador."
         required: true
         schema:
           type: integer
       responses:
-        204:
-          description: Item removido com sucesso
-          content: {}
-        400:
-          description: userId ou itemId inválidos
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou item não encontrados
-          content: {}
+          description: index inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified index is not valid. Check the content of your cart for updated indexes.
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags:
+      - user
+      summary: Remover item do cesto de compras
+      description: |-
+        Remover item correspondente ao índice fornecido do cesto de compras do utilizador userId. 
+        Limita-se a utilizadores autenticados, o funcionamento para utilizadores não autenticados é session-based."
+      operationId: removeItemFromCart
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador associado ao cesto de compras
+        required: true
+        schema:
+          type: integer
+      - name: index
+        in: path
+        description: |-
+          Índice do item a remover do cesto de compras. 
+          Deve corresponder a um item atualmente no cesto de compras do utilizador.
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: index inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified index is not valid. Check the content of your cart for updated indexes.
+      security:
+        - bearerAuth: []
   ### STORE ROUTES
   ## PRODUCT ROUTES
   /store/products:
@@ -2479,40 +2575,91 @@ components:
       description: Objeto utilizado para devolver informações sobre um centro de distribuição
       xml:
         name: DistributionCenter
-    Cart:
+    ReceivedCart:
       type: object
       properties:
-        userId:
-          type: integer
-          description: Código identificador do utilizador
-        itemList:
+        items:
           type: array
-          description: Itens no cesto de compras
+          description: Conjunto de items no carrinho
           items:
             type: object
             properties:
-              item:
-                $ref: '#/components/schemas/Item'
+              index:
+                type: integer
+                description: O índice do item no carrinho, utilizado para identificar este item em ações relativas de atualização ou remoção
+              product:
+                type: object
+                description: Informação sobre o produto
+                properties:
+                  id:
+                    type: integer
+                    description: O código identificador do produto
+                  name:
+                    type: string
+                    description: O nome do produto
+              supplier:
+                type: object
+                description: Informação sobre o fornecedor
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador do fornecedor
+                  name:
+                    type: string
+                    description: O nome do fornecedor
+              transporter:
+                type: object
+                description: Informação sobre o transportador
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador do transportador
+                  name:
+                    type: string
+                    description: O nome do transportador
               quantity:
                 type: integer
-                description: Quantidade do item
+                description: A quantidade do produto especificado a incluir na futura encomenda
+              price:
+                type: number
+                format: float
+                description: O preço do fornecimento do produto
+              transport_price:
+                type: number
+                format: float
+                description: O preço do transporte do produto
+        total_price:
+          type: number
+          format: float
+          description: Preço total do carrinho
+            
+
       description: Objeto utilizado para representar o cesto de compras de um utilizador,
         detalhando cada item incluído e respetiva quantidade
       xml:
-        name: Cart
-    CartItem:
+        name: ReceivedCart
+    SentCartItem:
       type: object
       properties:
-        itemId:
-          type: string
-          description: Código identificador do item
+        product:
+          type: integer
+          description: Código identificador do produto a ser adicionado ao carrinho
+        supplier:
+          type: integer
+          description: Código identificador do fornecedor escolhido
+        transporter:
+          type: integer
+          description: Código identificador do transportador escolhido
         quantity:
           type: integer
-          description: Quantidade do item
-      description: Objeto que deverá ser fornecido ao ser colocado no carrinho, especificando
-        o itemId do item e  a respetiva quantidade
+          description: Quantidade do item. Deverá ser um valor igual ou inferior à quantidade de stock disponível pelo fornecedor
+      description: |-
+          Objeto que deverá ser fornecido ao ser colocado no carrinho, especificando os parâmetros do fornecimento e quantidade desejada. 
+
+          Nota: a combinação `product`, `supplier`, `transporter` deverá ser válida.
       xml:
-        name: CartItem
+        name: SentCartItem
+    # CartItemUpdate:
     Payment:
       type: object
       properties:

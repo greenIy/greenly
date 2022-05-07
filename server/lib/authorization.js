@@ -17,7 +17,7 @@ async function check(req, res, next) {
         "/store/categories":                    "ALL_CATEGORIES",
         "/store/categories/:categoryId":        "SINGLE_CATEGORY",
         "/user/:userId/cart":                   "ALL_CART_ITEMS",
-        "/user/:userId/cart/:index":            "SINGLE_CART_ITEMS"}
+        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM"}
 
     // Helper functions
     const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}

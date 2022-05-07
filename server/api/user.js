@@ -13,7 +13,8 @@ const {
     updateUserValidator, 
     createAddressValidator, 
     updateAddressValidator,
-    addToCartValidator 
+    addToCartValidator, 
+    updateCartItemValidator
 } = require('../lib/validation.js');
 
 
@@ -208,7 +209,7 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
             case "INVALID_COMBINATION":
                 return res.status(400).send({message: "Invalid combination of product, supplier and transport."})
             case "ALREADY_PRESENT":
-                return res.status(400).send({message: "Specified item is already in cart."})
+                return res.status(409).send({message: "Specified item is already in cart."})
             default:
                 return res.status(200).send({message: "Item successfully added to cart."})
         }
@@ -216,16 +217,50 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
 
 })
 
-router.delete('/:userId/cart', (req, res) => {
-    
+router.delete('/:userId/cart', authentication.check, authorization.check, (req, res) => {
+    persistence.clearCart(req.params.userId).then((success) => {
+        if (success) {
+            return res.status(200).send({message: "Cart cleared successfully."})
+        } else {
+            return res.status(500).send(defaultErr())
+        }
+    })
 })
 
-router.put('/:userId/cart/:index', (req, res) => {
-    
+router.put('/:userId/cart/:index', authentication.check, authorization.check, updateCartItemValidator(), (req, res) => {
+    persistence.updateCartItem(
+        req.params.userId, 
+        req.params.index,
+        req.body.quantity).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "NO_STOCK":
+                    return res.status(400).send({message: "Requested quantity is higher than available stock."})
+                case "INVALID_INDEX":
+                    return res.status(404).send({message: "Specified index is not valid. Check the content of your cart for updated indexes."})
+                default:
+                    return res.status(200).send({message: "Item quantity successfully updated."})
+            }
+        })
 })
 
-router.delete('/:userId/cart/:index', (req, res) => {
-    
+router.delete('/:userId/cart/:index', authentication.check, authorization.check, (req, res) => {
+    persistence.removeCartItem(
+        req.params.userId, 
+        req.params.index,
+        req.body.quantity).then((result) => {
+
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_INDEX":
+                    return res.status(404).send({message: "Specified index is not valid. Check the content of your cart."})
+                default:
+                    return res.status(200).send({message: "Item successfully removed from cart."})
+            }
+
+        })
 })
 
 

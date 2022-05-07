@@ -2,7 +2,7 @@
     Functions included pertain to database access and manipulation.
 */
 
-const { PrismaClient, Prisma, } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
@@ -865,6 +865,7 @@ async function updateCategory(id, params) {
 
     let categoryDataSelection = {}
 
+    // Map all attributes to be changed
     for (const [key, value] of Object.entries(params)) {
         if (key in categoryKeyMap) {
             categoryDataSelection[categoryKeyMap[key]] = value
@@ -909,16 +910,22 @@ async function deleteCategory(id) {
 
 async function getCart(userID) {
     try {
+
+        // Obtaining current cart items, sorted by index
         let cartItems = await prisma.cart.findMany({
             where: {
                 consumer: userID
             },
             select: {
+                index: true,
                 product: true,
                 supplier: true,
                 warehouse: true,
                 transporter: true,
                 quantity: true
+            },
+            orderBy: {
+                index: 'asc'
             }
         })
 
@@ -927,7 +934,6 @@ async function getCart(userID) {
         // Update each cart item with calculated properties: (shipping price and product price)
         await Promise.all(cartItems.map(async (item) => {
 
-            // TODO: Include supplier name, product name, transporter name
             // Obtaining additional data regarding cart item
             let correspondingSupply = await prisma.supply.findUnique({
                 where: {
@@ -981,11 +987,25 @@ async function getCart(userID) {
 
             item.transporter = {
                 id: item.transporter,
-                name: transporter.Company.name || transporter.first_name + transporter.last_name
+                name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+            }
+
+            // Additional product information
+
+            let product = await prisma.product.findUnique({
+                where: {
+                    id: item.product
+                },
+            })
+
+            // Eventually, also select the product's image here
+            item.product = {
+                id: item.product,
+                name: product.name
             }
 
             // Incrementing the total cart price
-            totalPrice += item.price + item.transport_price
+            totalPrice += (item.price * item.quantity) + item.transport_price
 
             return item
         }))
@@ -1032,14 +1052,17 @@ async function addItemToCart(
         }
 
         try {
-            let newItem = await prisma.cart.create({
+            let itemCount = await prisma.cart.count()
+
+            await prisma.cart.create({
                 data: {
-                    consumer: Number(userId),
-                    product: Number(product),
-                    supplier: Number(supplier),
-                    warehouse: Number(warehouse),
-                    transporter: Number(transporter),
-                    quantity: Number(quantity),
+                    index:          Number(itemCount) + 1,
+                    consumer:       Number(userId),
+                    product:        Number(product),
+                    supplier:       Number(supplier),
+                    warehouse:      Number(warehouse),
+                    transporter:    Number(transporter),
+                    quantity:       Number(quantity),
                 }
             })
         } catch (e) {
@@ -1056,19 +1079,113 @@ async function addItemToCart(
         console.log(e)
         return null;
     }
-
 }
 
-async function updateCartItem(userID, itemID) {
+async function clearCart(userID) {
+    try {
+        await prisma.cart.deleteMany({
+            where: {
+                consumer: Number(userID)
+            }
+        })
 
+        return true;
+    } catch (e) {
+        console.log(e)
+        return false;
+    }
 }
 
-async function removeCartItem(userID, itemID) {
+async function updateCartItem(userID, index, quantity) {
+    try {
 
+        let mentionedItem = await prisma.cart.findFirst({
+            where: {
+                index: Number(index),
+                consumer: Number(userID)
+            }
+        })
+
+        if (!mentionedItem) {
+            return "INVALID_INDEX"
+        }
+
+        let correspondingSupply = await prisma.supply_Transporter.findUnique({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: mentionedItem.product,
+                    supplier: mentionedItem.supplier,
+                    warehouse: mentionedItem.warehouse,
+                    transporter: mentionedItem.transporter,
+                }
+            },
+            select: {
+                Supply: true
+            }
+        })
+
+        if (correspondingSupply.Supply.quantity < quantity) {
+            // In case the user is trying to update the cart item to a quantity larger than available
+            return "NO_STOCK";
+        }
+
+        // Updating quantity
+        await prisma.cart.updateMany({
+            where: {
+                index: Number(index),
+                consumer: Number(userID)
+            }, data: {
+                quantity: quantity
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
 }
 
-async function clearCart(userID, itemID) {
-    
+async function removeCartItem(userID, index) {
+    try {
+        let mentionedItem = await prisma.cart.findFirst({
+            where: {
+                index: Number(index),
+                consumer: Number(userID)
+            }
+        })
+
+        if (!mentionedItem) {
+            return "INVALID_INDEX"
+        }
+
+        // Removing specified cart item
+        await prisma.cart.deleteMany({
+            where: {
+                index: Number(index),
+                consumer: Number(userID) 
+            }
+        })
+
+        // Updating all affected indexes
+        await prisma.cart.updateMany({
+            where: {
+                consumer: Number(userID),
+                index: {
+                    gt: Number(index)
+                }
+            },
+            data: {
+                index: {
+                    decrement: 1
+                }
+            }
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
 }
 
 /* All functions to be made available to the rest of the project should be listed here */

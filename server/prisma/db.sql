@@ -286,6 +286,7 @@ CREATE TABLE Cart (
     transporter INT UNSIGNED NOT NULL,
 
     # Properties
+    `index`       INT UNSIGNED NOT NULL,
     quantity    INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
