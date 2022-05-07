@@ -67,7 +67,7 @@ export default {
       limit: 12,
       productsInPage: 0,
       newProducts: this.product,
-      nameFilter:String
+      nameFilter: "id",
     };
   },
   mounted() {
@@ -76,68 +76,50 @@ export default {
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {
-      this.nameFilter = "id";
-      var response = await http.get("/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice);
+      let response;
+      let request;
+      if (this.nameFilter === "name") {
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=name_asc";
+      } else if (this.nameFilter === "priceMin") {
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=price_asc";
+      } else if (this.nameFilter === "priceMax") {
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=price_desc";
+      } else if (this.nameFilter === "id") {
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=newest";
+      } else {
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice ;
+      }
+      
+      if (this.currentCategory.id != "") {
+        request = request + "&category=" + this.currentCategory.id;
+      }
+
+      response = await http.get(request);
       this.products = response.data.products;
       this.productAmount = response.data.total_products;
       this.productsInPage = this.products.length;
       //console.log(response.data);
       window.scrollTo(0, 0);
-      return this.nameFilter
     },
-    async getProductsByChild(params) {
-      if( params == "name"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=name_asc").then((response) => {
-                this.newProducts = response.data.products;
-            });
-      this.products = Object.assign([], this.newProducts);
-      this.nameFilter = "name";
-      }
-      else if( params == "id"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=newest").then((response) => {
-                this.newProducts = response.data.products;
-            });
-      this.products = Object.assign([], this.newProducts);
-      this.nameFilter = "id";
-      }
-      else if( params == "priceMin"){
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=price_asc").then((response) => {
-                this.newProducts = response.data.products;
-            });
-      this.products = Object.assign([], this.newProducts);
-      this.nameFilter = "priceMin";
-  
-      }
-      else {
-        await http.get("/store/products?page=" + this.currentPage + "&limit="+ this.limit + "&sort=price_desc").then((response) => {
-                this.newProducts = response.data.products;
-            });
-      this.products = Object.assign([], this.newProducts);
-      this.nameFilter = "priceMax";
-      }
-      return this.nameFilter
+    getProductsByChild(params) {
+      this.nameFilter = params;
+      this.getProducts();
     },
     getCurrentPage: function(params) {
       this.currentPage = params;
       if (this.nameFilter == "id"){
         this.getProducts();
-      }else {
+      } else {
         this.getProductsByChild(this.nameFilter);
       }
     },
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;
-      //console.log(response.data);
     },
     getCurrentCategory: function(params) {
       this.currentCategory = params;
-      var productByCategory = http.get("/store/products?category=" + this.currentCategory.id + "&page=" + this.currentPage + "&limit=12").then((response) => {
-        this.products = response.data.products;
-        this.productAmount = response.data.total_products;
-        this.productsInPage = this.products.length;
-      });
-      this.products = Object.assign([], productByCategory);
+      this.getProducts();
     },
     goBackPage: function(params) {
       this.currentCategory = params;
@@ -149,14 +131,9 @@ export default {
     },
     productsPerPage: function (params) {
       this.limit = params;
-      if (this.nameFilter == "id"){
-        this.getProducts(this.currentPage, params);
-      }else {
-        this.getProductsByChild(this.nameFilter);
-      }
+      this.getProducts();
     },
     searchInformation: function (params) {
-      //console.log(this.$route.name);
       http.get("/store/products?page=" + this.currentPage + "&limit=" + this.limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;

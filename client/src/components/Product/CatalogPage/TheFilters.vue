@@ -109,7 +109,7 @@ library.add(faAngleLeft);
       },
       goBack() {
         this.categoryList.pop();
-        this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {};
+        this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.$emit("sendGoBack", this.currentCategory);
       },
@@ -135,7 +135,7 @@ library.add(faAngleLeft);
         if(minPrice === "") {
           minPrice = 0;
         }
-        
+
         this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
@@ -156,8 +156,7 @@ library.add(faAngleLeft);
     computed: {
       showCategories: function () {
         if (this.categorySelected) {
-          var filteredCategory = this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category && category.total_products > 0);
-          return filteredCategory;
+          return this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category && category.total_products > 0);
         }
         // show highest level of categories
         return this.categories.filter(category => category.parent_category == null);
