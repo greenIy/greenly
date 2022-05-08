@@ -17,7 +17,10 @@ async function check(req, res, next) {
         "/store/categories":                    "ALL_CATEGORIES",
         "/store/categories/:categoryId":        "SINGLE_CATEGORY",
         "/user/:userId/cart":                   "ALL_CART_ITEMS",
-        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM"}
+        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM",
+        "/user/:userId/wishlist":               "ALL_WISHLIST_ITEMS",
+        "/user/:userId/wishlist/:index":        "SINGLE_WISHLIST_ITEM"
+    }
 
     // Helper functions
     const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
@@ -133,8 +136,25 @@ async function check(req, res, next) {
             break;
 
         case "SINGLE_CART_ITEM":
-            // This is valid for: DELETE
+            // This is valid for: PUT, DELETE
             // Cart is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+        case "ALL_WISHLIST_ITEMS":
+            // This is valid for: GET, POST, DELETE
+            // Wishlist is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_WISHLIST_ITEM":
+            // This is valid for: DELETE
+            // Wishlist is only accessible to consumers
             if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
                 return next()
             }

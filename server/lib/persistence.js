@@ -13,11 +13,6 @@ const saltRounds = 10;
 // Round coordinates to 6 decimal places
 const roundingPrecision = 6;
 
-// Proper rounding function as oposed to JS Math
-function roundCoordinates(value, decimals) {
-    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
-}   
-
 /* Persistence Init */
 
 const prisma = new PrismaClient({ 
@@ -32,6 +27,41 @@ prisma.$connect().catch((reason) => {
     console.log("📶 Database connection failed.")
     process.exit(1)
 })
+
+/* Helper functions */
+
+// Proper rounding function as oposed to JS Math
+function roundCoordinates(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}   
+
+// Server-side pagination
+function manualPagination (array, page_size, page_number) {
+    return array.slice((page_number - 1) * page_size, page_number * page_size);
+}
+
+
+function calcLowestPrice (supplies) {
+    let min = Number.POSITIVE_INFINITY;
+    supplies.forEach((supply) => {
+        if (parseFloat(supply.price) < parseFloat(min)) {
+            min = supply.price
+        }
+    })
+
+    return min;
+}; 
+
+function calcHighestPrice (supplies) {
+    let max = Number.NEGATIVE_INFINITY;
+    supplies.forEach((supply) => {
+        if (parseFloat(supply.price) > parseFloat(max)) {
+            max = supply.price
+        }
+    })
+
+    return max;
+}; 
 
 
 /* User Functions */
@@ -486,33 +516,6 @@ async function getAllProducts(limit = 50,
                               sort,
                               price_range) {
 
-    // Helper functions
-    const manualPagination = (array, page_size, page_number) => {
-        return array.slice((page_number - 1) * page_size, page_number * page_size);
-    }
-
-    const calcLowestPrice = (supplies) => {
-        let min = Number.POSITIVE_INFINITY;
-        supplies.forEach((supply) => {
-            if (parseFloat(supply.price) < parseFloat(min)) {
-                min = supply.price
-            }
-        })
-
-        return min;
-    }; 
-
-    const calcHighestPrice = (supplies) => {
-        let max = Number.NEGATIVE_INFINITY;
-        supplies.forEach((supply) => {
-            if (parseFloat(supply.price) > parseFloat(max)) {
-                max = supply.price
-            }
-        })
-
-        return max;
-    }; 
-
     let filterSelection = {}
 
     let sortingMethod = {}
@@ -932,7 +935,7 @@ async function getCart(userID) {
         let totalPrice = 0;
 
         // Update each cart item with calculated properties: (shipping price and product price)
-        await Promise.all(cartItems.map(async (item) => {
+        cartItems = await Promise.all(cartItems.map(async (item) => {
 
             // Obtaining additional data regarding cart item
             let correspondingSupply = await prisma.supply.findUnique({
@@ -998,7 +1001,7 @@ async function getCart(userID) {
                 },
             })
 
-            // Eventually, also select the product's image here
+            // TODO: Eventually, also select the product's image here
             item.product = {
                 id: item.product,
                 name: product.name
@@ -1188,6 +1191,74 @@ async function removeCartItem(userID, index) {
     }
 }
 
+/* Wishlist Functions */
+
+async function getWishlist(userID) {
+    try {
+
+        let wishlistItems = await prisma.wishlist.findMany({
+            where: {
+                consumer: userID
+            },
+            select: {
+                product: true
+            },
+            orderBy: {
+                product: 'asc'
+            }
+        })
+
+        // Gather additional data for each product
+        // TODO: Eventually add product photo here too
+        wishlistItems = await Promise.all(wishlistItems.map(async (item) => {
+            let correspondingProduct = await prisma.product.findUnique({
+                where: {
+                    id: item.product
+                }, select: {
+                    name: true,
+                    description: true,
+                    Category: true,
+                    Supply: true
+                }
+            })
+
+            // Adding product information to wishlist item
+
+            item = {
+                id: item.product,
+                name: correspondingProduct.name,
+                description: correspondingProduct.description,
+                category: {
+                    id: correspondingProduct.Category.id,
+                    name: correspondingProduct.Category.name
+                },
+                lowest_price: parseFloat(calcLowestPrice(correspondingProduct.Supply).toFixed(2))
+            }
+
+            console.log(item)
+
+            return item
+        }))
+
+        return wishlistItems
+
+    } catch (e) {
+        return null;
+    }
+}
+
+async function addProductToWishlist(userID, productID) {
+
+}
+
+async function clearWishlist(userID) {
+
+}
+
+async function removeProductFromWishlist(userID, productID) {
+
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -1220,5 +1291,11 @@ module.exports = {
     addItemToCart,
     updateCartItem,
     removeCartItem,
-    clearCart
+    clearCart,
+
+    // Wishlist Functions
+    getWishlist,
+    addProductToWishlist,
+    removeProductFromWishlist,
+    clearWishlist
 }
