@@ -270,3 +270,55 @@ CREATE TABLE Supply_Transporter (
         ON DELETE CASCADE
 
 );
+
+# CART
+
+CREATE TABLE Cart (
+    # User identifiers
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Supply Identifiers
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
+
+    # Transporter
+    transporter INT UNSIGNED NOT NULL,
+
+    # Properties
+    `index`       INT UNSIGNED NOT NULL,
+    quantity    INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id),
+
+    FOREIGN KEY (product, supplier, warehouse)
+        REFERENCES Supply(product, supplier, warehouse)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (transporter)
+        REFERENCES User(id)
+        ON DELETE CASCADE
+);
+
+# WISHLIST
+
+CREATE TABLE Wishlist (
+    # User identifier
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Product identifier
+    product     INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id)
+        ON DELETE CASCADE
+);

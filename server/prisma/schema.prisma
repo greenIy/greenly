@@ -29,6 +29,7 @@ model Product {
   Category          Category?          @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
   ProductAttribute  ProductAttribute[]
   Supply            Supply[]
+  Wishlist          Wishlist[]
 
   @@index([category], map: "category")
   @@fulltext([name, description], map: "name")
@@ -59,6 +60,41 @@ model Company {
   email String  @db.VarChar(255)
   bio   String? @db.VarChar(255)
   User  User[]
+}
+
+model User {
+  id                          Int                   @id @default(autoincrement()) @db.UnsignedInt
+  password                    String?               @db.VarChar(60)
+  first_name                  String                @db.VarChar(255)
+  last_name                   String                @db.VarChar(255)
+  email                       String                @unique(map: "email") @db.VarChar(255)
+  phone                       String?               @db.VarChar(20)
+  company                     Int?                  @db.UnsignedInt
+  type                        User_type
+  Company                     Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Address                     Address[]
+  Cart_Cart_consumerToUser    Cart[]                @relation("Cart_consumerToUser")
+  Cart_Cart_transporterToUser Cart[]                @relation("Cart_transporterToUser")
+  Distribution_Center         Distribution_Center[]
+  Order                       Order[]
+  Supply                      Supply[]
+  Supply_Transporter          Supply_Transporter[]
+  Vehicle                     Vehicle[]
+  Warehouse                   Warehouse[]
+  Wishlist                    Wishlist[]
+
+  @@index([company], map: "company")
+}
+
+model ProductAttribute {
+  id      Int     @default(autoincrement()) @db.UnsignedInt
+  product Int     @db.UnsignedInt
+  title   String  @db.VarChar(255)
+  content String  @db.VarChar(500)
+  Product Product @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ProductAttribute_ibfk_1")
+
+  @@id([id, product])
+  @@index([product], map: "product")
 }
 
 model Distribution_Center {
@@ -116,6 +152,7 @@ model Supply {
   Product            Product              @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_1")
   User               User                 @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_2")
   Warehouse          Warehouse            @relation(fields: [warehouse], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Supply_ibfk_3")
+  Cart               Cart[]
   Order_Item         Order_Item[]
   Supply_History     Supply_History[]
   Supply_Transporter Supply_Transporter[]
@@ -148,27 +185,6 @@ model Supply_Transporter {
 
   @@id([product, supplier, warehouse, transporter])
   @@index([transporter], map: "transporter")
-}
-
-model User {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  password            String?               @db.VarChar(60)
-  first_name          String                @db.VarChar(255)
-  last_name           String                @db.VarChar(255)
-  email               String                @unique(map: "email") @db.VarChar(255)
-  phone               String?               @db.VarChar(20)
-  company             Int?                  @db.UnsignedInt
-  type                User_type
-  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
-  Address             Address[]
-  Distribution_Center Distribution_Center[]
-  Order               Order[]
-  Supply              Supply[]
-  Supply_Transporter  Supply_Transporter[]
-  Vehicle             Vehicle[]
-  Warehouse           Warehouse[]
-
-  @@index([company], map: "company")
 }
 
 model Vehicle {
@@ -205,15 +221,38 @@ model Warehouse {
   @@index([supplier], map: "supplier")
 }
 
-model ProductAttribute {
-  id      Int     @default(autoincrement()) @db.UnsignedInt
-  product Int     @db.UnsignedInt
-  title   String  @db.VarChar(255)
-  content String  @db.VarChar(500)
-  Product Product @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ProductAttribute_ibfk_1")
+model Cart {
+  consumer                    Int    @db.UnsignedInt
+  product                     Int    @db.UnsignedInt
+  supplier                    Int    @db.UnsignedInt
+  warehouse                   Int    @db.UnsignedInt
+  transporter                 Int    @db.UnsignedInt
+  index                       Int    @db.UnsignedInt
+  quantity                    Int    @db.UnsignedInt
+  User_Cart_consumerToUser    User   @relation("Cart_consumerToUser", fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Cart_ibfk_1")
+  Supply                      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_2")
+  User_Cart_transporterToUser User   @relation("Cart_transporterToUser", fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_3")
 
-  @@id([id, product])
+  @@id([consumer, product, supplier, warehouse, transporter])
+  @@index([product, supplier, warehouse], map: "product")
+  @@index([transporter], map: "transporter")
+}
+
+model Wishlist {
+  consumer Int     @db.UnsignedInt
+  product  Int     @db.UnsignedInt
+  User     User    @relation(fields: [consumer], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Wishlist_ibfk_1")
+  Product  Product @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Wishlist_ibfk_2")
+
+  @@id([consumer, product])
   @@index([product], map: "product")
+}
+
+enum User_type {
+  ADMINISTRATOR
+  CONSUMER
+  SUPPLIER
+  TRANSPORTER
 }
 
 enum Order_Item_status {
@@ -224,13 +263,6 @@ enum Order_Item_status {
   COMPLETE
   FAILURE
   CANCELED
-}
-
-enum User_type {
-  ADMINISTRATOR
-  CONSUMER
-  SUPPLIER
-  TRANSPORTER
 }
 
 enum Vehicle_fuel_type {

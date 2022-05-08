@@ -149,18 +149,27 @@ def sendUser(user):
 
     return userResponse.status_code == 201 and addressResponse.status_code == 201
 
-def genProductsSQL(amount, usersInDB):
-    # FIXME: Mentioned Suppliers and Transporters may not be of types Supplier and Transporter
-
-
+def genProductsSQL(amount, adminToken):
     fake = Faker("pt_PT")
     fake.add_provider(faker_commerce.Provider)
     lineBuffer = []
 
-    # Choose amount/5 suppliers
-    possibleSuppliers = sample(range(1, usersInDB), math.ceil(amount/5))
+    # Obtaining updated user information
+    authenticatedHeaders = {'Authorization': f'Bearer {adminToken}'}
 
-    possibleTransporters = sample(range(1, usersInDB), math.ceil(amount/5))
+    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders)
+
+    if response.status_code == 403:
+        print("Invalid administrator token. Operation canceled.")
+        return
+
+    usersInDB = len(response.json()) - 1
+
+    # Identifying all suppliers in platform
+    possibleSuppliers = [user["id"] for user in response.json() if user["type"] == "SUPPLIER"]
+
+    # Identifying all transporters in platform
+    possibleTransporters = [user["id"] for user in response.json() if user["type"] == "TRANSPORTER"]
 
     # Create amount/5 categories
     # TODO: Eventually curate a list of category names instead of random names
@@ -303,7 +312,7 @@ def main():
     global API_PORT
 
     generationOptions = ["Users", "Products"]
-    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)"]
+    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)", "Development (dev.greenly.pt)"]
 
     generationOption, index = pick(generationOptions, 'Choose what to generate: ', indicator='->', default_index=0)
     APIOption, APIIndex = pick(APIOptions, 'Choose which API to use: ', indicator='->', default_index=0)
@@ -311,6 +320,11 @@ def main():
     if (APIIndex == 1):
         API_BASE_URL = "http://localhost"
         API_PORT = 8080
+
+    if (APIIndex == 2):
+        API_BASE_URL = "http://dev.greenly.pt"
+        API_PORT = 80
+
 
     if (generationOption == "Users"):
         print(f"Requesting at {API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}\n")
@@ -340,9 +354,10 @@ def main():
         print("Time elapsed: ", end-start)
     elif (generationOption == "Products"):
         print("Temporarily generating only SQL.\n")
-        usersInDB = int(input("How many users are currently registed in the database? "))
         amount = int(input("How many products would you like to generate? "))
-        genProductsSQL(amount, usersInDB)
+        adminToken = input("Please provide an administrator token: ")
+
+        genProductsSQL(amount, adminToken)
 
 if __name__ == "__main__":
     main()

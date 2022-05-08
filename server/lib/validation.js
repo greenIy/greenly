@@ -270,6 +270,11 @@ function getProductsValidator() {
                 return true;
             })
             .withMessage("Maximum price has to be higher than minimum price.").bail(),
+        query("supplier")
+            .optional()
+            .notEmpty()
+            .isInt({min: 1})
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -363,23 +368,103 @@ function loginValidator() {
     ]
 }
 
+function addToCartValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("supplier")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("warehouse")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("transporter")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateCartItemValidator() {
+    return [
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function addProductToWishlistValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
-    // User Validators
+    // User validators
     createUserValidator,
     updateUserValidator,
 
-    // Address Validators
+    // Address validators
     createAddressValidator,
     updateAddressValidator,
 
     // Authentication validators
     loginValidator,
 
-    // Product Validators
+    // Product validators
     getProductsValidator,
 
-    // Category Validators,
+    // Category validators,
     createCategoryValidator,
     updateCategoryValidator,
+
+    // Cart validators
+    addToCartValidator,
+    updateCartItemValidator,
+
+    // Wishlist validators
+    addProductToWishlistValidator
+
 
 }

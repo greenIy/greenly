@@ -28,14 +28,18 @@ const http          = require('http');
 const cors          = require('cors');
 const errorHandler  = require('./lib/error').errorHandler;
 const passport      = require('./lib/authentication').passport;
+const moment        = require('moment-timezone');
 
 /* Initializing */
 const app = express();
 
 /* Middleware Init */
 // Enable request logging middleware if -l flag is present
-if (argv.l) {             
-  app.use(morgan(':status | :method :url | :remote-addr | :response-time ms | :date[web]'));
+if (argv.l) { 
+  morgan.token('date', (req, res) => {
+    return moment().tz("Europe/Lisbon").format('MMMM Do YYYY, H:mm:ss');
+  })
+  app.use(morgan(':status | :method :url | :remote-addr | :response-time ms | :date'));
 }
 
 // Important middleware
