@@ -71,7 +71,6 @@ export default {
       currentCategory: {id: "", name: ""},
       limit: 12,
       productsInPage: 0,
-      newProducts: this.product,
       nameFilter: "id",
     };
   },

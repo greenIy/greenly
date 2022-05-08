@@ -139,7 +139,7 @@ library.add(faAngleLeft);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
-          maxPrice = 0;
+          maxPrice = 9000000;
         }
         this.$emit("sendMaxPrice", maxPrice);
       },
