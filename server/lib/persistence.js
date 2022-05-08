@@ -1235,8 +1235,6 @@ async function getWishlist(userID) {
                 lowest_price: parseFloat(calcLowestPrice(correspondingProduct.Supply).toFixed(2))
             }
 
-            console.log(item)
-
             return item
         }))
 
@@ -1248,15 +1246,84 @@ async function getWishlist(userID) {
 }
 
 async function addProductToWishlist(userID, productID) {
+    try {
+        
+        // Checking if product exists
 
+        let mentionedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!mentionedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        await prisma.wishlist.create({
+            data: {
+                consumer: userID,
+                product: productID
+            }
+        })
+
+        return "SUCCESSFULLY_ADDED";
+
+    } catch (e) {
+        if (e.code == "P2002") {
+            return "ALREADY_PRESENT";
+        } else {
+            return null;
+        }
+    }
 }
 
 async function clearWishlist(userID) {
-
+    try {
+        await prisma.wishlist.deleteMany({
+            where: {
+                consumer: Number(userID)
+            }
+        })
+        return true;
+    } catch (e) {
+        console.log(e)
+        return false;
+    }
 }
 
 async function removeProductFromWishlist(userID, productID) {
+    try {
+        
+        // Checking if product is in wishlist
 
+        let mentionedProductInWishlist = await prisma.wishlist.findUnique({
+            where: {
+                consumer_product: {
+                    consumer: Number(userID),
+                    product: Number(productID)
+                }
+            }
+        })
+
+        if (!mentionedProductInWishlist) {
+            return "NOT_PRESENT"
+        }
+
+        await prisma.wishlist.delete({
+            where: {
+                consumer_product: {
+                    consumer: Number(userID),
+                    product: Number(productID)
+                }
+            }
+        })
+
+        return "SUCCESSFULLY_DELETED"
+
+    } catch (e) {
+        return null;
+    }
 }
 
 /* All functions to be made available to the rest of the project should be listed here */

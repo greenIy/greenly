@@ -14,7 +14,8 @@ const {
     createAddressValidator, 
     updateAddressValidator,
     addToCartValidator, 
-    updateCartItemValidator
+    updateCartItemValidator,
+    addProductToWishlistValidator
 } = require('../lib/validation.js');
 
 
@@ -246,8 +247,7 @@ router.put('/:userId/cart/:index', authentication.check, authorization.check, up
 router.delete('/:userId/cart/:index', authentication.check, authorization.check, (req, res) => {
     persistence.removeCartItem(
         req.params.userId, 
-        req.params.index,
-        req.body.quantity).then((result) => {
+        req.params.index).then((result) => {
 
             switch (result) {
                 case null:
@@ -257,7 +257,6 @@ router.delete('/:userId/cart/:index', authentication.check, authorization.check,
                 default:
                     return res.status(200).send({message: "Item successfully removed from cart."})
             }
-
         })
 })
 
@@ -274,19 +273,48 @@ router.get('/:userId/wishlist', authentication.check, authorization.check, (req,
     }
 })
 
-router.post('/:userId/wishlist', authentication.check, authorization.check, (req, res) => {
-
-
+router.post('/:userId/wishlist', authentication.check, authorization.check, addProductToWishlistValidator(), (req, res) => {
+    persistence.addProductToWishlist(
+        Number(req.params.userId),
+        Number(req.body.product)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "ALREADY_PRESENT":
+                return res.status(409).send({message: "Specified product is already in wishlist."})
+            case "INVALID_PRODUCT":
+                return res.status(404).send({message: "The specified product does not exist."})
+            default:
+                return res.status(201).send({message: "Product successfully added to wishlist."})
+        }
+    })
 })
 
 router.delete('/:userId/wishlist', authentication.check, authorization.check, (req, res) => {
-
+    persistence.clearWishlist(req.params.userId).then((success) => {
+        if (success) {
+            return res.status(200).send({message: "Wishlist cleared successfully."})
+        } else {
+            return res.status(500).send(defaultErr())
+        }
+    })
 })
 
-router.delete('/:userId/wishlist/:index', authentication.check, authorization.check, (req, res) => {
-
+router.delete('/:userId/wishlist/:productId', authentication.check, authorization.check, (req, res) => {
+    persistence.removeProductFromWishlist(
+        Number(req.params.userId),
+        Number(req.params.productId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "NOT_PRESENT":
+                return res.status(404).send({message: "Specified product is not in wishlist."})
+            default:
+                return res.status(200).send({message: "Product successfully removed from wishlist."})
+        }
+    })
 })
-
-
 
 module.exports = router;

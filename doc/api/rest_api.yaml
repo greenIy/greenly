@@ -518,14 +518,15 @@ paths:
     get:
       tags:
       - user
-      summary: Obter produtos na wishlist do utilizador userId
-      description: Apenas pode ser feito pelo utilizador quando autenticado
+      summary: Obter items na wishlist
+      description: |-
+        Obter items que estão na wishlist do utilizador userId.
+        Limita-se a consumidores autenticados.
       operationId: getWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja wishlist se deseja obter \nDeve corresponder\
-          \ a um utilizador do tipo consumer"
+        description: userId do utilizador cuja wishlist se deseja obter
         required: true
         schema:
           type: integer
@@ -535,83 +536,174 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Products'
-        400:
-          description: userId inválido
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
+                $ref: '#/components/schemas/ReceivedWishlist'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
     post:
       tags:
       - user
       summary: Adicionar produto à wishlist
-      description: Apenas pode ser feito pelo utilizador quando autenticado
+      description: |-
+          Adicionar produto à wishlist do utilizador userId.
+          Limita-se a utilizadores autenticados.
       operationId: addToWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja wishlist irá receber um produto \n\
-          Deve corresponder a um utilizador do tipo consumer"
+        description: userId do utilizador associado à wishlist à qual será
+          adicionado um produto
         required: true
         schema:
           type: integer
       requestBody:
-        description: productId do produto a ser adicionado à wishlist
+        description: Informação do produto a adicionar ao carrinho, deverá corresponder a um produto existente
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WishlistProduct'
+              type: object
+              properties:
+                product:
+                  type: integer
+                  description: O código identificador do produto a adicionar à wishlist
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: userId ou productId inválidos
-          content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou produto não encontrados
-          content: {}
-      x-codegen-request-body-name: productID
-  /user/{userId}/wishlist/{productId}:
+          description: Produto mencionado não existe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - The specified product does not exist.
+        409:
+          description: Produto já presente na wishlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified product is already in wishlist.
+
+      security:
+        - bearerAuth: []
+      x-codegen-request-body-name: body
     delete:
       tags:
       - user
-      summary: Remover produto da wishlist
-      description: Apenas pode ser feito pelo utilizador quando autenticado
-      operationId: removeFromWishlist
+      summary: Limpar todos os produtos da wishlist
+      description: |-
+        Permite retirar todos os produtos que estão na wishlist do utilizador userId. 
+        Limita-se a consumidores autenticados.
+      operationId: clearWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador associado à wishlist \nDeve corresponder\
-          \ a um utilizador do tipo consumer"
+        description: userId do utilizador cuja wishlist se deseja limpar
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+  /user/{userId}/cart/{productId}:
+    delete:
+      tags:
+      - user
+      summary: Remover produto específico da wishlist
+      description: |-
+        Remover produto correspondente ao código identificador fornecido da wishlist do utilizador userId. 
+        Limita-se a consumidores autenticados.
+      operationId: removeProductFromWishlist
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador associado à wishlist
         required: true
         schema:
           type: integer
       - name: productId
         in: path
-        description: "productId do produto a remover da wishlist \nDeve corresponder\
-          \ a um produto atualmente na wishlist do utilizador"
+        description: |-
+          Código identificador do produto a remover da wishlist. 
+          Deve corresponder a um produto atualmente na wishlist do utilizador.
         required: true
         schema:
           type: integer
       responses:
-        204:
-          description: Produto removido com sucesso
-          content: {}
-        400:
-          description: userId ou productId inválidos
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou produto não encontrados
-          content: {}
+          description: productId inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified product is not in wishlist.
+      security:
+        - bearerAuth: []
   ## CART ROUTES
   /user/{userId}/cart:
     get:
@@ -718,7 +810,7 @@ paths:
       parameters:
       - name: userId
         in: path
-        description: userId do utilizador cujo cesto de compras se deseja obter
+        description: userId do utilizador cujo cesto de compras se deseja limpar
         required: true
         schema:
           type: integer
@@ -2422,13 +2514,35 @@ components:
                 type: integer
                 description: O preço mais alto a que o produto é vendido, de entre todos
                   os seus fornecedores
-    WishlistProduct:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Código identificador do produto
-      description: Envio do identificador do produto para a wishlist do utilizador
+    ReceivedWishlist:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Código identificador do produto
+          name:
+            type: string
+            description: Nome do produto em questão
+          description:
+            type: string
+            description: Descrição do produto em questão
+          category:
+            type: object
+            description: A categoria do produto
+            properties:
+              id:
+                type: integer
+                description: O código identificador da categoria
+              name:
+                type: string
+                description: O nome da categoria
+          lowest_price:
+            type: number
+            format: float
+            description: O preço mais baixo a que o produto é vendido
+      description: Objeto utilizado para devolver informação sobre produtos na wishlist do utilizador
 
     ## CATEGORY DEFINITIONS
     SentCategory:

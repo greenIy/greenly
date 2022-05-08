@@ -419,6 +419,22 @@ function updateCartItemValidator() {
     ]
 }
 
+function addProductToWishlistValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -438,8 +454,12 @@ module.exports = {
     createCategoryValidator,
     updateCategoryValidator,
 
-    // Cart validators,
+    // Cart validators
     addToCartValidator,
-    updateCartItemValidator
+    updateCartItemValidator,
+
+    // Wishlist validators
+    addProductToWishlistValidator
+
 
 }

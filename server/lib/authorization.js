@@ -19,7 +19,7 @@ async function check(req, res, next) {
         "/user/:userId/cart":                   "ALL_CART_ITEMS",
         "/user/:userId/cart/:index":            "SINGLE_CART_ITEM",
         "/user/:userId/wishlist":               "ALL_WISHLIST_ITEMS",
-        "/user/:userId/wishlist/:index":        "SINGLE_WISHLIST_ITEM"
+        "/user/:userId/wishlist/:productId":    "SINGLE_WISHLIST_ITEM"
     }
 
     // Helper functions
