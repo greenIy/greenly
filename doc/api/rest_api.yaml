@@ -990,6 +990,12 @@ paths:
         schema:
           type: number
           format: float
+      - name: supplier
+        in: query
+        description: Código identificador do fornecedor dos produtos a apresentar
+        required: false
+        schema:
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -1266,6 +1272,39 @@ paths:
           
       security:
         - bearerAuth: []
+  ## Supplier information route
+  /store/suppliers:
+    get:
+      tags:
+      - store
+      summary: Obter informação sobre todos os fornecedores registados na plataforma.
+      description: |-
+        Permite obter informação básica sobre todos os fornecedores, bem como a quantidade de produtos que estes fornecem.
+
+        Operação limitada a utilizadores autenticados.
+      operationId: getAllSuppliers
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivedSuppliers'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
 
   ## ORDER ROUTES
   /store/orders:
@@ -2773,7 +2812,44 @@ components:
           Nota: a combinação `product`, `supplier`, `transporter` deverá ser válida.
       xml:
         name: SentCartItem
-    # CartItemUpdate:
+
+    ReceivedSuppliers:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Código identificador do fornecedor
+          first_name:
+            type: string
+            description: Primeiro nome do utilizador da conta de fornecedor
+          last_name:
+            type: string
+            description: Último nome do utilizador da conta de fornecedor
+          phone: 
+            type: string
+            description: Número de telefone associado à conta de utilizador do fornecedor, i.e. número de telefone do representante
+          email:
+            type: string
+            description: Conta de e-mail associada à conta de utilizador do fornecedor, i.e. e-mail do representante
+          company:
+            type: object
+            description: Informação sobre a empresa do fornecedor
+            properties:
+              name:
+                type: string
+                description: Nome da empresa
+              bio:
+                type: string
+                description: Descrição da empresa
+              email:
+                type: string
+                description: E-mail de contacto da empresa
+          products_sold:
+            type: integer
+            description: A quantidade de produtos que são fornecidos pelo fornecedor em questão
+
     Payment:
       type: object
       properties:
