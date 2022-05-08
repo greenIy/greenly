@@ -135,19 +135,17 @@ library.add(faAngleLeft);
         if(minPrice === "") {
           minPrice = 0;
         }
-
         this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
           maxPrice = 0;
         }
-
         this.$emit("sendMaxPrice", maxPrice);
       },
       getMinPrice() {
         this.priceMin = this.minPrice;
-        console.log()
+        //console.log()
       },
       getMaxPrice() {
         this.priceMax = this.maxPrice;
@@ -158,7 +156,6 @@ library.add(faAngleLeft);
         if (this.categorySelected) {
           return this.categories.filter(category => this.categoryList[this.categoryList.length-1].id == category.parent_category && category.total_products > 0);
         }
-        // show highest level of categories
         return this.categories.filter(category => category.parent_category == null);
       },
     },

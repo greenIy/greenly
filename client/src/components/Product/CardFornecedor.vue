@@ -43,7 +43,6 @@ export default {
   methods:{
     sendSuppliersSelected(event){
       this.fornecedorCard = event.target.getAttribute('value');
-      console.log(this.fornecedorCard)
       this.$emit('sendSupplierSelected',this.fornecedorCard);
     },
     addSelected(){
@@ -53,9 +52,7 @@ export default {
         this.fornecedorCard=this.supplier.supplier.id;
         this.$emit('sendSupplierSelected',this.fornecedorCard);
       } 
-      
     }
- 
   }
 };
 </script>

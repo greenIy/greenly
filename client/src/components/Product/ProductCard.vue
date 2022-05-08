@@ -78,7 +78,7 @@ h5 {
 .card {
   margin: auto;
   width: 14rem;
-  font-size: 10px;
+  font-size: 11px;
 }
 .card:hover {
   box-shadow: 1px 8px 10px #d9d9d9;

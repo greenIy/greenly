@@ -89,6 +89,7 @@
                 </ul>
               </div>
               <div class="mx-3 mt-3 " id="detalhe" v-if="active_el==1" style="text-items:left" >
+                <h6 class="my-3">Caterísticas</h6>
                 <table class="table table-striped table-responsive">
                   <tbody>
                     <tr v-for="a in attributes" :key="a.id">
@@ -100,7 +101,7 @@
                 </table>
               </div>
               <div class="container mt-3" id="info" v-if="active_el==2" >
-                <Chart :idSupplier="idSupplier" :suppliers="suppliers" />
+                <Chart :idSupplier="idSupplier" :suppliers="suppliers" ref="Chart" />
               </div>
               </div>
             </div>
@@ -111,7 +112,7 @@
                 </div>
                 <div class="card-body">
                   <div class="row align-items-center justify-content-between">
-                    <div class="d-inline-block p-0 col-md-5">
+                    <div class="d-inline-block p-0 col-md-4">
                       <div class="d-flex gap-3 mx-2 align-items-center text-center align-content-center">
                         <span class="fs-5">Quantidade:</span>
                           <div class="col-md-4">
@@ -128,10 +129,10 @@
                           <div class="col-md-5"></div>
                       </div>
                     </div>
-                    <div class="d-inline-block p-0 col-md-3" style="text-align:end">
-                      <h4 class="my-0 fs-3">{{ this.totalPrice }} €</h4>
+                    <div class="d-inline-block p-0 col-md-5" style="text-align:end;">
+                      <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
-                    <div class="d-inline-block text-end col-md-3">
+                    <div class="d-inline-block text-end col-md-2">
                       <button class="btnS p-2">
                         <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
@@ -230,7 +231,11 @@ export default {
     this.getInfo();
     this.getSuppliers();
     
+    
   },
+  mounted: function() {
+    console.log(this.$refs.Chart);
+},
   methods: {
     liked(event) {
       const svg = event.path[1];
@@ -329,6 +334,7 @@ export default {
       this.idTransporter = 0;
       this.showCurrentSupplier();
       this.showCurrentTransporter();
+
     },
     getTransporterSelected(event){
       var transporterSelected = event;
@@ -386,6 +392,7 @@ export default {
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;  
       this.getTotalPrice();
       this.getSuppliersandTransporterNumber();
+      //this.$refs.Chart.showCharts();
     },
     showCurrentTransporter() {
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;

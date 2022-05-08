@@ -52,7 +52,6 @@ export default {
         this.transportadorCard=this.transporter.transporter.id;
         this.$emit('sendTransporterSelected',this.transportadorCard);
       } 
-      
     }
   }
 };

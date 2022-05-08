@@ -26,12 +26,15 @@ export default {
   props: {
     suppliers:Array,
     idSupplier:Number,
+    
   },
   mounted() {
     this.showCharts();
+  
   },
   methods: {
-        showCharts(){
+
+    showCharts(){
       const priceCtx = document.getElementById('priceChart');
       const stockCtx = document.getElementById('stockChart');
         
@@ -109,8 +112,9 @@ export default {
         // Mostrar gráficos de preço e stock
         const priceChart = new Chart(priceCtx, priceConfig)
         const stockChart = new Chart(stockCtx, stockConfig)
+        //this.$emit("showC","this.showCharts()");
     }
-  }
+  },
 };
 </script>
 

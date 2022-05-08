@@ -2,7 +2,7 @@
   <div class="page-container">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <div class="content-wrap">
-      <TheNavbar />
+      <TheNavbar @search-information="searchInformation" />
       <router-link to="/produtos">
         <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
@@ -16,12 +16,17 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 
+import http from "../../http-common";
+
 export default {
   name: 'HomeView',
   components: {
     TheNavbar,
     TheFooter,
   },
+  methods:{
+   
+  }
 };
 </script>
 

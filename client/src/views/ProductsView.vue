@@ -153,7 +153,7 @@ export default {
     showProductsByMaxPrice: function (params) {
       this.maxPrice = params;
       this.getProducts();
-      console.log(this.products);
+      //console.log(this.products);
     },
   },
   computed: {

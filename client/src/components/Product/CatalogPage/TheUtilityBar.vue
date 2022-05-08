@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex align-items-end my-3" style="width:90%">
+<div class="d-flex align-items-end my-3" style="width:89.5%">
     <div class="col-6">
     </div>
     <div class="col-3 text-end mx-1">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import http from "../../../../http-common";
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 

@@ -1,8 +1,8 @@
 <template>
 <div class="text-center">
   <img src="../../assets/Curious-cuate.png" class="img-fluid">
-  <h3>Não encontramos os produtos que queres! :(</h3>
-  <h5>Mas podes sempre tentar novamente!</h5>
+  <h3>Os produtos procurados não foram encontrados!</h3>
+  <h5>Podes sempre tentar novamente!</h5>
 </div>
 </template>
 <script>
