@@ -25,7 +25,8 @@ router.get('/products', getProductsValidator(), (req, res) => {
             req.query.category,
             req.query.keywords,
             req.query.sort,
-            {min: req.query.min_price, max: req.query.max_price}).
+            {min: req.query.min_price, max: req.query.max_price},
+            req.query.supplier).
         then((productData) => {
 
             if (productData) {
@@ -42,7 +43,8 @@ router.get('/products', getProductsValidator(), (req, res) => {
             res.status(200).json(productData)
         })
     } 
-    catch {
+    catch (e) {
+        console.log(e)
         res.status(500).send(defaultErr());
     }}
 )

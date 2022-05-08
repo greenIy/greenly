@@ -514,7 +514,8 @@ async function getAllProducts(limit = 50,
                               category, 
                               keywords,
                               sort,
-                              price_range) {
+                              price_range,
+                              supplier) {
 
     let filterSelection = {}
 
@@ -669,6 +670,24 @@ async function getAllProducts(limit = 50,
             where: filterSelection,
             orderBy: sortingMethod
         });
+    }
+
+    // Filtering products based on selected supplier
+    if (supplier) {
+
+        // Checking what products the selected supplier sells
+        let supplierProducts = await prisma.supply.groupBy({
+            by: ['product'],
+            where: {
+                supplier: Number(supplier)
+            },
+        })
+        
+        // Cleaning data
+        supplierProducts = supplierProducts.map((product) => product.product)
+
+        // Filtering products
+        products = products.filter((product) => supplierProducts.includes(product.id))
     }
 
     // Calculating and defining lowest and highest prices for each product

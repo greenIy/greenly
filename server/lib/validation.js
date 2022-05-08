@@ -270,6 +270,11 @@ function getProductsValidator() {
                 return true;
             })
             .withMessage("Maximum price has to be higher than minimum price.").bail(),
+        query("supplier")
+            .optional()
+            .notEmpty()
+            .isInt({min: 1})
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
