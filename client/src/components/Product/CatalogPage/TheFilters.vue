@@ -79,8 +79,8 @@ library.add(faAngleLeft);
         categoryList: [],
         categorySelected: false,
         currentCategory: {},
-        priceMin: 0,
-        priceMax: 0,
+        priceMin: Number,
+        priceMax: Number,
         countC: 0,
         countP: 0,
         countF: 0,
@@ -139,7 +139,7 @@ library.add(faAngleLeft);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
-          maxPrice = 0;
+          maxPrice = 9000000;
         }
         this.$emit("sendMaxPrice", maxPrice);
       },
