@@ -43,32 +43,26 @@ async function createUser(params) {
         let newUser = await prisma.user.create({
             data: {
                 first_name: params.first_name,
-                last_name: params.last_name,
+                last_name: params.last_name ? params.last_name : '',
                 email: params.email,
                 phone: params.phone,
                 type: params.type
             }
         })
 
-        let newCredentials = await prisma.credentials.create({
+
+        let newCredentials = params.password ? await prisma.credentials.create({
             data: {
                 id: newUser.id,
                 provider: "local",
                 value: bcrypt.hashSync(params.password, saltRounds)
-            }
-        })
 
-        const newAddress = await prisma.address.create({
+            }
+        }) : await prisma.credentials.create({
             data: {
-                street: params.address.street,
-                country: params.address.country,
-                city: params.address.city,
-                // Using dummy values for testing. Use this for API call:
-                // geocoded.data.results[0].geometry.location.lat
-                // geocoded.data.results[0].geometry.location.lng
-                latitude: geocoded.data.results[0].geometry.location.lat,
-                longitude: geocoded.data.results[0].geometry.location.lng,
-                postal_code: params.address.postal_code
+                id: newUser.id,
+                provider: params.provider,
+                value: bcrypt.hashSync(params.sub, saltRounds)
             }
         })
 

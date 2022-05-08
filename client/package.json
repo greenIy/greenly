@@ -22,8 +22,10 @@
     "react-country-region-selector": "^3.4.0",
     "vue": "^3.2.31",
     "vue-country-region-select": "^2.0.16",
+    "vue-google-oauth2": "^1.5.8",
     "vue-router": "^4.0.3",
     "vue-tabz": "^1.1.5",
+    "vue3-google-oauth2": "^1.0.6",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

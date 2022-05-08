@@ -6,6 +6,7 @@
 const passport  = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GoogleAuthCodeStrategy = require('passport-google-authcode').Strategy;
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const { User_type } = require('@prisma/client');
@@ -13,7 +14,7 @@ const bcrypt = require('bcrypt');
 
 
 // Importing Greenly libraries
-const {getUserByID, getUserByEmail} = require("./persistence");
+const {getUserByID, getUserByEmail, createUser} = require("./persistence");
 const { restart } = require('nodemon');
 const { defaultErr } = require('./error');
 
@@ -57,23 +58,37 @@ passport.use('basic-login', new LocalStrategy({
 authUser = (request, accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }
-/* Defining login GoogleStrategy, used to create new JWT tokens */
 
-passport.use( new GoogleStrategy({
+// Defining Google token strategy, used to create new JWT tokens
+
+passport.use('google-login', new GoogleAuthCodeStrategy({
         clientID: process.env['GOOGLE_CLIENT_ID'],
         clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-        callbackURL: 'http://localhost:4000/auth/google/callback',
-        passReqToCallback: true
-    }, function (request, accessToken, refreshToken, profile, done) {
-    console.log(profile.email);
-    console.log(profile);
-        getUserByEmail(profile.email, true).then((user) => {
+        callbackURL: 'postmessage'
+    },function (idToken, refreshToken, profile, done) {
+        getUserByEmail(profile.emails[0].value, true).then((user) => {
             if (!user) {
-                return done(null, false, {
-                    message: 'User not found.'
+                const userData = {
+                        first_name: profile.name.givenName,
+                        last_name: profile.name.familyName,
+                        email: profile.emails[0].value,
+                        type: 'CONSUMER',
+                        provider: profile.provider,
+                        sub: profile.id
+                    }
+                createUser(userData).then((r) => {
+                    getUserByID(r.id, true).then((user) => {
+                        if(!user){
+                            return done(null, false, {
+                                    message: 'Something went wrong (not able to return user).'
+                                })
+                        } else {
+                            return done(null, user)
+                        }
+                    })
                 })
             } else {
-                if (profile.id.equals(user.Credentials.value) && profile.provider.equals(user.Credentials.provider)){
+                if (bcrypt.compareSync(profile.id, user.Credentials.value) && profile.provider === user.Credentials.provider){
                     return done(null, user);
                 } else {
                     return done(null, false, {
@@ -84,7 +99,6 @@ passport.use( new GoogleStrategy({
         })
     }
 ));
-
 
 /* Defining JWT validation strategy, used to check if JWT tokens are valid. Does NOT authenticate, only validates token. */
 passport.use(

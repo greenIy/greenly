@@ -2,7 +2,11 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import GAuth from 'vue3-google-oauth2';
+
+
+
 
 
 // Fontawesome imports
@@ -61,7 +65,14 @@ router.beforeEach(AuthService.authenticate);
 
 myApp.use(router).mount('#app');
 
+const gauthOption = {
+    clientId: '569764819828-g3po196193avqfu9bc9puqp1ncihjipr.apps.googleusercontent.com',
+    scope: 'profile email',
+    prompt: 'select_account'
+}
+
+myApp.use(GAuth, gauthOption);
 
 
-// Layer de autenticação verificada em cada pedido
-
+// Exportação da store para que possa ser utilizada pelo serviço de autenticação
+export default store;
