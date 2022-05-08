@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-2 card mx-2">
+  <div class="d-flex card mx-2 mt-1">
     <label  @click="sendSuppliersSelected($event)">
       <div class="d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supplier.supplier.name }}</p></div>
@@ -58,6 +58,7 @@ export default {
 </script>
 
 <style scoped>
+
 .card-input-element {
     margin-left: 10px;
 }
@@ -67,6 +68,6 @@ export default {
 }
 .card{
   border: 1px solid #e5e5e5!important;
-  width:17rem!important;
+  width:16rem!important;
 }
 </style>

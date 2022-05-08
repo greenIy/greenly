@@ -10,10 +10,12 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
+          <div class="content d-flex justify-content-center">
             <CardFornecedor  @sendSupplierSelected="getSupplierSelected"  :targetSupplier="suppliers[idSupplier]" :suppliers="suppliers" :idSupplier="idSupplier"
              v-for="s in suppliers"
               :key="s.supplier.id"
               :supplier="s" />
+          </div>
         </div> 
       </div>
       <div class="modal-footer">
@@ -71,6 +73,9 @@ export default {
 </script>
 
 <style scoped>
+.content {
+  flex-wrap:wrap
+}
 .modal{
     display: block;
 }

@@ -101,7 +101,7 @@
                 </table>
               </div>
               <div class="container mt-3" id="info" v-if="active_el==2" >
-                <Chart :idSupplier="idSupplier" :suppliers="suppliers" ref="Chart" />
+                <Chart :idSupplier="idSupplier" :suppliers="suppliers" ref="chartComponent" />
               </div>
               </div>
             </div>
@@ -229,13 +229,9 @@ export default {
   },
   created() {
     this.getInfo();
-    this.getSuppliers();
-    
-    
+    this.getSuppliers(); 
   },
-  /* mounted: function() {
-    console.log(this.$refs.Chart);
-}, */
+ 
   methods: {
     liked(event) {
       const svg = event.path[1];
@@ -392,7 +388,8 @@ export default {
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;  
       this.getTotalPrice();
       this.getSuppliersandTransporterNumber();
-      //this.$refs.Chart.showCharts();
+      //console.log(this.$refs.chartComponent)
+      //this.$refs.chartComponent[0].showCharts();
     },
     showCurrentTransporter() {
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;
