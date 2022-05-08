@@ -233,9 +233,9 @@ export default {
     
     
   },
-  mounted: function() {
+  /* mounted: function() {
     console.log(this.$refs.Chart);
-},
+}, */
   methods: {
     liked(event) {
       const svg = event.path[1];
