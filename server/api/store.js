@@ -172,7 +172,6 @@ router.put('/categories/:categoryId', authentication.check, authorization.check,
 
 router.delete('/categories/:categoryId', authentication.check, authorization.check, (req, res) => {
     persistence.deleteCategory(Number(req.params.categoryId)).then((success) => {
-
         if (success == 409) {
             return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories"})
         } else if (success) {
@@ -183,6 +182,18 @@ router.delete('/categories/:categoryId', authentication.check, authorization.che
     })
 });
 
+/* Supplier information route */
+// Any authenticated user can inquire about suppliers registered to the platform
+router.get('/suppliers', authentication.check, (req, res) => {
+    persistence.getAllSuppliers().then((result) => {
+        if (result) {
+            return res.status(200).json(result)
+        }
+        else {
+            res.status(500).send(defaultErr())
+        }
+    })
+})
 
 
 

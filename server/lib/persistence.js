@@ -908,6 +908,56 @@ async function deleteCategory(id) {
     }
 }
 
+/* Supplier Information Function */
+
+async function getAllSuppliers() {
+    try {
+        let suppliers = await prisma.user.findMany({
+            where: {
+                type: "SUPPLIER"
+            }, select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                Company: true,
+                phone: true,
+                email: true
+            }
+        })
+
+        suppliers = await Promise.all(suppliers.map(async (supplier) => {
+
+            // Cleaning data
+            supplier.company = {
+                name: supplier.Company.name,
+                bio: supplier.Company.bio,
+                email: supplier.Company.email
+            }
+
+            delete(supplier.Company)
+
+            // Obtaining current product count (not including more than one supply for the same product)
+            let productCount = await prisma.supply.groupBy({
+                by: ['product'],
+                where: {
+                    supplier: supplier.id
+                },
+            })
+
+            supplier.products_sold = productCount.length
+            
+            return supplier
+
+        }))
+
+        return suppliers
+
+        // Obtaining amount of products currently available (i.e. supplies)
+
+    } catch (e) {
+        return null;
+    }
+}
 
 /* Cart Functions */
 
@@ -1352,6 +1402,9 @@ module.exports = {
     createCategory,
     updateCategory,
     deleteCategory,
+
+    // Supplier Information Functions
+    getAllSuppliers,
 
     // Cart Functions
     getCart,

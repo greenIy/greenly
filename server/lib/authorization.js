@@ -9,10 +9,10 @@ async function check(req, res, next) {
     const resourceIdentification = {
         "/user/":                               "ALL_USERS",
         "/user/:userId":                        "SINGLE_USER",
-        "/user/:userId/addresses/":             "ALL_ADDRESSES",
+        "/user/:userId/addresses":              "ALL_ADDRESSES",
         "/user/:userId/addresses/:addressId":   "SINGLE_ADDRESS",
         "/store/products/:productId":           "SINGLE_PRODUCT",
-        "/store/orders/":                       "ALL_ORDERS",
+        "/store/orders":                        "ALL_ORDERS",
         "/store/orders/:orderId":               "SINGLE_ORDER",
         "/store/categories":                    "ALL_CATEGORIES",
         "/store/categories/:categoryId":        "SINGLE_CATEGORY",

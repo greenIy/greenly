@@ -125,7 +125,7 @@ router.delete('/:userId', authentication.check, authorization.check, (req, res) 
 
 /* Address routes */
 
-router.post('/:userId/addresses/', authentication.check, authorization.check, createAddressValidator(), (req, res) => {
+router.post('/:userId/addresses', authentication.check, authorization.check, createAddressValidator(), (req, res) => {
     try {
         persistence.createAddress(Number(req.params.userId),
                                   req.body.street,
