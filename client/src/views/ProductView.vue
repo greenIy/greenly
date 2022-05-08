@@ -101,7 +101,7 @@
                 </table>
               </div>
               <div class="container mt-3" id="info" v-if="active_el==2" >
-                <Chart :idSupplier="idSupplier" :suppliers="suppliers" ref="chartComponent" />
+                <Chart :key="idSupplier" :idSupplier="idSupplier" :suppliers="suppliers" />
               </div>
               </div>
             </div>

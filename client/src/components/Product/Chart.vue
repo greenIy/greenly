@@ -24,25 +24,16 @@ import Chart from "chart.js/auto";
 export default {
 
   name: "Chart",
-  expose: ['showCharts'],
   props: {
     suppliers:Array,
-    idSupplier:Number,
-    
+    idSupplier:Number
   },
-  mounted() {
-    this.showCharts();
-  },
-  methods: {
-    showCharts(){
-      const priceCtx = document.getElementById('priceChart');
-      const stockCtx = document.getElementById('stockChart');
-        
+  data() {
         let productHistory = this.suppliers[this.idSupplier].history
-        const dateOptions = {
-            month: 'long',
-            day: 'numeric'
-        };
+                const dateOptions = {
+                    month: 'long',
+                    day: 'numeric'
+                };
 
         // Re-estruturação de dados históricos
         const monthLabels = productHistory.map((singleData) => new Date(singleData.moment).toLocaleDateString("pt-PT", dateOptions))
@@ -52,7 +43,7 @@ export default {
 
         // Configuração dos gráficos de preços e stock (tipo, dados, opções)
         // Configuração do gráfico de preços
-        const priceConfig = {
+        let priceConfig = {
             type: 'line',
             data: {
                 labels: labels,
@@ -81,7 +72,7 @@ export default {
         };
 
         // Configuração do gráfico de stock
-        const stockConfig = {
+        let stockConfig = {
             type: 'line',
             data: {
                 labels: labels,
@@ -109,14 +100,17 @@ export default {
             }
         };
 
-        // Mostrar gráficos de preço e stock
-        const priceChart = new Chart(priceCtx, priceConfig)
-        const stockChart = new Chart(stockCtx, stockConfig)
-    }
+        return {
+            priceConfig: priceConfig,
+            stockConfig: stockConfig}
   },
+  mounted() {
+        let priceCtx = document.getElementById('priceChart');
+        let stockCtx = document.getElementById('stockChart');
+
+        // Mostrar gráficos de preço e stock
+        new Chart(priceCtx, this.priceConfig);
+        new Chart(stockCtx, this.stockConfig);
+  }
 };
 </script>
-
-<style scoped>
-
-</style>
