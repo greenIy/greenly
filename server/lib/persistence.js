@@ -1002,6 +1002,10 @@ async function getCart(userID) {
         })
 
         let totalPrice = 0;
+        let totalSupplierResourceUsage = 0
+        let totalSupplierRenewableResources = 0
+        let totalTransporterResourceUsage = 0
+        let totalTransporterEmissions = 0
 
         // Update each cart item with calculated properties: (shipping price and product price)
         cartItems = await Promise.all(cartItems.map(async (item) => {
@@ -1026,12 +1030,6 @@ async function getCart(userID) {
                 }
             })
 
-            // Updating cart item with additional information
-            item.price = Number(correspondingSupply.price)
-            item.transport_price = Number(correspondingSupply.Supply_Transporter[0].price)
-
-            // Additional supplier info
-
             let supplier = await prisma.user.findUnique({
                 where: {
                     id: item.supplier
@@ -1040,13 +1038,6 @@ async function getCart(userID) {
                     Company: true
                 }
             })
-
-            item.supplier = {
-                id: item.supplier,
-                name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
-            }
-
-            // Additional transporter info
 
             let transporter = await prisma.user.findUnique({
                 where: {
@@ -1057,12 +1048,14 @@ async function getCart(userID) {
                 }
             })
 
-            item.transporter = {
-                id: item.transporter,
-                name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
-            }
-
-            // Additional product information
+            let warehouse = await prisma.warehouse.findUnique({
+                where: {
+                    id_supplier: {
+                        id: item.warehouse,
+                        supplier: item.supplier
+                    }
+                }
+            })
 
             let product = await prisma.product.findUnique({
                 where: {
@@ -1070,6 +1063,42 @@ async function getCart(userID) {
                 },
             })
 
+            // Calculating transporter averages
+            let vehicle_averages = await prisma.vehicle.aggregate({
+                where: {
+                    transporter: item.transporter
+                },
+                _avg: {
+                    average_emissions: true,
+                    resource_usage: true
+                    },
+            })
+
+            // Updating cart item with additional information
+            item.price = Number(correspondingSupply.price)
+            item.transport_price = Number(correspondingSupply.Supply_Transporter[0].price)
+
+            // Additional supplier info
+            item.supplier = {
+                id: item.supplier,
+                name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+            }
+
+            // Additional transporter info
+            item.transporter = {
+                id: item.transporter,
+                name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+            }
+
+            // Adding vehicle averages to payload
+            item.average_transporter_emissions = parseFloat(vehicle_averages._avg.average_emissions.toFixed(2));
+            item.average_transporter_resource_usage = parseFloat(vehicle_averages._avg.resource_usage.toFixed(2));
+
+            // Adding warehouse averages to payload
+            item.average_supplier_resource_usage = warehouse.resource_usage
+            item.supplier_renewable_resouces = warehouse.renewable_resources
+
+            // Additional product information
             // TODO: Eventually, also select the product's image here
             item.product = {
                 id: item.product,
@@ -1079,10 +1108,25 @@ async function getCart(userID) {
             // Incrementing the total cart price
             totalPrice += (item.price * item.quantity) + item.transport_price
 
+            // Incrementing environmental details
+            totalSupplierRenewableResources += item.supplier_renewable_resouces
+            totalSupplierResourceUsage      += item.average_supplier_resource_usage
+            totalTransporterResourceUsage   += item.average_transporter_resource_usage
+            totalTransporterEmissions       += item.average_transporter_emissions
+
             return item
         }))
 
-        return {items: cartItems, total_price: totalPrice}
+        // Weighing the renewable resources average
+        totalSupplierRenewableResources = parseFloat((totalSupplierRenewableResources / cartItems.length).toFixed(2)) || 0
+
+        return {
+            items:                              cartItems, 
+            total_price:                        totalPrice,
+            total_supplier_renewable_resources: parseFloat(totalSupplierRenewableResources.toFixed(2)),
+            total_supplier_resource_usage:      parseFloat(totalSupplierResourceUsage.toFixed(2)),
+            total_transporter_resource_usage:   parseFloat(totalTransporterResourceUsage.toFixed(2)),
+            total_transporter_emissions:        parseFloat(totalTransporterEmissions.toFixed(2))}
 
     } catch (e) {
         console.log(e)

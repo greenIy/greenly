@@ -2477,7 +2477,7 @@ components:
                           description: Nome da empresa
                         average_emissions:
                           type: integer
-                          description: Média de emissões da frota do transportador (em g.CO2/Tonelada/km)
+                          description: Média de emissões da frota do transportador (em CO2 g/km/t)
                         average_resource_usage:
                           type: integer
                           description: Média de consumo de combustível da frota do transportador (em l/100km)
@@ -2629,7 +2629,7 @@ components:
             de veículos a combustão e kWh/100km em caso de veículos elétricos
         averageEmissions:
           type: integer
-          description: Média de emissões do veículo, medida em g/km de CO2
+          description: Média de emissões do veículo, medida em CO2 g/km/t
       description: Objeto utilizado para devolver informação sobre um veículo
       xml:
         name: Vehicle
@@ -2781,12 +2781,42 @@ components:
                 type: number
                 format: float
                 description: O preço do transporte do produto
+              supplier_renewable_resources:
+                type: number
+                format: float
+                description: A percentagem de recursos utilizados pelo fornecedor oriundos de fontes renováveis
+              average_supplier_resource_usage:
+                type: number
+                format: float
+                description: A média de utilização de recursos do fornecedor para o armazenamento do produto, em kWh (Quilowatt-hora)
+              average_transporter_resource_usage:
+                type: number
+                format: float
+                description: A média de utilização de recursos do transportador para o envio de um produto, em l/100km (litros de combustível aos 100km)
+              average_transporter_resource_emissions:
+                type: number
+                format: float
+                description: A média de emissões poluentes do transportador para o envio de um produto, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
         total_price:
           type: number
           format: float
           description: Preço total do carrinho
-            
-
+        total_supplier_renewable_resources:
+          type: number
+          format: float
+          description: Percentagem ponderada total de recursos oriundos de fontes renováveis utilizados pelos vários fornecedores dos itens no carrinho
+        total_supplier_resource_usage:
+          type: number
+          format: float
+          description: Total de utilização de recursos por parte dos vários fornecedores dos itens no carrinho para o armazenamento de produtos, em kWh (Quilowatt-hora)
+        total_transporter_resource_usage:
+          type: number
+          format: float
+          description: Total de utilização de recursos por parte dos vários transportadores dos itens no carrinho para o envio de produtos, em l/100km (litros de combustível aos 100km)
+        total_transporter_emissions:
+          type: number
+          format: float
+          description: Total de emissões poluentes feitas por parte dos vários transportadores dos itens no carrinho para o envio de produtos, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada)
       description: Objeto utilizado para representar o cesto de compras de um utilizador,
         detalhando cada item incluído e respetiva quantidade
       xml:
