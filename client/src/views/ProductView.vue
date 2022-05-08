@@ -230,8 +230,7 @@ export default {
   created() {
     this.getInfo();
     this.getSuppliers(); 
-  },
- 
+  }, 
   methods: {
     liked(event) {
       const svg = event.path[1];
@@ -317,7 +316,6 @@ export default {
     async getSuppliers() {
       var response = await http.get("/store/products/" + this.$route.params.id);
       this.suppliers = response.data.supplies;
-      //console.log(this.suppliers);
       this.showMostSustenaibleSuppliers();
       this.showCurrentSupplier();
       this.showMostSusteinableTransporters();
@@ -388,8 +386,7 @@ export default {
       this.currentSupplier.transporters = this.suppliers[this.idSupplier].transports;  
       this.getTotalPrice();
       this.getSuppliersandTransporterNumber();
-      //console.log(this.$refs.chartComponent)
-      //this.$refs.chartComponent[0].showCharts();
+      
     },
     showCurrentTransporter() {
       this.currentTransporter.name = this.currentSupplier.transporters[this.idTransporter].transporter.name;

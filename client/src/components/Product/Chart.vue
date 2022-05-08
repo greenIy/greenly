@@ -20,9 +20,11 @@
 
 <script>
 import Chart from "chart.js/auto";
+
 export default {
 
   name: "Chart",
+  expose: ['showCharts'],
   props: {
     suppliers:Array,
     idSupplier:Number,
@@ -30,7 +32,6 @@ export default {
   },
   mounted() {
     this.showCharts();
-  
   },
   methods: {
     showCharts(){
