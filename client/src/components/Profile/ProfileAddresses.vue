@@ -144,17 +144,8 @@ export default({
     },
     methods: {
         getUserInfo() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    this.user = response.data
-                    return this.user
-                }
-                })  
-            }
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
         },
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));

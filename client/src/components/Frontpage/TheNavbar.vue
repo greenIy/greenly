@@ -69,6 +69,7 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import AuthService from '../../router/auth';
 
 library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket);
 
@@ -87,12 +88,7 @@ export default {
             this.$emit('search-information', search);
         },
         logoutUser() {
-            // Apagar token e informação sobre o utilizador presente na VueX store
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('userId');
-            this.$store.dispatch('setUser', null)
-            this.$store.dispatch('setState', false);
-
+            AuthService.logoutUser()
             // TODO: Eventualmente fazer um pedido a /auth/logout aqui
         }
 

@@ -63,8 +63,6 @@ import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 library.add(faPen);
 
-import http from "../../../http-common"
-
 
 export default({
     name: 'ProfilePersonalInfo',
@@ -78,17 +76,8 @@ export default({
     },
     methods: {
         getUserInfo() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    this.user = response.data
-                    return this.user
-                }
-                })  
-            }
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
         },
         editUserInfo() {
             document.getElementById("editInfoButton").style.display = "none";

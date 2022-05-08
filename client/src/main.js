@@ -61,7 +61,5 @@ router.beforeEach(AuthService.authenticate);
 
 myApp.use(router).mount('#app');
 
-
-
-// Layer de autenticação verificada em cada pedido
-
+// Exportação da store para que possa ser utilizada pelo serviço de autenticação
+export default store;
