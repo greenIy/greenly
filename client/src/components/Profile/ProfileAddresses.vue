@@ -150,25 +150,37 @@ export default({
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
-            console.log(accessToken)
-            console.log(`Bearer ${accessToken}`)
-            if (accessToken){
-                http.post(`/user/${userId}/addresses`, { headers: {"Authorization" : `Bearer ${accessToken}`} },
-                JSON.stringify({
-                    street: this.newAddressInfo.street,
-                    city: this.newAddressInfo.street,
-                    postal_code: this.newAddressInfo.postalCode,
-                    country: this.newAddressInfo.country.toString(),
-                    nif: this.newAddressInfo.nif,
-                    }))
-                .then((response, request) => {
-                console.log(request)
-                if (response.status == 201) {
-                    console.log("Success")
-                } else {
-                    console.log(response)
+
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
                 }
-                })  
+            }
+
+            console.log(headers)
+
+            console.log(`/user/${userId}/addresses`)
+
+            if (accessToken) {
+                // Basicamente o problema aqui é que o http.post não vai para o then se a resposta for um erro (i.e. > 400)
+                // Portanto, usa-se o then para o caso de sucesso e o catch() para casos de insucesso
+                http.post(`/user/${userId}/addresses`,
+                        JSON.stringify({
+                            street: this.newAddressInfo.street,
+                            city: this.newAddressInfo.street,
+                            postal_code: this.newAddressInfo.postalCode,
+                            country: this.newAddressInfo.country,
+                            nif: this.newAddressInfo.nif,
+                        }), headers)
+                    .then((response) => {
+                        if (response.status == 201) {
+                            console.log("Success")
+                        }
+                    }).catch((error) => {
+                        // TODO: Error.response.data dá para ver exatamente o que foi devolvido no API, há aqui um problema em que o this.newAddressInfo.country está a ir vazio!!
+                        console.log(error.response.data);
+                        console.log("Failure!")
+                    })
             }
         },
     },
