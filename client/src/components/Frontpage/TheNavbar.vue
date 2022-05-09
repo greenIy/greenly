@@ -1,49 +1,48 @@
 <template>
 <nav>
-        <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
-            <div class="align-self-center mt-2 mb-2">
-                <router-link to="/" class="navbar-brand">
-                    <img alt="Logo do greenly" src="../../assets/logo_dark.png">
-                </router-link>
-            </div>
-            <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
-                <input class="form-control" type="search" placeholder="O que estás à procura?" aria-label="Search" v-model="search" @keyup.enter="submit(this.search)">
-                <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
-            </div>
-            <div class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">
-                <router-link to="/login">
-                    Iniciar Sessão
-                </router-link>
-            </div>
-            <div class="align-self-center nav-links mt-2 mb-2">
-                <router-link to="/cart">
-                    <font-awesome-icon :icon="['fas', 'cart-shopping']" size="lg"/>
-                </router-link>
-            </div>
+    <div class="navmenu d-flex justify-content-center pt-2 pb-2">
+        <div class="align-self-center mt-2 mb-2">
+            <router-link to="/" class="navbar-brand">
+                <img alt="Logo do greenly" src="../../assets/logo_dark.png">
+            </router-link>
         </div>
-        <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
-            <div class="pt-2">
-                <router-link to="/promocoes" class="mb-2 pr-2">
-                    promoções <span class="ms-3"> | </span>
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
-                    produtos <span class="ms-3"> | </span> 
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/servicos" class="mb-2 ml-2">
-                    serviços <span class="ms-3"> | </span> 
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/fornecedores" class="mb-2">
-                    fornecedores
-                </router-link>
-            </div>
+        <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
+            <input class="form-control" type="search" placeholder="O que estás à procura?" aria-label="Search" v-model="search" @keyup.enter="submit(this.search)">
+            <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
         </div>
-    
+        <div class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">
+            <router-link to="/login">
+                Iniciar Sessão
+            </router-link>
+        </div>
+        <div class="align-self-center nav-links mt-2 mb-2">
+            <router-link to="/cart">
+                <font-awesome-icon :icon="['fas', 'cart-shopping']" size="lg"/>
+            </router-link>
+        </div>
+    </div>
+    <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
+        <div class="pt-2">
+            <router-link to="/promocoes" class="mb-2 pr-2">
+                promoções <span class="ms-3"> | </span>
+            </router-link>
+        </div>
+        <div class="pt-2">
+            <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
+                produtos <span class="ms-3"> | </span> 
+            </router-link>
+        </div>
+        <div class="pt-2">
+            <router-link to="/servicos" class="mb-2 ml-2">
+                serviços <span class="ms-3"> | </span> 
+            </router-link>
+        </div>
+        <div class="pt-2">
+            <router-link to="/fornecedores" class="mb-2">
+                fornecedores
+            </router-link>
+        </div>
+    </div>   
 </nav>
 </template>
 
@@ -67,7 +66,7 @@ export default {
     reloadPage() {
         //console.log("eu to aqui");
         //console.log(this.$route.name);
-        if(this.$route.name === produtos) {
+        if(this.$route.name === "produtos") {
             this.$router.go();
         } 
     },

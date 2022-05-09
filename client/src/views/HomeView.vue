@@ -16,8 +16,6 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 
-import http from "../../http-common";
-
 export default {
   name: 'HomeView',
   components: {
