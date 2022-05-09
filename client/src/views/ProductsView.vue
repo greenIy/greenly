@@ -58,6 +58,7 @@ export default {
   props: {
     product: Object,
     params:String,
+    allSuppliers:Array,
   },
   data() {
     return {
@@ -72,11 +73,13 @@ export default {
       limit: 12,
       productsInPage: 0,
       nameFilter: "id",
+      allSuppliers: [],
     };
   },
   mounted() {
     this.getProducts();
     this.getCategories();
+    //this.getSuppliers();
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {
@@ -105,6 +108,15 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
+   /*  async getSuppliers() {
+      let response;
+      let request;
+      request = "/store/suppliers";
+      response = await http.get(request);
+      this.allSuppliers = response.data;
+      console.log(this.allSuppliers)
+
+    }, */
     getProductsByChild(params) {
       this.nameFilter = params;
       this.getProducts();

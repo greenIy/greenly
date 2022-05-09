@@ -29,22 +29,25 @@
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
-                <input v-model="priceMin" :min="minPrice" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)">
+                <input v-model="priceMin" min="0" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)" 
+               >
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
-              <input v-model="priceMax" :max="maxPrice" class="form-control w-50 d-inline" id="max-price" type="number" @keyup.enter="updateProductsByMaxPrice(this.priceMax)">
+              <input v-model="priceMax" :max="maxPrice" min="0" class="form-control w-50 d-inline" id="max-price" type="number" @keyup.enter="updateProductsByMaxPrice(this.priceMax)">
             </span>
           </div>
         </div>
       </li>
-  <!--     <li>
+ <!--       <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
         <div class="collapse show" id="fornecedores-collapse">
           <div class="list-group list-group-flush">
-          
+            <router-link v-for="supplier in showSuppliers" :key="supplier" class="list-group-item list-group-item-action border-0">
+              &nbsp; {{ category.name }}
+            </router-link>
           </div>
         </div>
       </li> -->
