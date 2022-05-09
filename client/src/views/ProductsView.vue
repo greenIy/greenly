@@ -93,6 +93,9 @@ export default {
     if(this.$route.query.pesquisa) {
       this.searchInformation(this.$route.query.pesquisa);
     }
+    if(this.$route.params.categoria) {
+      this.getCurrentCategory(this.$route.params.categoria[this.$route.params.categoria.length - 1])
+    }
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {
@@ -147,8 +150,12 @@ export default {
       this.categories = response.data;
     },
     getCurrentCategory: function(params) {
-      this.currentCategory = params;
-      this.getProducts();
+      // enviar O ID!!!! NAO O NOME
+      //let categoryId = this.categories.filter(category => category.name === params);
+      //console.log(categoryId);
+      //this.currentCategory = {id: categoryId.id, name: params};
+      //console.log(this.currentCategory)
+      //this.getProducts();
     },
     goBackPage: function(params) {
       this.currentCategory = params;
