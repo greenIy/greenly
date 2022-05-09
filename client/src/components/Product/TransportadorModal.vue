@@ -10,10 +10,12 @@
       </div>
       <div class="modal-body">
         <div class="card-group">
+          <div class="content d-flex justify-content-center">
             <CardTransportador @sendTransporterSelected="getTransporter" :idTransporter="idTransporter" :supplier="supplier" :targetTransporter="transporters[idTransporter]"
              v-for="t in transporters"
               :key="t.id"
               :transporter="t" />
+          </div>
         </div>
       </div>
       <div class="modal-footer">
