@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex card mt-2 mx-2">
     <label @click="sendTransporterSelected($event)">
-      <div class=" d-flex justify-content-between card-input">
+      <div class="d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw"  :icon="['fas', 'truck']" /> {{ transporter.transporter.name }}</p></div>
           <div class="mx-2"><input type="radio" :id="'t-'+transporter.transporter.id" v-model="transportadorCard" name="transportadorCard" :value="transporter.transporter.id" class="card-input-element transp"  /></div> 
       </div>
-      <div class="d-flex flex-column card-input mt-0">
+      <div class="card-input mt-0">
         <p class="text-p"><b>Emissões Médias:</b> {{ transporter.transporter.average_emissions.toFixed(1) }} CO₂ g/km/t</p>
         <p class="text-p"><b>Recursos Gastos:</b> {{ transporter.transporter.average_resource_usage.toFixed(1) }} l/100km</p>
         <p class="text-p"><b>Preço:</b> {{ transporter.price }}€</p>

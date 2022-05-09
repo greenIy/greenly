@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex card mx-2 mt-2">
-    <label  @click="sendSuppliersSelected($event)">
+    <label @click="sendSuppliersSelected($event)">
       <div class="d-flex justify-content-between card-input">
         <div><p><font-awesome-icon class="fs-6 fa-fw mx-2" :icon="['fas', 'cubes']" />{{ supplier.supplier.name }}</p></div>
           <div class="mx-2"><input type="radio" :id="'s-'+supplier.supplier.id" name="fornecedorCard" v-model="fornecedorCard"  :value="supplier.supplier.id" class="card-input-element"/></div> 

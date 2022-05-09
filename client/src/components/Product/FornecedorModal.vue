@@ -84,7 +84,7 @@ export default {
   color:white;
 }
 .modal-body{
-    height: 25rem;
+    height: 18rem;
     overflow-y: auto;
 }
 </style>
