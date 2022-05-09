@@ -30,11 +30,12 @@
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
                 <input v-model="priceMin" min="0" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)" 
-               >
+               onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57">
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
-              <input v-model="priceMax" :max="maxPrice" min="0" class="form-control w-50 d-inline" id="max-price" type="number" @keyup.enter="updateProductsByMaxPrice(this.priceMax)">
+              <input v-model="priceMax" :max="maxPrice" min="0" class="form-control w-50 d-inline" id="max-price" type="number" @keyup.enter="updateProductsByMaxPrice(this.priceMax)"
+              onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57">
             </span>
           </div>
         </div>
