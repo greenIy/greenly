@@ -26,7 +26,7 @@
             </div>
           </div>
       </div>
-      <TheNextPage @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/>
+      <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/>
     </div>
     <TheFooter />
   </div>

@@ -92,18 +92,6 @@ library.add(faAngleLeft);
         currentMaxPrice: this.maxPrice,
       }
     },
-    /* mounted() {
-      this.getMinPrice();
-      this.getMaxPrice();
-    },
-    watch: {
-      minPrice() {
-        this.getMinPrice();
-      },
-      maxPrice() {
-        this.getMaxPrice();
-      }
-    }, */
     methods: {
       showProducts(category) {
         this.categoryList.push(category);
