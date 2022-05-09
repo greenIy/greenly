@@ -21,6 +21,7 @@
     "morgan": "~1.9.1",
     "passport": "^0.5.2",
     "passport-facebook": "^3.0.0",
+    "passport-facebook-token": "^4.0.0",
     "passport-google-authcode": "^0.1.5",
     "passport-google-oauth2": "^0.2.0",
     "passport-jwt": "^4.0.0",

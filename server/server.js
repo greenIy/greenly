@@ -26,14 +26,14 @@ const fs            = require('fs');
 const createError   = require('http-errors');
 const https         = require('https');
 const http          = require('http');
-const privateKey    = fs.readFileSync('sslcert/privkey1.pem', 'utf8');
-const certificate   = fs.readFileSync('sslcert/cert1.pem', 'utf8');
-const ca            = fs.readFileSync('sslcert/chain1.pem', 'utf8')
-const credentials   = {
-                        key: privateKey,
-                        cert: certificate,
-                        ca: ca
-                    };
+// const privateKey    = fs.readFileSync('sslcert/privkey1.pem', 'utf8');
+// const certificate   = fs.readFileSync('sslcert/cert1.pem', 'utf8');
+// const ca            = fs.readFileSync('sslcert/chain1.pem', 'utf8')
+// const credentials   = {
+//                         key: privateKey,
+//                         cert: certificate,
+//                         ca: ca
+//                     };
 const cors          = require('cors');
 const errorHandler  = require('./lib/error').errorHandler;
 const passport      = require('./lib/authentication').passport;
@@ -108,7 +108,7 @@ console.log(swag.textSync('greenly-api', {
 }))
 
 var httpserver = http.createServer(app);
-var httpsserver = https.createServer(credentials, app)
+// var httpsserver = https.createServer(credentials, app)
 
 httpserver.listen(port, () => {
     console.log(`🌿 Greenly server listening on port ${port} ${

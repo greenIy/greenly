@@ -65,12 +65,14 @@ router.beforeEach(AuthService.authenticate);
 
 myApp.use(router).mount('#app');
 
+// Google authentication
 const gauthOption = {
     clientId: '569764819828-g3po196193avqfu9bc9puqp1ncihjipr.apps.googleusercontent.com',
     scope: 'profile email',
     prompt: 'select_account'
 }
 
+// Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
 
 

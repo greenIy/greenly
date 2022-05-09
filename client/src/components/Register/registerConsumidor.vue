@@ -82,7 +82,7 @@
             <p class="text-center">Regista-te através de uma rede social</p>
             <div class="text-center social-btn">
                 <a @click="googleSignIn" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+                <a @click="loginWithFacebook" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
             </div>
 
         </form>
@@ -99,6 +99,7 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
 import http from "../../../http-common";
 import AuthService from "@/router/auth";
+import {initFbsdk} from "@/config/facebook_oAuth";
 
 export default {
     name: 'registerConsumer',
@@ -114,6 +115,9 @@ export default {
                 passwordConfirm:'',
             }
         }
+    },
+    mounted() {
+        initFbsdk();
     },
     methods: {
         checkPasswords() {
@@ -145,6 +149,31 @@ export default {
                 console.error(error);
             }
         },
+
+        loginWithFacebook() {
+            window.FB.login(response => {
+                // obtain access token from the response
+                if (response.authResponse) {
+                    console.log(response);
+                    const accessToken = response.authResponse.accessToken;
+                    http.post("/auth/facebook", JSON.stringify({
+                            access_token: accessToken,
+                        })
+                    ).then(async(response) => {
+                        if (response.status === 200) {
+                            localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                            localStorage.setItem('userId', JSON.stringify(response.data.id));
+                            this.$router.push({path: '/'})
+
+                            // Modificar a store do VueX de forma a refletir o estado de autenticação
+                            this.$store.dispatch('setUser', await AuthService.getUser())
+                            this.$store.dispatch('setState', true);
+                        }
+                    })
+                }
+            }, {scope: 'public_profile,email'});
+        },
+
         wrongRegister(message) {
             if (message.msg == "Invalid value") {
                 if (message.param == "email") {
