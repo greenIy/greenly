@@ -23,7 +23,12 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: ProductsView,
     children: [
-      { path: ':categoria', name: 'categoria', component: ProductsView }
+      { path: ':categoria+',
+      name: 'categoria',
+      component: ProductsView,
+      props: route => ({
+        categoria: route.params.categoria.split('/')
+      }) }
     ]
   },
   {

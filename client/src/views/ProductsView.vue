@@ -109,7 +109,7 @@ export default {
       } else {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice ;
       }
-      
+
       if (this.currentCategory.id != "") {
         request = request + "&category=" + this.currentCategory.id;
       }
