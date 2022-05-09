@@ -127,12 +127,16 @@ library.add(faAngleLeft);
         if(minPrice === "") {
           minPrice = 0;
         }
+
+        this.$router.push({ query: Object.assign({}, this.$route.query, { preco_min: `${ minPrice }` }) });
         this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
           maxPrice = 9000000;
         }
+
+        this.$router.push({ query: Object.assign({}, this.$route.query, { preco_max: `${ maxPrice }` }) });
         this.$emit("sendMaxPrice", maxPrice);
       },
       getMinPrice() {
