@@ -44,6 +44,8 @@ import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 
 import http from "../../http-common";
 
+import { useRouter } from 'vue-router';
+
 export default {
   name: "ProductsView",
   components: {
@@ -54,6 +56,13 @@ export default {
     TheFilters,
     TheUtilityBar,
     TheNoProduct
+  },
+  setup() {
+    const router = useRouter();
+/* 
+    beforeRouteEnter((to, from) => {
+     console.log(to.query.pesquisa);
+    }) */
   },
   props: {
     product: Object,
@@ -79,7 +88,11 @@ export default {
   mounted() {
     this.getProducts();
     this.getCategories();
-    //this.getSuppliers();
+  },
+  updated() {
+    if(this.$route.query.pesquisa) {
+      this.searchInformation(this.$route.query.pesquisa);
+    }
   },
   methods: {
     async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {

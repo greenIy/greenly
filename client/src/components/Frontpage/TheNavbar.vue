@@ -61,14 +61,14 @@ export default {
   },
   methods: {
     submit(search) {
-        this.$emit('search-information', search);
+        this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
     },
     reloadPage() {
         //console.log("eu to aqui");
         //console.log(this.$route.name);
-        if(this.$route.name === "produtos") {
+        if(this.$route.name === "produtos" && !this.$route.query) {
             this.$router.go();
-        } 
+        }
     },
   }
 };
