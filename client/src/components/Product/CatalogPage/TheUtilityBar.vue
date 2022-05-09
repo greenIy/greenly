@@ -13,9 +13,9 @@
                 <font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" />
             </a>
             <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
-                <li><a class="dropdown-item" @click='productsPerPage(12)'>12</a></li>
-                <li><a class="dropdown-item" @click='productsPerPage(24)'>24</a></li>
-                <li><a class="dropdown-item" @click='productsPerPage(48)'>48</a></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, por_pag: 12 } }" class="dropdown-item" @click='productsPerPage(12)'>12</router-link></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, por_pag: 24 } }" class="dropdown-item" @click='productsPerPage(24)'>24</router-link></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, por_pag: 48 } }" class="dropdown-item" @click='productsPerPage(48)'>48</router-link></li>
             </ul>
         </div>
     </div>
@@ -26,10 +26,10 @@
                 <span style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" /></span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
-                <li><a class="dropdown-item" @click='order("name")' style="width: 12rem;">Nome</a></li>
-                <li><a class="dropdown-item" @click='order("id")' style="width: 12rem;">Novidade</a></li>
-                <li><a class="dropdown-item" @click='order("priceMin")' style="width: 12rem;">Preço Ascendente</a></li>
-                <li><a class="dropdown-item" @click='order("priceMax")' style="width: 12rem;">Preço Descendente</a></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, ordenar_por: 'nome' } }" class="dropdown-item" @click='order("name")' style="width: 12rem;">Nome</router-link></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, ordenar_por: 'novidade' } }" class="dropdown-item" @click='order("id")' style="width: 12rem;">Novidade</router-link></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, ordenar_por: 'preco_asc' } }" class="dropdown-item" @click='order("priceMin")' style="width: 12rem;">Preço Ascendente</router-link></li>
+                <li><router-link append :to="{ path: 'produtos', query: { ...$route.query, ordenar_por: 'preco_desc' } }" class="dropdown-item" @click='order("priceMax")' style="width: 12rem;">Preço Descendente</router-link></li>
             </ul>
         </div>
     </div>
