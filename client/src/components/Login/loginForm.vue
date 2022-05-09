@@ -98,7 +98,6 @@ export default({
             window.FB.login(response => {
                 // obtain access token from the response
                 if (response.authResponse) {
-                    console.log(response);
                     const accessToken = response.authResponse.accessToken;
                     http.post("/auth/facebook", JSON.stringify({
                         access_token: accessToken,

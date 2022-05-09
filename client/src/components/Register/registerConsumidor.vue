@@ -154,7 +154,6 @@ export default {
             window.FB.login(response => {
                 // obtain access token from the response
                 if (response.authResponse) {
-                    console.log(response);
                     const accessToken = response.authResponse.accessToken;
                     http.post("/auth/facebook", JSON.stringify({
                             access_token: accessToken,
@@ -170,6 +169,8 @@ export default {
                             this.$store.dispatch('setState', true);
                         }
                     })
+                } else {
+                    console.log('User cancelled login or did not fully authorize.');
                 }
             }, {scope: 'public_profile,email'});
         },
