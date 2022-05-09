@@ -80,5 +80,9 @@ export default {
   background-color: #608072;
   color:white;
 }
+.modal-body{
+    height: 5rem;
+    overflow-y: auto;
+}
 
 </style>

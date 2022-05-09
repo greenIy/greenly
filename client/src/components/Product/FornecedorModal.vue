@@ -1,5 +1,5 @@
 <template>
-<div class="modal forn-modal-xl" role="dialog" id="fornModal" tabindex="-1" aria-hidden="true">
+<div class="modal forn-modal-xl mh-75" role="dialog" id="fornModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="d-flex modal-content">
       <div class="modal-header">
@@ -82,5 +82,9 @@ export default {
 .save{
   background-color: #608072;
   color:white;
+}
+.modal-body{
+    height: 25rem;
+    overflow-y: auto;
 }
 </style>

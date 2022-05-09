@@ -68,6 +68,6 @@ export default {
 }
 .card{
   border: 1px solid #e5e5e5!important;
-  width:16rem!important;
+  width:15rem!important;
 }
 </style>
