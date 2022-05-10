@@ -14,7 +14,7 @@
               <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
             
-            <router-link v-for="category in showCategories" :key="category" :to="$route.path + '/' + category.name" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+            <router-link v-for="category in showCategories" :key="category" :to="$route.path + '/' + category.id" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
               &nbsp; {{ category.name }}
             </router-link>
           </div>
@@ -103,7 +103,8 @@ library.add(faAngleLeft);
         this.categoryList.pop();
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
-        this.$emit("sendGoBack", this.currentCategory);
+        this.$router.back();
+        this.$emit("sendGoBack", this.$route.params);
       },
       transformC() {
         this.countC++;

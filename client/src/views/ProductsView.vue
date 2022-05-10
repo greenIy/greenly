@@ -57,13 +57,6 @@ export default {
     TheUtilityBar,
     TheNoProduct
   },
-  setup() {
-    const router = useRouter();
-/* 
-    beforeRouteEnter((to, from) => {
-     console.log(to.query.pesquisa);
-    }) */
-  },
   props: {
     product: Object,
     params:String,
@@ -78,7 +71,7 @@ export default {
       maxPrice: 50000000,
       productAmount: 0,
       pageAmount: 0,
-      currentCategory: {id: "", name: ""},
+      currentCategory: [],
       limit: 12,
       productsInPage: 0,
       nameFilter: "id",
@@ -89,12 +82,16 @@ export default {
     this.getProducts();
     this.getCategories();
   },
+  watch: {
+    $route(to, from) {
+      if(to.name === "categoria") {
+        this.getCurrentCategory(this.$route.params);
+      }
+    }
+  },
   updated() {
     if(this.$route.query.pesquisa) {
       this.searchInformation(this.$route.query.pesquisa);
-    }
-    if(this.$route.params.categoria) {
-      this.getCurrentCategory(this.$route.params.categoria[this.$route.params.categoria.length - 1])
     }
   },
   methods: {
@@ -110,11 +107,11 @@ export default {
       } else if (this.nameFilter === "id") {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=newest";
       } else {
-        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice ;
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice;
       }
-
-      if (this.currentCategory.id != "") {
-        request = request + "&category=" + this.currentCategory.id;
+  
+      if (this.currentCategory.length) {
+        request = request + "&category=" + this.currentCategory[this.currentCategory.length - 1].id;
       }
 
       response = await http.get(request);
@@ -150,20 +147,27 @@ export default {
       this.categories = response.data;
     },
     getCurrentCategory: function(params) {
-      // enviar O ID!!!! NAO O NOME
-      //let categoryId = this.categories.filter(category => category.name === params);
-      //console.log(categoryId);
-      //this.currentCategory = {id: categoryId.id, name: params};
-      //console.log(this.currentCategory)
-      //this.getProducts();
+      if (this.currentCategory.length) {
+        this.currentCategory = [];
+      }
+
+      if (params.categoria != undefined) {
+        for(let i in params.categoria) {
+          let cat = this.categories.filter(category => category.id === parseInt(params.categoria[i]));
+          this.currentCategory.push({id: cat[0].id, name: cat[0].name, parent_cat: cat[0].parent_category});
+        }
+        this.getProducts();
+      }
     },
     goBackPage: function(params) {
+      /* console.log(params);
       this.currentCategory = params;
       if (Object.keys(params).length === 0) {
         this.getProducts();
       } else {
         this.getCurrentCategory(this.currentCategory);
-      }
+      } */
+      console.log("oi", params);
     },
     productsPerPage: function (params) {
       this.limit = params;
