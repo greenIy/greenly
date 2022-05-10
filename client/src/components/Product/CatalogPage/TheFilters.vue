@@ -10,11 +10,11 @@
         </div>   
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-if="categorySelected" :to="'/produtos' + urls" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
+            <router-link v-if="categorySelected" :to="{ path: '/produtos' + urls, query: { ...$route.query } }" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
               <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
             
-            <router-link v-for="category in showCategories" :key="category" :to="$route.path + '/' + category.id" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
+            <router-link v-for="category in showCategories" :key="category" :to="{ path: $route.path + '/' + category.id, query: { ...$route.query } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
               &nbsp; {{ category.name }}
             </router-link>
           </div>
@@ -91,14 +91,18 @@ library.add(faAngleLeft);
         countF: 0,
         currentMinPrice: this.minPrice,
         currentMaxPrice: this.maxPrice,
+        return: false,
       }
     },
     watch: {
+      urls: function () {
+        this.$forceUpdate();
+      },
       currentCategories: function () {
         this.categoryList = this.currentCategories;
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
-      }
+      },
     },
     methods: {
       showProducts(category) {
@@ -110,7 +114,7 @@ library.add(faAngleLeft);
         this.categoryList.pop();
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
-        this.$router.back();
+        this.return = true;
       },
       transformC() {
         this.countC++;
@@ -168,8 +172,21 @@ library.add(faAngleLeft);
             url += "/" + this.$route.params.categoria[i];
           }
         }
+        if (this.return) {
+          let urlSeparated = url.split("/");
+          url = "";
+          urlSeparated.splice(0, 1);
+          urlSeparated.splice(urlSeparated.length -1, 1);
+
+          for (let i = 0; i < urlSeparated.length; i++) {
+            console.log(urlSeparated[i]);
+            url += "/" + urlSeparated[i];
+          }
+        }
+
+        this.return = false;
         return url;
-      }
+      },
     },
   }
 </script>
