@@ -10,7 +10,7 @@
         </div>   
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-if="categorySelected" to="/produtos" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
+            <router-link v-if="categorySelected" :to="'/produtos' + urls" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
               <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
             
@@ -97,14 +97,12 @@ library.add(faAngleLeft);
         this.categoryList.push(category);
         this.currentCategory = category;
         this.categorySelected = true;
-        this.$emit("sendCurrentCategory", this.currentCategory);
       },
       goBack() {
         this.categoryList.pop();
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.$router.back();
-        this.$emit("sendGoBack", this.$route.params);
       },
       transformC() {
         this.countC++;
@@ -155,6 +153,15 @@ library.add(faAngleLeft);
         }
         return this.categories.filter(category => category.parent_category == null);
       },
+      urls: function () {
+        let url = "";
+        if (this.$route.params.categoria != undefined) {
+          for(let i in this.$route.params.categoria) {
+            url += "/" + this.$route.params.categoria[i];
+          }
+        }
+        return url;
+      }
     },
   }
 </script>

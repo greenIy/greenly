@@ -9,7 +9,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="categories" @sendCurrentCategory="getCurrentCategory" @sendGoBack="goBackPage" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
+              <TheFilters :categories="categories" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
@@ -86,6 +86,9 @@ export default {
     $route(to, from) {
       if(to.name === "categoria") {
         this.getCurrentCategory(this.$route.params);
+      } else {
+        this.currentCategory = [];
+        this.getProducts();
       }
     }
   },
@@ -160,6 +163,7 @@ export default {
       }
     },
     goBackPage: function(params) {
+      console.log("eu chego aqui no products");
       /* console.log(params);
       this.currentCategory = params;
       if (Object.keys(params).length === 0) {
@@ -167,6 +171,7 @@ export default {
       } else {
         this.getCurrentCategory(this.currentCategory);
       } */
+      this.$router.back();
       console.log("oi", params);
     },
     productsPerPage: function (params) {
