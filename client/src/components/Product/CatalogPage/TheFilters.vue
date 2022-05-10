@@ -68,6 +68,7 @@ library.add(faAngleLeft);
     name: "TheFilters",
     props: {
       categories: Array,
+      currentCategories: Array,
       minPrice: Number,
       maxPrice: Number,
       page: {
@@ -90,6 +91,13 @@ library.add(faAngleLeft);
         countF: 0,
         currentMinPrice: this.minPrice,
         currentMaxPrice: this.maxPrice,
+      }
+    },
+    watch: {
+      currentCategories: function () {
+        this.categoryList = this.currentCategories;
+        this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
+        this.categorySelected = (this.categoryList.length) ? true : false;
       }
     },
     methods: {

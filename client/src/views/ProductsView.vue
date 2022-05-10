@@ -9,7 +9,7 @@
         <div class="row content justify-content-center">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="categories" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
+              <TheFilters :categories="categories" :currentCategories="currentCategories" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
@@ -71,7 +71,7 @@ export default {
       maxPrice: 50000000,
       productAmount: 0,
       pageAmount: 0,
-      currentCategory: [],
+      currentCategories: [],
       limit: 12,
       productsInPage: 0,
       nameFilter: "id",
@@ -87,8 +87,9 @@ export default {
       if(to.name === "categoria") {
         this.getCurrentCategory(this.$route.params);
       } else {
-        this.currentCategory = [];
+        this.currentCategories = [];
         this.getProducts();
+        this.getCategories();
       }
     }
   },
@@ -113,8 +114,8 @@ export default {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice;
       }
   
-      if (this.currentCategory.length) {
-        request = request + "&category=" + this.currentCategory[this.currentCategory.length - 1].id;
+      if (this.currentCategories.length) {
+        request = request + "&category=" + this.currentCategories[this.currentCategories.length - 1].id;
       }
 
       response = await http.get(request);
@@ -150,29 +151,17 @@ export default {
       this.categories = response.data;
     },
     getCurrentCategory: function(params) {
-      if (this.currentCategory.length) {
-        this.currentCategory = [];
+      if (this.currentCategories.length) {
+        this.currentCategories = [];
       }
 
       if (params.categoria != undefined) {
         for(let i in params.categoria) {
           let cat = this.categories.filter(category => category.id === parseInt(params.categoria[i]));
-          this.currentCategory.push({id: cat[0].id, name: cat[0].name, parent_cat: cat[0].parent_category});
+          this.currentCategories.push({id: cat[0].id, name: cat[0].name, parent_cat: cat[0].parent_category});
         }
         this.getProducts();
       }
-    },
-    goBackPage: function(params) {
-      console.log("eu chego aqui no products");
-      /* console.log(params);
-      this.currentCategory = params;
-      if (Object.keys(params).length === 0) {
-        this.getProducts();
-      } else {
-        this.getCurrentCategory(this.currentCategory);
-      } */
-      this.$router.back();
-      console.log("oi", params);
     },
     productsPerPage: function (params) {
       this.limit = params;
