@@ -546,34 +546,8 @@ async function getAllProducts(limit = 50,
                               category, 
                               keywords,
                               sort,
-                              price_range) {
-
-    // Helper functions
-    const manualPagination = (array, page_size, page_number) => {
-        return array.slice((page_number - 1) * page_size, page_number * page_size);
-    }
-
-    const calcLowestPrice = (supplies) => {
-        let min = Number.POSITIVE_INFINITY;
-        supplies.forEach((supply) => {
-            if (parseFloat(supply.price) < parseFloat(min)) {
-                min = supply.price
-            }
-        })
-
-        return min;
-    };
-
-    const calcHighestPrice = (supplies) => {
-        let max = Number.NEGATIVE_INFINITY;
-        supplies.forEach((supply) => {
-            if (parseFloat(supply.price) > parseFloat(max)) {
-                max = supply.price
-            }
-        })
-
-        return max;
-    };
+                              price_range,
+                              supplier) {
 
 
     let filterSelection = {}
