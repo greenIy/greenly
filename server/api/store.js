@@ -197,6 +197,17 @@ router.get('/suppliers', authentication.check, (req, res) => {
     })
 })
 
+/* Payment routes */
 
+router.get('/payments/config', (req, res) => {
+    //TODO: Serve publishable key here
+    return res.status(200).json({
+        publishable_key: process.env.STRIPE_PUBLISHABLE_KEY
+    })
+})
+
+router.post('/payments/webhook', (req, res) => {
+    // TODO: Log received paymentintent here, based on status execute underlying actions (e.g. decrement stock, etc)
+})
 
 module.exports = router;

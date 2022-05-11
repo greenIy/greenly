@@ -11,6 +11,7 @@ async function check(req, res, next) {
         "/user/:userId":                        "SINGLE_USER",
         "/user/:userId/addresses":              "ALL_ADDRESSES",
         "/user/:userId/addresses/:addressId":   "SINGLE_ADDRESS",
+        "/user/:userId/orders":                 "ALL_USER_ORDERS",
         "/store/products/:productId":           "SINGLE_PRODUCT",
         "/store/orders":                        "ALL_ORDERS",
         "/store/orders/:orderId":               "SINGLE_ORDER",
@@ -108,6 +109,23 @@ async function check(req, res, next) {
                 (isAdministrator(req.user))) {
                 return next();
             }
+            break;
+
+        case "ALL_USER_ORDERS":
+            // Only the user himself can create new orders
+            if (intent == "POST") {
+                if (req.params.userId == req.user.id) {
+                    return next()
+                }
+            } 
+            // Only the user himself or an administrator can see all user orders
+            else if (intent == "GET") {
+                if ((req.params.userId == req.user.id) ||
+                    (isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
             break;
 
         case "ALL_CATEGORIES":

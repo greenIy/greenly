@@ -15,7 +15,8 @@ const {
     updateAddressValidator,
     addToCartValidator, 
     updateCartItemValidator,
-    addProductToWishlistValidator
+    addProductToWishlistValidator,
+    createOrderValidator
 } = require('../lib/validation.js');
 
 
@@ -164,7 +165,10 @@ router.put('/:userId/addresses/:addressId', authentication.check, authorization.
 
 router.delete('/:userId/addresses/:addressId', authentication.check, authorization.check, (req, res) => {
     try {
-        persistence.deleteAddress(Number(req.params.addressId)).then((success) => {
+        persistence.deleteAddress(
+            Number(req.params.userId),
+            Number(req.params.addressId)
+            ).then((success) => {
             if (success) {
                 res.status(202).send({message: "Address deleted successfully."})
             } else {
@@ -206,7 +210,7 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
             case "NO_STOCK":
                 return res.status(400).send({message: "Requested quantity is higher than available stock."})
             case "INVALID_COMBINATION":
-                return res.status(400).send({message: "Invalid combination of product, supplier and transport."})
+                return res.status(400).send({message: "Invalid combination of product, supplier and transporter."})
             case "ALREADY_PRESENT":
                 return res.status(409).send({message: "Specified item is already in cart."})
             default:
@@ -315,6 +319,49 @@ router.delete('/:userId/wishlist/:productId', authentication.check, authorizatio
                 return res.status(200).send({message: "Product successfully removed from wishlist."})
         }
     })
+})
+
+/* Order functions */
+// TODO: Add authorization rules 
+router.post('/:userId/orders', authentication.check, authorization.check, createOrderValidator(), (req, res) => {
+    persistence.createOrder(
+        Number(req.params.userId),
+        Number(req.body.address),
+        req.body.observations
+    )
+    .then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "EMPTY_CART":
+                return res.status(400).send({
+                    message: "Your cart is empty. You can add items to it by using the cart manipulation endpoints."
+                })
+            case "INVALID_ADDRESS":
+                return res.status(400).send({
+                    message: "Invalid destination. Make sure to use an address registered to your account."
+                })
+            default:
+                return res.status(200).send({message: "Order successfully created.",})
+        }
+
+    })
+})
+
+// TODO: Add authorization rules and validator
+router.get('/:userId/orders', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.getOrdersByUserID(
+            Number(req.params.userId)
+        ).then((result) => {
+            if (result == null) {
+                return res.status(500).send(defaultErr())
+            }
+            return res.status(200).json(result)
+        })   
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
 })
 
 module.exports = router;

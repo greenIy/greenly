@@ -1,3 +1,7 @@
+/*  Greenly Validation Library
+    Functions included pertain to data validation, filtering and type-safety.
+*/
+
 /* Parameter Validation Package */
 const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
@@ -440,6 +444,24 @@ function addProductToWishlistValidator() {
     ]
 }
 
+function createOrderValidator() {
+    return [
+        body("address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("observations")
+            .optional()
+            .isString().isLength({ max: 255 }),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -464,7 +486,9 @@ module.exports = {
     updateCartItemValidator,
 
     // Wishlist validators
-    addProductToWishlistValidator
+    addProductToWishlistValidator,
 
+    // Order validators
+    createOrderValidator
 
 }

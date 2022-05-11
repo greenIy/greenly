@@ -35,25 +35,6 @@ model Product {
   @@fulltext([name, description], map: "name")
 }
 
-model Address {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  street              String                @db.VarChar(255)
-  country             String                @db.VarChar(50)
-  city                String                @db.VarChar(50)
-  latitude            Decimal               @db.Decimal(8, 6)
-  longitude           Decimal               @db.Decimal(9, 6)
-  postal_code         String                @db.VarChar(10)
-  nif                 Int                   @db.UnsignedInt
-  is_shipping         Boolean               @default(false)
-  is_billing          Boolean               @default(false)
-  user                Int                   @db.UnsignedInt
-  User                User                  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Address_ibfk_1")
-  Distribution_Center Distribution_Center[]
-  Warehouse           Warehouse[]
-
-  @@index([user], map: "user")
-}
-
 model Company {
   id    Int     @id @default(autoincrement()) @db.UnsignedInt
   name  String  @db.VarChar(50)
@@ -97,6 +78,43 @@ model ProductAttribute {
   @@index([product], map: "product")
 }
 
+model Address {
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
+  street              String                @db.VarChar(255)
+  country             String                @db.VarChar(50)
+  city                String                @db.VarChar(50)
+  latitude            Decimal               @db.Decimal(8, 6)
+  longitude           Decimal               @db.Decimal(9, 6)
+  postal_code         String                @db.VarChar(10)
+  nif                 Int                   @db.UnsignedInt
+  is_shipping         Boolean               @default(false)
+  is_billing          Boolean               @default(false)
+  user                Int                   @db.UnsignedInt
+  User                User                  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Address_ibfk_1")
+  Distribution_Center Distribution_Center[]
+  Order               Order[]
+  Warehouse           Warehouse[]
+
+  @@index([user], map: "user")
+}
+
+model Cart {
+  consumer                    Int    @db.UnsignedInt
+  product                     Int    @db.UnsignedInt
+  supplier                    Int    @db.UnsignedInt
+  warehouse                   Int    @db.UnsignedInt
+  transporter                 Int    @db.UnsignedInt
+  index                       Int    @db.UnsignedInt
+  quantity                    Int    @db.UnsignedInt
+  User_Cart_consumerToUser    User   @relation("Cart_consumerToUser", fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Cart_ibfk_1")
+  Supply                      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_2")
+  User_Cart_transporterToUser User   @relation("Cart_transporterToUser", fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_3")
+
+  @@id([consumer, product, supplier, warehouse, transporter])
+  @@index([product, supplier, warehouse], map: "product")
+  @@index([transporter], map: "transporter")
+}
+
 model Distribution_Center {
   id          Int       @default(autoincrement()) @db.UnsignedInt
   address     Int       @db.UnsignedInt
@@ -112,28 +130,39 @@ model Distribution_Center {
 }
 
 model Order {
-  id         Int          @id @default(autoincrement()) @db.UnsignedInt
-  consumer   Int          @db.UnsignedInt
-  date       DateTime     @db.Date
-  User       User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
-  Order_Item Order_Item[]
+  id           Int          @id @default(autoincrement()) @db.UnsignedInt
+  consumer     Int          @db.UnsignedInt
+  date         DateTime     @db.Date
+  destination  Int          @db.UnsignedInt
+  observations String?      @db.VarChar(255)
+  User         User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
+  Address      Address      @relation(fields: [destination], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_2")
+  Order_Item   Order_Item[]
 
   @@index([consumer], map: "consumer")
+  @@index([destination], map: "destination")
 }
 
 model Order_Item {
-  id          Int               @default(autoincrement()) @db.UnsignedInt
-  quantity    Int               @db.UnsignedInt
-  status      Order_Item_status
-  order       Int               @db.UnsignedInt
-  product     Int               @db.UnsignedInt
-  supplier    Int               @db.UnsignedInt
-  warehouse   Int               @db.UnsignedInt
-  transporter Int               @db.UnsignedInt
-  vehicle     Int               @db.UnsignedInt
-  Order       Order             @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
-  Supply      Supply            @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
-  Vehicle     Vehicle           @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
+  id                           Int               @default(autoincrement()) @db.UnsignedInt
+  status                       Order_Item_status
+  order                        Int               @db.UnsignedInt
+  supply_price                 Decimal           @db.Decimal(10, 2)
+  transport_price              Decimal           @db.Decimal(10, 2)
+  quantity                     Int               @db.UnsignedInt
+  arrival_date                 DateTime?         @db.Date
+  supplier_resource_usage      Decimal           @db.Decimal(10, 2)
+  supplier_renewable_resources Decimal           @db.Decimal(10, 2)
+  transporter_resource_usage   Decimal           @db.Decimal(10, 2)
+  transporter_emissions        Decimal           @db.Decimal(10, 2)
+  product                      Int               @db.UnsignedInt
+  supplier                     Int               @db.UnsignedInt
+  warehouse                    Int               @db.UnsignedInt
+  transporter                  Int               @db.UnsignedInt
+  vehicle                      Int               @db.UnsignedInt
+  Order                        Order             @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
+  Supply                       Supply            @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
+  Vehicle                      Vehicle           @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
 
   @@id([id, order])
   @@index([order], map: "order")
@@ -219,23 +248,6 @@ model Warehouse {
   @@id([id, supplier])
   @@index([address], map: "address")
   @@index([supplier], map: "supplier")
-}
-
-model Cart {
-  consumer                    Int    @db.UnsignedInt
-  product                     Int    @db.UnsignedInt
-  supplier                    Int    @db.UnsignedInt
-  warehouse                   Int    @db.UnsignedInt
-  transporter                 Int    @db.UnsignedInt
-  index                       Int    @db.UnsignedInt
-  quantity                    Int    @db.UnsignedInt
-  User_Cart_consumerToUser    User   @relation("Cart_consumerToUser", fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Cart_ibfk_1")
-  Supply                      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_2")
-  User_Cart_transporterToUser User   @relation("Cart_transporterToUser", fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_3")
-
-  @@id([consumer, product, supplier, warehouse, transporter])
-  @@index([product, supplier, warehouse], map: "product")
-  @@index([transporter], map: "transporter")
 }
 
 model Wishlist {

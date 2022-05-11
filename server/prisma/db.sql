@@ -154,13 +154,17 @@ CREATE TABLE Vehicle (
 
 # CONSUMER, ORDER & SUPPLY RELATED TABLES
 CREATE TABLE `Order` (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    consumer    INT UNSIGNED NOT NULL,
-    date        DATE NOT NULL,
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    consumer        INT UNSIGNED NOT NULL,
+    date            DATE NOT NULL,
+    destination     INT UNSIGNED NOT NULL,
+    observations    VARCHAR(255),
 
     FOREIGN KEY (consumer)
-       REFERENCES User(id)
+        REFERENCES User(id),
 
+    FOREIGN KEY (destination)
+        REFERENCES Address(id)
 );
 
 CREATE TABLE Supply (
@@ -191,8 +195,8 @@ CREATE TABLE Order_Item (
     # Represents Supply inside Order
     # This structure allows items from multiple suppliers and transporters to be within the same order. (e.g. AliExpress)
 
+    # Core details
     id          INT UNSIGNED AUTO_INCREMENT,
-    quantity    INT UNSIGNED NOT NULL,
     status      ENUM('AWAITING_PAYMENT',
                      'PROCESSING',
                      'AWAITING_TRANSPORT',
@@ -203,10 +207,24 @@ CREATE TABLE Order_Item (
                      NOT NULL,
     `order`     INT UNSIGNED NOT NULL,
 
+    supply_price    NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transport_price NUMERIC(10, 2) UNSIGNED NOT NULL,
+    quantity        INT UNSIGNED NOT NULL,
+    arrival_date    DATE,
+
+
+    # Environmental data has to be here since it could change in the future and affect past orders, so this data relates to the moment when the order was made
+    supplier_resource_usage         NUMERIC(10, 2) UNSIGNED NOT NULL,
+    supplier_renewable_resources    NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transporter_resource_usage      NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transporter_emissions           NUMERIC(10, 2) UNSIGNED NOT NULL,
+
+    # Supply identifiers
     product     INT UNSIGNED NOT NULL,
     supplier    INT UNSIGNED NOT NULL,
     warehouse   INT UNSIGNED NOT NULL,
 
+    # Transporter identifiers
     transporter INT UNSIGNED NOT NULL,
     vehicle     INT UNSIGNED NOT NULL,
 
@@ -286,8 +304,8 @@ CREATE TABLE Cart (
     transporter INT UNSIGNED NOT NULL,
 
     # Properties
-    `index`       INT UNSIGNED NOT NULL,
-    quantity    INT UNSIGNED NOT NULL,
+    `index`         INT UNSIGNED NOT NULL,
+    quantity        INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
 

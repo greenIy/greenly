@@ -1,18 +1,20 @@
 # This script can be used to populate the database with dummy data
 
 # Imports
-from calendar import monthcalendar
 import datetime
 import math
 import string
-from pick import pick
 import requests
 import time
-import sys
 import os
-from faker import Faker
+import heapq
 import faker_commerce
-from random import randint, choice, randrange, sample
+import sys
+import json
+from calendar import monthcalendar
+from pick import pick
+from faker import Faker
+from random import randint, choice, randrange, sample, random
 from queue import Queue
 from threading import Thread
 from rich.table import Table
@@ -59,6 +61,12 @@ def genDaySequence(monthsBack):
 
     return [startDate + relativedelta(days=n) for n in range(delta.days + 1)]
 
+def genAddresses(fileName, sampleSize):
+    with open(fileName) as fin:
+        sample = heapq.nlargest(sampleSize, fin, key=lambda L: random())
+        return [json.loads(item) for item in sample]
+
+
 class User:
     def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
         self.firstName      = firstName
@@ -91,6 +99,12 @@ class User:
 
 def genUsers(amount):
     fake = Faker("pt_PT")
+    try:
+        addresses = genAddresses("random_addresses.geojson", amount)
+    except:
+        print("Missing geodata file.")
+        sys.exit(1)
+    
     users = [User(fake.first_name(),
                  fake.last_name(),
                  fake.password(length=9),
@@ -98,10 +112,10 @@ def genUsers(amount):
                  fake.free_email(),
                  fake.phone_number(),
                  choice(["SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-                 fake.street_address(),
-                 fake.city(),
-                 fake.postcode(),
-                 fake.country(),
+                 f'{addresses[i]["s"]} {addresses[i]["n"]}',
+                 addresses[i]["c"],
+                 addresses[i]["p"],
+                 "Portugal",
                  fake.company(),
                  fake.free_email(),
                  fake.catch_phrase()) for i in range(amount)]
