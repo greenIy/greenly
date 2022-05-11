@@ -101,6 +101,7 @@ import http from "../../../http-common";
 import AuthService from "@/router/auth";
 import {initFbsdk} from "@/config/facebook_oAuth";
 
+
 export default {
     name: 'registerConsumer',
     data(){
@@ -119,6 +120,7 @@ export default {
     mounted() {
         initFbsdk();
     },
+
     methods: {
         checkPasswords() {
             if(document.getElementById("password").value == document.getElementById("passwordConfirm").value) {
@@ -174,6 +176,7 @@ export default {
                 }
             }, {scope: 'public_profile,email'});
         },
+
 
         wrongRegister(message) {
             if (message.msg == "Invalid value") {

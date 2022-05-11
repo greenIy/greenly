@@ -27,6 +27,7 @@
             <div class="text-center social-btn">
                     <a @click="googleSignIn" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
                     <a @click="loginWithFacebook" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+
                 </div>
         </form>
         <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
@@ -53,6 +54,7 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
 import http from "../../../http-common";
 import { initFbsdk } from "@/config/facebook_oAuth";
+
 
 export default({
   name: 'loginForm',
