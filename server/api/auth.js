@@ -144,52 +144,6 @@ router.post('/facebook', async (req, res, next) => {
 }
 );
 
-
-/* This function handles the Google sign-in strategy. Returns JWT token to use if everything goes well, returns error messages otherwise. */
-
-// router.get('/google', passport.authenticate('google', { scope:
-//         [ 'email', 'profile' ], session: false }
-// ));
-
-
-//
-// router.get( '/google/callback', async (req, res, next) => {
-//     passport.authenticate('google', async (err, user, info) => {
-//         try {
-//             if (err) {
-//                 return res.status(500).send(defaultErr())
-//             }
-//             if (!user) {
-//                 return res.status(401).send(info)
-//             }
-//             req.login(user, {
-//                 session: false
-//             }, async (error) => {
-//                 if (error) {
-//                     return res.status(500).send(defaultErr())
-//                 }
-//                 const body = {
-//                     id: user.id,
-//                     email: user.email
-//                 };
-//                 const token = jwt.sign({
-//                         user: body
-//                     }, process.env.JWT_SECRET,
-//                     {
-//                         expiresIn: process.env.JWT_EXPIRATION
-//                     });
-//                 return res.json({
-//                     token: token,
-//                     id: user.id
-//                 });
-//             });
-//         } catch (error) {
-//             return next(error);
-//         }
-//     })(req, res, next);
-// });
-
-
 router.get('/status', authentication.check, async (req, res, next) => {
     if (req.user) {
         res.status(200).send({
