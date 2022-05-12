@@ -61,7 +61,6 @@ CREATE TABLE Company (
 
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    password    VARCHAR(60),# bcrypt hashes always use 60 characters
     first_name  VARCHAR(255) NOT NULL,
     last_name   VARCHAR(255) NOT NULL,
     email       VARCHAR(255) UNIQUE NOT NULL,
@@ -71,7 +70,15 @@ CREATE TABLE User (
 
     FOREIGN KEY (company)
         REFERENCES Company(id)
+);
 
+CREATE TABLE Credentials (
+    id          INT UNSIGNED PRIMARY KEY,
+    provider    VARCHAR(8)      NOT NULL,  # Local, Facebook or Google
+    value       VARCHAR(60)     NOT NULL,    
+
+    FOREIGN KEY (id)
+        REFERENCES User(id)
 );
 
 CREATE TABLE Address (

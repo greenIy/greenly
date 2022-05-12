@@ -81,8 +81,8 @@
             <div class="or-seperator"><i>ou</i></div>
             <p class="text-center">Regista-te através de uma rede social</p>
             <div class="text-center social-btn">
-                <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+                <a @click="googleSignIn" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
+                <a @click="loginWithFacebook" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
             </div>
 
         </form>
@@ -98,6 +98,9 @@ import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
 library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
 import http from "../../../http-common";
+import AuthService from "@/router/auth";
+import {initFbsdk} from "@/config/facebook_oAuth";
+
 
 export default {
     name: 'registerConsumer',
@@ -114,6 +117,10 @@ export default {
             }
         }
     },
+    mounted() {
+        initFbsdk();
+    },
+
     methods: {
         checkPasswords() {
             if(document.getElementById("password").value == document.getElementById("passwordConfirm").value) {
@@ -122,6 +129,55 @@ export default {
                 return false
             }
         },
+        async googleSignIn() {
+            try {
+                const authCode = await this.$gAuth.getAuthCode();
+                http.post("/auth/google", JSON.stringify({
+                    code: authCode})
+                ).then(async(response) => {
+                    if (response.status == 200) {
+                        localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                        localStorage.setItem('userId', JSON.stringify(response.data.id));
+                        this.$router.push({path: '/'})
+
+                        // Modificar a store do VueX de forma a refletir o estado de autenticação
+                        this.$store.dispatch('setUser', await AuthService.getUser())
+                        this.$store.dispatch('setState', true);
+                    }
+                })
+
+
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+        loginWithFacebook() {
+            window.FB.login(response => {
+                // obtain access token from the response
+                if (response.authResponse) {
+                    const accessToken = response.authResponse.accessToken;
+                    http.post("/auth/facebook", JSON.stringify({
+                            access_token: accessToken,
+                        })
+                    ).then(async(response) => {
+                        if (response.status === 200) {
+                            localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                            localStorage.setItem('userId', JSON.stringify(response.data.id));
+                            this.$router.push({path: '/'})
+
+                            // Modificar a store do VueX de forma a refletir o estado de autenticação
+                            this.$store.dispatch('setUser', await AuthService.getUser())
+                            this.$store.dispatch('setState', true);
+                        }
+                    })
+                } else {
+                    console.log('User cancelled login or did not fully authorize.');
+                }
+            }, {scope: 'public_profile,email'});
+        },
+
+
         wrongRegister(message) {
             if (message.msg == "Invalid value") {
                 if (message.param == "email") {

@@ -71,6 +71,11 @@ router.get('/:userId', authentication.check, authorization.check, (req, res, nex
                     Object.assign(user, {["company"]: user["Company"]});
                 }
 
+                // Renaming credentials key
+                user.account_provider = user.Credentials.provider
+                
+                delete user.Credentials
+
                 delete user.Company
 
                 res.status(200).json(user)

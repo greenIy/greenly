@@ -15,7 +15,7 @@ const roundingPrecision = 6;
 
 /* Persistence Init */
 
-const prisma = new PrismaClient({ 
+const prisma = new PrismaClient({
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
@@ -72,11 +72,26 @@ async function createUser(params) {
         let newUser = await prisma.user.create({
             data: {
                 first_name: params.first_name,
-                last_name: params.last_name,
+                last_name: params.last_name ? params.last_name : '',
                 email: params.email,
-                password: bcrypt.hashSync(params.password, saltRounds),
                 phone: params.phone,
-                type: params.type,
+                type: params.type
+            }
+        })
+
+
+        let newCredentials = params.password ? await prisma.credentials.create({
+            data: {
+                id: newUser.id,
+                provider: "local",
+                value: bcrypt.hashSync(params.password, saltRounds)
+
+            }
+        }) : await prisma.credentials.create({
+            data: {
+                id: newUser.id,
+                provider: params.provider,
+                value: bcrypt.hashSync(params.sub, saltRounds)
             }
         })
 
@@ -134,14 +149,18 @@ async function updateUser(id, params) {
     }
 
     const userDataSelection = {}
-    
+
 
     // Mapping user data
 
     for (const [key, value] of Object.entries(params)) {
         if (key in userKeyMap) {
             if (key == "new_password") {
-                userDataSelection[userKeyMap[key]] = bcrypt.hashSync(value, saltRounds)
+                userDataSelection.Credentials = {
+                    update: {
+                        value: bcrypt.hashSync(value, saltRounds)
+                    }
+                }
 
             } else {
                 userDataSelection[userKeyMap[key]] = value
@@ -244,7 +263,12 @@ async function getUserByID(id, withPassword=false) {
                 email: true,
                 phone: true,
                 type: true,
-                password: withPassword,
+                Credentials: {
+                    select: {
+                        provider: true,
+                        value: withPassword,
+                    }
+                },
                 Address: {
                     select: {
                         id: true,
@@ -256,7 +280,7 @@ async function getUserByID(id, withPassword=false) {
                         latitude: true,
                         longitude: true,
                         is_shipping: true,
-                        is_billing: true,   
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -275,6 +299,7 @@ async function getUserByID(id, withPassword=false) {
 }
 
 async function getUserByEmail(email, withPassword=false) {
+    // TODO: Fix 'with password'
     try {
         return user = await prisma.user.findUnique({
             where: {
@@ -286,8 +311,13 @@ async function getUserByEmail(email, withPassword=false) {
                 last_name: true,
                 email: true,
                 phone: true,
+                Credentials: withPassword ? {
+                    select: {
+                        provider: true,
+                        value: true
+                    }
+                } : withPassword,
                 type: true,
-                password: withPassword,
                 Address: {
                     select: {
                         id: true,
@@ -299,7 +329,7 @@ async function getUserByEmail(email, withPassword=false) {
                         latitude: true,
                         longitude: true,
                         is_shipping: true,
-                        is_billing: true,   
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -363,7 +393,7 @@ async function createAddress(userID,
                 key: process.env.GOOGLE_API_KEY
             }
         })
-    
+
         lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
         lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
     } catch (e) {
@@ -459,7 +489,7 @@ async function updateAddress(userId, addressId, params) {
             })
             lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
             lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
-    
+
         } catch (e) {
             console.log(e)
         }
@@ -502,11 +532,11 @@ async function deleteAddress(id) {
 /* Product Functions */
 
 /**
- * 
- * @param {Number} limit 
- * @param {Number} page 
- * @param {String} category 
- * @param {String[]} keywords 
+ *
+ * @param {Number} limit
+ * @param {Number} page
+ * @param {String} category
+ * @param {String[]} keywords
  * @returns An object composed of the total number of pages for the included filters and an array of product objects.
  */
 async function getAllProducts(limit = 50,
@@ -517,10 +547,11 @@ async function getAllProducts(limit = 50,
                               price_range,
                               supplier) {
 
+
     let filterSelection = {}
 
     let sortingMethod = {}
-    
+
     /* Sorting */
 
     // If no sorting method was specified
@@ -576,7 +607,7 @@ async function getAllProducts(limit = 50,
         // Adding created filters to the filterSelection
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
-    
+
     let products;
 
     if (["price_asc", "price_desc"].includes(sort)) {
@@ -617,7 +648,7 @@ async function getAllProducts(limit = 50,
         }
 
         products = await Promise.all(
-            sortedProductIDs.map((currentProduct) => prisma.product.findMany({ 
+            sortedProductIDs.map((currentProduct) => prisma.product.findMany({
                 where: {id:currentProduct.product, ...filterSelection},
 
                 select: {
@@ -703,8 +734,8 @@ async function getAllProducts(limit = 50,
     const maxPrice = price_range.max || Number.POSITIVE_INFINITY;
 
     // Filtering products based on price
-    products = products.filter((product) => 
-        product.lowest_price > Number(minPrice) && 
+    products = products.filter((product) =>
+        product.lowest_price > Number(minPrice) &&
         product.lowest_price < Number(maxPrice))
 
     // Get total product count
@@ -803,9 +834,9 @@ async function getProductByID(id){
                         renewable_resources: true
                     }
                 })
-    
+
                 result.Supply[i].warehouse = warehouse
-    
+
                 // Gathering futher transport info
                 for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
                     // Gather average emissions based on all transporter vehicles
@@ -818,14 +849,14 @@ async function getProductByID(id){
                             resource_usage: true
                           },
                     })
-    
+
                     // Adding vehicle averages to payload
                     result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
                     result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
                 }
-            }    
+            }
         }
-        
+
 
         return result;
 
@@ -849,14 +880,14 @@ async function getAllCategories() {
 
             // Counting products in each category
             let categorySelection = {OR:[{category:category.id}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]}
-            
+
             category.total_products = await prisma.product.count({
                     where: categorySelection
                     })
             }
 
         return categories
-        
+
     } catch (e) {
         console.log(e)
         return null;

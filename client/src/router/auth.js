@@ -1,5 +1,5 @@
 import http from "../../http-common";
-
+import store from "../main"
 
 export default class AuthService {
 
@@ -9,11 +9,18 @@ export default class AuthService {
         static async isLoggedIn() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             if (accessToken){
-                let response = await http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`} })
+                let response = await http.get("/auth/status", { headers: {"Authorization" : `Bearer ${accessToken}`}}).catch((err) => {
+                    return false
+                }).catch((err) => {
+                    // Caso exista um erro de autenticação com o atual token, apagar o que está definido
+                    AuthService.logoutUser()
+                })
 
                 if (response.status == 200) {
                     return true;
                 } else {
+                    // Caso exista um erro de autenticação com o atual token, apagar o que está definido
+                    AuthService.logoutUser()
                     return false;
                 }
             } else {
@@ -30,6 +37,7 @@ export default class AuthService {
             if (accessToken && userId){
                 let response = await http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
                 if (response.status == 200) {
+                    console.log(response.data)
                     return response.data
                 } else {
                     return null;
@@ -48,6 +56,16 @@ export default class AuthService {
             const noAuthenticationPages = ["/login", "/register"]
         
             const isLoggedIn = await AuthService.isLoggedIn()
+
+            // Definir informação na store durante a autenticação, antes do rendering de componentes
+            if (isLoggedIn) {
+                store.dispatch('setUser', await AuthService.getUser())
+                store.dispatch('setState', true);
+              } else {
+              // Caso seja inexistente ou inválido
+                store.dispatch('setUser', null)
+                store.dispatch('setState', false);
+              }
         
             const requiresAuth = !publicPages.includes(to.path)
         
@@ -72,5 +90,13 @@ export default class AuthService {
                     return next();
                 }
             }
-    }
+        }
+
+        static logoutUser() {
+            // Apagar token e informação sobre o utilizador presente na VueX store
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userId');
+            store.dispatch('setUser', null)
+            store.dispatch('setState', false);
+        }
 }
