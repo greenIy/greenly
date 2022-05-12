@@ -263,12 +263,12 @@ async function getUserByID(id, withPassword=false) {
                 email: true,
                 phone: true,
                 type: true,
-                Credentials: withPassword ? {
+                Credentials: {
                     select: {
                         provider: true,
-                        value: true,
+                        value: withPassword,
                     }
-                } : withPassword,
+                },
                 Address: {
                     select: {
                         id: true,
