@@ -15,7 +15,7 @@ const roundingPrecision = 6;
 
 /* Persistence Init */
 
-const prisma = new PrismaClient({ 
+const prisma = new PrismaClient({
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
@@ -63,113 +63,6 @@ function calcHighestPrice (supplies) {
     return max;
 }; 
 
-/**
- * Determining distribution center closest to destination and the best vehicle for delivery.
- * Currently decides the optimal vehicle based on distance from center to destination and 
- * current load of orders (i.e. which one currently has the least amount of orders in AWAITING_TRANSPORT mode?)
- * @param {*} transporter 
- * @param {*} destination 
- */
-async function determineOptimalVehicle(transporter, destination) {
-    try {
-
-        /* Determining the closest distribution center */
-
-        let userAddress = await prisma.address.findUnique({
-            where: {
-                id: destination
-            }
-        })
-
-        let distributionCenters = await prisma.distribution_Center.findMany({
-            where: {
-                transporter: transporter.id
-            },
-            select: {
-                id: true,
-                Address: {
-                    select: {
-                        id: true,
-                        latitude: true,
-                        longitude: true
-                    }
-                }
-            }
-        })
-
-        // Figuring out which warehouse is closest to the destination address
-
-        let origins = distributionCenters.map((center) =>  ({
-            lat: parseFloat(center.Address.latitude), 
-            lng: parseFloat(center.Address.longitude)}))
-        
-
-        let distances = await maps.distancematrix({
-            params: {
-                origins: origins,
-                destinations: [
-                    {
-                        lat: userAddress.latitude,
-                        lng: userAddress.longitude
-                    }
-                ],
-                key: process.env.GOOGLE_API_KEY
-            }
-        })
-
-        // If anything goes wrong, simply use the first vehicle
-        if (distances.status != 200) {
-            return 1
-        }
-
-        // Parsing the distances obtained from Google Distance Matrix
-
-        let parsedDistances = distances.data.rows.map((row) => (row.elements[0].distance.value))
-
-        // Determining which warehouse is closest
-        // This is index-safe since there are n distribution centers and n distance results
-
-        let closestDistributionCenter = distributionCenters[parsedDistances.indexOf(Math.min(...parsedDistances))]
-
-        /* Determining least-busy vehicle */
-
-        let vehicles = await prisma.vehicle.findMany({
-            where: {
-                transporter: transporter.id,
-                distribution_center: closestDistributionCenter.id
-            },
-            select: {
-                id: true
-            }
-        })
-
-        /**
-         * This bit of code:
-         * Gets the count of orders AWAITING_TRANSPORT for each vehicle in the warehouse;
-         * Determines which vehicle is least busy, i.e. which one has the least amount of orders awaiting transport.
-         */
-        let leastBusyVehicle = vehicles[Math.min(...await Promise.all(
-            vehicles.map(async (vehicle) => {
-                return await prisma.order_Item.count({
-                    where: {
-                        status: "AWAITING_TRANSPORT",
-                        transporter: transporter.id,
-                        vehicle: vehicles[0].id
-                    }
-                })
-            })
-        ))]
-            
-        return leastBusyVehicle
-
-    } catch (e) {
-        console.log(e)
-        // If anything goes wrong, simply use the first vehicle
-        return 1
-    }
-
-}
-
 
 /* User Functions */
 
@@ -179,11 +72,26 @@ async function createUser(params) {
         let newUser = await prisma.user.create({
             data: {
                 first_name: params.first_name,
-                last_name: params.last_name,
+                last_name: params.last_name ? params.last_name : '',
                 email: params.email,
-                password: bcrypt.hashSync(params.password, saltRounds),
                 phone: params.phone,
-                type: params.type,
+                type: params.type
+            }
+        })
+
+
+        let newCredentials = params.password ? await prisma.credentials.create({
+            data: {
+                id: newUser.id,
+                provider: "local",
+                value: bcrypt.hashSync(params.password, saltRounds)
+
+            }
+        }) : await prisma.credentials.create({
+            data: {
+                id: newUser.id,
+                provider: params.provider,
+                value: bcrypt.hashSync(params.sub, saltRounds)
             }
         })
 
@@ -241,14 +149,18 @@ async function updateUser(id, params) {
     }
 
     const userDataSelection = {}
-    
+
 
     // Mapping user data
 
     for (const [key, value] of Object.entries(params)) {
         if (key in userKeyMap) {
             if (key == "new_password") {
-                userDataSelection[userKeyMap[key]] = bcrypt.hashSync(value, saltRounds)
+                userDataSelection.Credentials = {
+                    update: {
+                        value: bcrypt.hashSync(value, saltRounds)
+                    }
+                }
 
             } else {
                 userDataSelection[userKeyMap[key]] = value
@@ -351,7 +263,12 @@ async function getUserByID(id, withPassword=false) {
                 email: true,
                 phone: true,
                 type: true,
-                password: withPassword,
+                Credentials: {
+                    select: {
+                        provider: true,
+                        value: withPassword,
+                    }
+                },
                 Address: {
                     select: {
                         id: true,
@@ -363,7 +280,7 @@ async function getUserByID(id, withPassword=false) {
                         latitude: true,
                         longitude: true,
                         is_shipping: true,
-                        is_billing: true,   
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -382,6 +299,7 @@ async function getUserByID(id, withPassword=false) {
 }
 
 async function getUserByEmail(email, withPassword=false) {
+    // TODO: Fix 'with password'
     try {
         return user = await prisma.user.findUnique({
             where: {
@@ -393,8 +311,13 @@ async function getUserByEmail(email, withPassword=false) {
                 last_name: true,
                 email: true,
                 phone: true,
+                Credentials: withPassword ? {
+                    select: {
+                        provider: true,
+                        value: true
+                    }
+                } : withPassword,
                 type: true,
-                password: withPassword,
                 Address: {
                     select: {
                         id: true,
@@ -406,7 +329,7 @@ async function getUserByEmail(email, withPassword=false) {
                         latitude: true,
                         longitude: true,
                         is_shipping: true,
-                        is_billing: true,   
+                        is_billing: true,
                     }
                 },
                 Company: {
@@ -470,7 +393,7 @@ async function createAddress(userID,
                 key: process.env.GOOGLE_API_KEY
             }
         })
-    
+
         lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
         lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
     } catch (e) {
@@ -566,7 +489,7 @@ async function updateAddress(userId, addressId, params) {
             })
             lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
             lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
-    
+
         } catch (e) {
             console.log(e)
         }
@@ -590,7 +513,6 @@ async function updateAddress(userId, addressId, params) {
 }
 
 async function deleteAddress(id) {
-    // TODO: Eventually deal with foreign key conflicts
     try {
         await prisma.address.delete({
             where: {
@@ -610,11 +532,11 @@ async function deleteAddress(id) {
 /* Product Functions */
 
 /**
- * 
- * @param {Number} limit 
- * @param {Number} page 
- * @param {String} category 
- * @param {String[]} keywords 
+ *
+ * @param {Number} limit
+ * @param {Number} page
+ * @param {String} category
+ * @param {String[]} keywords
  * @returns An object composed of the total number of pages for the included filters and an array of product objects.
  */
 async function getAllProducts(limit = 50,
@@ -625,10 +547,11 @@ async function getAllProducts(limit = 50,
                               price_range,
                               supplier) {
 
+
     let filterSelection = {}
 
     let sortingMethod = {}
-    
+
     /* Sorting */
 
     // If no sorting method was specified
@@ -684,7 +607,7 @@ async function getAllProducts(limit = 50,
         // Adding created filters to the filterSelection
         filterSelection.OR.push(nameKeywords, descriptionKeywords)
     }
-    
+
     let products;
 
     if (["price_asc", "price_desc"].includes(sort)) {
@@ -725,7 +648,7 @@ async function getAllProducts(limit = 50,
         }
 
         products = await Promise.all(
-            sortedProductIDs.map((currentProduct) => prisma.product.findMany({ 
+            sortedProductIDs.map((currentProduct) => prisma.product.findMany({
                 where: {id:currentProduct.product, ...filterSelection},
 
                 select: {
@@ -811,8 +734,8 @@ async function getAllProducts(limit = 50,
     const maxPrice = price_range.max || Number.POSITIVE_INFINITY;
 
     // Filtering products based on price
-    products = products.filter((product) => 
-        product.lowest_price > Number(minPrice) && 
+    products = products.filter((product) =>
+        product.lowest_price > Number(minPrice) &&
         product.lowest_price < Number(maxPrice))
 
     // Get total product count
@@ -911,9 +834,9 @@ async function getProductByID(id){
                         renewable_resources: true
                     }
                 })
-    
+
                 result.Supply[i].warehouse = warehouse
-    
+
                 // Gathering futher transport info
                 for (let j = 0; j < result.Supply[i].Supply_Transporter.length; j++) {
                     // Gather average emissions based on all transporter vehicles
@@ -926,14 +849,14 @@ async function getProductByID(id){
                             resource_usage: true
                           },
                     })
-    
+
                     // Adding vehicle averages to payload
                     result.Supply[i].Supply_Transporter[j].average_emissions = vehicle_averages._avg.average_emissions;
                     result.Supply[i].Supply_Transporter[j].average_resource_usage = vehicle_averages._avg.resource_usage;
                 }
-            }    
+            }
         }
-        
+
 
         return result;
 
@@ -957,14 +880,14 @@ async function getAllCategories() {
 
             // Counting products in each category
             let categorySelection = {OR:[{category:category.id}, ...subCategories.map((subCategory) => ({category: subCategory.id}))]}
-            
+
             category.total_products = await prisma.product.count({
                     where: categorySelection
                     })
             }
 
         return categories
-        
+
     } catch (e) {
         console.log(e)
         return null;
@@ -1204,7 +1127,7 @@ async function getCart(userID) {
 
             // Adding warehouse averages to payload
             item.average_supplier_resource_usage = warehouse.resource_usage
-            item.supplier_renewable_resources = warehouse.renewable_resources
+            item.supplier_renewable_resouces = warehouse.renewable_resources
 
             // Additional product information
             // TODO: Eventually, also select the product's image here
@@ -1217,7 +1140,7 @@ async function getCart(userID) {
             totalPrice += (item.price * item.quantity) + item.transport_price
 
             // Incrementing environmental details
-            totalSupplierRenewableResources += item.supplier_renewable_resources
+            totalSupplierRenewableResources += item.supplier_renewable_resouces
             totalSupplierResourceUsage      += item.average_supplier_resource_usage
             totalTransporterResourceUsage   += item.average_transporter_resource_usage
             totalTransporterEmissions       += item.average_transporter_emissions
@@ -1547,122 +1470,6 @@ async function removeProductFromWishlist(userID, productID) {
     }
 }
 
-/* Order Functions */
-// TODO: Calculate computed items here
-async function getOrdersByUserID(userID) {
-    try {
-        let orders = await prisma.order.findMany({
-            where: {
-                consumer: userID
-            },
-        })
-
-        orders = await Promise.all(orders.map(async (order) => {
-            let orderItems = await prisma.order_Item.findMany({
-                where: {
-                    order: order.id
-                }
-            })
-            
-            // Cleaning data
-            orderItems.forEach((item) => {
-                item.supply_price = parseFloat(item.supply_price) 
-                item.transport_price = parseFloat(item.transport_price) 
-                item.supplier_resource_usage = parseFloat(item.supplier_resource_usage) 
-                item.supplier_renewable_resources = parseFloat(item.supplier_renewable_resources) 
-                item.transporter_resource_usage = parseFloat(item.transporter_resource_usage) 
-                item.transporter_emissions = parseFloat(item.transporter_emissions) 
-            })
-
-            order.items = orderItems
-
-            return order
-        }))
-
-        return orders
-    } catch (e) {
-        console.log(e)
-        return null;
-    }
-}
-
-async function createOrder(userID, addressID, observations) {
-    try {
-        
-        // Check if user is using a valid address
-
-        let mentionedUser = await getUserByID(userID)
-
-        let userAddressIDs = mentionedUser.Address.map((addressObject) => addressObject.id)            
-
-        if (!userAddressIDs.includes(Number(addressID))) {
-            return "INVALID_ADDRESS";
-        }
-
-        // Creating order
-        let newOrder = await prisma.order.create({
-            data: {
-                consumer: userID,
-                destination: addressID,
-                observations: observations,
-                date: new Date()
-            }
-        })
-
-        // Converting cartItems into order
-        let cartItems = (await getCart(userID)).items
-
-        // Checking if cart has items
-        if (cartItems.length == 0) {
-            return "EMPTY_CART"
-        }
-
-        let counter = 1
-
-        // Creating OrderItems from cartItems
-
-        await Promise.all(cartItems.map(async (item) => {
-
-            // Determine closest distribution center, and which vehicle to use
-
-            let vehicle = await determineOptimalVehicle(item.transporter, addressID)
-
-            let newOrderItem = await prisma.order_Item.create({
-                data: {
-                    id: counter,
-                    order: newOrder.id,
-                    product: item.product.id,
-                    supplier: item.supplier.id,
-                    transporter: item.transporter.id,
-                    warehouse: item.warehouse,
-                    vehicle: 1,
-                    quantity: item.quantity,
-                    status: 'AWAITING_PAYMENT',
-                    supply_price: item.price,
-                    transport_price: item.transport_price,
-                    supplier_resource_usage: item.average_supplier_resource_usage,
-                    supplier_renewable_resources: item.supplier_renewable_resources,
-                    transporter_resource_usage: item.average_transporter_resource_usage,
-                    transporter_emissions: item.average_transporter_emissions,
-                    arrival_date: null
-                }
-            })
-
-            counter ++
-        }))
-
-
-        // Clear cart TODO: Uncomment this line
-        // await clearCart(userID)
-
-        return "ORDER_CREATED"
-
-    } catch (e) {
-        console.log(e)
-        return null;
-    }
-}
-
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -1704,9 +1511,5 @@ module.exports = {
     getWishlist,
     addProductToWishlist,
     removeProductFromWishlist,
-    clearWishlist,
-
-    // Order Functions
-    getOrdersByUserID,
-    createOrder,
+    clearWishlist
 }

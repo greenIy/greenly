@@ -2,10 +2,14 @@
 require("dotenv").config();
 
 const requiredEnvironmentVariables = [
-  "GOOGLE_API_KEY", 
-  "DATABASE_URL", 
-  "JWT_SECRET", 
+  "DATABASE_URL",
+  "JWT_SECRET",
   "JWT_EXPIRATION",
+  "GOOGLE_API_KEY",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "FACEBOOK_APP_ID",
+  "FACEBOOK_APP_SECRET",
   "STRIPE_PUBLISHABLE_KEY",
   "STRIPE_CLIENT_SECRET"]
 
@@ -28,9 +32,18 @@ exports.argv = argv;
 const session       = require('express-session');
 const cookieParser  = require('cookie-parser');
 const morgan        = require('morgan');
+const fs            = require('fs');
 const createError   = require('http-errors');
 const https         = require('https');
 const http          = require('http');
+// const privateKey    = fs.readFileSync('sslcert/privkey1.pem', 'utf8');
+// const certificate   = fs.readFileSync('sslcert/cert1.pem', 'utf8');
+// const ca            = fs.readFileSync('sslcert/chain1.pem', 'utf8')
+// const credentials   = {
+//                         key: privateKey,
+//                         cert: certificate,
+//                         ca: ca
+//                     };
 const cors          = require('cors');
 const errorHandler  = require('./lib/error').errorHandler;
 const passport      = require('./lib/authentication').passport;
@@ -49,7 +62,8 @@ if (argv.l) {
 }
 
 // Important middleware
-app.use(cors())           // Enable cross-origin resource sharing
+
+app.use(cors({origin: true, credentials: true}))           // Enable cross-origin resource sharing
 app.use(express.json({    // Enable parsing for received JSON payloads
   strict: false
 }));
@@ -70,7 +84,7 @@ module.exports.passport = passport; // Allow passport to be used by other routes
 /* Critical Routes */
 
 // Auto Rerouting HTTP -> HTTPS
-if (argv.SSL != "False") {
+if(argv.SSL != "False"){
   app.use((req, res, next) => {
     if (!req.secure)
         return res.redirect('https://' + req.headers.host + req.url);
@@ -107,7 +121,10 @@ console.log(swag.textSync('greenly-api', {
   whitespaceBreak: true
 }))
 
-app.listen(port, () => {
+var httpserver = http.createServer(app);
+// var httpsserver = https.createServer(credentials, app)
+
+httpserver.listen(port, () => {
     console.log(`🌿 Greenly server listening on port ${port} ${
     argv.SSL != "False" ? "with SSL support! ✅" : "without SSL support! 🚫"
 }`)

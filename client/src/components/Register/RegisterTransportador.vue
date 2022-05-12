@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form @submit.prevent="registerConsumer" style="width: 85%; margin-left: 7.5%;">   
+        <form @submit.prevent="registerTransporter" style="width: 85%; margin-left: 7.5%;">   
             <p class="text-left" style="margin-bottom: -2%">Informações Pessoais</p><hr/>         
             <div class="row">
                 <div class="col mb-3">
@@ -15,7 +15,7 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="registerInfo.email" placeholder="E-mail" required>
+                    <input type="email" v-on:click="removeIsInvalid" class="form-control" id="email" v-model="registerInfo.email" placeholder="E-mail" required>
                     <div class="invalid-feedback" id="invalidFeedbackEmail"></div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                 <div class="col mb-3">
                     <label for="inputPassword" class="form-label">Palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Palavra-passe" required>    
+                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Palavra-passe" required> 
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -34,9 +34,10 @@
                     </div>
                 </div>
                 <div class="col mb-3">
+
                     <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required>  
+                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required>   
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -45,45 +46,27 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- p class="text-left" style="margin-bottom: -2%">Morada</p><hr/>
+            <p class="text-left" style="margin-bottom: -2%">Informações da Empresa</p><hr/>         
             <div class="row">
                 <div class="col mb-3">
-                    <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                    <country-select v-model="country" :country="country" topCountry="" :countryName="true" class="form-control"/>
-                    <input type="name" class="form-control" id="country" v-model="registerInfo.country" placeholder="Introduza país" required>
+                    <label for="inputCompanyName" class="form-label">Nome empresa <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" id="companyName" v-model="registerInfo.companyName" placeholder="Nome" required>
                 </div>
                 <div class="col mb-3">
-                    <label for="selectCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                    <region-select v-model="region" :country="country" :region="region" :countryName="true" :regionName="true" class="form-control"/>
-                    <input type="name" class="form-control" id="city" v-model="registerInfo.city" placeholder="Introduza a cidade" required>
+                    <label for="inputComapnyEmail" class="form-label">Email empresa <span style='color: #FF0000;'>*</span></label>
+                    <input type="name" class="form-control" v-on:click="removeIsInvalid" id="companyEmail" v-model="registerInfo.companyEmail" placeholder="Email" required>
+                    <div class="invalid-feedback">E-mail não tem o formato correto ou e-mail já em uso.</div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="inputStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="street" v-model="registerInfo.street" placeholder="Introduza rua" required>
-                </div>
-                <div class="col mb-3">
-                    <label for="postalCode" class="form-label">Código Postal <span style='color: #FF0000;'>*</span></label>
-                    <input type="number" class="form-control" id="postalCode" v-model="registerInfo.postalCode" placeholder="Introduza código postal" required>
-                </div>
-            </div> -->
-
+            
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsConditons" required>
                 <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
                 <br>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Consumidor&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
+            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Transportador&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
 
-            <div class="or-seperator"><i>ou</i></div>
-            <p class="text-center">Regista-te através de uma rede social</p>
-            <div class="text-center social-btn">
-                <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
-            </div>
 
         </form>
         <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
@@ -91,7 +74,6 @@
 </template>
 
 <script>
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookSquare, faGoogle} from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
@@ -100,7 +82,7 @@ library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 import http from "../../../http-common";
 
 export default {
-    name: 'registerConsumer',
+    name: 'registerTransporter',
     data(){
         return {
             showPassword1: false,
@@ -111,6 +93,8 @@ export default {
                 email:'',
                 password:'',
                 passwordConfirm:'',
+                companyName:'',
+                companyEmail:''
             }
         }
     },
@@ -139,14 +123,18 @@ export default {
             document.getElementById("password").value = "";
             document.getElementById("passwordConfirm").value = "";
         },
-        registerConsumer() {
+        registerTransporter() {
             if(this.checkPasswords()) {
                 http.post("/user", JSON.stringify({
                     first_name: this.registerInfo.firstName,
                     last_name: this.registerInfo.lastName,
                     email: this.registerInfo.email,
                     password: this.registerInfo.password.toString(),
-                    type: "CONSUMER",
+                    type: "TRANSPORTER",
+                    company:{
+                        name: this.registerInfo.companyName,
+                        email: this.registerInfo.companyEmail
+                    }
                 })).then((response) => {
                     if (response.status == 201) {
                         alert('Account registered successfully!')

@@ -43,30 +43,6 @@ model Company {
   User  User[]
 }
 
-model User {
-  id                          Int                   @id @default(autoincrement()) @db.UnsignedInt
-  password                    String?               @db.VarChar(60)
-  first_name                  String                @db.VarChar(255)
-  last_name                   String                @db.VarChar(255)
-  email                       String                @unique(map: "email") @db.VarChar(255)
-  phone                       String?               @db.VarChar(20)
-  company                     Int?                  @db.UnsignedInt
-  type                        User_type
-  Company                     Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
-  Address                     Address[]
-  Cart_Cart_consumerToUser    Cart[]                @relation("Cart_consumerToUser")
-  Cart_Cart_transporterToUser Cart[]                @relation("Cart_transporterToUser")
-  Distribution_Center         Distribution_Center[]
-  Order                       Order[]
-  Supply                      Supply[]
-  Supply_Transporter          Supply_Transporter[]
-  Vehicle                     Vehicle[]
-  Warehouse                   Warehouse[]
-  Wishlist                    Wishlist[]
-
-  @@index([company], map: "company")
-}
-
 model ProductAttribute {
   id      Int     @default(autoincrement()) @db.UnsignedInt
   product Int     @db.UnsignedInt
@@ -216,6 +192,27 @@ model Supply_Transporter {
   @@index([transporter], map: "transporter")
 }
 
+model User {
+  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
+  first_name          String                @db.VarChar(255)
+  last_name           String                @db.VarChar(255)
+  email               String                @unique(map: "email") @db.VarChar(255)
+  phone               String?               @db.VarChar(20)
+  company             Int?                  @db.UnsignedInt
+  Credentials         Credentials?
+  type                User_type
+  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Address             Address[]
+  Distribution_Center Distribution_Center[]
+  Order               Order[]
+  Supply              Supply[]
+  Supply_Transporter  Supply_Transporter[]
+  Vehicle             Vehicle[]
+  Warehouse           Warehouse[]
+
+  @@index([company], map: "company")
+}
+
 model Vehicle {
   id                  Int                 @default(autoincrement()) @db.UnsignedInt
   resource_usage      Int                 @db.UnsignedInt
@@ -260,6 +257,13 @@ model Wishlist {
   @@index([product], map: "product")
 }
 
+model Credentials {
+  id       Int    @id @db.UnsignedInt
+  provider String @db.VarChar(8)
+  value    String @db.VarChar(60)
+  User     User   @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Credentials_ibfk_1")
+ }
+ 
 enum User_type {
   ADMINISTRATOR
   CONSUMER

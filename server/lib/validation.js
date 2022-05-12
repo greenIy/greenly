@@ -108,9 +108,17 @@ function updateUserValidator() {
         body('old_password') // Require new_password if old_password is included.
             .if(body("new_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
             .custom( (old_password, { req }) => {
+                return user = getUserByID(req.params.userId, true).then((user) => { 
+                    if (user.Credentials.provider != "local") {
+                        return Promise.reject("Password changing is only available to locally registered users (i.e. non-Google/Facebook).")
+                    }
+                    return true;
+                })
+            })
+            .custom( (old_password, { req }) => {
                 // Check if old_password matches current user password using bcrypt.compareSync
                 return user = getUserByID(req.params.userId, true).then((user) => {
-                    if (!bcrypt.compareSync(old_password, user.password)) {
+                    if (!bcrypt.compareSync(old_password, user.Credentials.value)) {
                         return Promise.reject("old_password doesn't match user password.")
                     }
                     return true
