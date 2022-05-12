@@ -13,12 +13,6 @@ const saltRounds = 10;
 // Round coordinates to 6 decimal places
 const roundingPrecision = 6;
 
-// Proper rounding function as oposed to JS Math
-function roundCoordinates(value, decimals) {
-    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
-}
-
-
 /* Persistence Init */
 
 const prisma = new PrismaClient({
