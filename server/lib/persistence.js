@@ -162,7 +162,11 @@ async function updateUser(id, params) {
     for (const [key, value] of Object.entries(params)) {
         if (key in userKeyMap) {
             if (key == "new_password") {
-                userDataSelection[userKeyMap[key]] = bcrypt.hashSync(value, saltRounds)
+                userDataSelection.Credentials = {
+                    update: {
+                        value: bcrypt.hashSync(value, saltRounds)
+                    }
+                }
 
             } else {
                 userDataSelection[userKeyMap[key]] = value
