@@ -10,29 +10,30 @@
                 <input class="form-control" type="search" placeholder="" aria-label="Search" v-model="search">
                 <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
             </div>
-            <div v-if="!userIsLoggedIn" class="align-self-center text-uppercase nav-links mt-2 mb-2 ml-2 ms-5">
+            <div v-if="!userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-2 ms-5">
                 <router-link  to="/login">
                     <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                 </router-link>
             </div>
-            <div v-else class="align-self-center nav-links mt-3 mb-0 ml-0 ms-2">
-                <h6>{{ user.first_name + " " + user.last_name }}</h6>
-                <div class="dropdown">
-                    <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
-                    </a>
-                    <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
-                        <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></router-link></li>
-                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Encomendas</a></router-link></li>
-                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></router-link></li>
-                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</a></router-link></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item" style="color: red !important; width: 85%">Terminar sessão</a></router-link></li>
-                    </ul>
+            <div v-else style="display: flex">
+                <div class="align-self-center nav-links mt-3 mb-2 ms-3">
+                    <h6>{{ user.first_name }}</h6>
                 </div>
-                <router-link  to="/login">
-                    
-                </router-link>
+                <div class="align-self-center nav-links mt-2 mb-2 ml-3">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
+                        </a>
+                        <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
+                            <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
+                            <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
+                            <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
+                            <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" />&nbsp; Notificações</a></router-link></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item" style="color: red !important; width: 85%">Terminar sessão</a></router-link></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="align-self-center nav-links mt-2 mb-2">
                 <router-link to="/cart">

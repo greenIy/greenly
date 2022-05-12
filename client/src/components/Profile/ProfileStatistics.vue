@@ -4,7 +4,7 @@
         <h4>Estatísticas</h4>
         <hr>
         
-        <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" size=""/></h4>
+        <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" /></h4>
 
 
     </div>

@@ -30,13 +30,6 @@
         </form>
         <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
 
-        <!--
-        <div class="alert alert-danger alert-dismissible" role="alert" style="display:none;">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>Oops! </strong> Corrija os erros e tente outra vez.
-        </div>
-        -->
-
     </div>
 </template>
 
