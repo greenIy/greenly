@@ -3,7 +3,8 @@
         
         <h4>Moradas</h4>
         <hr>
-        <i>Pode adicionar mais do que uma morada à sua conta Greenly</i>
+        <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada assoicada à sua conta</i>
+        <i v-else>Pode adicionar mais do que uma morada à sua conta Greenly</i>
         <br>
         <br>
         <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -61,7 +62,7 @@
                         <div class="col mb-3">
                             <label for="newAddressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
                             <input type="number" class="form-control" id="newAddressNIF" v-model="newAddressInfo.nif" v-on:click="removeIsInvalid" required>
-                            <div class="invalid-feedback" id="invalidFeedbackNIF">Deve conter exatamente 9 algarismos.</div>
+                            <div class="invalid-feedback" id="invalidFeedbackNewNIF">Deve conter exatamente 9 algarismos.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -86,7 +87,7 @@
                 <form @submit.prevent="editAddress">
                     <div class="col mb-3">
                         <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                        <country-select class="form-control" id="country" v-model="this.selectedAddress.country" :country="this.selectedAddress.country" topCountry="" :countryName="true" required/>
+                        <country-select class="form-control" id="editAddressCountry" v-model="this.selectedAddress.country" :country="this.selectedAddress.country" topCountry="" :countryName="true" required/>
                     </div>
                     <div class="col mb-3">
                         <label for="addressCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
@@ -103,13 +104,13 @@
                         </div>
                         <div class="col mb-3">
                             <label for="addressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
-                            <input type="number" class="form-control" id="addressNIF" v-model="this.selectedAddress.nif" v-on:click="removeIsInvalid" required>
-                            <div class="invalid-feedback" id="invalidFeedbackNIF">Deve conter exatamente 9 algarismos.</div>
+                            <input type="number" class="form-control" id="editAddressNIF" v-model="this.selectedAddress.nif" v-on:click="removeIsInvalid" required>
+                            <div class="invalid-feedback" id="invalidFeedbackEditNIF">Deve conter exatamente 9 algarismos.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
-                        <button type="button" class="btn btn-primary"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
+                        <button type="submit" class="btn btn-primary"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
                     </div>
                 </form>
             </div>
@@ -139,6 +140,12 @@
         <!-- Notification New Address -->
         <div class="alert alert-success alert-dismissible fade show" id="newAddressNotification" role="alert">
             <strong>Adicionada!</strong> A morada foi adicionada com sucesso ao seu perfil.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Notification Edit Address -->
+        <div class="alert alert-success alert-dismissible fade show" id="editAddressNotification" role="alert">
+            <strong>Atualizada!</strong> A sua morada foi atualizada com sucesso.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -188,17 +195,33 @@ export default({
             this.user = this.$store.getters.getUser
             return this.$store.getters.getUser
         },
+        cloneAddress(address) {
+            return JSON.parse(JSON.stringify(address))
+        },
+        addressesLength() {
+            let numberAddresses = 0
+            
+
+            console.log(this.user.addresses)
+            return numberAddresses
+        },
         selectAddress(address) {
             this.selectedAddress = address;
         },
-        wrongCredentials(message) {
-            console.log(message)
-            if (message == "nif") {
+        wrongCredentials(action, param) {
+            console.log(param)
+            if (action == "new" && param == "nif") {
                 document.getElementById("newAddressNIF").classList.add("is-invalid");          
+            }
+            else if (action == "edit" && param == "nif") {
+                document.getElementById("editAddressNIF").classList.add("is-invalid");          
             }
         },
         successfulNewAddress() {
             document.getElementById("newAddressNotification").style.display = "block"
+        },
+        successfulEditAddress() {
+            document.getElementById("editAddressNotification").style.display = "block"
         },
         successfulDeleteAddress() {
             document.getElementById("deleteAddressNotification").style.display = "block"
@@ -225,7 +248,35 @@ export default({
                         if (response.status == 201) {
                             setTimeout(this.successfulNewAddress, 500)
                         }
-                    }).catch(error => this.wrongCredentials(error.response.data.errors[0].param)) 
+                    }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param)) 
+            }
+        },
+        editAddress() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            let addressId = this.selectedAddress.id
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId) {
+                this.selectedAddress.country = document.getElementById("editAddressCountry").value;
+                http.put(`/user/${userId}/addresses/${addressId}`, 
+                    JSON.stringify({
+                            street: this.selectedAddress.street,
+                            city: this.selectedAddress.city,
+                            country: this.selectedAddress.country,
+                            postal_code: this.selectedAddress.postal_code,
+                            nif: this.selectedAddress.nif
+                        }), headers)
+                    .then((response) => {
+                        console.log(response)
+                        if (response.status == 200) {
+                            setTimeout(this.successfulEditAddress, 500)
+                            console.log("Success!")
+                        }
+                    }).catch(error => this.wrongCredentials("edit", error.response.data.errors[0].param)) 
             }
         },
         deleteAddress() {
@@ -263,7 +314,8 @@ export default({
     .modal-footer {
         border-width: 0;
     }
-    #newAddressNotification {
+    #newAddressNotification, #editAddressNotification, 
+    #deleteAddressNotification  {
         position: absolute;
         top: 0;
         right: 0;
@@ -272,13 +324,5 @@ export default({
         display: none;
         width: 25%;
     }
-    #deleteAddressNotification {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-right: 30px;
-        margin-top: 150px;
-        display: none;
-        width: 25%;
-    }
+   
 </style>
