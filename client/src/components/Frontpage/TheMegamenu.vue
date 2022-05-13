@@ -30,7 +30,6 @@
 
 <script>
     import http from "../../../http-common";
-
     export default {
         name: 'TheMegamenu',
         data () {
@@ -55,7 +54,6 @@
                 this.mainCategories = response.data;
                 console.log("array de categorias do serv:");
                 console.log(response.data);
-
                 console.log("array de categorias no vue array:");
                 console.log(this.mainCategories);
             }
@@ -77,52 +75,36 @@
     width: 90px;
     height: 35px;
 }
-
 .offcanvas {
   padding-top: 60px;
 }
-
 .offcanvas p {
   cursor: pointer;
   color: #686868;
 }
-
 .promo {
-    color: #464646!important;
+    color: #226d53!important;
 }
-
-
 .offcanvas p:hover {
-  color: #727272;
+  color: #adadad;
 }
-
 .promo:hover {
-    color: #493df693;
+    color: #226d5393!important;
 }
-
 .offcanvas-backdrop {
     z-index: 1!important;
 }
-
 .list-group-item {
     font-size: 12.5px;
 }
-
 @media only screen and (max-width: 575px) {
     #megamenu {
         width: 100%;
     }
 }
-
 @media only screen and (min-width: 576px) {
-
     #megamenu {
         min-width: 400px;
     }
-
 }
-
-.offcanvas-backdrop {
-  z-index: 0;}
-
 </style>

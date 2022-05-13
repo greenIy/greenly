@@ -83,7 +83,6 @@
 <script>
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-
 export default {
   name: 'equipa',
   components: {
@@ -94,12 +93,10 @@ export default {
 </script>
 
 <style scoped>
-
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
    width: 100%;
    margin: 0 auto;
-
 }
 .card:hover{
      box-shadow: 1px 10px 12px #d9d9d9;

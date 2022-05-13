@@ -59,17 +59,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 // eslint-disable-next-line
 import { faCcPaypal, faInstagram, faTwitter, faFacebookSquare, faCcVisa, faCcMastercard, faCcAmex, faCcApplePay, faGooglePay } from '@fortawesome/free-brands-svg-icons';
-
-library.add(faCcPaypal);
-library.add(faInstagram);
-library.add(faTwitter);
-library.add(faFacebookSquare);
-library.add(faCcVisa);
-library.add(faCcMastercard);
-library.add(faCcAmex);
-library.add(faCcApplePay);
-library.add(faGooglePay);
-
+library.add(faCcPaypal, faInstagram, faTwitter, faFacebookSquare, faCcVisa, faCcMastercard, faCcAmex, faCcApplePay, faGooglePay);
 export default {
   name: 'TheFooter',
   data() {
@@ -84,32 +74,27 @@ export default {
 
 <style scoped>
     .footer {
-        background-color: #608072;
+        background-color: #309c76;
         font-size: 12px;
         width: 99.88%;
         position: absolute;
         bottom: 0;
         height: 7.5rem;
     }
-
     img {
         width: 65px;
         height: 40px;
     }
-
     a {
         color: #f8f9fa;
         text-decoration: none;
     }
-
     a:hover {
         color: #dce5e1;
     }
-
     .icon-space {
         padding-left: 5px;
     }
-
     .icons-div {
        font-size: 10px;
     }
