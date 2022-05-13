@@ -6,7 +6,7 @@
       <TheNavbar @search-information="searchInformation"/>
       
       <router-link to="/produtos">
-        img alt="Logo do greenly" src="../assets/poster.png" id="front"
+        <img alt="Logo do greenly" src="../assets/poster.png" id="front">
       </router-link>
     </div>
     <TheFooter />
