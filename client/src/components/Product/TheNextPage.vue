@@ -107,16 +107,16 @@ button {
 }
 
 button:hover {
-  color: #608072;
+  color: #5e9f88;
 }
 
 button:focus {
-  color: #608072;
+  color: #5e9f88;
   box-shadow: none;
 }
 
 .page-item.active .page-link {
-  color: #608072;
+  color: #5e9f88;
   background-color: #ededed;
   border: #dee2e6 1px solid;
 }

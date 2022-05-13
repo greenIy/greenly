@@ -77,7 +77,7 @@ export default {
     display: flex;
 }
 .save{
-  background-color: #608072;
+  background-color: #5e9f88;
   color:white;
 }
 .modal-body{

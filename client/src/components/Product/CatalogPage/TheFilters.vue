@@ -10,7 +10,7 @@
         </div>   
         <div class="collapse show" id="categories-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-if="categorySelected" :to="{ path: '/produtos' + urls, query: { ...$route.query } }" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#608072;">
+            <router-link v-if="categorySelected" :to="{ path: '/produtos' + urls, query: { ...$route.query } }" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#5e9f88;">
               <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
             
@@ -115,6 +115,8 @@ library.add(faAngleLeft);
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.return = true;
+        this.$router.push({ path: '/produtos' + this.getGoBackUrl(), query: { ...this.$route.query } });
+        console.log("eu entro aqui");
       },
       transformC() {
         this.countC++;
@@ -156,7 +158,29 @@ library.add(faAngleLeft);
       },
       getMaxPrice() {
         this.priceMax = this.maxPrice;
-      }
+      },
+      getGoBackUrl() {
+        let url = "";
+        if (this.$route.params.categoria != undefined) {
+          for(let i in this.$route.params.categoria) {
+            url += "/" + this.$route.params.categoria[i];
+          }
+        }
+        if (this.return) {
+          let urlSeparated = url.split("/");
+          url = "";
+          urlSeparated.splice(0, 1);
+          urlSeparated.splice(urlSeparated.length -1, 1);
+
+          for (let i = 0; i < urlSeparated.length; i++) {
+            console.log(urlSeparated[i]);
+            url += "/" + urlSeparated[i];
+          }
+        }
+
+        this.return = false;
+        return url;
+      },
     },
     computed: {
       showCategories: function () {
@@ -202,12 +226,12 @@ library.add(faAngleLeft);
   padding: .300rem .20rem .300rem .40rem;
 }
 #iconC{
-  color:#608072;
+  color:#5e9f88;
 }
 #iconP{
-  color:#608072;
+  color:#5e9f88;
 }
 #iconF{
-  color:#608072;
+  color:#5e9f88;
 }
 </style>

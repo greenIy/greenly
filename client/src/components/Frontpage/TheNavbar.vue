@@ -72,7 +72,7 @@ export default {
 
 <style scoped>
     .navmenu {
-        background-color: #608072;
+        background-color: #5e9f88;
         color: #fcfaf9;
     }
 
@@ -99,7 +99,7 @@ export default {
         color: #e4e4e4;
     }
     .navmenu2 a:hover {
-        color: #608072;
+        color: #5e9f88;
     }
 
     .nav-links {
@@ -128,14 +128,14 @@ export default {
     button {
         background-color: #dce5e1;
         border: 0px;
-        color: #608072;
+        color: #5e9f88;
         box-shadow: none;
     }
 
     button:hover {
         background-color: #dce5e1;
         border: 0px;
-        color: #608072;
+        color: #5e9f88;
     }
     .btn-outline-success{
         box-shadow:none;

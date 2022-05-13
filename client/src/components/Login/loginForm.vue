@@ -42,7 +42,7 @@ export default {
 
 <style scoped>
     .btn-primary {
-        background-color: #608072;
+        background-color: #5e9f88;
         border-color: white;
     }
     .btn-primary:hover {

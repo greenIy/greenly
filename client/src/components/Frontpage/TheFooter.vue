@@ -84,7 +84,7 @@ export default {
 
 <style scoped>
     .footer {
-        background-color: #608072;
+        background-color: #5e9f88;
         color: #fcfaf9;
         font-size: 9px;
         width: 99.88%;

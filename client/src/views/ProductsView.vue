@@ -6,24 +6,26 @@
       <div class="container">
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
               :product="products" @sendProduct="getProductsByChild" />
-        <div class="row content justify-content-center">
+        <div class="row content justify-content-center" v-if="rendered">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
               <TheFilters :categories="categories" :currentCategories="currentCategories" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
+          <Transition name="fade">
             <div v-if="products.length" class="content d-flex w-100 " @currentPage="getCurrentPage">
               <ProductCard
               v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
-             </div>
-             <div v-else class="content d-flex w-100 ">
-               <TheNoProduct></TheNoProduct>
-             </div>
             </div>
+            <div v-else class="content d-flex w-100 ">
+              <TheNoProduct></TheNoProduct>
+            </div>
+          </Transition>
+          </div>
           </div>
       </div>
       <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/>
@@ -76,7 +78,11 @@ export default {
       productsInPage: 0,
       nameFilter: "id",
       allSuppliers: [],
+      rendered: false,
     };
+  },
+  beforeMount() {
+    this.getProducts();
   },
   mounted() {
     this.getProducts();
@@ -122,6 +128,7 @@ export default {
       this.products = response.data.products;
       this.productAmount = response.data.total_products;
       this.productsInPage = this.products.length;
+      this.rendered = true;
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
@@ -201,5 +208,10 @@ export default {
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
   border-radius: .25rem;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
 }
 </style>
