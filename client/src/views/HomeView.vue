@@ -5,12 +5,8 @@
       
       <TheNavbar @search-information="searchInformation"/>
       
-      <TheMegamenu />
-
-      
-      
       <router-link to="/produtos">
-        <img alt="Logo do greenly" src="../assets/poster.png" id="front">
+        img alt="Logo do greenly" src="../assets/poster.png" id="front"
       </router-link>
     </div>
     <TheFooter />
@@ -21,14 +17,12 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-import TheMegamenu from '@/components/Frontpage/TheMegamenu.vue';
 
 export default {
   name: 'HomeView',
   components: {
     TheNavbar,
-    TheFooter,
-    TheMegamenu
+    TheFooter
   },
   methods: {
     searchInformation: function (params) {

@@ -2,7 +2,6 @@
 <body>
   <div class="page-container">
      <TheNavbar @search-information="searchInformation"/>
-     <TheMegamenu />
     <div class="content-wrap mw-0">
       <div class="container">
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :pageAmount="pageAmount" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
@@ -38,7 +37,6 @@ import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
-import TheMegamenu from "@/components/Frontpage/TheMegamenu.vue";
 
 import http from "../../http-common";
 
@@ -50,8 +48,7 @@ export default {
     TheNavbar,
     TheFooter,
     TheFilters,
-    TheUtilityBar,
-    TheMegamenu,
+    TheUtilityBar
   },
   props: {
     product: Object,

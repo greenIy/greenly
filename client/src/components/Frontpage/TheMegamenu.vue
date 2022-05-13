@@ -88,16 +88,16 @@
 }
 
 .promo {
-    color: #464646!important;
+    color: #226d53!important;
 }
 
 
 .offcanvas p:hover {
-  color: #727272;
+  color: #adadad;
 }
 
 .promo:hover {
-    color: #493df693;
+    color: #226d5393!important;
 }
 
 .offcanvas-backdrop {
@@ -121,8 +121,5 @@
     }
 
 }
-
-.offcanvas-backdrop {
-  z-index: 0;}
 
 </style>
