@@ -1,12 +1,15 @@
 # This script can be used to populate the database with dummy data
 
 # Imports
+from calendar import monthcalendar
 import datetime
 import math
+import string
 from pick import pick
 import requests
 import time
 import sys
+import os
 from faker import Faker
 import faker_commerce
 from random import randint, choice, randrange, sample
@@ -14,11 +17,16 @@ from queue import Queue
 from threading import Thread
 from rich.table import Table
 from rich.live import Live
+from requests.exceptions import ConnectionError
+from dateutil.relativedelta import relativedelta
+from operator import add, sub, mul
+
 
 # Constants
-API_BASE_URL = "http://localhost"
-PORT = 8080
+API_BASE_URL = "http://api.greenly.pt"
+API_PORT = 80
 USER_CREATION_ENDPOINT = "/user"
+LOGIN_ENDPOINT = "/auth/login"
 q = Queue()
 table = Table(title="Added Users", show_lines=True)
 
@@ -29,7 +37,7 @@ def worker():
         user = q.get()
         result = sendUser(user)
         q.task_done()
-        table.add_row(f"{user.firstName} {user.lastName}", user.email, user.phone, str(user.nif), "✅" if result == 201 else "❌")
+        table.add_row(f"{user.firstName} {user.lastName}", user.email, user.phone, "✅" if result else "❌")
 
 def genRandomDate():
     start_date = datetime.date(2018, 12, 12)
@@ -42,6 +50,14 @@ def genRandomDate():
 
     return str(random_date)
         
+def genDaySequence(monthsBack):
+    # Gera uma sequência de dias
+    today = datetime.datetime.today()
+    today = today.replace(hour=10, minute=0, second=0, microsecond=0)
+    startDate = today - relativedelta(months=monthsBack)
+    delta = today - startDate
+
+    return [startDate + relativedelta(days=n) for n in range(delta.days + 1)]
 
 class User:
     def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
@@ -92,51 +108,105 @@ def genUsers(amount):
     return users
     
 def sendUser(user):
-    payload = {"first_name":    user.firstName,
-               "last_name":     user.lastName,
-               "password":      user.password,
-               "nif":           user.nif,
-               "email":         user.email,
-               "phone":         user.phone,
-               "type":          user.type,
-               "address":   {"street":      user.street,
-                             "city":        user.city,
-                             "country":     user.country,
-                             "postal_code": user.postalCode},
-               "company":  {"name":         user.companyName,
-                            "email":        user.companyEmail,
-                            "bio":          user.companyBio}}
+    global API_BASE_URL
+    global API_PORT
 
-    r = requests.post(f"{API_BASE_URL}:{PORT}{USER_CREATION_ENDPOINT}", json=payload)
+    userDataPayload = {'first_name':    user.firstName,
+               'last_name':     user.lastName,
+               'password':      user.password,
+               'email':         user.email,
+               'phone':         user.phone,
+               'type':          user.type}
 
-    return r.status_code
+    if (user.type in ['SUPPLIER', 'TRANSPORTER']):
+        userDataPayload['company'] = {'name':     user.companyName,
+                                      'email':    user.companyEmail,
+                                      'bio':      user.companyBio}
 
-def genProductsSQL(amount, usersInDB):
-    # FIXME: Mentioned Suppliers and Transporters may not be of types Supplier and Transporter
+    addressDataPayload = {'street':      user.street,
+                          'city':        user.city,
+                          'country':     user.country,
+                          'postal_code': user.postalCode,
+                          'nif': user.nif}
 
+    authPayload = {'email': user.email,
+                   'password': user.password}
 
+    
+    try:
+        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload)
+
+        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload)
+
+        authenticatedHeaders = {'Authorization': f'Bearer {authResponse.json()["token"]}'}
+
+        # Address creation requires authentication
+        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders)
+    except ConnectionError:
+        os.system('clear')
+        print(f"{API_BASE_URL}:{API_PORT} didn't respond.")
+        os._exit(1)
+
+    return userResponse.status_code == 201 and addressResponse.status_code == 201
+
+def genProductsSQL(amount, adminToken):
     fake = Faker("pt_PT")
     fake.add_provider(faker_commerce.Provider)
     lineBuffer = []
 
-    # Choose amount/5 suppliers
-    possibleSuppliers = sample(range(1, usersInDB), math.ceil(amount/5))
+    # Obtaining updated user information
+    authenticatedHeaders = {'Authorization': f'Bearer {adminToken}'}
 
-    possibleTransporters = sample(range(1, usersInDB), math.ceil(amount/5))
+    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders)
+
+    if response.status_code == 403:
+        print("Invalid administrator token. Operation canceled.")
+        return
+
+    usersInDB = len(response.json()) - 1
+
+    # Identifying all suppliers in platform
+    possibleSuppliers = [user["id"] for user in response.json() if user["type"] == "SUPPLIER"]
+
+    # Identifying all transporters in platform
+    possibleTransporters = [user["id"] for user in response.json() if user["type"] == "TRANSPORTER"]
 
     # Create amount/5 categories
     # TODO: Eventually curate a list of category names instead of random names
     possibleCategories = [fake.words(nb=1)[0].capitalize() for i in range(math.ceil(amount/5))]
 
-    
+    # TODO: Warehouses and Distribution Centers should use the same address as User ID
+    # Generate warehouses
     lineBuffer.append("#Warehouses")
     for i, supplier in enumerate(possibleSuppliers):
-        for j in range(3):
+        for j in range(1, 4):
             randomAddress = randint(1, usersInDB)
             randomCapacity = randint(20, 50)
             randomResourceUsage = randint(20, 50)
+            renewableResources = randint(0, 100)
 
-            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j+1}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier});")
+            lineBuffer.append(f"INSERT INTO Warehouse VALUES ({j}, {randomAddress}, {randomCapacity}, {randomResourceUsage}, {supplier}, {renewableResources});")
+
+    # Generate distribution centers
+    lineBuffer.append("#Distribution Centers")
+    for i, transporter in enumerate(possibleTransporters):
+        # Vehicles are indexed by transporter, not by warehouse
+        vehicleIDCounter = 1
+        for j in range(1, 4):
+            randomAddress = randint(1, usersInDB)
+            randomCapacity = randint(20, 50)
+
+            lineBuffer.append(f"INSERT INTO Distribution_Center VALUES ({j}, {randomAddress}, {randomCapacity}, {transporter});")
+
+            for n in range(1, randint(1, 6)):
+                randomResourceUsage = randint(5, 30)
+                licensePlate =  ''.join(sample(string.ascii_uppercase, 2) + sample(string.digits, 2) + sample(string.ascii_uppercase, 2))
+                fuelType = choice(["ELECTRICITY", "DIESEL", "PETROL"])
+                averageEmissions = fuelType == 0 if fuelType == "ELECTRICITY" else randint(90, 460);
+                payloadCapacity = randint(2, 20)
+
+                lineBuffer.append(f"INSERT INTO Vehicle (id, resource_usage, license_plate, average_emissions, fuel_type, payload_capacity, transporter, distribution_center) VALUES ({vehicleIDCounter}, {randomResourceUsage}, '{licensePlate}', {averageEmissions}, '{fuelType}', {payloadCapacity}, {transporter}, {j});")
+                vehicleIDCounter += 1
     
     # Generate parent categories
     lineBuffer.append("#Categories")
@@ -158,9 +228,17 @@ def genProductsSQL(amount, usersInDB):
         lineBuffer.append(
             f"INSERT INTO Product (id, name, description, category) VALUES ({i}, '{fake.ecommerce_name()}', '{fake.text(max_nb_chars=220)}', {randint(1, categoryIdCounter-1)});")
 
+    # Generate product attributes
+    for i in range(1, amount+1):
+        for j in range(1, randint(3,10)):
+            lineBuffer.append(
+                f"INSERT INTO ProductAttribute(id, product, title, content) VALUES ({j}, {i}, '{fake.words(nb=2)[0].capitalize()}', '{fake.text(max_nb_chars=220)}');"
+            )
+
     # Generate supplies
     lineBuffer.append("#Supplies")
     suppliesRegistered = set()
+    additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
 
@@ -175,7 +253,13 @@ def genProductsSQL(amount, usersInDB):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
-            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randint(1, 300)}, {randint(1, 3000)}, '{genRandomDate()}', '{genRandomDate()}');")
+            randomPrice = randint(1, 3000)
+            randomQuantity = randint(1, 300)
+
+            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")
+
+            # Keep price and quantity data to use for historical data
+            additionalSupplyData[(i, randomSupplier, randomWarehouse)] = (randomQuantity, randomPrice)
 
     # Add tranporters to Supply_Transporter for each supply created
     transportsRegistered = set()
@@ -192,7 +276,31 @@ def genProductsSQL(amount, usersInDB):
 
             transportsRegistered.add((product, supplier, warehouse, randomTransporter))
 
-            lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter});")
+            price = randint(5, 60)
+
+            lineBuffer.append(f"INSERT INTO Supply_Transporter VALUES ({product}, {supplier}, {warehouse}, {randomTransporter}, {price});")
+
+    # Generate historical data
+    for day in genDaySequence(int(input("How many months of historical data would you like to generate? "))):
+        for product, supplier, warehouse in suppliesRegistered:
+            quantity, price = additionalSupplyData[(product, supplier, warehouse)]
+
+            # Decice by how much price and quantity will oscilate
+            randomQuantityDelta = randint(0, 20)
+            randomPriceDelta = randint(0, 200)
+
+            # Randomize between addition and subtraction
+            ops = (add, sub)
+            op = choice(ops)
+
+            # Form new values, making sure they aren't negative
+            newQuantity = abs(op(quantity, randomQuantityDelta))
+            newPrice = abs(op(price, randomPriceDelta))
+
+            lineBuffer.append(f"INSERT INTO Supply_History (product, supplier, warehouse, moment, quantity, price) VALUES ({product}, {supplier}, {warehouse}, '{day}' , {newQuantity}, {newPrice});")
+
+
+    
 
     f = open("mock.sql", "w")
     f.write("\n".join(lineBuffer))
@@ -200,14 +308,27 @@ def genProductsSQL(amount, usersInDB):
     print("SQL generated to 'mock.sql'")
 
 def main():
+    global API_BASE_URL
+    global API_PORT
 
-    title = 'Choose what to generate: '
-    options = ["Users", "Products"]
+    generationOptions = ["Users", "Products"]
+    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)", "Development (dev.greenly.pt)"]
 
-    option, index = pick(options, title, indicator='->', default_index=0)
+    generationOption, index = pick(generationOptions, 'Choose what to generate: ', indicator='->', default_index=0)
+    APIOption, APIIndex = pick(APIOptions, 'Choose which API to use: ', indicator='->', default_index=0)
+
+    if (APIIndex == 1):
+        API_BASE_URL = "http://localhost"
+        API_PORT = 8080
+
+    if (APIIndex == 2):
+        API_BASE_URL = "http://dev.greenly.pt"
+        API_PORT = 80
 
 
-    if (option == "Users"):
+    if (generationOption == "Users"):
+        print(f"Requesting at {API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}\n")
+
         start = time.time()
         [q.put(user) for user in genUsers(int(input("How many users to generate? ")))]
 
@@ -219,7 +340,7 @@ def main():
         table.add_column("User Name", style="blue")
         table.add_column("E-mail", style="blue")
         table.add_column("Phone", style="blue")
-        table.add_column("NIF", style="blue")
+        # table.add_column("NIF", style="blue")
         table.add_column("Status", justify="right", style="green")
 
         with Live(table, refresh_per_second=10, vertical_overflow="visible") as live:  # update 4 times a second to feel fluid
@@ -231,18 +352,12 @@ def main():
         end = time.time()
 
         print("Time elapsed: ", end-start)
-    elif (option == "Products"):
+    elif (generationOption == "Products"):
         print("Temporarily generating only SQL.\n")
-        usersInDB = int(input("How many users are currently registed in the database? "))
         amount = int(input("How many products would you like to generate? "))
-        genProductsSQL(amount, usersInDB)
+        adminToken = input("Please provide an administrator token: ")
 
-
-
-
-
-    
-
+        genProductsSQL(amount, adminToken)
 
 if __name__ == "__main__":
     main()

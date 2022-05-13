@@ -52,10 +52,17 @@ const routes = [
     },
   },
   {
-    path: '/registo',
-    name: 'registo',
+    path: '/registar',
+    name: 'registar',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
+    },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
     },
   },
 
@@ -64,7 +71,8 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-
 });
+
+
 
 export default router;

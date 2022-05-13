@@ -1,6 +1,6 @@
 /* Parameter Validation Package */
 const { body, param, query, validationResult, matchedData } = require('express-validator');
-const { checkUserConflict, getUserByID } = require('./persistence');
+const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -25,30 +25,12 @@ function createUserValidator() {
                     }
                 })
             }),
-        body('phone')
-            .notEmpty()
-            .isString(),
         body('password')
             .isLength({min: 5}),
-        body('nif')
-            .isLength({min: 9, max:9})
-            .isInt()
-            .custom(value => {
-                return checkUserConflict("nif", value).then(conflict => {
-                    if (conflict) {
-                        return Promise.reject("NIF already in use.")
-                    }
-                })
-            }),
         body('type')
             .isIn(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-        body('address.street')
-            .notEmpty()
-            .isString(),
-        body('address.country')
-            .notEmpty()
-            .isString(),
-        body('address.postal_code')
+        body('phone')
+            .optional()
             .notEmpty()
             .isString(),
         body('company.name')
@@ -59,10 +41,7 @@ function createUserValidator() {
             .notEmpty()
             .isString(),
         body('company.bio')
-            .if(body('type')
-                .isIn(["SUPPLIER", "TRANSPORTER"]))
-            .exists()
-            .withMessage("Company bio must be included if user type is supplier or transporter.").bail()
+            .optional()
             .notEmpty()
             .isString(),
         body('company.email')
@@ -90,11 +69,8 @@ function createUserValidator() {
 }
 
 function updateUserValidator() {
-    // TODO: Don't forget to proof this (try/catch/detail exception) during database access
-    // TODO: When dealing with authentication, this will have to be proofed.
-    //       Only the user itself or an admin could use this, and only to edit the user in question.
     return [
-        param('userId').toInt().custom(value => {
+        param('userId').isInt().toInt().custom(value => {
                     return getUserByID(value).then(user => {
                         if (!user) {
                             return Promise.reject(`User with ID ${value} doesn't exist.`)
@@ -121,17 +97,24 @@ function updateUserValidator() {
                     }
                 })
             }),
-
         body('phone')
             .optional()
-            .notEmpty(),
-
+            .notEmpty()
+            .isString(),
         body('old_password') // Require new_password if old_password is included.
             .if(body("new_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
             .custom( (old_password, { req }) => {
+                return user = getUserByID(req.params.userId, true).then((user) => { 
+                    if (user.Credentials.provider != "local") {
+                        return Promise.reject("Password changing is only available to locally registered users (i.e. non-Google/Facebook).")
+                    }
+                    return true;
+                })
+            })
+            .custom( (old_password, { req }) => {
                 // Check if old_password matches current user password using bcrypt.compareSync
                 return user = getUserByID(req.params.userId, true).then((user) => {
-                    if (!bcrypt.compareSync(old_password, user.password)) {
+                    if (!bcrypt.compareSync(old_password, user.Credentials.value)) {
                         return Promise.reject("old_password doesn't match user password.")
                     }
                     return true
@@ -149,33 +132,33 @@ function updateUserValidator() {
                     return true
                 }
             }),
-
-        body('nif')
-            .optional()
-            .isLength({min: 9, max:9})
-            .custom(value => {
-                return checkUserConflict("nif", value).then(conflict => {
-                    if (conflict) {
-                        return Promise.reject("NIF already in use.")
-                    }
-                })
-            }),
-
         body('type')
             .optional()
             .isIn(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-        body('address.street')
+        body('company.bio')
             .optional()
-            .notEmpty(),
-
-        body('address.country')
+            // If it exists and the user isn't supplier or transport
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.name')
             .optional()
-            .notEmpty(),
-
-        body('address.postal_code')
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.email')
             .optional()
-            .notEmpty(),
-            
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .isEmail(),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
@@ -187,13 +170,75 @@ function updateUserValidator() {
     ]
 }
 
+/* Address Validation Functions */
+
+function createAddressValidator() {
+    return [
+        body("street")
+            .notEmpty()
+            .isString(),
+        body("country")
+            .notEmpty()
+            .isString(),
+        body("city")
+            .notEmpty()
+            .isString(),
+        body("postal_code")
+            .notEmpty()
+            .isString(),
+        body('nif')
+            .isLength({min: 9, max:9})
+            .isInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateAddressValidator() {
+    return [
+        body("street")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("country")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("city")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("postal_code")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body('nif')
+            .optional()
+            .isLength({min: 9, max:9})
+            .isInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+
 /* Product Validation Functions */
 
 function getProductsValidator() {
     return [
         query("sort")
             .optional()
-            .isIn(["price_asc", "price_desc"]),
+            .isIn(["newest", "oldest", "price_asc", "price_desc", "name_asc", "name_desc"]),
         query("limit")
             .optional()
             .isInt({min: 0, max: 250})
@@ -209,6 +254,98 @@ function getProductsValidator() {
             .optional()
             .notEmpty()
             .isString(),
+        query("min_price")
+            .optional()
+            .isFloat({min: 0})
+            .toFloat()
+            .notEmpty()
+            .custom((value, {req}) => {
+                if (req.query.max_price) {
+                    return value < req.query.max_price
+                }
+                return true;
+            })
+            .withMessage("Minimum price has to be lower than maximum price.").bail(),
+        query("max_price")
+            .optional()
+            .isFloat({min: 0})
+            .toFloat()
+            .notEmpty()
+            .custom((value, {req}) => {
+                if (req.query.min_price) {
+                    return value > req.query.min_price
+                }
+                return true;
+            })
+            .withMessage("Maximum price has to be higher than minimum price.").bail(),
+        query("supplier")
+            .optional()
+            .notEmpty()
+            .isInt({min: 1})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+/* Category Validation Functions */
+
+
+function createCategoryValidator() {
+    return [
+        body("name")
+            .notEmpty()
+            .isString(),
+        body("parent_category")
+            .optional()
+            .toInt()
+            .custom(async value => {
+                let currentCategories = await getAllCategories();
+
+                // If the parent_category isn't valid
+        
+                if (!currentCategories.map((category) => category.id).includes(value)) {
+                    return Promise.reject("Invalid parent category.");
+                }
+
+                return true;
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateCategoryValidator() {
+    return [
+        body("name")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("parent_category")
+            .optional()
+            .notEmpty()
+            .toInt()
+            .custom(async value => {
+                let currentCategories = await getAllCategories();
+
+                // If the parent_category isn't valid
+        
+                if (!currentCategories.map((category) => category.id).includes(value)) {
+                    return Promise.reject("Parent category not found.");
+                }
+
+                return true;
+            }),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -239,9 +376,103 @@ function loginValidator() {
     ]
 }
 
+function addToCartValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("supplier")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("warehouse")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("transporter")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateCartItemValidator() {
+    return [
+        body("quantity")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt()
+            .isInt({min:1})
+            .withMessage("Minimum quantity is 1."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function addProductToWishlistValidator() {
+    return [
+        body("product")
+            .notEmpty()
+            .bail()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
+    // User validators
     createUserValidator,
     updateUserValidator,
+
+    // Address validators
+    createAddressValidator,
+    updateAddressValidator,
+
+    // Authentication validators
+    loginValidator,
+
+    // Product validators
     getProductsValidator,
-    loginValidator
+
+    // Category validators,
+    createCategoryValidator,
+    updateCategoryValidator,
+
+    // Cart validators
+    addToCartValidator,
+    updateCartItemValidator,
+
+    // Wishlist validators
+    addProductToWishlistValidator
+
+
 }

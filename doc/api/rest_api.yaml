@@ -10,7 +10,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.2
+  version: 1.0.5
 servers:
 - url: https://greenly.pt/api
 - url: http://greenly.pt/api
@@ -77,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-          $ref: '#/components/schemas/UnauthorizedAccessError'
+                $ref: '#/components/schemas/UnauthorizedAccessError'
 
   # USER ROUTES
   /user:
@@ -100,6 +100,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
       security:
         - bearerAuth: []
     post:
@@ -108,10 +114,20 @@ paths:
       summary: Criar utilizador
       operationId: createUser
       requestBody:
-        description: |-
-          Cria um objeto User.
+        description: |- 
+                      Informação correspondente ao utilizador a criar.
+                      
+                      No caso da criação de um novo consumidor ou administrador (i.e. _type_ é 'CONSUMER' ou 'ADMINISTRATOR'):
+                      * Apenas os campos _email_, _first_name_, _last_name_, _password_ e _type_ são absolutamente necessários
 
-          Nota: Por padrão, o atributo 'password' não é devolvido.
+                      No caso da criação de um fornecedor ou transportador (i.e. _type_ é 'SUPPLIER' ou 'TRANSPORTER'):
+                      * São necessários os mesmos campos que o consumidor, bem como informação adicional sobre a empresa (_company.name_ e _company.email_)
+
+                      Notas:
+                      * Qualquer outro campo não-essencial (_phone_, _company.bio_) poderá ser incluido, ou posteriormente preenchido através de [PUT /user/{userId}]().
+                      * É possível atualizar qualquer atributo de um utilizador posteriormente, à excepção de _type_.
+                      * Apenas um admninistrador autenticado pode criar novos administradores. Para qualquer outro tipo de utilizador não é necessária autenticação.
+
         content:
           application/json:
             schema:
@@ -127,7 +143,17 @@ paths:
         400:
           description: Dados inválidos
           content: {}
+        403:
+          description: Utilizador não autorizado (ao tentar criar um novo administrador sem ter permissões de administrador)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
       x-codegen-request-body-name: body
+      security:
+        - bearerAuth: []
+
+      
   /user/{userId}:
     get:
       tags:
@@ -142,7 +168,7 @@ paths:
         description: userId do utilizador cuja informação se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -159,6 +185,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
@@ -178,13 +210,14 @@ paths:
         description: userId do utilizador cuja informação se deseja atualizar
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: |-
           Atualiza o objeto User. Requere-se apenas que sejam enviados os parâmetros que seram alterados. (e.g. enviar um valor no parâmetro e-mail causará a sua atualização.
-          No caso de atualização de password, deverão ser incluidos os parâmetros 'old_password', representativo da password atual do respetivo utilizador, e 'new_password', representativo do novo valor da password. Caso o valor do parâmetro 'old_password' não corresponder à atual password do utilizador, o pedido não será concluido.
+          
+          No caso de atualização de password, deverão ser incluidos os parâmetros 'old_password', representativo da password atual do respetivo utilizador, e 'new_password', representativo do novo valor da password. 
+          * Caso o valor do parâmetro 'old_password' não corresponda à atual password do utilizador, o pedido não será concluido.
 
-          Nota: O parâmetro 'userId' não é aceite, devendo este ser mencionado como parâmetro de URL.
         content:
           '*/*':
             schema:
@@ -203,12 +236,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
         409:
           description: Valor unico fornecido está em conflito com valores de outros
-            utilizadores (e.g. e-mail, NIF)
+            utilizadores (i.e. e-mail)
           content: {}
       security:
         - bearerAuth: []
@@ -226,7 +265,7 @@ paths:
         description: userId do utilizador que será removido
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Utilizador removido com sucesso
@@ -240,11 +279,174 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
       security:
         - bearerAuth: []
+  ## ADDRESS ROUTES
+  /user/{userId}/addresses:
+    post:
+      tags:
+        - user
+      summary: Adicionar nova morada à coleção de moradas do utilizador
+      description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
+        um administrador)
+      operationId: createAddress
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador ao qual pertencerá a nova morada
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: |-
+          Representa uma nova morada.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SentAddress'
+        required: true
+      responses:
+        201:
+          description: Morada criada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador da nova morada"
+
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+
+  /user/{userId}/addresses/{addressId}:
+    put:
+      tags:
+        - user
+      summary: Atualizar uma morada do utilizador
+      description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
+        um administrador)
+      operationId: updateAddress
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador ao qual pertence a morada a alterar
+        required: true
+        schema:
+          type: integer
+      - name: addressId
+        in: path
+        description: addressId da morada a alterar
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: |-
+          Representa as atualizações a aplicar à morada em questão.
+
+          Apenas é necessário incluir os atributos que se desejam alterar. (e.g. se for só para alterar a rua, envia-se apenas o atributo _street_ e o respetivo valor).
+
+          Caso se deseje tornar uma morada a principal para envio ou faturação, definindo _is_shipping_ ou _is_billing_ como _true_, qualquer outra morada será alterada, tal que, respetivamente, o seu campo _is_shipping_ ou _is_billing_ seja _false_.
+
+          Na eventualidade de serem atualizados campos correspondentes à localização da morada (i.e. _street_, _city_, _country_ ou _postal_code_), a latitude e longitude da morada serão recalculadas.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddress'
+      responses:
+        201:
+          description: Morada atualizada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Address updated succcessfully"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags:
+        - user
+      summary: Apagar uma morada do utilizador
+      description: Apenas pode ser feito pelo utilizador quando autenticado (ou por
+        um administrador)
+      operationId: deleteAddress
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador ao qual pertence a morada a apagar
+        required: true
+        schema:
+          type: integer
+      - name: addressId
+        in: path
+        description: addressId da morada a apagar
+        required: true
+        schema:
+          type: integer
+      responses:
+        201:
+          description: Morada apagada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Address deleted succcessfully"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
   ## ORDER ROUTES
   /user/{userId}/orders:
     get:
@@ -261,7 +463,7 @@ paths:
         description: userId do utilizador cuja lista de encomendas se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -289,7 +491,7 @@ paths:
         description: userId do utilizador a criar encomenda
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Cria um objeto Order
         content:
@@ -316,100 +518,192 @@ paths:
     get:
       tags:
       - user
-      summary: Obter produtos na wishlist do utilizador userId
-      description: Apenas pode ser feito pelo utilizador quando autenticado
+      summary: Obter items na wishlist
+      description: |-
+        Obter items que estão na wishlist do utilizador userId.
+        Limita-se a consumidores autenticados.
       operationId: getWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja wishlist se deseja obter \nDeve corresponder\
-          \ a um utilizador do tipo consumer"
+        description: userId do utilizador cuja wishlist se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Products'
-        400:
-          description: userId inválido
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
+                $ref: '#/components/schemas/ReceivedWishlist'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
     post:
       tags:
       - user
       summary: Adicionar produto à wishlist
-      description: Apenas pode ser feito pelo utilizador quando autenticado
+      description: |-
+          Adicionar produto à wishlist do utilizador userId.
+          Limita-se a utilizadores autenticados.
       operationId: addToWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja wishlist irá receber um produto \n\
-          Deve corresponder a um utilizador do tipo consumer"
+        description: userId do utilizador associado à wishlist à qual será
+          adicionado um produto
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
-        description: productId do produto a ser adicionado à wishlist
+        description: Informação do produto a adicionar ao carrinho, deverá corresponder a um produto existente
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WishlistProduct'
+              type: object
+              properties:
+                product:
+                  type: integer
+                  description: O código identificador do produto a adicionar à wishlist
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: userId ou productId inválidos
-          content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou produto não encontrados
-          content: {}
-      x-codegen-request-body-name: productID
-  /user/{userId}/wishlist/{productId}:
+          description: Produto mencionado não existe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - The specified product does not exist.
+        409:
+          description: Produto já presente na wishlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified product is already in wishlist.
+
+      security:
+        - bearerAuth: []
+      x-codegen-request-body-name: body
     delete:
       tags:
       - user
-      summary: Remover produto da wishlist
-      description: Apenas pode ser feito pelo utilizador quando autenticado
-      operationId: removeFromWishlist
+      summary: Limpar todos os produtos da wishlist
+      description: |-
+        Permite retirar todos os produtos que estão na wishlist do utilizador userId. 
+        Limita-se a consumidores autenticados.
+      operationId: clearWishlist
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador associado à wishlist \nDeve corresponder\
-          \ a um utilizador do tipo consumer"
+        description: userId do utilizador cuja wishlist se deseja limpar
         required: true
         schema:
-          type: string
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+  /user/{userId}/cart/{productId}:
+    delete:
+      tags:
+      - user
+      summary: Remover produto específico da wishlist
+      description: |-
+        Remover produto correspondente ao código identificador fornecido da wishlist do utilizador userId. 
+        Limita-se a consumidores autenticados.
+      operationId: removeProductFromWishlist
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador associado à wishlist
+        required: true
+        schema:
+          type: integer
       - name: productId
         in: path
-        description: "productId do produto a remover da wishlist \nDeve corresponder\
-          \ a um produto atualmente na wishlist do utilizador"
+        description: |-
+          Código identificador do produto a remover da wishlist. 
+          Deve corresponder a um produto atualmente na wishlist do utilizador.
         required: true
         schema:
-          type: string
+          type: integer
       responses:
-        204:
-          description: Produto removido com sucesso
-          content: {}
-        400:
-          description: userId ou productId inválidos
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou produto não encontrados
-          content: {}
+          description: productId inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified product is not in wishlist.
+      security:
+        - bearerAuth: []
   ## CART ROUTES
   /user/{userId}/cart:
     get:
@@ -426,27 +720,35 @@ paths:
         description: userId do utilizador cujo cesto de compras se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cart'
-        400:
-          description: userId inválido
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
+                $ref: '#/components/schemas/ReceivedCart'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
     post:
       tags:
       - user
       summary: Adicionar item ao cesto de compras
-      description: "Adicionar item com identificador itemId ao cesto de compras do\
+      description: "Adicionar item ao cesto de compras do\
         \ utilizador userId\n A quantidade deverá ser menor ou igual que o stock atual\
-        \ do produto \nLimita-se a utilizadores autenticados, o funcionamento para\
+        \ do produto. \nLimita-se a utilizadores autenticados, o funcionamento para\
         \ utilizadores não autenticados é session-based"
       operationId: addToCart
       parameters:
@@ -456,28 +758,46 @@ paths:
           adicionado um produto
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
-        description: itemId do item a ser adicionado ao cesto de compras e respetiva
-          quantidade
+        description: Informação do item a adicionar ao carrinho
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CartItem'
+              $ref: '#/components/schemas/SentCartItem'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
         400:
-          description: userId ou itemId inválidos
-          content: {}
+          description: Parâmetros inválidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Requested quantity is higher than available stock."
+                    - "Specified item is already in cart."
+                    - "Requested quantity is higher than available stock."
+                    - "Minimum quantity is 1."
+
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-        404:
-          description: Utilizador ou item não encontrados
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
       x-codegen-request-body-name: body
     delete:
       tags:
@@ -490,59 +810,129 @@ paths:
       parameters:
       - name: userId
         in: path
-        description: userId do utilizador cujo cesto de compras se deseja obter
+        description: userId do utilizador cujo cesto de compras se deseja limpar
         required: true
         schema:
-          type: string
+          type: integer
       responses:
-        204:
-          description: Items removidos com sucesso
-          content: {}
-        400:
-          description: userId inválido
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-        404:
-          description: Utilizador encontrado
-          content: {}
-  /user/{userId}/cart/{itemId}:
-    delete:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+  /user/{userId}/cart/{index}:
+    put:
       tags:
       - user
-      summary: Remover item do cesto de compras
-      description: "Remover item itemId do cesto de compras do utilizador userId \n\
-        Limita-se a utilizadores autenticados, o funcionamento para utilizadores nã\
-        o autenticados é session-based"
-      operationId: removeFromCart
+      summary: Atualizar a quantidade de um item no carrinho
+      description: "Permite alterar a quantidade de um item que se quer no carrinho. Este parâmetro tem um mínimo de 1, estando limitado ao stock atual do fornecedor em questão."
+      operationId: updateItemInCart
       parameters:
       - name: userId
         in: path
         description: userId do utilizador associado ao cesto de compras
         required: true
         schema:
-          type: string
+          type: integer
       - name: itemId
         in: path
-        description: "itemId do item a remover do cesto de compras \nDeve corresponder\
-          \ a um item atualmente no cesto de compras do utilizador"
+        description: |-
+          Indíce do item a remover do cesto de compras. Deve corresponder a um item atualmente no cesto de compras do utilizador."
         required: true
         schema:
-          type: string
+          type: integer
       responses:
-        204:
-          description: Item removido com sucesso
-          content: {}
-        400:
-          description: userId ou itemId inválidos
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou item não encontrados
-          content: {}
+          description: index inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified index is not valid. Check the content of your cart for updated indexes.
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags:
+      - user
+      summary: Remover item do cesto de compras
+      description: |-
+        Remover item correspondente ao índice fornecido do cesto de compras do utilizador userId. 
+        Limita-se a utilizadores autenticados, o funcionamento para utilizadores não autenticados é session-based."
+      operationId: removeItemFromCart
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador associado ao cesto de compras
+        required: true
+        schema:
+          type: integer
+      - name: index
+        in: path
+        description: |-
+          Índice do item a remover do cesto de compras. 
+          Deve corresponder a um item atualmente no cesto de compras do utilizador.
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: index inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Specified index is not valid. Check the content of your cart for updated indexes.
+      security:
+        - bearerAuth: []
   ### STORE ROUTES
   ## PRODUCT ROUTES
   /store/products:
@@ -561,6 +951,9 @@ paths:
           enum:
           - price_asc
           - price_desc
+          - name_desc
+          - newest
+          - oldest
       - name: limit
         in: query
         description: Limite de produtos a devolver
@@ -576,15 +969,33 @@ paths:
         description: Identificador da categoria de produtos a devolver
         schema:
           type: integer
-      - name: keyword
+      - name: keywords
         in: query
         description: Palavas-chave a incluir na pesquisa
-        style: form
-        explode: false
         schema:
           type: array
           items:
             type: string
+      - name: min_price
+        in: query
+        description: Preço mínimo dos produtos a apresentar
+        required: false 
+        schema:
+          type: number
+          format: float
+      - name: max_price
+        in: query
+        description: Preço máximo dos produtos a apresentar
+        required: false
+        schema:
+          type: number
+          format: float
+      - name: supplier
+        in: query
+        description: Código identificador do fornecedor dos produtos a apresentar
+        required: false
+        schema:
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -592,6 +1003,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Products'
+        400:
+          description: Argumentos inválidos
     post:
       tags:
       - store
@@ -630,7 +1043,7 @@ paths:
         description: productId do produto cuja informação se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -656,7 +1069,7 @@ paths:
         description: productId do produto cuja informação se deseja atualizar
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto Product
         content:
@@ -690,7 +1103,7 @@ paths:
         description: productId do produto que será removido
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Produto removido com sucesso
@@ -704,6 +1117,195 @@ paths:
         404:
           description: Produto não encontrado
           content: {}
+  ## Category Routes
+  /store/categories:
+    get:
+      tags:
+      - store
+      summary: Obter todas as categorias de produtos
+      description: "Devolve informação sobre todas as categorias de produtos existentes"
+      operationId: getCategories
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedCategory'
+    post:
+      tags:
+      - store
+      summary: Criar uma nova categoria de produtos
+      description: "Permite criar uma nova categoria (operação limitada a administradores)"
+      operationId: createCategory
+      requestBody:
+        description: "Informação correspondente à nova categoria a criar. Requer o nome da mesma e o código identificador da categoria mãe (opcional)"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SentCategory'
+      responses:
+        201:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador da nova categoria
+        400:
+          description: Informação fornecida é inválida. (e.g. parent_category inválida)
+          content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+      
+  /store/categories/{categoryId}:
+    put:
+      tags:
+      - store
+      summary: Atualizar uma categoria específica pelo respetivo categoryId
+      description: "Devolve uma mensagem de sucesso relativa à atualização da informação a categoria (operação limitada a administradores)"
+      operationId: updateCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: categoryId da categoria cuja informação se deseja atualizar
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Atualiza o objeto Category, apenas os campos que se deseja atualizar têm que ser incluidos.
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SentCategory'
+        required: true
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category updated succcessfully"
+        400:
+          description: Informação fornecida é inválida. (e.g. parent_category inválida)
+          content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - store
+      summary: Apagar uma categoria de produtos
+      description: Permite apagar uma categoria de produtos, desde que esta não tenha produtos ou sub-categorias associadas (operação limitada a administradores)
+      operationId: deleteCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: categoryId da categoria que se pretende apagar
+        required: true
+        schema:
+          type: integer
+      responses:
+        201:
+          description: Categoria apagada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category deleted succcessfully"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        409:
+          description: Categoria não pode ser apagada pois tem sub-categorias ou produtos associados
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Category can't be deleted, includes products or sub-categories."
+          
+      security:
+        - bearerAuth: []
+  ## Supplier information route
+  /store/suppliers:
+    get:
+      tags:
+      - store
+      summary: Obter informação sobre todos os fornecedores registados na plataforma.
+      description: |-
+        Permite obter informação básica sobre todos os fornecedores, bem como a quantidade de produtos que estes fornecem.
+
+        Operação limitada a utilizadores autenticados.
+      operationId: getAllSuppliers
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivedSuppliers'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
+
   ## ORDER ROUTES
   /store/orders:
     get:
@@ -735,7 +1337,7 @@ paths:
         description: orderId da encomenda cuja informação se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -763,7 +1365,7 @@ paths:
         description: orderId da encomenda a ser atualizada
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto OrderStatus que se encontra dentro da encomenda
           orderId
@@ -803,7 +1405,7 @@ paths:
           \ a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -830,7 +1432,7 @@ paths:
           \ a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Cria um objeto Product
         content:
@@ -868,14 +1470,14 @@ paths:
           \ a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: vehicleId
         in: path
         description: "vehicleId do veículo \nDeve corresponder a um veículo pertencente\
           \ à frota do transportador"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -903,14 +1505,14 @@ paths:
           \ a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: vehicleId
         in: path
         description: "vehicleId do veículo a atualizar \nDeve corresponder a um veí\
           culo pertencente à frota do transportador"
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto Vehicle
         content:
@@ -946,14 +1548,14 @@ paths:
           \ a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: vehicleId
         in: path
         description: "vehicleId do veículo a remover \nDeve corresponder a um veí\
           culo pertencente à frota do transportador"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Veículo removido com sucesso
@@ -984,7 +1586,7 @@ paths:
           obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -1013,7 +1615,7 @@ paths:
           de distribuição
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Cria um objeto DistributionCenter, adicionando-o à coleção de
           centros de distribuição do transportador
@@ -1049,7 +1651,7 @@ paths:
           \ corresponder a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: centerId
         in: path
         description: "centerId do centro de distribuição cuja informação se deseja\
@@ -1057,7 +1659,7 @@ paths:
           \ userId"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -1086,14 +1688,14 @@ paths:
           Deve corresponder a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: centerId
         in: path
         description: "centerId do centro de distribuição a ser atualizado \nDeve corresponder\
           \ a um centro de distribuição associado ao utilizador userId"
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto DistributionCenter
         content:
@@ -1129,14 +1731,14 @@ paths:
           Deve corresponder a um utilizador do tipo transporter"
         required: true
         schema:
-          type: string
+          type: integer
       - name: centerId
         in: path
         description: "centerId do centro de distribuição a ser removido \nDeve corresponder\
           \ a um centro de distribuição associado ao utilizador userId"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Centro de distribuição removido com sucesso
@@ -1167,7 +1769,7 @@ paths:
           obter
         required: true
         schema:
-          type: string
+          type: integer
       - name: productId
         in: query
         description: Filtro de items a aplicar à pesquisa
@@ -1218,7 +1820,7 @@ paths:
           produto
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: "Cria um objeto Item \nO produto referido deverá estar previamente\
           \ registado na lista de produtos vendidos na loja"
@@ -1254,13 +1856,13 @@ paths:
           \ a um utilizador do tipo supplier"
         required: true
         schema:
-          type: string
+          type: integer
       - name: itemId
         in: path
         description: itemId do item a ser atualizado
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto Item
         content:
@@ -1295,14 +1897,14 @@ paths:
           \ a um utilizador do tipo supplier"
         required: true
         schema:
-          type: string
+          type: integer
       - name: itemId
         in: path
         description: "productId do produto a deixar de fornecer \nDeve corresponder\
           \ a um produto atualmente fornecido pelo utilizador"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Produto removido com sucesso
@@ -1332,7 +1934,7 @@ paths:
         description: userId do fornecedor cujos armazéns se deseja obter
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -1359,7 +1961,7 @@ paths:
         description: userId do fornecedor ao qual se vai adicionar um novo armazém
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Cria um objeto Warehouse, adicionando-o à coleção de armazéns
           do fornecedor
@@ -1394,14 +1996,14 @@ paths:
           \ corresponder a um utilizador do tipo supplier"
         required: true
         schema:
-          type: string
+          type: integer
       - name: warehouseId
         in: path
         description: "warehouseId do armazém cuja informação se deseja saber \nDeve\
           \ corresponder a um armazém associado ao utilizador userId"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         200:
           description: Operação efetuada com sucesso
@@ -1429,14 +2031,14 @@ paths:
           \ a um utilizador do tipo supplier"
         required: true
         schema:
-          type: string
+          type: integer
       - name: warehouseId
         in: path
         description: "warehouseId do armazém a ser atualizado \nDeve corresponder\
           \ a um armazém associado ao utilizador userId"
         required: true
         schema:
-          type: string
+          type: integer
       requestBody:
         description: Atualiza o objeto Warehouse
         content:
@@ -1472,14 +2074,14 @@ paths:
           \ a um utilizador do tipo supplier"
         required: true
         schema:
-          type: string
+          type: integer
       - name: warehouseId
         in: path
         description: "warehouseId do armazém a ser removido \nDeve corresponder a\
           \ um armazém associado ao utilizador userId"
         required: true
         schema:
-          type: string
+          type: integer
       responses:
         204:
           description: Armazém removido com sucesso
@@ -1499,9 +2101,6 @@ components:
     SentUser:
       type: object
       properties:
-        nif:
-          type: integer
-          description: Número de identificação fiscal do utilizador
         first_name:
           type: string
           description: Nome do utilizador
@@ -1511,6 +2110,9 @@ components:
         email:
           type: string
           description: E-mail do utilizador
+        password:
+          type: string
+          description: Palavra-passe do utilizador 
         phone:
           type: string
           description: Número de telefone do utilizador
@@ -1521,8 +2123,6 @@ components:
           - CONSUMER
           - SUPPLIER
           - TRANSPORTER
-        address:
-          $ref: '#/components/schemas/Address'
         company:
           $ref: '#/components/schemas/SentCompany'
       description: Objeto utilizado para devolver informação sobre um utilizador
@@ -1532,9 +2132,6 @@ components:
         id:
           type: integer
           description: Código identificador do utilizador
-        nif:
-          type: integer
-          description: Número de identificação fiscal do utilizador
         first_name:
           type: string
           description: Nome do utilizador
@@ -1554,17 +2151,16 @@ components:
           - CONSUMER
           - SUPPLIER
           - TRANSPORTER
-        address:
-          $ref: '#/components/schemas/Address'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceivedAddress'
         company:
           $ref: '#/components/schemas/ReceivedCompany'
       description: Exemplo de objeto de retorno que inclui a informação do utilizador
     UpdateUser:
       type: object
       properties:
-        nif:
-          type: integer
-          description: Número de identificação fiscal do utilizador
         first_name:
           type: string
           description: Nome do utilizador
@@ -1586,15 +2182,6 @@ components:
           type: string
           description: A nova palavra-passe a definir para o utilizador. Este campo
             apenas é requerido se o campo 'old_password' estiver incluido (Opcional)
-        type:
-          type: string
-          enum:
-          - ADMINISTRATOR
-          - CONSUMER
-          - SUPPLIER
-          - TRANSPORTER
-        address:
-          $ref: '#/components/schemas/Address'
       description: Objeto utilizado para devolver informação sobre um utilizador
     ReceivedID:
       type: object
@@ -1633,6 +2220,85 @@ components:
           type: string
           description: E-mail de contacto da empresa
       description: Objeto utilizado para representar informação sobre uma empresa
+    SentAddress:
+      type: object
+      description: Objeto utilizado para criar uma morada
+      properties:
+        street:
+          type: string
+          description: Rua da morada
+        city:
+          type: string
+          description: Cidade da morada
+        postal_code:
+          type: string
+          description: Código postal da morada
+        country:
+          type: string
+          description: País da morada
+        nif:
+          type: integer
+          description: Número de contribuinte associado à morada
+      xml:
+        name: SentAddress
+    ReceivedAddress:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Código identificador da morada
+        street:
+          type: string
+          description: Rua da morada
+        city:
+          type: string
+          description: Cidade da morada
+        country:
+          type: string
+          description: País da morada
+        postal_code:
+          type: string
+          description: Código postal da morada
+        nif:
+          type: integer
+          description: Número de contribuinte associado à morada
+        latitude:
+          type: number
+          description: A latitude da morada especificada (precisão de 6 decimais)
+        longitude:
+          type: number
+          description: A longitude da morada especificada (precisão de 6 decimais)
+        is_shipping:
+          type: boolean
+          description: Atributo que sinaliza se a morada é a morada principal de envio do utilizador
+        is_billing:
+          type: boolean
+          description: Atributo que sinaliza se a morada é a morada principal de faturação do utilizador
+    UpdateAddress:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Rua da morada
+        city:
+          type: string
+          description: Cidade da morada
+        country:
+          type: string
+          description: País da morada
+        postal_code:
+          type: string
+          description: Código postal da morada
+        nif:
+          type: integer
+          description: Número de contribuinte associado à morada
+        is_shipping:
+          type: boolean
+          description: Atributo que sinaliza se a morada é a morada principal de envio do utilizador
+        is_billing:
+          type: boolean
+          description: Atributo que sinaliza se a morada é a morada principal de faturação do utilizador
+
     ## ORDER DEFINITIONS
     Order:
       type: object
@@ -1692,14 +2358,10 @@ components:
         name:
           type: string
           description: Nome do produto
-        categories:
-          type: array
-          description: Categorias associadas ao produto
-          items:
-            type: object
-            properties:
-              category:
-                $ref: '#/components/schemas/Category'
+        category:
+          type: integer
+          description: A categoria em que o produto se insere
+
         complement:
           type: string
           description: productId do produto que serve de complemento a este
@@ -1739,6 +2401,21 @@ components:
             name:
               type: string
               description: O nome da categoria à qual o produto pertence
+        attributes:
+          type: array
+          description: Lista de atributos do produto
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Indíce do atributo do produto
+              title:
+                type: string
+                description: Título do atributo do produto
+              content:
+                type: string
+                description: Conteúdo do atributo do produto
         supplies:
           type: array
           description: Informação detalhada sobre o fornecimento de cada fornecedor
@@ -1747,8 +2424,18 @@ components:
             type: object
             properties:
               warehouse:
-                type: integer
-                description: Código identificador do armazém em que o produto se encontra
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador do armazém em que o produto se encontra 
+                  resource_usage:
+                    type: integer
+                    description: Utilização média de recursos para o armazenamento de 1 item (em kWh)
+                  renewable_resources:
+                    type: integer
+                    description: Percentagem da energia utilizada em armazenamento proveniente de fontes renováveis
+              
               quantity:
                 type: integer
                 description: Quantidade em stock que o fornecedor tem deste produto
@@ -1772,19 +2459,32 @@ components:
                     type: string
                     description: Nome da empresa
                 description: Informação do fornecedor
-              transporters:
+              transports:
                 type: array
-                description: Informação sobre todos os transportadores que podem transportar
-                  este produto, quando vendido por este fornecedor
+                description: Informação sobre todos os transportadores que podem transportar este produto, quando vendido por este fornecedor
                 items:
                   type: object
                   properties:
-                    id:
-                      type: integer
-                      description: Código identificador da empresa do fornecedor
-                    name:
-                      type: string
-                      description: Nome da empresa
+                    transporter:
+                      type: object
+                      description: Informação sobre o transportador
+                      properties:
+                        id:
+                          type: integer
+                          description: Código identificador do transportador
+                        name:
+                          type: string
+                          description: Nome da empresa
+                        average_emissions:
+                          type: integer
+                          description: Média de emissões da frota do transportador (em CO2 g/km/t)
+                        average_resource_usage:
+                          type: integer
+                          description: Média de consumo de combustível da frota do transportador (em l/100km)
+                    price:
+                      type: number
+                      description: A preço do transporte
+                      format: float
               history:
                 type: array
                 description: Informação histórica sobre a venda deste produto por
@@ -1808,70 +2508,107 @@ components:
       description: Objeto utilizado para devolver informação detalhada sobre um único
         produto
     Products:
+      type: object
+      properties:
+        total_products:
+          type: integer
+          description: A quantidade de produtos disponíveis considerando os filtros específicados
+        products:
+          type: array
+          description: Objeto utilizado para devolver informação sobre vários produtos
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: O código identificador do produto
+              name:
+                type: string
+                description: O nome do produto
+              description:
+                type: string
+                description: A descrição do produto
+              complement_name:
+                type: string
+                description: O nome de um produto adicional que seja necessário para o
+                  uso deste produto (e.g. pilhas)
+              complement_amount:
+                type: integer
+                description: A quantidade do produto adicional requerido
+              category:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador da categoria à qual o produto
+                      pertence
+                  name:
+                    type: string
+                    description: O nome da categoria à qual o produto pertence
+              lowest_price:
+                type: integer
+                description: O preço mais baixo a que o produto é vendido, de entre todos
+                  os seus fornecedores
+              highest_price:
+                type: integer
+                description: O preço mais alto a que o produto é vendido, de entre todos
+                  os seus fornecedores
+    ReceivedWishlist:
       type: array
-      description: Objeto utilizado para devolver informação sobre vários produtos
       items:
         type: object
         properties:
           id:
             type: integer
-            description: O código identificador do produto
+            description: Código identificador do produto
           name:
             type: string
-            description: O nome do produto
+            description: Nome do produto em questão
           description:
             type: string
-            description: A descrição do produto
-          complement_name:
-            type: string
-            description: O nome de um produto adicional que seja necessário para o
-              uso deste produto (e.g. pilhas)
-          complement_amount:
-            type: integer
-            description: A quantidade do produto adicional requerido
+            description: Descrição do produto em questão
           category:
             type: object
+            description: A categoria do produto
             properties:
               id:
-                type: string
-                description: O código identificador da categoria à qual o produto
-                  pertence
+                type: integer
+                description: O código identificador da categoria
               name:
                 type: string
-                description: O nome da categoria à qual o produto pertence
+                description: O nome da categoria
           lowest_price:
-            type: integer
-            description: O preço mais baixo a que o produto é vendido, de entre todos
-              os seus fornecedores
-          highest_price:
-            type: integer
-            description: O preço mais alto a que o produto é vendido, de entre todos
-              os seus fornecedores
-    WishlistProduct:
+            type: number
+            format: float
+            description: O preço mais baixo a que o produto é vendido
+      description: Objeto utilizado para devolver informação sobre produtos na wishlist do utilizador
+
+    ## CATEGORY DEFINITIONS
+    SentCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome da categoria
+        parent_category:
+          type: integer
+          description: A categoria-mãe da categoria em questão 
+      description: Objeto utilizado para a criação de uma categoria de produtos
+      xml:
+        name: Category
+    ReceivedCategory:
       type: object
       properties:
         id:
           type: integer
-          description: Código identificador do produto
-      description: Envio do identificador do produto para a wishlist do utilizador
-
-    ## CATEGORY DEFINITIONS
-    Category:
-      type: object
-      properties:
-        categoryId:
-          type: string
           description: Código identificador da categoria
         name:
           type: string
           description: Nome da categoria
-        subtype:
-          type: string
-          description: Subtipo da categoria
-      description: Objeto utilizado para devolver informação sobre a categoria de
-        um produto
-      xml:
-        name: Category
+        parent_category:
+          type: integer
+          description: A categoria-mãe da categoria em questão 
+
 
     ## VEHICLE DEFINITIONS
     Vehicle:
@@ -1892,7 +2629,7 @@ components:
             de veículos a combustão e kWh/100km em caso de veículos elétricos
         averageEmissions:
           type: integer
-          description: Média de emissões do veículo, medida em g/km de CO2
+          description: Média de emissões do veículo, medida em CO2 g/km/t
       description: Objeto utilizado para devolver informação sobre um veículo
       xml:
         name: Vehicle
@@ -1960,7 +2697,7 @@ components:
         capacity:
           type: integer
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: '#/components/schemas/ReceivedAddress'
         resourceUsage:
           type: integer
           description: Eletricidade utilizada para mantimento, por produto, medida
@@ -1982,7 +2719,7 @@ components:
           type: integer
           description: Capacidade de veículos de um centro de distribuição
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: '#/components/schemas/ReceivedAddress'
         vehicles:
           type: array
           description: Informação sobre os veículos que estão no centro de distribuição
@@ -1991,58 +2728,158 @@ components:
       description: Objeto utilizado para devolver informações sobre um centro de distribuição
       xml:
         name: DistributionCenter
-    Address:
+    ReceivedCart:
       type: object
       properties:
-        street:
-          type: string
-          description: Rua da morada
-        city:
-          type: string
-          description: Cidade da morada
-        postal_code:
-          type: string
-          description: Código postal da morada
-        country:
-          type: string
-          description: País da morada
-      description: Objeto utilizado para devolver a morada
-      xml:
-        name: Address
-    Cart:
-      type: object
-      properties:
-        userId:
-          type: integer
-          description: Código identificador do utilizador
-        itemList:
+        items:
           type: array
-          description: Itens no cesto de compras
+          description: Conjunto de items no carrinho
           items:
             type: object
             properties:
-              item:
-                $ref: '#/components/schemas/Item'
+              index:
+                type: integer
+                description: O índice do item no carrinho, utilizado para identificar este item em ações relativas de atualização ou remoção
+              product:
+                type: object
+                description: Informação sobre o produto
+                properties:
+                  id:
+                    type: integer
+                    description: O código identificador do produto
+                  name:
+                    type: string
+                    description: O nome do produto
+              supplier:
+                type: object
+                description: Informação sobre o fornecedor
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador do fornecedor
+                  name:
+                    type: string
+                    description: O nome do fornecedor
+              transporter:
+                type: object
+                description: Informação sobre o transportador
+                properties:
+                  id:
+                    type: string
+                    description: O código identificador do transportador
+                  name:
+                    type: string
+                    description: O nome do transportador
               quantity:
                 type: integer
-                description: Quantidade do item
+                description: A quantidade do produto especificado a incluir na futura encomenda
+              price:
+                type: number
+                format: float
+                description: O preço do fornecimento do produto
+              transport_price:
+                type: number
+                format: float
+                description: O preço do transporte do produto
+              supplier_renewable_resources:
+                type: number
+                format: float
+                description: A percentagem de recursos utilizados pelo fornecedor oriundos de fontes renováveis
+              average_supplier_resource_usage:
+                type: number
+                format: float
+                description: A média de utilização de recursos do fornecedor para o armazenamento do produto, em kWh (Quilowatt-hora)
+              average_transporter_resource_usage:
+                type: number
+                format: float
+                description: A média de utilização de recursos do transportador para o envio de um produto, em l/100km (litros de combustível aos 100km)
+              average_transporter_resource_emissions:
+                type: number
+                format: float
+                description: A média de emissões poluentes do transportador para o envio de um produto, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
+        total_price:
+          type: number
+          format: float
+          description: Preço total do carrinho
+        total_supplier_renewable_resources:
+          type: number
+          format: float
+          description: Percentagem ponderada total de recursos oriundos de fontes renováveis utilizados pelos vários fornecedores dos itens no carrinho
+        total_supplier_resource_usage:
+          type: number
+          format: float
+          description: Total de utilização de recursos por parte dos vários fornecedores dos itens no carrinho para o armazenamento de produtos, em kWh (Quilowatt-hora)
+        total_transporter_resource_usage:
+          type: number
+          format: float
+          description: Total de utilização de recursos por parte dos vários transportadores dos itens no carrinho para o envio de produtos, em l/100km (litros de combustível aos 100km)
+        total_transporter_emissions:
+          type: number
+          format: float
+          description: Total de emissões poluentes feitas por parte dos vários transportadores dos itens no carrinho para o envio de produtos, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada)
       description: Objeto utilizado para representar o cesto de compras de um utilizador,
         detalhando cada item incluído e respetiva quantidade
       xml:
-        name: Cart
-    CartItem:
+        name: ReceivedCart
+    SentCartItem:
       type: object
       properties:
-        itemId:
-          type: string
-          description: Código identificador do item
+        product:
+          type: integer
+          description: Código identificador do produto a ser adicionado ao carrinho
+        supplier:
+          type: integer
+          description: Código identificador do fornecedor escolhido
+        transporter:
+          type: integer
+          description: Código identificador do transportador escolhido
         quantity:
           type: integer
-          description: Quantidade do item
-      description: Objeto que deverá ser fornecido ao ser colocado no carrinho, especificando
-        o itemId do item e  a respetiva quantidade
+          description: Quantidade do item. Deverá ser um valor igual ou inferior à quantidade de stock disponível pelo fornecedor
+      description: |-
+          Objeto que deverá ser fornecido ao ser colocado no carrinho, especificando os parâmetros do fornecimento e quantidade desejada. 
+
+          Nota: a combinação `product`, `supplier`, `transporter` deverá ser válida.
       xml:
-        name: CartItem
+        name: SentCartItem
+
+    ReceivedSuppliers:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Código identificador do fornecedor
+          first_name:
+            type: string
+            description: Primeiro nome do utilizador da conta de fornecedor
+          last_name:
+            type: string
+            description: Último nome do utilizador da conta de fornecedor
+          phone: 
+            type: string
+            description: Número de telefone associado à conta de utilizador do fornecedor, i.e. número de telefone do representante
+          email:
+            type: string
+            description: Conta de e-mail associada à conta de utilizador do fornecedor, i.e. e-mail do representante
+          company:
+            type: object
+            description: Informação sobre a empresa do fornecedor
+            properties:
+              name:
+                type: string
+                description: Nome da empresa
+              bio:
+                type: string
+                description: Descrição da empresa
+              email:
+                type: string
+                description: E-mail de contacto da empresa
+          products_sold:
+            type: integer
+            description: A quantidade de produtos que são fornecidos pelo fornecedor em questão
+
     Payment:
       type: object
       properties:
@@ -2063,6 +2900,7 @@ components:
       xml:
         name: Payment
 
+    ## TODO: Transform this into responses
     ## CONFIRMATIONS AND ERRORS
     UnauthorizedAccessError:
       type: object
@@ -2073,6 +2911,23 @@ components:
           - Invalid token. Unauthorized access.
       description: Erro devolvido durante uma tentativa de acesso não autenticada
         a um recurso protegido (token inválido)
+    InsufficientPermissionsError:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+          - Insufficient permissions for specified resource.
+      description: Erro devolvido durante uma tentativa de acesso não autenticada a um recurso protegido
+    InvalidDataError:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+          - "Invalid data. Make sure to include every field."
+      description: Erro devolvido durante uma tentativa de criação ou atualização de um recurso em falta de campos obrigatórios. Na maioria dos casos, esta resposta incluirá também mensagens explicativas sobre as causas de erro."
+    
     LocalAuthenticationError:
       type: object
       properties:
@@ -2123,3 +2978,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+

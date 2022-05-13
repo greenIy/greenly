@@ -8,16 +8,6 @@
 # -- Viable alternative: (supplier, id). warehouse or product don't really need to be in composite PK.
 
 # OTHER TABLES
-CREATE TABLE Address (
-    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    street          VARCHAR(255)    NOT NULL,
-    country         VARCHAR(50)     NOT NULL,
-    city            VARCHAR(50)     NOT NULL,
-    # Best way to store latitude and longitude is using MySQL POINT, but it is not supported by Prisma
-    latitude        DECIMAL(8,6)    NOT NULL,
-    longitude       DECIMAL(8,6)    NOT NULL,
-    postal_code     VARCHAR(10)     NOT NULL
-);
 
 CREATE TABLE Category (
     id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -48,48 +38,66 @@ CREATE TABLE Product (
     FULLTEXT (name, description)
 );
 
+CREATE TABLE ProductAttribute (
+    id              INT UNSIGNED AUTO_INCREMENT,
+    product         INT UNSIGNED NOT NULL,
+    title           VARCHAR(255) NOT NULL,
+    content         VARCHAR(500) NOT NULL,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id),
+
+    PRIMARY KEY (id, product)
+);
+
 # USER TABLES
 
 CREATE TABLE Company (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR (50)    NOT NULL,
     email       VARCHAR (255)   NOT NULL,
-    bio         VARCHAR (255)   NULL
+    bio         VARCHAR (255)
 );
 
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    password    VARCHAR(60),# bcrypt hashes always use 60 characters
     first_name  VARCHAR(255) NOT NULL,
     last_name   VARCHAR(255) NOT NULL,
-    nif         INT(9)       UNIQUE NOT NULL,
     email       VARCHAR(255) UNIQUE NOT NULL,
-    phone       VARCHAR(20)  NOT NULL,
-    address     INT UNSIGNED,
+    phone       VARCHAR(20),
     company     INT UNSIGNED,
-    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
-
-
-    FOREIGN KEY (address)
-        REFERENCES Address(id),
+    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER') NOT NULL,
 
     FOREIGN KEY (company)
         REFERENCES Company(id)
-
 );
 
-# Uncomment if user-differentiating attributes are ever found
-# CREATE TABLE Consumer (
-#
-# );
-#
-# CREATE TABLE Supplier (
-#
-# );
-#
-# CREATE TABLE Transporter (
-#
-# );
+CREATE TABLE Credentials (
+    id          INT UNSIGNED PRIMARY KEY,
+    provider    VARCHAR(8)      NOT NULL,  # Local, Facebook or Google
+    value       VARCHAR(60)     NOT NULL,    
+
+    FOREIGN KEY (id)
+        REFERENCES User(id)
+);
+
+CREATE TABLE Address (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    street          VARCHAR(255)    NOT NULL,
+    country         VARCHAR(50)     NOT NULL,
+    city            VARCHAR(50)     NOT NULL,
+    # Best way to store latitude and longitude is using MySQL POINT, but it is not supported by Prisma
+    latitude        DECIMAL(8,6)    NOT NULL, # Latitude ranges from -90 to 90
+    longitude       DECIMAL(9,6)    NOT NULL, # Longitude ranges from -180 to 180
+    postal_code     VARCHAR(10)     NOT NULL,
+    nif             INT(9) UNSIGNED NOT NULL,
+    is_shipping     BOOL            NOT NULL DEFAULT 0,
+    is_billing      BOOL            NOT NULL DEFAULT 0,
+    user            INT UNSIGNED    NOT NULL,
+
+    FOREIGN KEY (user)
+        REFERENCES User(id)
+);
 
 # SUPPLIER-RELATED TABLES
 
@@ -98,7 +106,8 @@ CREATE TABLE Warehouse (
     address         INT UNSIGNED NOT NULL,
     capacity        INT UNSIGNED NOT NULL,
     resource_usage  INT UNSIGNED NOT NULL,
-    supplier     INT UNSIGNED NOT NULL,
+    supplier        INT UNSIGNED NOT NULL,
+    renewable_resources INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, supplier), # Composite PK allows warehouse indexing per supplier. No use-case requires listing all known warehouses.
 
@@ -244,7 +253,7 @@ CREATE TABLE Supply_History (
 );
 
 CREATE TABLE Supply_Transporter (
-    # Specified which transporters can serve which supplies
+    # Specified which transporters can serve which supplies, at which price
 
     # Supply Identifiers
     product     INT UNSIGNED NOT NULL,
@@ -253,6 +262,9 @@ CREATE TABLE Supply_Transporter (
 
     # Transporter
     transporter INT UNSIGNED NOT NULL,
+
+    # Properties
+    price       NUMERIC (10, 2) NOT NULL,
 
     PRIMARY KEY (product, supplier, warehouse, transporter),
 
@@ -264,4 +276,56 @@ CREATE TABLE Supply_Transporter (
         REFERENCES User(id)
         ON DELETE CASCADE
 
+);
+
+# CART
+
+CREATE TABLE Cart (
+    # User identifiers
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Supply Identifiers
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
+
+    # Transporter
+    transporter INT UNSIGNED NOT NULL,
+
+    # Properties
+    `index`       INT UNSIGNED NOT NULL,
+    quantity    INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id),
+
+    FOREIGN KEY (product, supplier, warehouse)
+        REFERENCES Supply(product, supplier, warehouse)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (transporter)
+        REFERENCES User(id)
+        ON DELETE CASCADE
+);
+
+# WISHLIST
+
+CREATE TABLE Wishlist (
+    # User identifier
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Product identifier
+    product     INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id)
+        ON DELETE CASCADE
 );
