@@ -1,0 +1,127 @@
+<template>
+<div class="d-flex justify-content-center mt-5">
+  <nav aria-label="page navigation example" v-if="getPages != 0">
+    <ul class="pagination">
+      <li class="page-item disabled" id="previous">
+        <button type="button" class="page-link" @click='prevPage()'>
+          <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /></span>
+          <span class="sr-only">Anterior</span>
+        </button>
+      </li>
+      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
+      <li class="page-item" id="next">
+        <button class="page-link" @click='nextPage()'>
+          <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-right']" /></span>
+          <span class="sr-only">Seguinte</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+</template>
+<script>
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {faAngleLeft, faAngleRight  } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faAngleLeft);
+library.add(faAngleRight);
+
+export default {
+  name: 'TheNextPage',
+  props: {
+    pageAmount: Number,
+  },
+  data() {
+    return {
+      currentPage: 1,
+      pages: this.pageAmount,
+    };
+  },
+  mounted() {
+    this.setPageActive();
+  },
+  updated() {
+    this.setPageActive();
+  },
+  methods: {
+    prevPage() {
+      if (this.currentPage > 1) {
+        var page = document.getElementById("page-" + this.currentPage);
+        page.classList.remove("active");
+        this.currentPage--;
+        page = document.getElementById("page-" + this.currentPage);
+        page.classList.add("active");
+        this.$emit("sendCurrentPage", this.currentPage);
+        this.manageDisable();
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.pageAmount) {
+        var page = document.getElementById("page-" + this.currentPage);
+        page.classList.remove("active");
+        this.currentPage++;
+        page = document.getElementById("page-" + this.currentPage);
+        page.classList.add("active");
+        this.$emit("sendCurrentPage", this.currentPage);
+        this.manageDisable();
+      }
+    },
+    definePage(num) {
+        var page = document.getElementById("page-" + this.currentPage);
+        page.classList.remove("active");
+        this.currentPage = num;
+        page = document.getElementById("page-" + this.currentPage);
+        page.classList.add("active");
+        this.$emit("sendCurrentPage", this.currentPage);
+        this.manageDisable();
+    },
+    manageDisable() {
+      var previous = document.getElementById("previous");
+      var next = document.getElementById("next");
+      if (this.currentPage != 1) {
+        previous.classList.remove("disabled");
+      } else {
+        previous.classList.add("disabled");
+      }
+
+      if (this.currentPage == this.pages) {
+        next.classList.add("disabled");
+      } else {
+        next.classList.remove("disabled");
+      }
+    },
+    setPageActive() {
+      document.getElementById("page-1").classList.add("active");
+    },
+  },
+  computed: {
+    getPages: function () {
+      this.pages = this.pageAmount;
+      return this.pages;
+    }
+  }
+};
+</script>
+
+<style scoped>
+
+button {
+  color: black;
+}
+
+button:hover {
+  color: #5e9f88;
+}
+
+button:focus {
+  color: #5e9f88;
+  box-shadow: none;
+}
+
+.page-item.active .page-link {
+  color: #5e9f88;
+  background-color: #ededed;
+  border: #dee2e6 1px solid;
+}
+
+</style>

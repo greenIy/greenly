@@ -38,6 +38,18 @@ CREATE TABLE Product (
     FULLTEXT (name, description)
 );
 
+CREATE TABLE ProductAttribute (
+    id              INT UNSIGNED AUTO_INCREMENT,
+    product         INT UNSIGNED NOT NULL,
+    title           VARCHAR(255) NOT NULL,
+    content         VARCHAR(500) NOT NULL,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id),
+
+    PRIMARY KEY (id, product)
+);
+
 # USER TABLES
 
 CREATE TABLE Company (
@@ -49,17 +61,24 @@ CREATE TABLE Company (
 
 CREATE TABLE User (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    password    VARCHAR(60),# bcrypt hashes always use 60 characters
     first_name  VARCHAR(255) NOT NULL,
     last_name   VARCHAR(255) NOT NULL,
     email       VARCHAR(255) UNIQUE NOT NULL,
     phone       VARCHAR(20),
     company     INT UNSIGNED,
-    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER'),
+    type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER') NOT NULL,
 
     FOREIGN KEY (company)
         REFERENCES Company(id)
+);
 
+CREATE TABLE Credentials (
+    id          INT UNSIGNED PRIMARY KEY,
+    provider    VARCHAR(8)      NOT NULL,  # Local, Facebook or Google
+    value       VARCHAR(60)     NOT NULL,    
+
+    FOREIGN KEY (id)
+        REFERENCES User(id)
 );
 
 CREATE TABLE Address (
@@ -88,6 +107,7 @@ CREATE TABLE Warehouse (
     capacity        INT UNSIGNED NOT NULL,
     resource_usage  INT UNSIGNED NOT NULL,
     supplier        INT UNSIGNED NOT NULL,
+    renewable_resources INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, supplier), # Composite PK allows warehouse indexing per supplier. No use-case requires listing all known warehouses.
 
@@ -243,6 +263,9 @@ CREATE TABLE Supply_Transporter (
     # Transporter
     transporter INT UNSIGNED NOT NULL,
 
+    # Properties
+    price       NUMERIC (10, 2) NOT NULL,
+
     PRIMARY KEY (product, supplier, warehouse, transporter),
 
     FOREIGN KEY (product, supplier, warehouse)
@@ -253,4 +276,56 @@ CREATE TABLE Supply_Transporter (
         REFERENCES User(id)
         ON DELETE CASCADE
 
+);
+
+# CART
+
+CREATE TABLE Cart (
+    # User identifiers
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Supply Identifiers
+    product     INT UNSIGNED NOT NULL,
+    supplier    INT UNSIGNED NOT NULL,
+    warehouse   INT UNSIGNED NOT NULL,
+
+    # Transporter
+    transporter INT UNSIGNED NOT NULL,
+
+    # Properties
+    `index`       INT UNSIGNED NOT NULL,
+    quantity    INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id),
+
+    FOREIGN KEY (product, supplier, warehouse)
+        REFERENCES Supply(product, supplier, warehouse)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (transporter)
+        REFERENCES User(id)
+        ON DELETE CASCADE
+);
+
+# WISHLIST
+
+CREATE TABLE Wishlist (
+    # User identifier
+    consumer    INT UNSIGNED NOT NULL,
+
+    # Product identifier
+    product     INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (consumer, product),
+
+    FOREIGN KEY (consumer)
+        REFERENCES User(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id)
+        ON DELETE CASCADE
 );

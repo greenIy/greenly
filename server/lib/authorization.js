@@ -6,19 +6,28 @@ const authentication = require("./authentication"); // One-time-usage for admini
 
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
-    const resourceIdentification = {"/user/":                       "ALL_USERS",
-                                    "/user/:userId":                "SINGLE_USER",
-                                    "/user/:userId/addresses/":     "ALL_ADDRESSES",
-                                    "/user/:userId/addresses/:addressId": "SINGLE_ADDRESS",
-                                    "/store/products/:productId":   "SINGLE_PRODUCT",
-                                    "/store/orders/":               "ALL_ORDERS",
-                                    "/store/orders/:orderId":       "SINGLE_ORDER"}
+    const resourceIdentification = {
+        "/user/":                               "ALL_USERS",
+        "/user/:userId":                        "SINGLE_USER",
+        "/user/:userId/addresses":              "ALL_ADDRESSES",
+        "/user/:userId/addresses/:addressId":   "SINGLE_ADDRESS",
+        "/store/products/:productId":           "SINGLE_PRODUCT",
+        "/store/orders":                        "ALL_ORDERS",
+        "/store/orders/:orderId":               "SINGLE_ORDER",
+        "/store/categories":                    "ALL_CATEGORIES",
+        "/store/categories/:categoryId":        "SINGLE_CATEGORY",
+        "/user/:userId/cart":                   "ALL_CART_ITEMS",
+        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM",
+        "/user/:userId/wishlist":               "ALL_WISHLIST_ITEMS",
+        "/user/:userId/wishlist/:productId":    "SINGLE_WISHLIST_ITEM"
+    }
+
+    // Helper functions
+    const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
+    const isConsumer = (user) => {return user.type == "CONSUMER"}
 
     const intent = req.method
-
     const incomingRoute = req.baseUrl + req.route.path
-    const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
-    
 
     // Interpreting resource from path
     switch (resourceIdentification[incomingRoute]) {
@@ -99,6 +108,57 @@ async function check(req, res, next) {
                 (isAdministrator(req.user))) {
                 return next();
             }
+            break;
+
+        case "ALL_CATEGORIES":
+            // This is only valid for: POST
+            if ((isAdministrator(req.user))) {
+                return next();
+            }
+
+            break;
+
+        case "SINGLE_CATEGORY":
+            // This is valid for PUT and DELETE
+            if ((isAdministrator(req.user))) {
+                return next();
+            }
+
+            break;
+
+        case "ALL_CART_ITEMS":
+            // This is valid for: GET, POST, DELETE
+            // Cart is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_CART_ITEM":
+            // This is valid for: PUT, DELETE
+            // Cart is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+        case "ALL_WISHLIST_ITEMS":
+            // This is valid for: GET, POST, DELETE
+            // Wishlist is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_WISHLIST_ITEM":
+            // This is valid for: DELETE
+            // Wishlist is only accessible to consumers
+            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
             break;
 
         default:
