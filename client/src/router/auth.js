@@ -66,7 +66,7 @@ export default class AuthService {
                 store.dispatch('setUser', null)
                 store.dispatch('setState', false);
               }
-              console.log(to.path)
+
               const requiresAuth = publicPages.some((allowedPage) => {
                 to.path.startsWith(allowedPage)
             })
