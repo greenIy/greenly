@@ -6,9 +6,6 @@ import { createStore } from 'vuex';
 import GAuth from 'vue3-google-oauth2';
 
 
-
-
-
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 
@@ -16,7 +13,13 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+// Axios imports
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
 const myApp = createApp(App);
+
+myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
@@ -64,6 +67,8 @@ myApp.use(store)
 router.beforeEach(AuthService.authenticate);
 
 myApp.use(router).mount('#app');
+
+window.document.title = "Greenly";
 
 // Google authentication
 const gauthOption = {

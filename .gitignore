@@ -88,4 +88,5 @@ typings/
 # IDE Project Files
 .idea/
 .vscode/
+.DS_Store
 *.code-workspace

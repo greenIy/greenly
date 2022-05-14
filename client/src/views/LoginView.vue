@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="content-wrap">
-      <the-navbar/>
-      <login-form/>
+      <TheNavbar/>
+      <LoginForm/>
     </div>
-    <the-footer/>
+    <TheFooter/>
   </div>
 </template>
 
