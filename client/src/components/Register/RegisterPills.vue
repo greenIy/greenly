@@ -16,15 +16,15 @@
       
         <div class="tab-content register-form" id="register-content" style="width: 45%; margin-top: 1.5%;">
             <transition name="fade">
-                <register-consumidor v-if="activeTab === 'consumidor'"/>
+                <RegisterConsumidor v-if="activeTab === 'consumidor'"/>
             </transition>
             
             <transition name="fade">
-                <register-transportador v-if="activeTab === 'transportador'"/>
+                <RegisterTransportador v-if="activeTab === 'transportador'"/>
             </transition>
             
             <transition name="fade">
-                <register-fornecedor v-if="activeTab === 'fornecedor'"/>
+                <RegisterFornecedor v-if="activeTab === 'fornecedor'"/>
             </transition>
         </div>        
 
@@ -43,7 +43,7 @@ import { faUser, faTruckFast, faBoxOpen } from '@fortawesome/free-solid-svg-icon
 library.add(faUser, faTruckFast, faBoxOpen);
 
 export default {
-    name: 'registerPills',
+    name: 'RegisterPills',
     components: {
         RegisterConsumidor,
         RegisterTransportador,
@@ -71,7 +71,7 @@ export default {
     }
     .nav-link-active {
         color: white;
-        background-color: #608072;
+        background-color: #5e9f88;
     }
     .fade-enter-active,
     .fade-leave-active {

@@ -2,7 +2,7 @@
 <div class="d-flex">
     <footer class="footer p-3 text-uppercase">
         <div class="row footer">
-            <div class="col-6">
+            <div class="col-4">
                 <img class="pt-2 pb-2" alt="Logo do greenly" src="../../assets/logo_dark.png">
                 <p>
                     Projeto Final da Licenciatura de Tecnologias de Informação.
@@ -12,10 +12,14 @@
                 </div>
             </div>
             <div class="col-2 mt-4">
+                <p>Sobre Greenly</p>
+                <router-link to="/equipa" class="mb-2 pr-2">
+                    Conheça a equipa
+                </router-link>
+            </div>
+            <div class="col-2 mt-4">
                 <p>Contacto</p>
-                <p>
-                   suporte@greenly.com
-                </p>
+                <a href="mailto:support@greenly.pt">support@greenly.pt</a>
             </div>
             <div class="col-2 mt-4">
                 <p>Siga-nos</p>
@@ -23,7 +27,7 @@
                    <span class="sr-only">Link para o Instagram</span>
                     <font-awesome-icon :icon="['fab', 'instagram']" size="lg"/>
                 </a>
-                <a :href="url_instagram" class="m-3" target=”_blank”>
+                <a :href="url_twitter" class="m-3" target=”_blank”>
                    <span class="sr-only">Link para o Twitter</span>
                     <font-awesome-icon :icon="['fab', 'twitter']" size="lg"/>
                 </a>
@@ -33,7 +37,7 @@
                 </a>
             </div>
             <div class="col-2 mt-4">
-                <p>Modos de pagamento</p>
+                <p>Métodos de pagamento</p>
                 <!-- eslint-disable max-len -->
                 <div class="ms-auto icons-div">
                     <font-awesome-icon :icon="['fab', 'cc-visa']" size="2xl"/>
@@ -70,9 +74,9 @@ export default {
   name: 'TheFooter',
   data() {
     return {
-      url_instagram: 'https://www.instagram.com',
-      url_twitter: 'https://www.twitter.com',
-      url_facebook: 'https://www.facebook.com',
+      url_instagram: 'https://www.instagram.com/greenlypt/',
+      url_twitter: 'https://www.twitter.com/greenlypt/',
+      url_facebook: 'https://www.facebook.com/Greenly-102561432419524',
     };
   },
 };
@@ -80,11 +84,11 @@ export default {
 
 <style scoped>
     .footer {
-        background-color: #608072;
+        background-color: #5e9f88;
         color: #fcfaf9;
         font-size: 9px;
-        width: 100%;
-        position: relative;
+        width: 99.88%;
+        position: absolute;
         bottom: 0;
         height: 7.5rem;
     }

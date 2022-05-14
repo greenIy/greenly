@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="col mb-3">
-                    <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
+                    <label for="inputPasswordConfirm" class="form-label">Confirmar palavra-passe</label>
                     <div class="input-group">
                     <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required>  
                         <div class="input-group-append">
@@ -72,7 +72,7 @@
 
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsConditons" required>
-                <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
+                <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right greenly-link">termos e condições de uso</router-link>.</label>
                 <br>
             </div>
 
@@ -86,7 +86,7 @@
             </div>
 
         </form>
-        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
+        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
@@ -228,7 +228,7 @@ export default {
 
 <style scoped>
     .btn-primary {
-        background-color: #608072;
+        background-color: #5e9f88;;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {
@@ -262,5 +262,9 @@ export default {
         position: relative;
         top: -11px;
         z-index: 1;
+    }
+
+    .greenly-link {
+        color: #5e9f88;
     }
 </style>

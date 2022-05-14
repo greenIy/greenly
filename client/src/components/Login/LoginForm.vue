@@ -30,7 +30,7 @@
 
                 </div>
         </form>
-        <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
+        <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/registar" class="float-right greenly-link">Regista-te aqui!</router-link></p>
 
         <!--
         <div class="alert alert-danger alert-dismissible" role="alert" style="display:none;">
@@ -156,7 +156,7 @@ export default({
 
 <style scoped>
     .btn-primary {
-        background-color: #608072;
+        background-color: #5e9f88;;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {
@@ -190,5 +190,9 @@ export default({
         position: relative;
         top: -11px;
         z-index: 1;
+    }
+
+    .greenly-link {
+        color:#5e9f88;
     }
 </style>

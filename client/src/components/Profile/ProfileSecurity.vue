@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="col mb-3">
-                <label for="inputNewPasswordConfirm" class="form-label">Repetir nova palavra-passe</label>
+                <label for="inputNewPasswordConfirm" class="form-label">Confirmar palavra-passe</label>
                 <div class="input-group">
                 <input :type="showPassword3 ? 'text' : 'password'" class="form-control" id="newPasswordConfirm" placeholder="Introduza palavra-passe" required>
                     <div class="input-group-append">
