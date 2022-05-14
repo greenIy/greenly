@@ -14,47 +14,62 @@ const defaultErr    = require("../lib/error").defaultErr
 
 router.get('/products', getProductsValidator(), (req, res) => {
     try {
-        persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((products) => {
+        let productData = persistence.getAllProducts(req.query.limit, req.query.page, req.query.category, req.query.keywords).then((productData) => {
 
-            if (products) {
-                for (let i = 0; i < products.length; i++) {
+            if (productData) {
+
+                // Defining quick helper functions
+                const calcLowestPrice = (supplies) => {
+                    let min = Number.POSITIVE_INFINITY;
+                    supplies.forEach((supply) => {
+                        if (parseFloat(supply.price) < parseFloat(min)) {
+                            min = supply.price
+                        }
+                    })
+
+                    return min;
+                }; 
+
+                const calcHighestPrice = (supplies) => {
+                    let max = Number.NEGATIVE_INFINITY;
+                    supplies.forEach((supply) => {
+                        if (parseFloat(supply.price) > parseFloat(max)) {
+                            max = supply.price
+                        }
+                    })
+
+                    return max;
+                }; 
+
+
+                for (let i = 0; i < productData.products.length; i++) {
                     // Renaming Category key -> category
-                    delete Object.assign(products[i], {["category"]: products[i]["Category"] })["Category"];
+                    delete Object.assign(productData.products[i], {["category"]: productData.products[i]["Category"] })["Category"];
 
-                    // Calculating lowest and highest price
-                    if (products[i].Supply.length > 1) {
-
-                        products[i]["lowest_price"] = products[i].Supply.reduce((a, b) => Math.min(a.price, b.price))
-
-                        products[i]["highest_price"] = products[i].Supply.reduce((a, b) => Math.max(a.price, b.price))
-
-
-                    } else if (products[i].Supply.length == 1) {
-
-                        // This is a workaround for when there's
-                        // only one Supply. Because array.reduce
-                        // works differently when there's only
-                        // one element in an array.
-                        products[i]["lowest_price"] = products[i]["highest_price"] = Number(products[i].Supply[0].price);
+                    // Calculating lowest and highest price 
+                    if (productData.products[i].Supply.length > 0) {
+                        productData.products[i]["lowest_price"] = parseFloat(calcLowestPrice(productData.products[i].Supply).toFixed(2))
+                        productData.products[i]["highest_price"] = parseFloat(calcHighestPrice(productData.products[i].Supply).toFixed(2))
+                        
                     }
 
                     // Removing unrequired keys
-                    delete products[i].Supply
+                    delete productData.products[i].Supply
                 }
 
                 // Sorting: has to be done here since Prisma does
                 // not support sorting over calculated attributes  
                 // such  as lowest_price)
                 if (req.query.sort == "price_asc") {
-                    products.sort((a, b) => a.lowest_price - b.lowest_price)
+                    productData.products.sort((a, b) => a.lowest_price - b.lowest_price)
 
                 } else if (req.query.sort == "price_desc") {
-                    products.sort((a, b) => b.lowest_price - a.lowest_price)
+                    productData.products.sort((a, b) => b.lowest_price - a.lowest_price)
                 }
             
             }
 
-            res.status(200).json(products)
+            res.status(200).json(productData)
         })
     } 
     catch {

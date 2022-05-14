@@ -25,30 +25,12 @@ function createUserValidator() {
                     }
                 })
             }),
-        body('phone')
-            .notEmpty()
-            .isString(),
         body('password')
             .isLength({min: 5}),
-        body('nif')
-            .isLength({min: 9, max:9})
-            .isInt()
-            .custom(value => {
-                return checkUserConflict("nif", value).then(conflict => {
-                    if (conflict) {
-                        return Promise.reject("NIF already in use.")
-                    }
-                })
-            }),
         body('type')
             .isIn(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-        body('address.street')
-            .notEmpty()
-            .isString(),
-        body('address.country')
-            .notEmpty()
-            .isString(),
-        body('address.postal_code')
+        body('phone')
+            .optional()
             .notEmpty()
             .isString(),
         body('company.name')
@@ -59,10 +41,7 @@ function createUserValidator() {
             .notEmpty()
             .isString(),
         body('company.bio')
-            .if(body('type')
-                .isIn(["SUPPLIER", "TRANSPORTER"]))
-            .exists()
-            .withMessage("Company bio must be included if user type is supplier or transporter.").bail()
+            .optional()
             .notEmpty()
             .isString(),
         body('company.email')
@@ -90,9 +69,6 @@ function createUserValidator() {
 }
 
 function updateUserValidator() {
-    // TODO: Don't forget to proof this (try/catch/detail exception) during database access
-    // TODO: When dealing with authentication, this will have to be proofed.
-    //       Only the user itself or an admin could use this, and only to edit the user in question.
     return [
         param('userId').toInt().custom(value => {
                     return getUserByID(value).then(user => {
@@ -121,11 +97,10 @@ function updateUserValidator() {
                     }
                 })
             }),
-
         body('phone')
             .optional()
-            .notEmpty(),
-
+            .notEmpty()
+            .isString(),
         body('old_password') // Require new_password if old_password is included.
             .if(body("new_password").exists()).notEmpty().withMessage("new_password and old_password both have to be included.")
             .custom( (old_password, { req }) => {
@@ -149,33 +124,33 @@ function updateUserValidator() {
                     return true
                 }
             }),
-
-        body('nif')
-            .optional()
-            .isLength({min: 9, max:9})
-            .custom(value => {
-                return checkUserConflict("nif", value).then(conflict => {
-                    if (conflict) {
-                        return Promise.reject("NIF already in use.")
-                    }
-                })
-            }),
-
         body('type')
             .optional()
             .isIn(["ADMINISTRATOR", "SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-        body('address.street')
+        body('company.bio')
             .optional()
-            .notEmpty(),
-
-        body('address.country')
+            // If it exists and the user isn't supplier or transport
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.name')
             .optional()
-            .notEmpty(),
-
-        body('address.postal_code')
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .notEmpty()
+            .isString(),
+        body('company.email')
             .optional()
-            .notEmpty(),
-            
+            .custom((value, {req}) => {
+                return ["SUPPLIER", "TRANSPORTER"].includes(req.user.type)
+            })
+            .withMessage("Company information can't be included if user is a consumer.").bail()
+            .isEmail(),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
@@ -186,6 +161,68 @@ function updateUserValidator() {
 
     ]
 }
+
+/* Address Validation Functions */
+
+function createAddressValidator() {
+    return [
+        body("street")
+            .notEmpty()
+            .isString(),
+        body("country")
+            .notEmpty()
+            .isString(),
+        body("city")
+            .notEmpty()
+            .isString(),
+        body("postal_code")
+            .notEmpty()
+            .isString(),
+        body('nif')
+            .isLength({min: 9, max:9})
+            .isInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateAddressValidator() {
+    return [
+        body("street")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("country")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("city")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body("postal_code")
+            .optional()
+            .notEmpty()
+            .isString(),
+        body('nif')
+            .optional()
+            .isLength({min: 9, max:9})
+            .isInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 
 /* Product Validation Functions */
 
@@ -240,8 +277,18 @@ function loginValidator() {
 }
 
 module.exports = {
+    // User Validators
     createUserValidator,
     updateUserValidator,
+
+    // Address Validators
+    createAddressValidator,
+    updateAddressValidator,
+
+    // Authentication validators
+    loginValidator,
+
+    // Product Validators
     getProductsValidator,
-    loginValidator
+
 }

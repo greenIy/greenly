@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
 const routes = [
@@ -26,15 +26,22 @@ const routes = [
     name: 'wishlist',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/WishlistView.vue');
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
     },
   },
 
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
-
 });
+
+
 
 export default router;

@@ -8,6 +8,8 @@ async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
     const resourceIdentification = {"/user/":                       "ALL_USERS",
                                     "/user/:userId":                "SINGLE_USER",
+                                    "/user/:userId/addresses/":     "ALL_ADDRESSES",
+                                    "/user/:userId/addresses/:addressId": "SINGLE_ADDRESS",
                                     "/store/products/:productId":   "SINGLE_PRODUCT",
                                     "/store/orders/":               "ALL_ORDERS",
                                     "/store/orders/:orderId":       "SINGLE_ORDER"}
@@ -55,17 +57,50 @@ async function check(req, res, next) {
             break;
 
         case "SINGLE_USER":
+            // Users can't change their account type, only administrators
+            if ((intent == "PUT") && (req.body.hasOwnProperty('type'))) {
+                if (isAdministrator(req.user)) {
+                    return next();
+                } else {
+                    break;
+                }
+            }
+
             // Besides the user himself, only administrators and related transporters/suppliers can access and manipulate specific information
-            // This is valid for: GET, PUT, DELETE
-            if ((req.params.userId == user.id) ||
+            // This is valid for: GET, PUT (except type changes), DELETE
+            if ((req.params.userId == req.user.id) ||
                 (isAdministrator(req.user))) {
                 return next();
             }
 
             // TODO: Complete part regarding related transporters and suppliers (e.g. have an order in common)
 
+            break;
+
+        case "SINGLE_ADDRESS":
+            // Valid for: PUT, DELETE
+            if ((isAdministrator(req.user))) {
+                return next();
+            }
+
+            // Check if the user is accessing own data, and if the address belongs to the user
+
+            let userAddressIDs = req.user.Address.map((addressObject) => addressObject.id)            
+
+            if ((req.params.userId == req.user.id) && (userAddressIDs.includes(Number(req.params.addressId)))) {
+                return next();
+            }
 
             break;
+        case "ALL_ADDRESSES":
+            // Only the user itself and administrators can create addresses
+            // This is valid for: POST
+            if ((req.params.userId == req.user.id) ||
+                (isAdministrator(req.user))) {
+                return next();
+            }
+            break;
+
         default:
             break;
     }
