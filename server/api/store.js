@@ -29,42 +29,11 @@ router.get('/products', getProductsValidator(), (req, res) => {
             req.query.supplier).
         then((productData) => {
 
-            if (products) {
+            if (productData) {
 
-                // Defining quick helper functions
-                const calcLowestPrice = (supplies) => {
-                    let min = Number.POSITIVE_INFINITY;
-                    supplies.forEach((supply) => {
-                        if (supply.price < min) {
-                            min = supply.price
-                        }
-                    })
-
-                    return min;
-                }; 
-
-                const calcHighestPrice = (supplies) => {
-                    let max = Number.NEGATIVE_INFINITY;
-                    supplies.forEach((supply) => {
-                        if (supply.price > max) {
-                            max = supply.price
-                        }
-                    })
-
-                    return max;
-                }; 
-
-
-                for (let i = 0; i < products.length; i++) {
+                for (let i = 0; i < productData.products.length; i++) {
                     // Renaming Category key -> category
-                    delete Object.assign(products[i], {["category"]: products[i]["Category"] })["Category"];
-
-                    // Calculating lowest and highest price 
-                    if (products[i].Supply.length > 0) {
-                        products[i]["lowest_price"] = parseFloat(calcLowestPrice(products[i].Supply).toFixed(2))
-                        products[i]["highest_price"] = parseFloat(calcHighestPrice(products[i].Supply).toFixed(2))
-                        
-                    }
+                    delete Object.assign(productData.products[i], {["category"]: productData.products[i]["Category"] })["Category"];
 
                     // Removing unrequired keys
                     delete productData.products[i].Supply
