@@ -21,6 +21,13 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
+  {
+    path: '/wishlist',
+    name: 'wishlist',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/WishlistView.vue');
+    },
+  },
 
 ];
 
