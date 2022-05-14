@@ -37,6 +37,9 @@ export default {
       pages: this.pageAmount,
     };
   },
+  mounted() {
+    this.setPageActive();
+  },
   updated() {
     this.setPageActive();
   },
