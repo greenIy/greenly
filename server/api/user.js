@@ -347,7 +347,7 @@ router.post('/:userId/orders', authentication.check, authorization.check, create
                     message: "Invalid destination. Make sure to use an address registered to your account."
                 })
             default:
-                return res.status(200).send({message: "Order successfully created.",})
+                return res.status(200).send({message: "Order successfully created.", id: result})
         }
 
     })
@@ -362,7 +362,10 @@ router.get('/:userId/orders', authentication.check, authorization.check, (req, r
             if (result == null) {
                 return res.status(500).send(defaultErr())
             }
+
             return res.status(200).json(result)
+
+
         })   
     } catch (e) {
         return res.status(500).send(defaultErr())

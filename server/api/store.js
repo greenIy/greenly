@@ -9,6 +9,7 @@ const {
     createCategoryValidator,              
     updateCategoryValidator } = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
+const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
 const authorization     = require("../lib/authorization");
 const defaultErr        = require("../lib/error").defaultErr;
@@ -199,15 +200,52 @@ router.get('/suppliers', authentication.check, (req, res) => {
 
 /* Payment routes */
 
-router.get('/payments/config', (req, res) => {
-    //TODO: Serve publishable key here
+router.get('/payments/config', authentication.check, (req, res) => {
+    // Serving publishable key
     return res.status(200).json({
         publishable_key: process.env.STRIPE_PUBLISHABLE_KEY
     })
 })
 
-router.post('/payments/webhook', (req, res) => {
-    // TODO: Log received paymentintent here, based on status execute underlying actions (e.g. decrement stock, etc)
+router.get('/payments/intent/:orderId', authentication.check, (req, res) => {
+    
+    payment.createPaymentIntent(Number(req.params.orderId))
+    .then((result) => {
+        
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_ORDER":
+                return res.status(400).send({message: "The specified order is invalid."})
+            case "INVALID_STATUS":
+                return res.status(400).send({message: "The specified order is not available to receive payments."})
+            default:
+                return res.status(200).send({intent: result})
+        }
+    })
+})
+
+router.post('/payments/webhook', async (req, res) => {
+
+    let event = req.body
+
+    let user = event.metadata ? await persistence.getUserByID(payment.metadata.user_id) : null
+
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log(`💸 Received payment for ${paymentIntent.amount/100}€!`);
+
+            // TODO: Try this message with actual metadata from frontend
+            // `, for order ${paymentIntent.metadata.order_id}, from ${user.first_name} ${user.last_name}!` : "!"
+
+            // TODO: Handle successful payment here
+
+            break;
+    }
+
+    return res.status(200).json({received: true})
+    
 })
 
 module.exports = router;

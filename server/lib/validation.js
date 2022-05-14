@@ -192,7 +192,8 @@ function createAddressValidator() {
             .isString(),
         body('nif')
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -224,7 +225,8 @@ function updateAddressValidator() {
         body('nif')
             .optional()
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -249,7 +251,8 @@ function getProductsValidator() {
             .toInt(),
         query("page")
             .optional()
-            .isInt({min:1}),
+            .isInt({min:1})
+            .toInt(),
         query("category")
             .optional()
             .isInt()

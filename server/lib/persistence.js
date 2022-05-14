@@ -395,6 +395,7 @@ async function getUserByID(id, withPassword=false) {
                         id: true,
                         name: true,
                         bio: true,
+                        email: true
                     }
                 },
             }
@@ -1234,7 +1235,7 @@ async function getCart(userID) {
 
             // Adding warehouse averages to payload
             item.average_supplier_resource_usage = warehouse.resource_usage
-            item.supplier_renewable_resouces = warehouse.renewable_resources
+            item.supplier_renewable_resources = warehouse.renewable_resources
 
             // Additional product information
             // TODO: Eventually, also select the product's image here
@@ -1247,7 +1248,7 @@ async function getCart(userID) {
             totalPrice += (item.price * item.quantity) + item.transport_price
 
             // Incrementing environmental details
-            totalSupplierRenewableResources += item.supplier_renewable_resouces
+            totalSupplierRenewableResources += item.supplier_renewable_resources
             totalSupplierResourceUsage      += item.average_supplier_resource_usage
             totalTransporterResourceUsage   += item.average_transporter_resource_usage
             totalTransporterEmissions       += item.average_transporter_emissions
@@ -1601,7 +1602,7 @@ async function getOrdersByUserID(userID) {
                 item.supplier_resource_usage = parseFloat(item.supplier_resource_usage) 
                 item.supplier_renewable_resources = parseFloat(item.supplier_renewable_resources) 
                 item.transporter_resource_usage = parseFloat(item.transporter_resource_usage) 
-                item.transporter_emissions = parseFloat(item.transporter_emissions) 
+                item.transporter_emissions = parseFloat(item.transporter_emissions)
             })
 
             order.items = orderItems
@@ -1681,16 +1682,45 @@ async function createOrder(userID, addressID, observations) {
             counter ++
         }))
 
+        // Clearing the cart
+        await clearCart(userID)
 
-        // Clear cart TODO: Uncomment this line
-        // await clearCart(userID)
-
-        return "ORDER_CREATED"
+        return newOrder.id
 
     } catch (e) {
         console.log(e)
         return null;
     }
+}
+
+async function getOrderByID(id) {
+    let order = await prisma.order.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            consumer: true,
+            date: true,
+            destination: true,
+            observations: true,
+            Order_Item: {
+                orderBy: {
+                    id: 'asc'
+                }
+            }
+        }
+    })
+
+    if (order) {
+
+        order.items = order.Order_Item
+        delete order.Order_Item
+    
+        return order
+    }
+
+    return null
+
 }
 
 /* All functions to be made available to the rest of the project should be listed here */
@@ -1738,5 +1768,6 @@ module.exports = {
 
     // Order Functions
     getOrdersByUserID,
+    getOrderByID,
     createOrder,
 }
