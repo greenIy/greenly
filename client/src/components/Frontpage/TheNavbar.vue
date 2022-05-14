@@ -129,11 +129,15 @@ export default {
     }
 
     .navmenu2 a:hover {
-        color: #5e9f88;;
+        color: #5e9f88;
     }
 
     .nav-links {
         font-size: 12px;
+    }
+
+    .router-link-exact-active {
+        color: #40806a !important;
     }
 
     .container {
