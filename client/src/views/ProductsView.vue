@@ -105,17 +105,30 @@ export default {
     }
   },
   methods: {
-    async getProducts(page=this.currentPage, limit=this.limit, minPrice=this.minPrice, maxPrice=this.maxPrice) {
+    async getProducts(page=1, limit=12, minPrice=0, maxPrice=500000000) {
       let response;
       let request;
-      if (this.nameFilter === "name") {
-        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=name_asc";
-      } else if (this.nameFilter === "priceMin") {
-        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=price_asc";
-      } else if (this.nameFilter === "priceMax") {
-        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=price_desc";
-      } else if (this.nameFilter === "id") {
-        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=newest";
+      let sort;
+
+      if(this.$route.query.pag) {
+        page = this.$route.query.pag;
+      }
+
+      if(this.$route.query.por_pag) {
+        limit = this.$route.query.por_pag;
+      }
+
+      if(this.$route.query.preco_max) {
+        maxPrice = this.$route.query.preco_max;
+      }
+
+      if(this.$route.query.preco_min) {
+        minPrice = this.$route.query.preco_min;
+      }
+
+      if(this.$route.query.ordenar_por) {
+        sort = this.$route.query.ordenar_por;
+        request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=" + sort;
       } else {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice;
       }

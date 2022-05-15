@@ -8,7 +8,7 @@
           <span class="sr-only">Anterior</span>
         </button>
       </li>
-      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><button class="page-link" @click='definePage(n)'> {{ n }} </button></li>
+      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><router-link append :to="{ query: { ...$route.query, pag: n } }"><button class="page-link" @click='definePage(n)'> {{ n }}</button></router-link></li>
       <li class="page-item" id="next">
         <button class="page-link" @click='nextPage()'>
           <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-right']" /></span>
