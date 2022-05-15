@@ -229,17 +229,17 @@ router.post('/payments/webhook', async (req, res) => {
 
     let event = req.body
 
-    let user = event.metadata ? await persistence.getUserByID(payment.metadata.user_id) : null
-
     switch (event.type) {
         case 'payment_intent.succeeded':
             const paymentIntent = event.data.object;
-            console.log(`💸 Received payment for ${paymentIntent.amount/100}€!`);
 
-            // TODO: Try this message with actual metadata from frontend
-            // `, for order ${paymentIntent.metadata.order_id}, from ${user.first_name} ${user.last_name}!` : "!"
+            let user = await persistence.getUserByID(
+                Number(paymentIntent.metadata.user_id))
 
-            // TODO: Handle successful payment here
+            console.log(`💸 Received payment for ${paymentIntent.amount/100}€ from ${user.first_name} ${user.last_name}! (Order ID: ${paymentIntent.metadata.order_id})`);
+
+            // await handler.postPaymentHandler(
+            //     Number(paymentIntent.metadata.order_id));
 
             break;
     }

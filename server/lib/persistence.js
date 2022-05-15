@@ -1643,21 +1643,11 @@ async function createOrder(userID, addressID, observations) {
             }
         })
 
-        // Converting cartItems into order
-        let cartItems = (await getCart(userID)).items
-
-        // Checking if cart has items
-        if (cartItems.length == 0) {
-            return "EMPTY_CART"
-        }
-
-        let counter = 1
-
         // TODO: Check if cart-items are still valid, check if the corresponding supply stock is still larger than the order quantity
 
         // Creating OrderItems from cartItems
 
-        await Promise.all(cartItems.map(async (item) => {
+        await Promise.all(cartItems.map(async (item, index) => {
 
             // Determine closest distribution center, and which vehicle to use
 
@@ -1665,7 +1655,7 @@ async function createOrder(userID, addressID, observations) {
 
             let newOrderItem = await prisma.order_Item.create({
                 data: {
-                    id: counter,
+                    id: index + 1,
                     order: newOrder.id,
                     product: item.product.id,
                     supplier: item.supplier.id,
@@ -1683,8 +1673,6 @@ async function createOrder(userID, addressID, observations) {
                     arrival_date: null
                 }
             })
-
-            counter ++
         }))
 
         // Clearing the cart

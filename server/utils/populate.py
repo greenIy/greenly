@@ -267,7 +267,7 @@ def genProductsSQL(amount, adminToken):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
-            randomPrice = randint(1, 3000)
+            randomPrice = randint(1, 3000) + choice([0.99, 0.59, 0.49, 0.29, 0.19])
             randomQuantity = randint(1, 300)
 
             lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")

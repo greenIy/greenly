@@ -114,7 +114,7 @@ async function check(req, res, next) {
         case "ALL_USER_ORDERS":
             // Only the user himself can create new orders
             if (intent == "POST") {
-                if (req.params.userId == req.user.id) {
+                if (req.params.userId == req.user.id && isConsumer(req.user)) {
                     return next()
                 }
             } 

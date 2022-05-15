@@ -88,7 +88,7 @@ model Distribution_Center {
 model Order {
   id           Int          @id @default(autoincrement()) @db.UnsignedInt
   consumer     Int          @db.UnsignedInt
-  date         DateTime     @db.Date
+  date         DateTime     @db.DateTime(0)
   destination  Int          @db.UnsignedInt
   observations String?      @db.VarChar(255)
   User         User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
@@ -100,13 +100,13 @@ model Order {
 }
 
 model Order_Item {
-  id                           Int               @default(autoincrement()) @db.UnsignedInt
+  id                           Int               @db.UnsignedInt
   status                       Order_Item_status
   order                        Int               @db.UnsignedInt
   supply_price                 Decimal           @db.Decimal(10, 2)
   transport_price              Decimal           @db.Decimal(10, 2)
   quantity                     Int               @db.UnsignedInt
-  arrival_date                 DateTime?         @db.Date
+  arrival_date                 DateTime?         @db.DateTime(0)
   supplier_resource_usage      Decimal           @db.Decimal(10, 2)
   supplier_renewable_resources Decimal           @db.Decimal(10, 2)
   transporter_resource_usage   Decimal           @db.Decimal(10, 2)

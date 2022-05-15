@@ -163,7 +163,7 @@ CREATE TABLE Vehicle (
 CREATE TABLE `Order` (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     consumer        INT UNSIGNED NOT NULL,
-    date            DATE NOT NULL,
+    date            DATETIME NOT NULL,
     destination     INT UNSIGNED NOT NULL,
     observations    VARCHAR(255),
 
@@ -203,7 +203,7 @@ CREATE TABLE Order_Item (
     # This structure allows items from multiple suppliers and transporters to be within the same order. (e.g. AliExpress)
 
     # Core details
-    id          INT UNSIGNED AUTO_INCREMENT,
+    id          INT UNSIGNED NOT NULL,
     status      ENUM('AWAITING_PAYMENT',
                      'PROCESSING',
                      'AWAITING_TRANSPORT',
@@ -217,7 +217,7 @@ CREATE TABLE Order_Item (
     supply_price    NUMERIC(10, 2) UNSIGNED NOT NULL,
     transport_price NUMERIC(10, 2) UNSIGNED NOT NULL,
     quantity        INT UNSIGNED NOT NULL,
-    arrival_date    DATE,
+    arrival_date    DATETIME,
 
 
     # Environmental data has to be here since it could change in the future and affect past orders, so this data relates to the moment when the order was made
