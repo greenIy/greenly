@@ -315,15 +315,6 @@ async function deleteUser(id) {
         */
 
         if (getUserByID(id)) {
-            // Delete user and all his addresses
-            const deletedUser = await prisma.user.delete({
-                where: {
-                    id: id
-                },
-                include: {
-                    Address: true
-                }
-            })
 
             await prisma.address.deleteMany({
                 where: {
@@ -331,7 +322,19 @@ async function deleteUser(id) {
                 }
             })
 
+            await prisma.credentials.delete({
+                where: {
+                    id: id
+                }
+            })
 
+            // Delete user and all his addresses
+            const deletedUser = await prisma.user.delete({
+                where: {
+                    id: id
+                }
+            })
+            
             return true
         } else {
             return false
@@ -1649,6 +1652,8 @@ async function createOrder(userID, addressID, observations) {
         }
 
         let counter = 1
+
+        // TODO: Check if cart-items are still valid, check if the corresponding supply stock is still larger than the order quantity
 
         // Creating OrderItems from cartItems
 
