@@ -9,12 +9,12 @@
         <div class="row content justify-content-center" v-if="rendered">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="categories" :currentCategories="currentCategories" @sendMinPrice="showProductsByMinPrice" @sendMaxPrice="showProductsByMaxPrice"/>
+              <TheFilters :categories="categories" :currentCategories="currentCategories"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
           <Transition name="fade">
-            <div v-if="products.length" class="content d-flex w-100 " @currentPage="getCurrentPage">
+            <div v-if="products.length" class="content d-flex w-100 ">
               <ProductCard
               v-for="p in products"
               :key="p.id"
@@ -61,22 +61,15 @@ export default {
   },
   props: {
     product: Object,
-    params:String,
     allSuppliers:Array,
   },
   data() {
     return {
       products: [],
-      currentPage: 1,
       categories: [],
-      minPrice: 0,
-      maxPrice: 50000000,
       productAmount: 0,
-      pageAmount: 0,
       currentCategories: [],
-      limit: 12,
       productsInPage: 0,
-      nameFilter: "id",
       allSuppliers: [],
       rendered: false,
     };
@@ -143,18 +136,6 @@ export default {
       console.log(this.allSuppliers)
 
     }, */
-    getProductsByChild(params) {
-      this.nameFilter = params;
-      this.getProducts();
-    },
-    /* getCurrentPage: function(params) {
-      this.currentPage = params;
-      if (this.nameFilter == "id"){
-        this.getProducts();
-      } else {
-        this.getProductsByChild(this.nameFilter);
-      }
-    }, */
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;
@@ -172,26 +153,16 @@ export default {
         this.getProducts();
       }
     },
-    productsPerPage: function (params) {
-      this.limit = params;
-      this.getProducts();
-    },
     searchInformation: function (params) {
-      http.get("/store/products?page=" + this.currentPage + "&limit=" + this.limit + "&keywords=" + params).then((response) => {
+      let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
+      let page = this.$route.query.pag ? this.$route.query.pag : 1;
+
+      http.get("/store/products?page=" + page + "&limit=" + limit + "&keywords=" + params).then((response) => {
         this.products = response.data.products;
         this.productAmount = response.data.total_products;
         this.productsInPage = this.products.length;
         //console.log(response.data);
       });
-    },
-    showProductsByMinPrice: function (params) {
-      this.minPrice = params;
-      this.getProducts();
-    },
-    showProductsByMaxPrice: function (params) {
-      this.maxPrice = params;
-      this.getProducts();
-      //console.log(this.products);
     },
   },
   computed: {
