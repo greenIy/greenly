@@ -8,7 +8,7 @@
           <span class="sr-only">Anterior</span>
         </button>
       </li>
-      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><router-link append :to="{ query: { ...$route.query, pag: n } }"><button class="page-link" @click='definePage(n)'> {{ n }}</button></router-link></li>
+      <li class="page-item" v-for="n in getPages" :key="n" :id="'page-' + n"><router-link append :to="{ query: { ...$route.query, pag: n } }"><button class="page-link"> {{ n }}</button></router-link></li>
       <li class="page-item" id="next">
         <button class="page-link" @click='nextPage()'>
           <span aria-hidden="true"><font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-right']" /></span>
@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      currentPage: 1,
+      currentPage: -1,
       pages: this.pageAmount,
     };
   },
@@ -48,29 +48,32 @@ export default {
       let page = this.$route.query.pag ? this.$route.query.pag - 1 : 1;
       if (page > 0) {
         this.$router.push({ query: Object.assign({}, this.$route.query, { pag: `${ page }` }) });
+
+        let pageElement = document.getElementById("page-" + (page + 1));
+        pageElement.classList.remove("active");
+        pageElement = document.getElementById("page-" + page);
+        pageElement.classList.add("active");
+
         this.manageDisable(page);
       }
     },
     nextPage() {
       let page = this.$route.query.pag ? parseInt(this.$route.query.pag) + 1 : 1;
       if (this.currentPage < this.pageAmount) {
-        //var page = document.getElementById("page-" + this.currentPage);
-        //page.classList.remove("active");
         this.$router.push({ query: Object.assign({}, this.$route.query, { pag: `${ page }` }) });
+
+        let pageElement = document.getElementById("page-" + (page - 1));
+        pageElement.classList.remove("active");
+        pageElement = document.getElementById("page-" + page);
+        pageElement.classList.add("active");
+
         this.manageDisable(page);
       }
     },
-    definePage(num) {
-        var page = document.getElementById("page-" + this.currentPage);
-        page.classList.remove("active");
-        this.currentPage = num;
-        page = document.getElementById("page-" + this.currentPage);
-        page.classList.add("active");
-        this.manageDisable();
-    },
     manageDisable(page) {
-      var previous = document.getElementById("previous");
-      var next = document.getElementById("next");
+      let previous = document.getElementById("previous");
+      let next = document.getElementById("next");
+
       if (page != 1) {
         previous.classList.remove("disabled");
       } else {
@@ -84,7 +87,14 @@ export default {
       }
     },
     setPageActive() {
-      document.getElementById("page-1").classList.add("active");
+      let page = this.$route.query.pag ? this.$route.query.pag : 1;
+      if(this.currentPage != -1) {
+        document.getElementById("page-" + this.currentPage).classList.remove("active");
+      }
+      
+      this.currentPage = page;
+      document.getElementById("page-" + page).classList.add("active");
+      this.manageDisable(page);
     },
   },
   computed: {
