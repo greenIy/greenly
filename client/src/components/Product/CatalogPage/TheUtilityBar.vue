@@ -13,9 +13,9 @@
                 <font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" />
             </a>
             <ul class="dropdown-menu drop" aria-labelledby="order-by-numbers">
-                <li><router-link append :to="{ query: { ...$route.query, por_pag: 12 } }" class="dropdown-item" @click='productsPerPage(12)'>12</router-link></li>
-                <li><router-link append :to="{ query: { ...$route.query, por_pag: 24 } }" class="dropdown-item" @click='productsPerPage(24)'>24</router-link></li>
-                <li><router-link append :to="{ query: { ...$route.query, por_pag: 48 } }" class="dropdown-item" @click='productsPerPage(48)'>48</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, por_pag: 12 } }" class="dropdown-item">12</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, por_pag: 24 } }" class="dropdown-item">24</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, por_pag: 48 } }" class="dropdown-item">48</router-link></li>
             </ul>
         </div>
     </div>
@@ -60,9 +60,6 @@ library.add(faCaretDown);
         };
     },
     methods: {
-        productsPerPage: function (amount) {
-            this.$emit("sendProductsPerPage", amount);
-        },
         order: function(params) {
             this.$emit("sendProduct",params);
             if (params == "name") {
@@ -82,18 +79,27 @@ library.add(faCaretDown);
     },
     computed: {
         getInitialAmountOfProducts: function () {
-            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
-                return this.limit * (this.currentPage - 1) + 1;
+            let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
+            let page = this.$route.query.pag ? this.$route.query.pag : 1;
+
+            if (Math.ceil(this.productAmount / limit) == page) {
+                return limit * (page - 1) + 1;
             } else if (this.productAmount === 0) {
                 return 0;
             }
-            return (this.productsInPage * this.currentPage) - this.productsInPage + 1;
+            return (this.productsInPage * page) - this.productsInPage + 1;
         },
         getFinalAmountOfProducts: function () {
-            if (Math.ceil(this.productAmount / this.limit) == this.currentPage) {
+            let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
+            let page = this.$route.query.pag ? this.$route.query.pag : 1;
+
+            if (Math.ceil(this.productAmount / limit) == page) {
                 return this.productAmount;
             }
-            return this.productsInPage * this.currentPage;
+            return this.productsInPage * page;
+        },
+        limit: function () {
+            return this.$route.query.por_pag ? this.$route.query.por_pag : 12;
         },
     }
   }

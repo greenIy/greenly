@@ -4,7 +4,7 @@
      <TheNavbar @search-information="searchInformation"/>
     <div class="content-wrap mw-0">
       <div class="container">
-        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage" :currentPage="currentPage" :limit="limit" @sendProductsPerPage="productsPerPage"
+        <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
               :product="products" @sendProduct="getProductsByChild" />
         <div class="row content justify-content-center" v-if="rendered">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
@@ -28,7 +28,7 @@
           </div>
           </div>
       </div>
-      <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/>
+      <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
     </div>
     <TheFooter />
   </div>
@@ -105,26 +105,15 @@ export default {
     }
   },
   methods: {
-    async getProducts(page=1, limit=12, minPrice=0, maxPrice=500000000) {
+    async getProducts() {
       let response;
       let request;
       let sort;
 
-      if(this.$route.query.pag) {
-        page = this.$route.query.pag;
-      }
-
-      if(this.$route.query.por_pag) {
-        limit = this.$route.query.por_pag;
-      }
-
-      if(this.$route.query.preco_max) {
-        maxPrice = this.$route.query.preco_max;
-      }
-
-      if(this.$route.query.preco_min) {
-        minPrice = this.$route.query.preco_min;
-      }
+      let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
+      let page = this.$route.query.pag ? this.$route.query.pag : 1;
+      let maxPrice = this.$route.query.preco_max ? this.$route.query.preco_max : 50000000;
+      let minPrice = this.$route.query.preco_min ? this.$route.query.preco_min : 0;
 
       if(this.$route.query.ordenar_por) {
         sort = this.$route.query.ordenar_por;
@@ -158,14 +147,14 @@ export default {
       this.nameFilter = params;
       this.getProducts();
     },
-    getCurrentPage: function(params) {
+    /* getCurrentPage: function(params) {
       this.currentPage = params;
       if (this.nameFilter == "id"){
         this.getProducts();
       } else {
         this.getProductsByChild(this.nameFilter);
       }
-    },
+    }, */
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;
@@ -207,7 +196,11 @@ export default {
   },
   computed: {
     getPageAmount: function () {
-      return Math.ceil(this.productAmount / this.limit);
+      let limit = 12;
+      if(this.$route.query.por_pag) {
+        limit = this.$route.query.por_pag;
+      }
+      return Math.ceil(this.productAmount / limit);
     },
   },
 };
