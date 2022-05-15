@@ -92,11 +92,6 @@ export default {
       }
     }
   },
-  updated() {
-    if(this.$route.query.pesquisa) {
-      this.searchInformation(this.$route.query.pesquisa);
-    }
-  },
   methods: {
     async getProducts() {
       let response;
@@ -117,6 +112,11 @@ export default {
   
       if (this.currentCategories.length) {
         request = request + "&category=" + this.currentCategories[this.currentCategories.length - 1].id;
+      }
+
+      if (this.$route.query.pesquisa){
+        console.log("eu entro aqui");
+        request = request +  "&keywords=" + this.$route.query.pesquisa;
       }
 
       response = await http.get(request);
@@ -152,17 +152,6 @@ export default {
         }
         this.getProducts();
       }
-    },
-    searchInformation: function (params) {
-      let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
-      let page = this.$route.query.pag ? this.$route.query.pag : 1;
-
-      http.get("/store/products?page=" + page + "&limit=" + limit + "&keywords=" + params).then((response) => {
-        this.products = response.data.products;
-        this.productAmount = response.data.total_products;
-        this.productsInPage = this.products.length;
-        //console.log(response.data);
-      });
     },
   },
   computed: {
