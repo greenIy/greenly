@@ -1633,6 +1633,14 @@ async function createOrder(userID, addressID, observations) {
             return "INVALID_ADDRESS";
         }
 
+        // Converting cartItems into order
+        let cartItems = (await getCart(userID)).items
+
+        // Checking if cart has items
+        if (cartItems.length == 0) {
+            return "EMPTY_CART"
+        }
+
         // Creating order
         let newOrder = await prisma.order.create({
             data: {
