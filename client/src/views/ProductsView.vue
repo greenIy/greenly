@@ -167,10 +167,7 @@ export default {
   },
   computed: {
     getPageAmount: function () {
-      let limit = 12;
-      if(this.$route.query.por_pag) {
-        limit = this.$route.query.por_pag;
-      }
+      let limit = this.$route.query.por_pag ? this.$route.query.por_pag : 12;
       return Math.ceil(this.productAmount / limit);
     },
   },

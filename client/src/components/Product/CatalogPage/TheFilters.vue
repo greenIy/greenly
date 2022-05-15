@@ -204,18 +204,23 @@ library.add(faAngleLeft);
 .list-group-item {
   font-size: 12px;
 }
+
 .list-group-item input {
   font-size: 12px;
 }
+
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
 }
+
 #iconC{
   color:#5e9f88;
 }
+
 #iconP{
   color:#5e9f88;
 }
+
 #iconF{
   color:#5e9f88;
 }

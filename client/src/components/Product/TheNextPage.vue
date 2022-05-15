@@ -45,25 +45,19 @@ export default {
   },
   methods: {
     prevPage() {
-      if (this.currentPage > 1) {
-        var page = document.getElementById("page-" + this.currentPage);
-        page.classList.remove("active");
-        this.currentPage--;
-        page = document.getElementById("page-" + this.currentPage);
-        page.classList.add("active");
-        this.$emit("sendCurrentPage", this.currentPage);
-        this.manageDisable();
+      let page = this.$route.query.pag ? this.$route.query.pag - 1 : 1;
+      if (page > 0) {
+        this.$router.push({ query: Object.assign({}, this.$route.query, { pag: `${ page }` }) });
+        this.manageDisable(page);
       }
     },
     nextPage() {
+      let page = this.$route.query.pag ? parseInt(this.$route.query.pag) + 1 : 1;
       if (this.currentPage < this.pageAmount) {
-        var page = document.getElementById("page-" + this.currentPage);
-        page.classList.remove("active");
-        this.currentPage++;
-        page = document.getElementById("page-" + this.currentPage);
-        page.classList.add("active");
-        this.$emit("sendCurrentPage", this.currentPage);
-        this.manageDisable();
+        //var page = document.getElementById("page-" + this.currentPage);
+        //page.classList.remove("active");
+        this.$router.push({ query: Object.assign({}, this.$route.query, { pag: `${ page }` }) });
+        this.manageDisable(page);
       }
     },
     definePage(num) {
@@ -72,19 +66,18 @@ export default {
         this.currentPage = num;
         page = document.getElementById("page-" + this.currentPage);
         page.classList.add("active");
-        this.$emit("sendCurrentPage", this.currentPage);
         this.manageDisable();
     },
-    manageDisable() {
+    manageDisable(page) {
       var previous = document.getElementById("previous");
       var next = document.getElementById("next");
-      if (this.currentPage != 1) {
+      if (page != 1) {
         previous.classList.remove("disabled");
       } else {
         previous.classList.add("disabled");
       }
 
-      if (this.currentPage == this.pages) {
+      if (page == this.pages) {
         next.classList.add("disabled");
       } else {
         next.classList.remove("disabled");
@@ -104,6 +97,10 @@ export default {
 </script>
 
 <style scoped>
+
+a {
+  text-decoration: none;
+}
 
 button {
   color: black;
