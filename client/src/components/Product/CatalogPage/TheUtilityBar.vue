@@ -22,14 +22,14 @@
     <div class="col-2">
         <div class="dropdown" >
             <a class="btn rounded text-decoration-none" id="order-by-filters" data-bs-toggle="dropdown" aria-expanded="false" style="width:12rem;text-align:left;">
-                <span id="orderBy">Ordenar por</span>
+                <span id="orderBy">{{ orderBy }}</span>
                 <span style="float:right!important;" ><font-awesome-icon  class="fa-cog mx-1 fa-sm" :icon="['fa', 'caret-down']" /></span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="order-by-filters" >
-                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'name_asc' } }" class="dropdown-item" @click='order("name")' style="width: 12rem;">Nome</router-link></li>
-                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'newest' } }" class="dropdown-item" @click='order("id")' style="width: 12rem;">Novidade</router-link></li>
-                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'price_asc' } }" class="dropdown-item" @click='order("priceMin")' style="width: 12rem;">Preço Ascendente</router-link></li>
-                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'price_desc' } }" class="dropdown-item" @click='order("priceMax")' style="width: 12rem;">Preço Descendente</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'name_asc' } }" class="dropdown-item" style="width: 12rem;">Nome</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'newest' } }" class="dropdown-item" style="width: 12rem;">Novidade</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'price_asc' } }" class="dropdown-item" style="width: 12rem;">Preço Ascendente</router-link></li>
+                <li><router-link append :to="{ query: { ...$route.query, ordenar_por: 'price_desc' } }" class="dropdown-item" style="width: 12rem;">Preço Descendente</router-link></li>
             </ul>
         </div>
     </div>
@@ -48,34 +48,12 @@ library.add(faCaretDown);
   export default {
     props: {
         productAmount: Number,
-        pageAmount: Number,
-        currentPage: Number,
-        limit: Number,
-        product:Object,
         productsInPage: Number,
     },
     data() {
         return {
             lastPageProducts: 0,
         };
-    },
-    methods: {
-        order: function(params) {
-            this.$emit("sendProduct",params);
-            if (params == "name") {
-                document.getElementById("orderBy").innerHTML = "Nome";
-            }
-            else if (params == "id") {
-                document.getElementById("orderBy").innerHTML = "Novidade";
-            }
-            else if (params == "priceMin") {
-                document.getElementById("orderBy").innerHTML = "Preço Ascendente";
-            }
-            else {
-                document.getElementById("orderBy").innerHTML = "Preço Descendente";
-            }
-            
-        },
     },
     computed: {
         getInitialAmountOfProducts: function () {
@@ -101,6 +79,21 @@ library.add(faCaretDown);
         limit: function () {
             return this.$route.query.por_pag ? this.$route.query.por_pag : 12;
         },
+        orderBy: function () {
+            if (this.$route.query.ordenar_por == "name_asc") {
+                return "Nome";
+            }
+            else if (this.$route.query.ordenar_por == "newest") {
+                return "Novidade";
+            }
+            else if (this.$route.query.ordenar_por == "price_asc") {
+                return "Preço Ascendente";
+            }
+            else if (this.$route.query.ordenar_por == "price_desc") {
+                return "Preço Descendente";
+            }
+            return "Ordenar por";
+        }
     }
   }
 </script>

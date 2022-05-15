@@ -5,7 +5,7 @@
     <div class="content-wrap mw-0">
       <div class="container">
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
-              :product="products" @sendProduct="getProductsByChild" />
+              :product="products"/>
         <div class="row content justify-content-center" v-if="rendered">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
