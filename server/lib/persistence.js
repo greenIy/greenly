@@ -1684,7 +1684,7 @@ async function createOrder(userID, addressID, observations) {
         }))
 
         // Clearing the cart
-        await clearCart(userID)
+        // await clearCart(userID)
 
         return newOrder.id
 
