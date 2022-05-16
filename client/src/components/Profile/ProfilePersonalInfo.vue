@@ -52,21 +52,28 @@
             </div>
         </div>        
         </div>
-
-        <!-- Notification Profile Edited -->
-        <div class="alert alert-success alert-dismissible fade show" id="successNotification" role="alert">
-            <strong>Atualizado!</strong> O seu perfil foi atualizado com sucesso.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        
+        <!-- Toast Edit User Info -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Atualizado!</strong> O seu perfil foi atualizado com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
     </div>
 </template>
 
 <script>
-
+import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
+
 library.add(faPen, faFloppyDisk, faXmark);
 
 import http from "../../../http-common"
@@ -109,7 +116,10 @@ export default({
         },
         saveUserInfo() {
             this.cancelUserInfo()
-            document.getElementById("successNotification").style.display = "block"
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("successToast");
+            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            successfulToast.show();
 
         },
         editProfile() {
@@ -132,7 +142,7 @@ export default({
                         }), headers)
                     .then((response) => {
                         if (response.status == 200) {
-                            setTimeout(this.saveUserInfo, 500)
+                            this.saveUserInfo()
                         }
                     }).catch((error) => {
                         console.log(error.response.data);
@@ -150,13 +160,8 @@ export default({
         background-color: #309C76;
         border-color: white;
     }
-    #successNotification {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-right: 30px;
-        margin-top: 150px;
-        display: none;
-        width: 25%;
+    #successToast {
+        margin-top: 120px;
+        background-color: #309C76 !important;
     }
 </style>

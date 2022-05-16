@@ -77,17 +77,23 @@
         </div>
         </div>
 
-        <!-- Notification Password Changed -->
-        <div class="alert alert-success alert-dismissible fade show" id="successNotification" role="alert">
-            <strong>Alterada!</strong> A sua palavra-passe foi alterada com sucesso.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Toast Change Password -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="changePasswordToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Atualizada!</strong> A sua palavra-passe foi atualizada com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
     </div>
 </template>
 
 <script>
-
+import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash, faCheck, faUserXmark, faKey} from '@fortawesome/free-solid-svg-icons';
@@ -121,7 +127,15 @@ export default({
         },
         logoutUser() {
             AuthService.logoutUser()
-            this.$forceUpdate();
+        },
+        successfulChangePassword() {
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("newPasswordConfirm").value = "";
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("changePasswordToast");
+            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            successfulToast.show();
         },
         successfulDelete() {
             document.getElementById("cancelButton").style.display = "none";
@@ -137,7 +151,6 @@ export default({
             }
         },
         wrongCredentials(message) {
-            
             if (message == "old_password doesn't match user password.") {
                 document.getElementById("oldPassword").classList.add("is-invalid")
             } else if (message == "Minimum password length is 5.") {
@@ -168,10 +181,7 @@ export default({
                                 }), headers)
                             .then(async (response) => {
                                 if (response.status == 200) {
-                                    document.getElementById("successNotification").style.display = "block"
-                                    document.getElementById("oldPassword").value = "";
-                                    document.getElementById("newPassword").value = "";
-                                    document.getElementById("newPasswordConfirm").value = "";
+                                    this.successfulChangePassword()
                                     console.log("Sucesso")
                                 }
                             }).catch(error => this.wrongCredentials(error.response.data.errors[0].msg))
@@ -214,13 +224,8 @@ export default({
 </script>
 
 <style scoped>
-    #successNotification {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-right: 30px;
-        margin-top: 150px;
-        display: none;
-        width: 25%;
+    #changePasswordToast {
+        margin-top: 120px;
+        background-color: #309C76 !important;
     }
 </style>

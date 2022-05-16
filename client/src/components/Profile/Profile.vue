@@ -38,7 +38,7 @@
                         <font-awesome-icon :icon="['fa', 'briefcase']" size="lg"/>&nbsp; Empresa
                     </a>
                 </li>
-                <li class="nav-item" @click="activeTab = 'orders'">
+                <li v-if="user.type == 'CONSUMER'" class="nav-item" @click="activeTab = 'orders'">
                     <a class="nav-link link-dark" :class="(activeTab === 'orders') ? 'nav-link active' : ''">
                     <svg class="bi me-0" width="16" height="16"></svg>
                         <font-awesome-icon :icon="['fa', 'box-archive']" size="lg"/>&nbsp; Encomendas

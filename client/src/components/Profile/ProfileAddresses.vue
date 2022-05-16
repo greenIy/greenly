@@ -3,7 +3,7 @@
         
         <h4>Moradas</h4>
         <hr>
-        <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada assoicada à sua conta</i>
+        <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada associada à sua conta.<br>Adicione uma clicando no botão abaixo.</i>
         <i v-else>Pode adicionar mais do que uma morada à sua conta Greenly</i>
         <br>
         <br>
@@ -20,7 +20,7 @@
                             <strong>NIF</strong><br>
                             <a>{{ address.nif }}</a>
                             <div class="position-absolute bottom-0 end-0 p-2 pe-3">
-                                <a data-bs-toggle="modal" data-bs-target="#editAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']" /></a>&nbsp;
+                                <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']" /></a>&nbsp;
                                 <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']" /></a>
                             </div>
                         </address>              
@@ -44,29 +44,29 @@
                 <form @submit.prevent="newAddress">
                     <div class="col mb-3">
                         <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                        <country-select class="form-control" id="newAddressCountry" v-model="newAddressInfo.country" :country="country" topCountry="" :countryName="true" required/>
+                        <country-select class="form-control" id="newAddressCountry" v-bind:value="newAddressInfo.country" :country="country" topCountry="" :countryName="true" required/>
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressCity" v-model="newAddressInfo.city" required>
+                        <input type="text" class="form-control" id="newAddressCity" v-bind:value="newAddressInfo.city" required>
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" required>
+                        <input type="text" class="form-control" id="newAddressStreet" v-bind:value="newAddressInfo.street" required>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
                             <label for="newAddressPostalCode" class="form-label">Código-postal <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newAddressPostalCode" v-model="newAddressInfo.postalCode" required>
+                            <input type="text" class="form-control" id="newAddressPostalCode" v-bind:value="newAddressInfo.postalCode" required>
                         </div>
                         <div class="col mb-3">
                             <label for="newAddressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
-                            <input type="number" class="form-control" id="newAddressNIF" v-model="newAddressInfo.nif" v-on:click="removeIsInvalid" required>
+                            <input type="number" class="form-control" id="newAddressNIF" v-bind:value="newAddressInfo.nif" v-on:click="removeIsInvalid" required>
                             <div class="invalid-feedback" id="invalidFeedbackNewNIF">Deve conter exatamente 9 algarismos.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
+                        <button type="button" id="closeNewModalButton" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
                         <button type="submit" class="btn btn-primary" id="newAddressButton"><font-awesome-icon :icon="['fa', 'plus']" /> &nbsp;Adicionar</button>
                     </div>
                 </form>
@@ -76,7 +76,7 @@
         </div>
 
         <!-- Modal Edit Address -->
-        <div class="modal fade" id="editAddress" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
+        <div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
@@ -87,29 +87,29 @@
                 <form @submit.prevent="editAddress">
                     <div class="col mb-3">
                         <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                        <country-select class="form-control" id="editAddressCountry" v-model="this.selectedAddress.country" :country="this.selectedAddress.country" topCountry="" :countryName="true" required/>
+                        <country-select class="form-control" id="editAddressCountry" v-bind:value="this.selectedAddress.country" :country="this.selectedAddress.country" topCountry="" :countryName="true" required/>
                     </div>
                     <div class="col mb-3">
                         <label for="addressCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="addressCity" v-model="this.selectedAddress.city" required>
+                        <input type="text" class="form-control" id="editAddressCity" v-bind:value="this.selectedAddress.city" required>
                     </div>
                     <div class="col mb-3">
                         <label for="addressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="addressStreet" v-model="this.selectedAddress.street" required>
+                        <input type="text" class="form-control" id="editAddressStreet" v-bind:value="this.selectedAddress.street" required>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
                             <label for="addressPostalCode" class="form-label">Código-postal <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="addressPostalCode" v-model="this.selectedAddress.postal_code" required>
+                            <input type="text" class="form-control" id="editAddressPostalCode" v-bind:value="this.selectedAddress.postal_code" required>
                         </div>
                         <div class="col mb-3">
                             <label for="addressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
-                            <input type="number" class="form-control" id="editAddressNIF" v-model="this.selectedAddress.nif" v-on:click="removeIsInvalid" required>
+                            <input type="number" class="form-control" id="editAddressNIF" v-bind:value="this.selectedAddress.nif" v-on:click="removeIsInvalid" required>
                             <div class="invalid-feedback" id="invalidFeedbackEditNIF">Deve conter exatamente 9 algarismos.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
+                        <button type="button" id="closeEditModalButton" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
                         <button type="submit" class="btn btn-primary"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
                     </div>
                 </form>
@@ -118,7 +118,7 @@
         </div>
         </div>
 
-        <!-- Modal Delete Address -->
+        <!-- Modal Remove Address -->
         <div class="modal fade" id="removeAddress" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeAddressLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,36 +130,56 @@
                 Tem a certeza que deseja remover esta morada do seu perfil?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" v-on:click="deleteAddress">Remover</button>
+                <button type="button" id="closeRemoveModalButton" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" v-on:click="removeAddress">Remover</button>
             </div>
             </div>
         </div>
         </div>
 
-        <!-- Notification New Address -->
-        <div class="alert alert-success alert-dismissible fade show" id="newAddressNotification" role="alert">
-            <strong>Adicionada!</strong> A morada foi adicionada com sucesso ao seu perfil.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Toast New Address -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Adicionada!</strong> A sua morada foi adicionada com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
-        <!-- Notification Edit Address -->
-        <div class="alert alert-success alert-dismissible fade show" id="editAddressNotification" role="alert">
-            <strong>Atualizada!</strong> A sua morada foi atualizada com sucesso.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Toast Edit Address -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="editAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Atualizada!</strong> A sua morada foi atualizada com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
-        <!-- Notification Delete Address -->
-        <div class="alert alert-success alert-dismissible fade show" id="deleteAddressNotification" role="alert">
-            <strong>Removida!</strong> A morada foi removida com sucesso ao seu perfil.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Toast Remove Address -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Removida!</strong> A sua morada foi removida com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
+
+        
 
     </div>
 </template>
 
 <script>
-
+import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney } from '@fortawesome/free-solid-svg-icons';
@@ -195,21 +215,15 @@ export default({
             this.user = this.$store.getters.getUser
             return this.$store.getters.getUser
         },
-        cloneAddress(address) {
-            return JSON.parse(JSON.stringify(address))
-        },
         addressesLength() {
-            let numberAddresses = 0
-            
-
-            console.log(this.user.addresses)
-            return numberAddresses
+            var user = this.getUserInfo()
+            var size = Object.keys(user.addresses).length;
+            return size
         },
         selectAddress(address) {
             this.selectedAddress = address;
         },
         wrongCredentials(action, param) {
-            console.log(param)
             if (action == "new" && param == "nif") {
                 document.getElementById("newAddressNIF").classList.add("is-invalid");          
             }
@@ -218,13 +232,28 @@ export default({
             }
         },
         successfulNewAddress() {
-            document.getElementById("newAddressNotification").style.display = "block"
+            var closeEditModal = document.getElementById("closeNewModalButton");
+            closeEditModal.click()
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("newAddressToast");
+            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            successfulToast.show();
         },
         successfulEditAddress() {
-            document.getElementById("editAddressNotification").style.display = "block"
+            var closeEditModal = document.getElementById("closeEditModalButton");
+            closeEditModal.click()
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("editAddressToast");
+            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            successfulToast.show();
         },
-        successfulDeleteAddress() {
-            document.getElementById("deleteAddressNotification").style.display = "block"
+        successfulRemoveAddress() {
+            var closeEditModal = document.getElementById("closeRemoveModalButton");
+            closeEditModal.click()
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("removeAddressToast");
+            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            successfulToast.show();
         },
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -234,6 +263,11 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             }
+            this.newAddressInfo.country = document.getElementById("newAddressCountry").value
+            this.newAddressInfo.city = document.getElementById("newAddressCity").value
+            this.newAddressInfo.street = document.getElementById("newAddressStreet").value
+            this.newAddressInfo.postalCode = document.getElementById("newAddressPostalCode").value
+            this.newAddressInfo.nif = document.getElementById("newAddressNIF").value
             if (accessToken && userId) {
                 this.newAddressInfo.country = document.getElementById("newAddressCountry").value;
                 http.post(`/user/${userId}/addresses`,
@@ -242,11 +276,13 @@ export default({
                             city: this.newAddressInfo.city,
                             postal_code: this.newAddressInfo.postalCode,
                             country: this.newAddressInfo.country,
-                            nif: this.newAddressInfo.nif,
+                            nif: Number(this.newAddressInfo.nif),
                         }), headers)
                     .then((response) => {
                         if (response.status == 201) {
-                            setTimeout(this.successfulNewAddress, 500)
+                            this.successfulNewAddress()
+                            this.getUserInfo()
+                            console.log("Success!")
                         }
                     }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param)) 
             }
@@ -260,6 +296,11 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             }
+            this.selectedAddress.country = document.getElementById("editAddressCountry").value
+            this.selectedAddress.city = document.getElementById("editAddressCity").value
+            this.selectedAddress.street = document.getElementById("editAddressStreet").value
+            this.selectedAddress.postalCode = document.getElementById("editAddressPostalCode").value
+            this.selectedAddress.nif = document.getElementById("editAddressNIF").value
             if (accessToken && userId) {
                 this.selectedAddress.country = document.getElementById("editAddressCountry").value;
                 http.put(`/user/${userId}/addresses/${addressId}`, 
@@ -268,18 +309,18 @@ export default({
                             city: this.selectedAddress.city,
                             country: this.selectedAddress.country,
                             postal_code: this.selectedAddress.postal_code,
-                            nif: this.selectedAddress.nif
+                            nif: Number(this.selectedAddress.nif)
                         }), headers)
                     .then((response) => {
                         console.log(response)
                         if (response.status == 200) {
-                            setTimeout(this.successfulEditAddress, 500)
+                            this.successfulEditAddress()
                             console.log("Success!")
                         }
                     }).catch(error => this.wrongCredentials("edit", error.response.data.errors[0].param)) 
             }
         },
-        deleteAddress() {
+        removeAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             let addressId = this.selectedAddress.id
@@ -292,7 +333,8 @@ export default({
                 http.delete(`/user/${userId}/addresses/${addressId}`, headers)
                     .then((response) => {
                         if (response.status == 202) {
-                            setTimeout(this.successfulDeleteAddress, 500)
+                            this.successfulRemoveAddress()
+                            this.getUserInfo()
                             console.log("Success!")
                         }
                     }).catch(error => this.wrongCredentials(error.response.data)) 
@@ -314,15 +356,9 @@ export default({
     .modal-footer {
         border-width: 0;
     }
-    #newAddressNotification, #editAddressNotification, 
-    #deleteAddressNotification  {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-right: 30px;
-        margin-top: 150px;
-        display: none;
-        width: 25%;
+    #newAddressToast, #editAddressToast,
+    #removeAddressToast {
+        margin-top: 120px;
+        background-color: #309C76 !important;
     }
-   
 </style>

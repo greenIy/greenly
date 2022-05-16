@@ -143,7 +143,6 @@ export default {
                     }
                 })).then((response) => {
                     if (response.status == 201) {
-                        alert('Account registered successfully!')
                         this.$router.push({path: '/login'});
                     }
                 })

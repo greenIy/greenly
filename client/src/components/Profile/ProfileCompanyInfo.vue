@@ -1,25 +1,25 @@
 <template>
     <div class="p-5" style="margin-top: 2px">
         
-        <h4>Empresa {{user.company}}</h4>
+        <h4>Empresa</h4>
         <hr>
         <form @submit.prevent="editCompany">
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyName" class="form-label">Nome da empresa <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="companyName" v-bind:value="user.company" placeholder="Nome" readonly required>
+                    <input type="name" class="form-control" id="companyName" v-bind:value="this.company.name" placeholder="Nome" readonly required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyEmail" class="form-label">E-mail da empresa<span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="companyEmail" v-model="user.company" placeholder="E-mail" readonly required>
+                    <input type="email" class="form-control" id="companyEmail" v-model="this.company.email" placeholder="E-mail" readonly required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputcompanyDescription" class="form-label">Descrição da empresa <span style='color: #FF0000;'>*</span></label>
-                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyDescription" v-model="user.company" placeholder="E-mail" readonly required></textarea>
+                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyDescription" v-model="this.company.bio" placeholder="Descrição" readonly required></textarea>
                 </div>
             </div>
 
@@ -70,18 +70,18 @@ import http from "../../../http-common"
 export default({
     name: 'ProfileCompanyInfo',
     mounted() {
-        this.getUserInfo();
+        this.getCompanyInfo();
     },
     data() {
         return {
-            user: {},
+            company: {},
         }
     },
     methods: {
         getUserInfo() {
-            this.user = this.$store.getters.getUser
-            console.log(this.user)
-            return this.user
+            this.company = this.$store.getters.getUser.company
+            console.log(this.company)
+            return this.company
         },
         cloneUser(user) {
             return JSON.parse(JSON.stringify(user))
@@ -120,9 +120,9 @@ export default({
             if (accessToken && userId){
             http.put(`/user/${userId}`,
                     JSON.stringify({
-                            name: this.user.first_name,
-                            bio: this.user.last_name,
-                            email: this.user.phone,
+                            name: this.company.first_name,
+                            bio: this.company.last_name,
+                            email: this.company.phone,
                         }), headers)
                     .then((response) => {
                         if (response.status == 200) {
