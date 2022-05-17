@@ -54,6 +54,14 @@ const routes = [
     },
   },
 
+  {
+    path: '/painel',
+    name: 'painel',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/AdminView.vue');
+    },
+  },
+
 ];
 
 const router = createRouter({
