@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
+import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -118,7 +118,7 @@ export default({
             this.cancelUserInfo()
             var animation = {animation: true, delay: 5000};
             var successToast = document.getElementById("successToast");
-            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
 
         },

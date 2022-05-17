@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
+import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash, faCheck, faUserXmark, faKey} from '@fortawesome/free-solid-svg-icons';
@@ -134,7 +134,7 @@ export default({
             document.getElementById("newPasswordConfirm").value = "";
             var animation = {animation: true, delay: 5000};
             var successToast = document.getElementById("changePasswordToast");
-            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
         successfulDelete() {

@@ -36,6 +36,9 @@ export default [
       "countryName": "Dinamarca",
     },
     {
+      "countryName": "Escócia",
+    },
+    {
       "countryName": "Eslováquia",
     },
     {
@@ -60,7 +63,10 @@ export default [
       "countryName": "Hungria",
     },
     {
-      "countryName": "irlanda",
+      "countryName": "Inglaterra",
+    },
+    {
+      "countryName": "Irlanda do Norte",
     },
     {
       "countryName": "Islânida",
@@ -108,16 +114,10 @@ export default [
       "countryName": "República Checa",
     },
     {
+      "countryName": "República da Irlanda",
+    },
+    {
       "countryName": "Macedônia do Norte",
-    },
-    {
-      "countryName": "Inglaterra",
-    },
-    {
-      "countryName": "Irlanda do Norte",
-    },
-    {
-      "countryName": "Escócia",
     },
     {
       "countryName": "País de Gales",

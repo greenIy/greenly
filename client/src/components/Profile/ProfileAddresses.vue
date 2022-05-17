@@ -179,7 +179,7 @@
 </template>
 
 <script>
-import * as bootstrapToasts from 'bootstrap/dist/js/bootstrap.bundle.js';
+import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney } from '@fortawesome/free-solid-svg-icons';
@@ -236,7 +236,7 @@ export default({
             closeEditModal.click()
             var animation = {animation: true, delay: 5000};
             var successToast = document.getElementById("newAddressToast");
-            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
         successfulEditAddress() {
@@ -244,7 +244,7 @@ export default({
             closeEditModal.click()
             var animation = {animation: true, delay: 5000};
             var successToast = document.getElementById("editAddressToast");
-            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
         successfulRemoveAddress() {
@@ -252,7 +252,7 @@ export default({
             closeEditModal.click()
             var animation = {animation: true, delay: 5000};
             var successToast = document.getElementById("removeAddressToast");
-            var successfulToast = new bootstrapToasts.Toast(successToast, animation)
+            var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
         newAddress() {
