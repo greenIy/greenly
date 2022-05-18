@@ -4,13 +4,29 @@
         <h4>Moradas</h4>
         <hr>
         <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada associada à sua conta.<br>Adicione uma clicando no botão abaixo.</i>
-        <i v-else>Pode adicionar mais do que uma morada à sua conta Greenly</i>
+        <div v-else>
+            <i>Pode adicionar mais do que uma morada à sua conta Greenly.</i>
+            <br>
+            <i>Deve definir uma morada de entrega &nbsp;<font-awesome-icon :icon="['fa', 'truck']" style="color: #E3C12B"/>&nbsp; 
+            e uma morada de faturação &nbsp;<font-awesome-icon :icon="['fa', 'money-check-dollar']" style="color: #309C76"/>&nbsp;.</i>
+        </div>
+        
         <br>
         <br>
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <div v-for="address in this.user.addresses" :key="address.nif" class="card" style="width: 300px; margin-right: 30px">
                 <div class="card-body">
                         <address>
+                            <div class="position-absolute top-0 end-0 p-2 pe-3">
+                                <font-awesome-icon v-if="address.is_shipping === true" style="cursor: pointer; color: #E3C12B; margin-right: 5px" :icon="['fa', 'truck']" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual"/>
+                                <font-awesome-icon v-else style="cursor: pointer; color: #D7D9D7; margin-right: 5px" :icon="['fa', 'truck']" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de entrega" v-on:click="selectAddress(address); setAsShippingAddress()"/>
+                                <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #309C76" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual"/>
+                                <font-awesome-icon v-else style="cursor: pointer; color: #D7D9D7" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de faturação" v-on:click="selectAddress(address); setAsBillingAddress()"/>
+                            </div>
                             <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
                             {{ address.street }}<br>
                             {{ address.city }}, {{ address.country }}<br>
@@ -20,8 +36,10 @@
                             <strong>NIF</strong><br>
                             <a>{{ address.nif }}</a>
                             <div class="position-absolute bottom-0 end-0 p-2 pe-3">
-                                <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']" /></a>&nbsp;
-                                <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']" /></a>
+                                <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Editar morada"/></a>&nbsp;
+                                <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Remover morada"/></a>
                             </div>
                         </address>              
                 </div>
@@ -161,6 +179,30 @@
             </div>
         </div>
 
+        <!-- Toast Set Shipping Address -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="setShippingAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Definida!</strong> A sua morada de entrega foi definida com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Set Billing Address -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="setBillingAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Definida!</strong> A sua morada de faturação foi definida com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
         <!-- Toast Remove Address -->
         <div class="toast-container position-absolute top-0 end-0 p-3">
             <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="polite" aria-atomic="true">
@@ -182,8 +224,8 @@
 import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney } from '@fortawesome/free-solid-svg-icons';
-library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faHouseChimney);
+import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
+library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck);
 
 import http from "../../../http-common"
 import countrySelect from '@/components/Profile/country-select'
@@ -247,6 +289,18 @@ export default({
             var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
+        successfulSetShippingAddress() {
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("setShippingAddressToast");
+            var successfulToast = new Toast(successToast, animation)
+            successfulToast.show();
+        },
+        successfulSetBillingAddress() {
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("setBillingAddressToast");
+            var successfulToast = new Toast(successToast, animation)
+            successfulToast.show();
+        },
         successfulRemoveAddress() {
             var closeEditModal = document.getElementById("closeRemoveModalButton");
             closeEditModal.click()
@@ -262,7 +316,7 @@ export default({
                 headers: {
                     "Authorization": `Bearer ${accessToken}`
                 }
-            }
+            };
             this.newAddressInfo.country = document.getElementById("newAddressCountry").value
             this.newAddressInfo.city = document.getElementById("newAddressCity").value
             this.newAddressInfo.street = document.getElementById("newAddressStreet").value
@@ -295,7 +349,7 @@ export default({
                 headers: {
                     "Authorization": `Bearer ${accessToken}`
                 }
-            }
+            };
             this.selectedAddress.country = document.getElementById("editAddressCountry").value
             this.selectedAddress.city = document.getElementById("editAddressCity").value
             this.selectedAddress.street = document.getElementById("editAddressStreet").value
@@ -318,6 +372,48 @@ export default({
                             console.log("Success!")
                         }
                     }).catch(error => this.wrongCredentials("edit", error.response.data.errors[0].param)) 
+            }
+        },
+        setAsShippingAddress() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            let addressId = this.selectedAddress.id
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            };
+            if (accessToken && userId) {
+                http.put(`/user/${userId}/addresses/${addressId}`, 
+                    JSON.stringify({is_shipping: true}), headers)
+                    .then((response) => {
+                        console.log(response)
+                        if (response.status == 200) {
+                            this.successfulSetShippingAddress()
+                            console.log("Success!")
+                        }
+                    }).catch(error => this.wrongCredentials("edit", error.response.data)) 
+            }
+        },
+        setAsBillingAddress() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            let addressId = this.selectedAddress.id
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            };
+            if (accessToken && userId) {
+                http.put(`/user/${userId}/addresses/${addressId}`, 
+                    JSON.stringify({is_billing: true}), headers)
+                    .then((response) => {
+                        console.log(response)
+                        if (response.status == 200) {
+                            this.successfulSetBillingAddress()
+                            console.log("Success!")
+                        }
+                    }).catch(error => this.wrongCredentials("edit", error.response.data)) 
             }
         },
         removeAddress() {
@@ -357,6 +453,7 @@ export default({
         border-width: 0;
     }
     #newAddressToast, #editAddressToast,
+    #setBillingAddressToast, #setShippingAddressToast,
     #removeAddressToast {
         margin-top: 120px;
         background-color: #309C76 !important;
