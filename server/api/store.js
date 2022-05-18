@@ -12,6 +12,7 @@ const persistence       = require('../lib/persistence.js');
 const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
 const authorization     = require("../lib/authorization");
+const handler           = require("../lib/handler")
 const defaultErr        = require("../lib/error").defaultErr;
 
 /* Product Routes */
@@ -238,8 +239,8 @@ router.post('/payments/webhook', async (req, res) => {
 
             console.log(`💸 Received payment for ${paymentIntent.amount/100}€ from ${user.first_name} ${user.last_name}! (Order ID: ${paymentIntent.metadata.order_id})`);
 
-            // await handler.postPaymentHandler(
-            //     Number(paymentIntent.metadata.order_id));
+            await handler.postPaymentHandler(
+                Number(paymentIntent.metadata.order_id));
 
             break;
     }

@@ -346,6 +346,10 @@ router.post('/:userId/orders', authentication.check, authorization.check, create
                 return res.status(400).send({
                     message: "Invalid destination. Make sure to use an address registered to your account."
                 })
+            case "NO_STOCK":
+                return res.status(400).send({
+                    message: "Some items included in your cart are no longer available in the quantities you requested. Please double-check your cart."
+                })
             default:
                 return res.status(200).send({message: "Order successfully created.", id: result})
         }

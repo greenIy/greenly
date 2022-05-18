@@ -103,7 +103,6 @@ async function determineOptimalVehicle(transporter, destination) {
             lat: parseFloat(center.Address.latitude), 
             lng: parseFloat(center.Address.longitude)}))
         
-
         let distances = await maps.distancematrix({
             params: {
                 origins: origins,
@@ -124,7 +123,14 @@ async function determineOptimalVehicle(transporter, destination) {
 
         // Parsing the distances obtained from Google Distance Matrix
 
-        let parsedDistances = distances.data.rows.map((row) => (row.elements[0].distance.value))
+        let parsedDistances = distances.data.rows.map((row) => {
+            let distance = row.elements[0].distance
+            if (distance != null) {
+                console.log('distance :>> ', distance);
+        
+                return distance.value
+            }
+        }).filter((distance) => (distance != undefined))
 
         // Determining which warehouse is closest
         // This is index-safe since there are n distribution centers and n distance results
@@ -160,7 +166,7 @@ async function determineOptimalVehicle(transporter, destination) {
             })
         ))]
             
-        return leastBusyVehicle
+        return leastBusyVehicle.id
 
     } catch (e) {
         console.log(e)
@@ -1124,6 +1130,8 @@ async function getAllSuppliers() {
 
 async function getCart(userID) {
     try {
+        // TODO: Check if cart-items are still valid, check if the corresponding supply stock is still larger than the order quantity, remove them from the cart if they've become out of stock
+
 
         // Obtaining current cart items, sorted by index
         let cartItems = await prisma.cart.findMany({
@@ -1640,7 +1648,31 @@ async function createOrder(userID, addressID, observations) {
         if (cartItems.length == 0) {
             return "EMPTY_CART"
         }
+        // Checking if cart-items are still valid, if the corresponding supply stock is still larger than the order quantity
 
+        let stockInvalid = await Promise.all(cartItems.map(async (item) => {
+            let correspondingSupply = await prisma.supply_Transporter.findUnique({
+                where: {
+                    product_supplier_warehouse_transporter: {
+                        product: item.product.id,
+                        supplier: item.supplier.id,
+                        warehouse: item.warehouse,
+                        transporter: item.transporter.id,
+                    }
+                },
+                select: {
+                    Supply: true
+                }
+            })
+
+            // In case the user's order is larger than the available stock
+            return Number(correspondingSupply.Supply.quantity) < Number(item.quantity)
+        }))
+
+        if (stockInvalid.some((value) => value == true)) {
+            return "NO_STOCK"
+        }
+    
         // Creating order
         let newOrder = await prisma.order.create({
             data: {
@@ -1651,15 +1683,13 @@ async function createOrder(userID, addressID, observations) {
             }
         })
 
-        // TODO: Check if cart-items are still valid, check if the corresponding supply stock is still larger than the order quantity
-
         // Creating OrderItems from cartItems
 
         await Promise.all(cartItems.map(async (item, index) => {
 
             // Determine closest distribution center, and which vehicle to use
 
-            let vehicle = await determineOptimalVehicle(item.transporter, addressID)
+            let vehicle = await determineOptimalVehicle(item.transporter, addressID) || 1
 
             let newOrderItem = await prisma.order_Item.create({
                 data: {
@@ -1669,7 +1699,7 @@ async function createOrder(userID, addressID, observations) {
                     supplier: item.supplier.id,
                     transporter: item.transporter.id,
                     warehouse: item.warehouse,
-                    vehicle: 1,
+                    vehicle: vehicle,
                     quantity: item.quantity,
                     status: 'AWAITING_PAYMENT',
                     supply_price: item.price,
@@ -1724,6 +1754,67 @@ async function getOrderByID(id) {
 
 }
 
+async function changeOrderStatus(orderId, targetStatus) {
+
+    let order = await getOrderByID(orderId)
+
+    await Promise.all(order.items.map(async (item) => {
+        let itemUpdate = await prisma.order_Item.update({
+            where: {
+                id_order: {
+                    id: item.id,
+                    order: orderId
+                }
+            },
+            data: {
+                status: targetStatus
+            }
+        })
+
+        return itemUpdate
+    }))
+}
+
+// Used to decrement the stock of many supplies when an order enters "PROCESSING" status
+async function decrementSupplyStock(orderId) {
+    let order = await getOrderByID(orderId)
+
+    // Iterating through items in order to decrease stock
+    await Promise.all(order.items.map(async (orderItem) => {
+
+        // Decrementing corresponding supply's stock by the ordered amount
+        let updatedSupply = await prisma.supply.update({
+            where: {
+                product_supplier_warehouse: {
+                    product: orderItem.product,
+                    supplier: orderItem.supplier,
+                    warehouse: orderItem.warehouse
+                }
+            },
+            data: {
+                quantity: {
+                    decrement: orderItem.quantity
+                }
+            }
+        })
+
+        if (updatedSupply.quantity < 0) {
+            updatedSupply = await prisma.supply.update({
+                where: {
+                    product: orderItem.product,
+                    supplier: orderItem.supplier,
+                    warehouse: orderItem.warehouse
+                },
+                data: {
+                    quantity: 0
+                }
+            })
+        }
+
+        return updatedSupply
+    }))
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -1771,4 +1862,6 @@ module.exports = {
     getOrdersByUserID,
     getOrderByID,
     createOrder,
+    changeOrderStatus,
+    decrementSupplyStock
 }
