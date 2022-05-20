@@ -65,6 +65,13 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
     },
   },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+    },
+  }
 
 ];
 
