@@ -1,27 +1,26 @@
 <template>
     <div class="p-5" style="margin-top: 2px">
-        
         <h4>Informações Pessoais</h4>
         <hr>
         <form @submit.prevent="editProfile">
-            <div class="row">
-                <div class="col mb-3" style="max-width: 50%">
+            <div class="row g-4">
+                <div class="col-md-6">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="firstName" v-bind:value="user.first_name" placeholder="Nome" readonly required>
                 </div>
-                <div class="col mb-3" style="max-width: 50%">
+                <div class="col-md-6 mb-3">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="lastName" v-bind:value="user.last_name" placeholder="Apelido" readonly required>
                 </div>
             </div>
-            <div class="row">
-                <div class="col mb-3">
+            <div class="row g-4">
+                <div class="col-md-12 mb-3">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
                     <input type="email" class="form-control" id="email" v-bind:value="user.email" placeholder="E-mail" readonly required>
                 </div>
             </div>
-            <div class="row">
-                <div class="col mb-3" style="max-width: 50%">
+            <div class="row g-4">
+                <div class="col-md-6 mb-3">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
                     <input type="number" class="form-control" id="phoneNumber" v-bind:value="user.phone" placeholder="Telemóvel" readonly required>
                 </div>

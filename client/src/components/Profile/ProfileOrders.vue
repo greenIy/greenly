@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5" style="margin-top: 2px">
+    <div class="p-5">
         
         <h4>Encomendas</h4>
         <hr>

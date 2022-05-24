@@ -1,6 +1,5 @@
 <template>
-    <div class="p-5" style="margin-top: 2px">
-        
+    <div class="p-5">
         <h4>Moradas</h4>
         <hr>
         <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada associada à sua conta.<br>Adicione uma clicando no botão abaixo.</i>
@@ -19,12 +18,12 @@
                         <address>
                             <div class="position-absolute top-0 end-0 p-2 pe-3">
                                 <font-awesome-icon v-if="address.is_shipping === true" style="cursor: pointer; color: #E3C12B; margin-right: 5px" :icon="['fa', 'truck']" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual"/>
-                                <font-awesome-icon v-else style="cursor: pointer; color: #D7D9D7; margin-right: 5px" :icon="['fa', 'truck']" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual" v-on:click="addressAlreadySet('shipping')"/>
+                                <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0; margin-right: 5px" :icon="['fa', 'truck']" 
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de entrega" v-on:click="selectAddress(address); setAsShippingAddress()"/>
                                 <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #309C76" :icon="['fa', 'money-check-dollar']" size="lg" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual"/>
-                                <font-awesome-icon v-else style="cursor: pointer; color: #D7D9D7" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual" v-on:click="addressAlreadySet('billing')"/>
+                                <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0" :icon="['fa', 'money-check-dollar']" size="lg" 
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de faturação" v-on:click="selectAddress(address); setAsBillingAddress()"/>
                             </div>
                             <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
@@ -62,24 +61,24 @@
                 <form @submit.prevent="newAddress">
                     <div class="col mb-3">
                         <label for="selectCountry" class="form-label">País <span style='color: #FF0000;'>*</span></label>
-                        <country-select class="form-control" id="newAddressCountry" v-bind:value="newAddressInfo.country" :country="country" topCountry="" :countryName="true" required/>
+                        <country-select class="form-control" id="newAddressCountry" v-model="newAddressInfo.country" :country="country" topCountry="" :countryName="true" required/>
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressCity" class="form-label">Cidade <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressCity" v-bind:value="newAddressInfo.city" required>
+                        <input type="text" class="form-control" id="newAddressCity" v-model="newAddressInfo.city" placeholder="Cidade" required>
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressStreet" v-bind:value="newAddressInfo.street" required>
+                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" placeholder="Rua" required>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
                             <label for="newAddressPostalCode" class="form-label">Código-postal <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newAddressPostalCode" v-bind:value="newAddressInfo.postalCode" required>
+                            <input type="text" class="form-control" id="newAddressPostalCode" v-model="newAddressInfo.postalCode" placeholder="Código Postal" required>
                         </div>
                         <div class="col mb-3">
                             <label for="newAddressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
-                            <input type="number" class="form-control" id="newAddressNIF" v-bind:value="newAddressInfo.nif" v-on:click="removeIsInvalid" required>
+                            <input type="number" class="form-control" id="newAddressNIF" v-model="newAddressInfo.nif" v-on:click="removeIsInvalid"  placeholder="NIF" required>
                             <div class="invalid-feedback" id="invalidFeedbackNewNIF">Deve conter exatamente 9 algarismos.</div>
                         </div>
                     </div>
@@ -203,6 +202,30 @@
             </div>
         </div>
 
+        <!-- Toast Shipping Already Set -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="shippingAlreadySetToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de entrega.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Billing Already Set -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="billingAlreadySetToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de faturação.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
         <!-- Toast Remove Address -->
         <div class="toast-container position-absolute top-0 end-0 p-3">
             <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="polite" aria-atomic="true">
@@ -228,6 +251,7 @@ import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney, faMon
 library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck);
 
 import http from "../../../http-common"
+import AuthService from "../../router/auth"
 import countrySelect from '@/components/Profile/country-select'
 
 
@@ -274,6 +298,12 @@ export default({
             }
         },
         successfulNewAddress() {
+            this.newAddressInfo.street = "";
+            this.newAddressInfo.city = "";
+            this.newAddressInfo.postalCode = "";
+            document.getElementById("newAddressCountry").value = "";
+            document.getElementById("newAddressCountry").placeholder = "Selecione país";
+            this.newAddressInfo.nif = "";
             var closeEditModal = document.getElementById("closeNewModalButton");
             closeEditModal.click()
             var animation = {animation: true, delay: 5000};
@@ -301,6 +331,18 @@ export default({
             var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
         },
+        addressAlreadySet(addressType) {
+            var animation = {animation: true, delay: 5000};
+            if(addressType == "shipping") {
+                var warnToast = document.getElementById("shippingAlreadySetToast");
+                var warningToast = new Toast(warnToast, animation)
+                warningToast.show();
+            } else if (addressType == "billing") {
+                var warnToast = document.getElementById("billingAlreadySetToast");
+                var warningToast = new Toast(warnToast, animation)
+                warningToast.show();
+            }
+        },
         successfulRemoveAddress() {
             var closeEditModal = document.getElementById("closeRemoveModalButton");
             closeEditModal.click()
@@ -317,11 +359,6 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             };
-            this.newAddressInfo.country = document.getElementById("newAddressCountry").value
-            this.newAddressInfo.city = document.getElementById("newAddressCity").value
-            this.newAddressInfo.street = document.getElementById("newAddressStreet").value
-            this.newAddressInfo.postalCode = document.getElementById("newAddressPostalCode").value
-            this.newAddressInfo.nif = document.getElementById("newAddressNIF").value
             if (accessToken && userId) {
                 this.newAddressInfo.country = document.getElementById("newAddressCountry").value;
                 http.post(`/user/${userId}/addresses`,
@@ -333,12 +370,14 @@ export default({
                             nif: Number(this.newAddressInfo.nif),
                         }), headers)
                     .then((response) => {
-                        if (response.status == 201) {
+                        if (response.status == 201) {                          
+                            AuthService.getUser().then((result) => {
+                                this.user.addresses = result.addresses;
+                            })
                             this.successfulNewAddress()
-                            this.getUserInfo()
                             console.log("Success!")
                         }
-                    }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param)) 
+                    }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param))
             }
         },
         editAddress() {
@@ -389,6 +428,9 @@ export default({
                     .then((response) => {
                         console.log(response)
                         if (response.status == 200) {
+                            AuthService.getUser().then((result) => {
+                                this.user.addresses = result.addresses;
+                            });
                             this.successfulSetShippingAddress()
                             console.log("Success!")
                         }
@@ -410,6 +452,9 @@ export default({
                     .then((response) => {
                         console.log(response)
                         if (response.status == 200) {
+                            AuthService.getUser().then((result) => {
+                                this.user.addresses = result.addresses;
+                            });
                             this.successfulSetBillingAddress()
                             console.log("Success!")
                         }
@@ -429,8 +474,10 @@ export default({
                 http.delete(`/user/${userId}/addresses/${addressId}`, headers)
                     .then((response) => {
                         if (response.status == 202) {
+                            AuthService.getUser().then((result) => {
+                                this.user.addresses = result.addresses;
+                            });
                             this.successfulRemoveAddress()
-                            this.getUserInfo()
                             console.log("Success!")
                         }
                     }).catch(error => this.wrongCredentials(error.response.data)) 
@@ -452,10 +499,21 @@ export default({
     .modal-footer {
         border-width: 0;
     }
+    #addressButtons {
+        opacity: 0.6;
+    }
+    #addressButtons:hover {
+        opacity: 1.0;
+        transform: scale(1.05)
+    }
     #newAddressToast, #editAddressToast,
     #setBillingAddressToast, #setShippingAddressToast,
     #removeAddressToast {
         margin-top: 120px;
         background-color: #309C76 !important;
     }
+     #billingAlreadySetToast, #shippingAlreadySetToast {
+        margin-top: 120px;
+        background-color: #E3C12B !important;
+     }
 </style>

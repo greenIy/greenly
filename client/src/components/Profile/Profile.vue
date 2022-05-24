@@ -2,11 +2,11 @@
    
     <div class="wrapper">
         
-        <nav class="d-flex flex-column flex-shrink-0 p-3" style="width: 25%">
+        <nav class="d-flex flex-column flex-shrink-0 p-3 w-25">
 
             <div class="container">
                 <div class="row">
-                    <div class="col-2 align-middle align-self-center" style="margin: 0 5%">
+                    <div class="col-2 align-middle align-self-center ms-2">
                         <span v-if="user.type == 'CONSUMER'"><font-awesome-icon :icon="['fas', 'user-tag']" size="2xl" /></span>
                         <span v-if="user.type == 'SUPPLIER'"><font-awesome-icon :icon="['fas', 'box-open']" size="2xl" /></span>
                         <span v-if="user.type == 'TRANSPORTER'"><font-awesome-icon :icon="['fas', 'truck-fast']" size="2xl" /></span>

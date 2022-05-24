@@ -1,6 +1,5 @@
 <template>
-    <div class="p-5" style="margin-top: 2px">
-        
+    <div class="p-5">
         <h4>Empresa</h4>
         <hr>
         <form @submit.prevent="editCompany">

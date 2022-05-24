@@ -1,11 +1,10 @@
 <template>
-    <div class="p-5" style="margin-top: 2px">
-        
+    <div class="p-5">
         <h4>Segurança</h4>
         <hr>
         <form @submit.prevent="changePassword">
-            <div class="row">
-                <div class="col mb-3" style="max-width: 50%">
+            <div class="row g-4">
+                <div class="col-md-6 mb-3">
                     <label for="inputOldPassword" class="form-label">Palavra-passe atual</label>
                     <div class="input-group">
                     <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="oldPassword" v-model="changePW.oldPassword" placeholder="Palavra-passe atual" required>
@@ -18,8 +17,8 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col mb-3" style="max-width: 50%">
+            <div class="row g-3">
+                <div class="col-md-6">
                     <label for="inputNewPassword" class="form-label">Nova palavra-passe</label>
                     <div class="input-group">
                     <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPassword" v-model="changePW.newPassword" placeholder="Palavra-passe nova" required>
@@ -31,7 +30,7 @@
                         <div class="invalid-feedback" id="invalidFeedbackNewPassword"></div>
                     </div>
                 </div>
-                <div class="col mb-3" style="max-width: 50%">
+                <div class="col-md-6 mb-3">
                     <label for="inputNewPasswordConfirm" class="form-label">Confirmar nova palavra-passe</label>
                     <div class="input-group">
                     <input :type="showPassword3 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPasswordConfirm" v-model="changePW.newPasswordConfirm" placeholder="Confirmar palavra-passe nov" required>
