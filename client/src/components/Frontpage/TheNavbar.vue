@@ -26,7 +26,8 @@
                         </a>
                         <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
                             <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
-                            <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
+                            <li v-if="user.type == 'CONSUMER'"><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
+                            <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Painel de encomendas</a></router-link></li>
                             <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
                             <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" />&nbsp; Notificações</a></router-link></li>
                             <li><hr class="dropdown-divider"></li>
@@ -69,10 +70,10 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import AuthService from '../../router/auth';
+import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket);
 
-library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faHeart, faBell, faArrowRightFromBracket);
+import AuthService from '../../router/auth';
 
 
 export default {

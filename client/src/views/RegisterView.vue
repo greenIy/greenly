@@ -27,5 +27,7 @@ export default {
 
 
 <style scoped>
-
+  .content-wrap {
+    background-color: #EDEDED;
+  }
 </style>

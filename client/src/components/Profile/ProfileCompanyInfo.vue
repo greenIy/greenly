@@ -6,26 +6,26 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyName" class="form-label">Nome da empresa <span style='color: #FF0000;'>*</span></label>
-                    <input type="name" class="form-control" id="companyName" v-bind:value="this.company.name" placeholder="Nome" readonly required>
+                    <input type="name" class="form-control" id="companyName" v-bind:value="company.name" placeholder="Nome" readonly required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyEmail" class="form-label">E-mail da empresa<span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="companyEmail" v-model="this.company.email" placeholder="E-mail" readonly required>
+                    <input type="email" class="form-control" id="companyEmail" v-model="company.email" placeholder="E-mail" readonly required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="inputcompanyDescription" class="form-label">Descrição da empresa <span style='color: #FF0000;'>*</span></label>
-                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyDescription" v-model="this.company.bio" placeholder="Descrição" readonly required></textarea>
+                    <label for="inputCompanyBio" class="form-label">Descrição da empresa <span style='color: #FF0000;'>*</span></label>
+                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyBio" v-model="company.bio" placeholder="Descrição" readonly required></textarea>
                 </div>
             </div>
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button type="button" class="btn btn-primary" id="editInfoButton" v-on:click="editCompanyInfo"><font-awesome-icon :icon="['fa', 'pen']" /> &nbsp;Editar</button>
                 <button type="button" class="btn btn-secondary" style="display: none" id="cancelInfoButton" data-bs-toggle="modal" data-bs-target="#cancelCompanyInfo"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
-                <button type="submit" class="btn btn-primary" style="display: none" id="saveInfoButton" v-on:click="editCompany"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
+                <button type="submit" class="btn btn-primary" style="display: none" id="saveInfoButton"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
             </div>
         </form>
 
@@ -48,17 +48,23 @@
         </div>        
         </div>
 
-        <!-- Notification Company Edited -->
-        <div class="alert alert-success alert-dismissible fade show" id="successNotification" role="alert">
-            <strong>Atualizado!</strong> O seu perfil foi atualizado com sucesso.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+       <!-- Toast Edit Company Info -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Atualizada!</strong> A sua empresa foi autalizada com sucesso.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
     </div>
 </template>
 
 <script>
-
+import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -77,13 +83,9 @@ export default({
         }
     },
     methods: {
-        getUserInfo() {
+        getCompanyInfo() {
             this.company = this.$store.getters.getUser.company
-            console.log(this.company)
             return this.company
-        },
-        cloneUser(user) {
-            return JSON.parse(JSON.stringify(user))
         },
         editCompanyInfo() {
             document.getElementById("editInfoButton").style.display = "none";
@@ -92,7 +94,7 @@ export default({
 
             document.getElementById("companyName").readOnly = false
             document.getElementById("companyEmail").readOnly = false
-            document.getElementById("companyDescription").readOnly = false
+            document.getElementById("companyBio").readOnly = false
         },
         cancelCompanyInfo() {
             document.getElementById("cancelInfoButton").style.display = "none"
@@ -101,11 +103,14 @@ export default({
 
             document.getElementById("companyName").readOnly = true
             document.getElementById("companyEmail").readOnly = true
-            document.getElementById("companyDescription").readOnly = true
+            document.getElementById("companyBio").readOnly = true
         },
         saveCompanyInfo() {
             this.cancelCompanyInfo()
-            document.getElementById("successNotification").style.display = "block"
+            var animation = {animation: true, delay: 5000};
+            var successToast = document.getElementById("successToast");
+            var successfulToast = new Toast(successToast, animation)
+            successfulToast.show();
 
         },
         editCompany() {
@@ -116,20 +121,24 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             }
+            this.company.name = document.getElementById("companyName").value
+            this.company.email = document.getElementById("companyEmail").value
+            this.company.bio = document.getElementById("companyBio").value
             if (accessToken && userId){
             http.put(`/user/${userId}`,
                     JSON.stringify({
-                            name: this.company.first_name,
-                            bio: this.company.last_name,
-                            email: this.company.phone,
+                            name: this.company.name,
+                            bio: this.company.bio,
+                            email: this.company.email,
                         }), headers)
                     .then((response) => {
                         if (response.status == 200) {
-                            setTimeout(this.saveCompanyInfo, 500)
+                            this.saveCompanyInfo()
+                            console.log("Success!")
                         }
                     }).catch((error) => {
-                        console.log(error.response.data);
-                        console.log("Failure!")
+                        console.log(error);
+                        console.log("Failure!");
                     })
             }
         }
@@ -143,13 +152,8 @@ export default({
         background-color: #309C76;
         border-color: white;
     }
-    #successNotification {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-right: 30px;
-        margin-top: 150px;
-        display: none;
-        width: 25%;
+    #successToast {
+        margin-top: 120px;
+        background-color: #309C76 !important;
     }
 </style>

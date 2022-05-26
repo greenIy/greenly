@@ -33,7 +33,7 @@
                 <div class="col-md-6 mb-3">
                     <label for="inputNewPasswordConfirm" class="form-label">Confirmar nova palavra-passe</label>
                     <div class="input-group">
-                    <input :type="showPassword3 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPasswordConfirm" v-model="changePW.newPasswordConfirm" placeholder="Confirmar palavra-passe nov" required>
+                    <input :type="showPassword3 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPasswordConfirm" v-model="changePW.newPasswordConfirm" placeholder="Confirmar palavra-passe nova" required>
                         <div class="input-group-append">
                             <span class="input-group-text" @click="showPassword3 = !showPassword3" style="height: 100%">
                                     <font-awesome-icon :icon="showPassword3 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -52,11 +52,13 @@
         <a>Depois de apagar a sua conta, não há como voltar atrás.<br>Por favor tenha isso em consideração antes de tomar uma decisão.</a>
         <br>
         <br>
+
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
+
         <!-- Modal -->
         <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteAccountLabel">Apagar conta</h5>

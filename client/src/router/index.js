@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import ProfileView from '../views/ProfileView.vue';
 
 const routes = [
   {
@@ -24,11 +25,36 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
-    },
-  },
+    redirect: '/profile/personalInfo',
+    component: ProfileView,
 
+    children: [
+      { path: 'personalInfo',
+      name: 'personalInfo',
+      component: ProfileView,
+        },
+      { path: 'companyInfo',
+      name: 'companyInfo',
+      component: ProfileView,
+        },
+      { path: 'orders',
+      name: 'orders',
+      component: ProfileView,
+        },
+      { path: 'addresses',
+        name: 'addresses',
+        component: ProfileView,
+      },
+      { path: 'security',
+        name: 'security',
+        component: ProfileView,
+      },
+      { path: 'statistics',
+        name: 'statistics',
+        component: ProfileView,
+      },
+    ]
+    },
 ];
 
 const router = createRouter({

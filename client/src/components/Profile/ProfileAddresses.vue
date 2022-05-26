@@ -9,6 +9,10 @@
             <i>Deve definir uma morada de entrega &nbsp;<font-awesome-icon :icon="['fa', 'truck']" style="color: #E3C12B"/>&nbsp; 
             e uma morada de faturação &nbsp;<font-awesome-icon :icon="['fa', 'money-check-dollar']" style="color: #309C76"/>&nbsp;.</i>
         </div>
+        <br>
+
+        <!-- Button trigger modal New Address -->
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#newAddress"><font-awesome-icon :icon="['fa', 'plus']" /> &nbsp;Adicionar morada</button>
         
         <br>
         <br>
@@ -45,13 +49,10 @@
             </div>
         </div>
         <br>
-
-        <!-- Button trigger modal New Address -->
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#newAddress"><font-awesome-icon :icon="['fa', 'plus']" /> &nbsp;Adicionar morada</button>
         
         <!-- Modal New Address -->
         <div class="modal fade" id="newAddress" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newAddressLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="newAddressLabel">Adicionar morada</h5>
@@ -83,7 +84,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="closeNewModalButton" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
+                        <button type="button" id="closeNewModalButton" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="removeIsInvalid"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
                         <button type="submit" class="btn btn-primary" id="newAddressButton"><font-awesome-icon :icon="['fa', 'plus']" /> &nbsp;Adicionar</button>
                     </div>
                 </form>
@@ -94,7 +95,7 @@
 
         <!-- Modal Edit Address -->
         <div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editAddressLabel">Editar morada</h5>
@@ -126,7 +127,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="closeEditModalButton" class="btn btn-secondary" data-bs-dismiss="modal"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
+                        <button type="button" id="closeEditModalButton" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="removeIsInvalid"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
                         <button type="submit" class="btn btn-primary"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
                     </div>
                 </form>
@@ -137,7 +138,7 @@
 
         <!-- Modal Remove Address -->
         <div class="modal fade" id="removeAddress" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeAddressLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="removeAddressLabel">Atenção!</h5>
@@ -154,9 +155,9 @@
         </div>
         </div>
 
-        <!-- Toast New Address -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+        <div class="toast-container position-absolute top-0 end-0 p-3" style="margin-top: 120px;">
+            <!-- Toast New Address -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Adicionada!</strong> A sua morada foi adicionada com sucesso.
@@ -164,11 +165,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
-
-        <!-- Toast Edit Address -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="editAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+        
+            <!-- Toast Edit Address -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="editAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Atualizada!</strong> A sua morada foi atualizada com sucesso.
@@ -176,11 +175,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
 
-        <!-- Toast Set Shipping Address -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="setShippingAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+            <!-- Toast Set Shipping Address -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="setShippingAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Definida!</strong> A sua morada de entrega foi definida com sucesso.
@@ -188,11 +185,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
 
-        <!-- Toast Set Billing Address -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="setBillingAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+            <!-- Toast Set Billing Address -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="setBillingAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Definida!</strong> A sua morada de faturação foi definida com sucesso.
@@ -200,11 +195,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
 
-        <!-- Toast Shipping Already Set -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="shippingAlreadySetToast" role="alert" aria-live="polite" aria-atomic="true">
+            <!-- Toast Shipping Already Set -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="shippingAlreadySetToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de entrega.
@@ -212,11 +205,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
 
-        <!-- Toast Billing Already Set -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="billingAlreadySetToast" role="alert" aria-live="polite" aria-atomic="true">
+            <!-- Toast Billing Already Set -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="billingAlreadySetToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de faturação.
@@ -224,11 +215,9 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
 
-        <!-- Toast Remove Address -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="polite" aria-atomic="true">
+            <!-- Toast Remove Address -->
+            <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                     <strong>Removida!</strong> A sua morada foi removida com sucesso.
@@ -237,8 +226,6 @@
                 </div>
             </div>
         </div>
-
-        
 
     </div>
 </template>
@@ -389,24 +376,27 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             };
-            this.selectedAddress.country = document.getElementById("editAddressCountry").value
-            this.selectedAddress.city = document.getElementById("editAddressCity").value
-            this.selectedAddress.street = document.getElementById("editAddressStreet").value
-            this.selectedAddress.postalCode = document.getElementById("editAddressPostalCode").value
-            this.selectedAddress.nif = document.getElementById("editAddressNIF").value
+            var newCountry = document.getElementById("editAddressCountry").value
+            var newCity = document.getElementById("editAddressCity").value
+            var newStreet = document.getElementById("editAddressStreet").value
+            var newPostalCode = document.getElementById("editAddressPostalCode").value
+            var newNif = document.getElementById("editAddressNIF").value
             if (accessToken && userId) {
-                this.selectedAddress.country = document.getElementById("editAddressCountry").value;
                 http.put(`/user/${userId}/addresses/${addressId}`, 
                     JSON.stringify({
-                            street: this.selectedAddress.street,
-                            city: this.selectedAddress.city,
-                            country: this.selectedAddress.country,
-                            postal_code: this.selectedAddress.postal_code,
-                            nif: Number(this.selectedAddress.nif)
+                            street: newStreet,
+                            city: newCity,
+                            country: newCountry,
+                            postal_code: newPostalCode,
+                            nif: Number(newNif)
                         }), headers)
                     .then((response) => {
-                        console.log(response)
                         if (response.status == 200) {
+                            this.selectedAddress.country = newCountry
+                            this.selectedAddress.city = newCity
+                            this.selectedAddress.street = newStreet
+                            this.selectedAddress.postalCode = newPostalCode
+                            this.selectedAddress.nif = newNif
                             this.successfulEditAddress()
                             console.log("Success!")
                         }
@@ -426,7 +416,6 @@ export default({
                 http.put(`/user/${userId}/addresses/${addressId}`, 
                     JSON.stringify({is_shipping: true}), headers)
                     .then((response) => {
-                        console.log(response)
                         if (response.status == 200) {
                             AuthService.getUser().then((result) => {
                                 this.user.addresses = result.addresses;
@@ -450,11 +439,10 @@ export default({
                 http.put(`/user/${userId}/addresses/${addressId}`, 
                     JSON.stringify({is_billing: true}), headers)
                     .then((response) => {
-                        console.log(response)
                         if (response.status == 200) {
                             AuthService.getUser().then((result) => {
                                 this.user.addresses = result.addresses;
-                            });
+                            })
                             this.successfulSetBillingAddress()
                             console.log("Success!")
                         }
@@ -485,6 +473,7 @@ export default({
         },
         removeIsInvalid() {
             document.getElementById("newAddressNIF").classList.remove("is-invalid");
+            document.getElementById("editAddressNIF").classList.remove("is-invalid");
         }
     },
 });
@@ -509,11 +498,9 @@ export default({
     #newAddressToast, #editAddressToast,
     #setBillingAddressToast, #setShippingAddressToast,
     #removeAddressToast {
-        margin-top: 120px;
         background-color: #309C76 !important;
     }
      #billingAlreadySetToast, #shippingAlreadySetToast {
-        margin-top: 120px;
         background-color: #E3C12B !important;
      }
 </style>

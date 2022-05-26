@@ -28,11 +28,9 @@ export default {
     position: relative;
     min-height: 100vh;
   }
-
   .content-wrap {
     padding-bottom: 7.5rem;
   }
-
   img {
     width: 100%;
   }
