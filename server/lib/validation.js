@@ -457,7 +457,11 @@ function addProductToWishlistValidator() {
 
 function createOrderValidator() {
     return [
-        body("address")
+        body("shipping_address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("billing_address")
             .notEmpty()
             .isInt()
             .toInt(),

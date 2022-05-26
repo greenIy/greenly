@@ -331,7 +331,8 @@ router.delete('/:userId/wishlist/:productId', authentication.check, authorizatio
 router.post('/:userId/orders', authentication.check, authorization.check, createOrderValidator(), (req, res) => {
     persistence.createOrder(
         Number(req.params.userId),
-        Number(req.body.address),
+        Number(req.body.shipping_address),
+        Number(req.body.billing_address),
         req.body.observations
     )
     .then((result) => {
@@ -342,9 +343,13 @@ router.post('/:userId/orders', authentication.check, authorization.check, create
                 return res.status(400).send({
                     message: "Your cart is empty. You can add items to it by using the cart manipulation endpoints."
                 })
-            case "INVALID_ADDRESS":
+            case "INVALID_SHIPPING_ADDRESS":
                 return res.status(400).send({
-                    message: "Invalid destination. Make sure to use an address registered to your account."
+                    message: "Invalid shipping destination. Make sure to use an address registered to your account."
+                })
+            case "INVALID_BILLING_ADDRESS":
+                return res.status(400).send({
+                    message: "Invalid billing address. Make sure to use an address registered to your account."
                 })
             case "NO_STOCK":
                 return res.status(400).send({

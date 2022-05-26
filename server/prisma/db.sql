@@ -164,13 +164,17 @@ CREATE TABLE `Order` (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     consumer        INT UNSIGNED NOT NULL,
     date            DATETIME NOT NULL,
-    destination     INT UNSIGNED NOT NULL,
     observations    VARCHAR(255),
+    shipping_address    INT UNSIGNED NOT NULL,
+    billing_address     INT UNSIGNED NOT NULL,
 
     FOREIGN KEY (consumer)
         REFERENCES User(id),
 
-    FOREIGN KEY (destination)
+    FOREIGN KEY (shipping_address)
+        REFERENCES Address(id),
+
+    FOREIGN KEY (billing_address)
         REFERENCES Address(id)
 );
 

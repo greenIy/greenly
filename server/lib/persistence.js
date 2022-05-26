@@ -166,6 +166,7 @@ async function determineOptimalVehicle(transporter, destination) {
             })
         ))]
             
+        console.log('leastBusyVehicle :>> ', leastBusyVehicle);
         return leastBusyVehicle.id
 
     } catch (e) {
@@ -1628,7 +1629,7 @@ async function getOrdersByUserID(userID) {
     }
 }
 
-async function createOrder(userID, addressID, observations) {
+async function createOrder(userID, shippingAddressID, billingAddressID, observations) {
     try {
         
         // Check if user is using a valid address
@@ -1637,8 +1638,12 @@ async function createOrder(userID, addressID, observations) {
 
         let userAddressIDs = mentionedUser.Address.map((addressObject) => addressObject.id)            
 
-        if (!userAddressIDs.includes(Number(addressID))) {
-            return "INVALID_ADDRESS";
+        if (!userAddressIDs.includes(Number(shippingAddressID))) {
+            return "INVALID_SHIPPING_ADDRESS";
+        }
+
+        if (!userAddressIDs.includes(Number(billingAddressID))) {
+            return "INVALID_BILLING_ADDRESS";
         }
 
         // Converting cartItems into order
@@ -1677,7 +1682,8 @@ async function createOrder(userID, addressID, observations) {
         let newOrder = await prisma.order.create({
             data: {
                 consumer: userID,
-                destination: addressID,
+                shipping_address: shippingAddressID,
+                billing_address: billingAddressID,
                 observations: observations,
                 date: new Date()
             }
@@ -1689,7 +1695,7 @@ async function createOrder(userID, addressID, observations) {
 
             // Determine closest distribution center, and which vehicle to use
 
-            let vehicle = await determineOptimalVehicle(item.transporter, addressID) || 1
+            let vehicle = await determineOptimalVehicle(item.transporter, shippingAddressID) || 1
 
             let newOrderItem = await prisma.order_Item.create({
                 data: {
