@@ -1,8 +1,9 @@
 <template>
-    <div class="p-5">
+    <div class="p-4">
         <h4>Moradas</h4>
         <hr>
-        <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada associada à sua conta.<br>Adicione uma clicando no botão abaixo.</i>
+        <i v-if="addressesLength() == 0">Parece que não tem nenhuma morada associada à sua conta.<br>Adicione uma clicando no botão abaixo.<br></i>
+        
         <div v-else>
             <i>Pode adicionar mais do que uma morada à sua conta Greenly.</i>
             <br>
@@ -16,35 +17,37 @@
         
         <br>
         <br>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div v-for="address in this.user.addresses" :key="address.nif" class="card" style="width: 300px; margin-right: 30px">
-                <div class="card-body">
-                        <address>
-                            <div class="position-absolute top-0 end-0 p-2 pe-3">
-                                <font-awesome-icon v-if="address.is_shipping === true" style="cursor: pointer; color: #E3C12B; margin-right: 5px" :icon="['fa', 'truck']" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual" v-on:click="addressAlreadySet('shipping')"/>
-                                <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0; margin-right: 5px" :icon="['fa', 'truck']" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de entrega" v-on:click="selectAddress(address); setAsShippingAddress()"/>
-                                <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #309C76" :icon="['fa', 'money-check-dollar']" size="lg" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual" v-on:click="addressAlreadySet('billing')"/>
-                                <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0" :icon="['fa', 'money-check-dollar']" size="lg" 
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de faturação" v-on:click="selectAddress(address); setAsBillingAddress()"/>
-                            </div>
-                            <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
-                            {{ address.street }}<br>
-                            {{ address.city }}, {{ address.country }}<br>
-                            <abbr title="CP">Código Postal:</abbr> {{ address.postal_code }}
-                        </address>
-                        <address>
-                            <strong>NIF</strong><br>
-                            <a>{{ address.nif }}</a>
-                            <div class="position-absolute bottom-0 end-0 p-2 pe-3">
-                                <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Editar morada"/></a>&nbsp;
-                                <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Remover morada"/></a>
-                            </div>
-                        </address>              
+        <div style="overflow-y: auto; overflow-x: hidden; height: 300px">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div v-for="address in this.user.addresses" :key="address.nif" class="card" style="width: 300px; margin-right: 30px; margin-left: 15px">
+                    <div class="card-body">
+                            <address>
+                                <div class="position-absolute top-0 end-0 p-2 pe-3">
+                                    <font-awesome-icon v-if="address.is_shipping === true" style="cursor: pointer; color: #E3C12B; margin-right: 5px" :icon="['fa', 'truck']" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual" v-on:click="addressAlreadySet('shipping')"/>
+                                    <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0; margin-right: 5px" :icon="['fa', 'truck']" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de entrega" v-on:click="selectAddress(address); setAsShippingAddress()"/>
+                                    <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #309C76" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual" v-on:click="addressAlreadySet('billing')"/>
+                                    <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de faturação" v-on:click="selectAddress(address); setAsBillingAddress()"/>
+                                </div>
+                                <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
+                                {{ address.street }}<br>
+                                {{ address.city }}, {{ address.country }}<br>
+                                <abbr title="CP">Código Postal:</abbr> {{ address.postal_code }}
+                            </address>
+                            <address>
+                                <strong>NIF</strong><br>
+                                <a>{{ address.nif }}</a>
+                                <div class="position-absolute bottom-0 end-0 p-2 pe-3">
+                                    <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Editar morada"/></a>&nbsp;
+                                    <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Remover morada"/></a>
+                                </div>
+                            </address>              
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,7 +158,7 @@
         </div>
         </div>
 
-        <div class="toast-container position-absolute top-0 end-0 p-3" style="margin-top: 120px;">
+        <div class="toast-container position-absolute top-0 end-0 p-3">
             <!-- Toast New Address -->
             <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
@@ -231,7 +234,7 @@
 </template>
 
 <script>
-import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.js';
+//import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
@@ -500,7 +503,20 @@ export default({
     #removeAddressToast {
         background-color: #309C76 !important;
     }
-     #billingAlreadySetToast, #shippingAlreadySetToast {
+    #billingAlreadySetToast, #shippingAlreadySetToast {
         background-color: #E3C12B !important;
-     }
+    }
+    ::-webkit-scrollbar {
+        width: 17px;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: #E4E4E4;
+        border-radius: 100px;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 100px;
+        border: 5px solid transparent;
+        background-clip: content-box;
+        background-color: #309C76;
+    }
 </style>

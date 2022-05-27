@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5">
+    <div class="p-4">
         
         <h4>Encomendas</h4>
         <hr>

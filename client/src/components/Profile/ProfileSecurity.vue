@@ -1,104 +1,127 @@
 <template>
-    <div class="p-5">
+    <div class="p-4">
         <h4>Segurança</h4>
         <hr>
-        <form @submit.prevent="changePassword">
-            <div class="row g-4">
-                <div class="col-md-6 mb-3">
-                    <label for="inputOldPassword" class="form-label">Palavra-passe atual</label>
-                    <div class="input-group">
-                    <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="oldPassword" v-model="changePW.oldPassword" placeholder="Palavra-passe atual" required>
-                        <div class="input-group-append">
-                            <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
-                                    <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
-                            </span>
-                        </div>
-                        <div class="invalid-feedback" id="invalidFeedbackOldPassword">Palavra-passe inserida não coincide com a atual.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="inputNewPassword" class="form-label">Nova palavra-passe</label>
-                    <div class="input-group">
-                    <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPassword" v-model="changePW.newPassword" placeholder="Palavra-passe nova" required>
-                        <div class="input-group-append">
-                            <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
-                                    <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
-                            </span>
-                        </div>
-                        <div class="invalid-feedback" id="invalidFeedbackNewPassword"></div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="inputNewPasswordConfirm" class="form-label">Confirmar nova palavra-passe</label>
-                    <div class="input-group">
-                    <input :type="showPassword3 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPasswordConfirm" v-model="changePW.newPasswordConfirm" placeholder="Confirmar palavra-passe nova" required>
-                        <div class="input-group-append">
-                            <span class="input-group-text" @click="showPassword3 = !showPassword3" style="height: 100%">
-                                    <font-awesome-icon :icon="showPassword3 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
-                            </span>
+        <div style="overflow-y: auto; overflow-x: hidden; height: 440px;">
+            <div style="width: 95%">
+                <form @submit.prevent="changePassword">
+                    <div class="row g-4">
+                        <div class="col-md-6 mb-3">
+                            <label for="inputOldPassword" class="form-label">Palavra-passe atual</label>
+                            <div class="input-group">
+                            <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="oldPassword" v-model="changePW.oldPassword" placeholder="Palavra-passe atual" required>
+                                <div class="input-group-append">
+                                    <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
+                                            <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                                    </span>
+                                </div>
+                                <div class="invalid-feedback" id="invalidFeedbackOldPassword">Palavra-passe inserida não coincide com a atual.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-secondary"><font-awesome-icon :icon="['fa', 'key']" /> &nbsp;Mudar palavra-passe</button>
-        </form>
-        <br>
-        <br>
-
-        <h4 style="color: red;">Apagar conta</h4>
-        <hr>
-        <a>Depois de apagar a sua conta, não há como voltar atrás.<br>Por favor tenha isso em consideração antes de tomar uma decisão.</a>
-        <br>
-        <br>
-
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
-
-        <!-- Modal -->
-        <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteAccountLabel">Apagar conta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="checkIcon" style="width: 15%; margin-left: 42.5%; display: none;">
-                <img src='../../assets/checkIconGreen.png'>
-            </div>
-            <div class="modal-body" id="deleteMessage">
-                Tem a certeza que deseja apagar a sua conta definitivamente?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="deleteAccount">Apagar</button>
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- Toast Change Password -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="changePasswordToast" role="alert" aria-live="polite" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Atualizada!</strong> A sua palavra-passe foi atualizada com sucesso.
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="inputNewPassword" class="form-label">Nova palavra-passe</label>
+                            <div class="input-group">
+                            <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPassword" v-model="changePW.newPassword" placeholder="Palavra-passe nova" required>
+                                <div class="input-group-append">
+                                    <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
+                                            <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                                    </span>
+                                </div>
+                                <div class="invalid-feedback" id="invalidFeedbackNewPassword"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inputNewPasswordConfirm" class="form-label">Confirmar nova palavra-passe</label>
+                            <div class="input-group">
+                            <input :type="showPassword3 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="newPasswordConfirm" v-model="changePW.newPasswordConfirm" placeholder="Confirmar palavra-passe nova" required>
+                                <div class="input-group-append">
+                                    <span class="input-group-text" @click="showPassword3 = !showPassword3" style="height: 100%">
+                                            <font-awesome-icon :icon="showPassword3 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <button type="submit" class="btn btn-secondary"><font-awesome-icon :icon="['fa', 'key']" /> &nbsp;Mudar palavra-passe</button>
+                </form>
+                <br>
+                <br>
+
+                <h4>Acesso API</h4>
+                <hr>
+                <a>Procura desenvolver aplicações utilizando o API Greenly? Utilize este token para se autenticar. 
+                   <br><b>Deve tratá-lo com todo o cuidado, pois este token permite acesso à sua conta.</b>
+                   <br>Consulte todas as funcionalidades do API em <a :href="url_api">docs.greenly.pt</a>.</a>
+                <br>
+                <br>
+                <p>
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#accessTokenCollapse" aria-expanded="false" aria-controls="accessTokenCollapse">
+                        <font-awesome-icon :icon="['fa', 'unlock-keyhole']" /> &nbsp;Mostrar token
+                    </button>
+                </p>
+                <div style="min-height: 50px;">
+                    <div class="collapse" id="accessTokenCollapse">
+                        <div class="card card-body" style="width: 100%; margin-bottom: 30px">
+                            {{ this.accessToken }}
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: red;">Apagar conta</h4>
+                <hr>
+                <a>Depois de apagar a sua conta, <b>não há como voltar atrás</b>.<br>Por favor tenha isso em consideração antes de tomar uma decisão.</a>
+                <br>
+                <br>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteAccountLabel">Apagar conta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="checkIcon" style="width: 15%; margin-left: 42.5%; display: none;">
+                        <img src='../../assets/checkIconGreen.png'>
+                    </div>
+                    <div class="modal-body" id="deleteMessage">
+                        Tem a certeza que deseja apagar a sua conta definitivamente?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="deleteAccount">Apagar</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Toast Change Password -->
+                <div class="toast-container position-absolute top-0 end-0 p-3">
+                    <div class="toast align-items-center text-white bg-primary border-0" id="changePasswordToast" role="alert" aria-live="polite" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                            <strong>Atualizada!</strong> A sua palavra-passe foi atualizada com sucesso.
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
-import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
+//import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faEye, faEyeSlash, faCheck, faUserXmark, faKey} from '@fortawesome/free-solid-svg-icons';
-library.add(faEye, faEyeSlash, faCheck, faUserXmark, faKey);
+import { faEye, faEyeSlash, faCheck, faUserXmark, faKey, faUnlockKeyhole} from '@fortawesome/free-solid-svg-icons';
+library.add(faEye, faEyeSlash, faCheck, faUserXmark, faKey, faUnlockKeyhole);
 
 import AuthService from '../../router/auth';
 import http from "../../../http-common"
@@ -111,6 +134,7 @@ export default({
     data() {
         return {
             user: [],
+            accessToken: localStorage.getItem('accessToken'),
             showPassword1: false,
             showPassword2: false,
             showPassword3: false,
@@ -118,7 +142,8 @@ export default({
                 oldPassword: '',
                 newPassword: '',
                 newPasswordConfirm: '',
-            }
+            },
+            url_api: 'https://docs.greenly.pt/'
         }
     },
     methods: {
@@ -226,7 +251,19 @@ export default({
 
 <style scoped>
     #changePasswordToast {
-        margin-top: 120px;
         background-color: #309C76 !important;
+    }
+    ::-webkit-scrollbar {
+        width: 17px;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: #E4E4E4;
+        border-radius: 100px;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 100px;
+        border: 5px solid transparent;
+        background-clip: content-box;
+        background-color: #309C76;
     }
 </style>

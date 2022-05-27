@@ -40,6 +40,12 @@
                                     <font-awesome-icon :icon="['fa', 'box-archive']" size="lg"/>&nbsp; Encomendas
                                 </router-link>
                             </li>
+                            <li v-if="user.type == 'CONSUMER'" class="nav-item">
+                                <router-link :to="{ name: 'wishlist'}" class="nav-link link-dark" :class="(this.$route.name === 'wishlist') ? 'nav-link active' : ''">
+                                <svg class="bi me-0" width="16" height="16"></svg>
+                                    <font-awesome-icon :icon="['fa', 'heart']" size="lg"/>&nbsp; Favoritos
+                                </router-link>
+                            </li>
                             <li class="nav-item">
                                 <router-link :to="{ name: 'addresses'}" class="nav-link link-dark" :class="(this.$route.name === 'addresses') ? 'nav-link active' : ''" aria-current="page">
                                 <svg class="bi me-0" width="16" height="16"></svg>
@@ -66,9 +72,8 @@
             </div>
         </div>
 
-
         <div class="d-flex ms-5">
-            <div class="card p-3 my-5" style="width: 1000px; height: 600px; overflow: auto">
+            <div class="card p-3 my-5" style="width: 1000px; height: 600px">
                 <div class="card-body">
 
                     <div class="tab-content" id="profile-content" >
@@ -78,6 +83,8 @@
                         <profile-company-info v-if="this.$route.name === 'companyInfo'"/>
 
                         <profile-orders v-if="this.$route.name === 'orders'"/>
+
+                        <profile-wishlist v-if="this.$route.name === 'wishlist'"/>
                     
                         <profile-addresses v-if="this.$route.name === 'addresses'"/>
 
@@ -92,7 +99,6 @@
 
     </div>
 
-
 </template>
 
 <script>
@@ -102,13 +108,14 @@ import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import ProfilePersonalInfo from '@/components/Profile/ProfilePersonalInfo.vue'
 import ProfileCompanyInfo from '@/components/Profile/ProfileCompanyInfo.vue'
 import ProfileOrders from '@/components/Profile/ProfileOrders.vue'
+import ProfileWishlist from '@/components/Profile/ProfileWishlist.vue'
 import ProfileAddresses from '@/components/Profile/ProfileAddresses.vue'
 import ProfileSecurity from '@/components/Profile/ProfileSecurity.vue'
 import ProfileStatistics from '@/components/Profile/ProfileStatistics.vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUserTag, faTruckFast, faBoxOpen, faUser, faBriefcase, faBoxArchive, faMap, faGear, faChartLine } from '@fortawesome/free-solid-svg-icons';
-library.add(faUserTag, faTruckFast, faBoxOpen, faUser, faBriefcase, faBoxArchive, faMap, faGear, faChartLine);
+import { faUserTag, faTruckFast, faBoxOpen, faUser, faBriefcase, faBoxArchive, faHeart, faMap, faGear, faChartLine } from '@fortawesome/free-solid-svg-icons';
+library.add(faUserTag, faTruckFast, faBoxOpen, faUser, faBriefcase, faBoxArchive, faHeart, faMap, faGear, faChartLine);
 
 export default {
     name: 'Profile',
@@ -118,6 +125,7 @@ export default {
         ProfilePersonalInfo,
         ProfileCompanyInfo,
         ProfileOrders,
+        ProfileWishlist,
         ProfileAddresses,
         ProfileSecurity,
         ProfileStatistics
@@ -142,18 +150,5 @@ export default {
     }
     .nav-link {
         cursor: pointer;
-    }
-    ::-webkit-scrollbar {
-        width: 17px;
-    }
-    ::-webkit-scrollbar-track {
-        background-color: #E4E4E4;
-        border-radius: 100px;
-    }
-    ::-webkit-scrollbar-thumb {
-        border-radius: 100px;
-        border: 5px solid transparent;
-        background-clip: content-box;
-        background-color: #309C76;
     }
 </style>

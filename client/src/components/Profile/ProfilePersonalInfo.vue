@@ -1,14 +1,20 @@
 <template>
-    <div class="p-5">
+    <div class="p-4">
         <h4>Informações Pessoais</h4>
         <hr>
+        <i>As suas infromações pessoais não são publicos aos restantes consumidores da plataforma Greenly.<br>Apenas
+           os admistradores, fornecedores e transportadores que estiveram e/ou estarão envolivdos num processo de entrega de umas das suas
+           encomendas têm também acesso a estas informações.
+        </i>
+        <br>
+        <br>
         <form @submit.prevent="editProfile">
             <div class="row g-4">
-                <div class="col-md-6 w-25">
+                <div class="col-md-6 w-50">
                     <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="firstName" v-bind:value="user.first_name" placeholder="Nome" readonly required>
                 </div>
-                <div class="col-md-6 mb-3 w-25">
+                <div class="col-md-6 mb-3 w-50">
                     <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
                     <input type="name" class="form-control" id="lastName" v-bind:value="user.last_name" placeholder="Apelido" readonly required>
                 </div>
@@ -16,17 +22,16 @@
             <div class="row g-4">
                 <div class="col-md-12 mb-3 w-50">
                     <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="email" v-bind:value="user.email" placeholder="E-mail" readonly required>
+                    <input type="email" class="form-control" id="email" v-bind:value="user.email" placeholder="E-mail" readonly v-on:click="removeIsInvalid" required>
+                    <div class="invalid-feedback" id="invalidEmail">Email já em uso.</div>
                 </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 mb-3 w-25">
+                <div class="col-md-6 mb-3 w-50">
                     <label for="inputPhoneNumber" class="form-label">Telemóvel <span style='color: #FF0000;'>*</span></label>
                     <input type="number" class="form-control" id="phoneNumber" v-bind:value="user.phone" placeholder="Telemóvel" readonly required>
                 </div>
             </div>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                 <button type="button" class="btn btn-primary" id="editInfoButton" v-on:click="editUserInfo"><font-awesome-icon :icon="['fa', 'pen']" /> &nbsp;Editar</button>
                 <button type="button" class="btn btn-secondary" style="display: none" id="cancelInfoButton" data-bs-toggle="modal" data-bs-target="#cancelUserInfo"><font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
                 <button type="submit" class="btn btn-primary" style="display: none" id="saveInfoButton"><font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar alterações</button>
@@ -68,7 +73,7 @@
 </template>
 
 <script>
-import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
+//import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -76,6 +81,7 @@ import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons'
 library.add(faPen, faFloppyDisk, faXmark);
 
 import http from "../../../http-common"
+import AuthService from "../../router/auth"
 
 export default({
     name: 'ProfilePersonalInfo',
@@ -114,6 +120,16 @@ export default({
             document.getElementById("lastName").readOnly = true
             document.getElementById("email").readOnly = true
             document.getElementById("phoneNumber").readOnly = true
+            AuthService.getUser().then((result) => {
+                document.getElementById("email").value = result.email;
+            })
+            this.removeIsInvalid()
+
+        },
+        wrongCredentials(message) {
+            if (message == "E-mail already in use.") {
+                document.getElementById("email").classList.add("is-invalid")
+            }
         },
         saveUserInfo() {
             this.cancelUserInfo()
@@ -171,11 +187,14 @@ export default({
                             this.saveUserInfo()
                         }
                     }).catch((error) => {
-                        console.log(error.response.data.errors.msg);
+                        this.wrongCredentials(error.response.data.errors[0].msg);
                         console.log("Failure!")
                     })
                 }
             }
+        },
+        removeIsInvalid() {
+            document.getElementById("email").classList.remove("is-invalid");
         }
     },
 });
@@ -188,7 +207,6 @@ export default({
         border-color: white;
     }
     #successToast {
-        margin-top: 120px;
         background-color: #309C76 !important;
     }
 </style>

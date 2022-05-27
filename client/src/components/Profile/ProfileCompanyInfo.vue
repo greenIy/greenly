@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5">
+    <div class="p-4">
         <h4>Empresa</h4>
         <hr>
         <form @submit.prevent="editCompany">
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
+//import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -153,7 +153,6 @@ export default({
         border-color: white;
     }
     #successToast {
-        margin-top: 120px;
         background-color: #309C76 !important;
     }
 </style>
