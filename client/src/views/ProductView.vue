@@ -89,7 +89,7 @@
                 </ul>
               </div>
               <div class="mx-3 mt-3 " id="detalhe" v-if="active_el==1" style="text-items:left" >
-                <h6 class="my-3">Caterísticas</h6>
+                <h6 class="my-3">Caraterísticas</h6>
                 <table class="table table-striped table-responsive">
                   <tbody>
                     <tr v-for="a in attributes" :key="a.id">

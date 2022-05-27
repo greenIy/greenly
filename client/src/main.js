@@ -17,6 +17,9 @@ import router from './router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
+//Draggable
+import VueDraggable from 'vuedraggable';
+
 const myApp = createApp(App);
 
 myApp.use(VueAxios, axios);
@@ -79,6 +82,8 @@ const gauthOption = {
 
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
+
+myApp.use(VueDraggable);
 
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação

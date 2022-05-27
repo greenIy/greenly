@@ -62,7 +62,14 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component() {
-      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
+      return import(/* webpackChunkName: "profile" */ '../views/ProfileView.vue');
+    },
+  },
+  {
+    path: '/supplier',
+    name: 'supplier',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
   },
 

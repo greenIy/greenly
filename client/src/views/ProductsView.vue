@@ -46,8 +46,6 @@ import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 
 import http from "../../http-common";
 
-import { useRouter } from 'vue-router';
-
 export default {
   name: "ProductsView",
   components: {
@@ -127,15 +125,7 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
-   /*  async getSuppliers() {
-      let response;
-      let request;
-      request = "/store/suppliers";
-      response = await http.get(request);
-      this.allSuppliers = response.data;
-      console.log(this.allSuppliers)
-
-    }, */
+  
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;

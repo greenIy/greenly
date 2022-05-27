@@ -14,6 +14,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@popperjs/core": "^2.11.5",
+    "@shopify/draggable": "^1.0.0-beta.8",
     "@vuelidate/core": "^2.0.0-alpha.40",
     "@vuelidate/validators": "^2.0.0-alpha.28",
     "axios": "^0.26.1",
@@ -22,12 +23,14 @@
     "country-region-data": "^2.2.0",
     "jquery": "^3.6.0",
     "react-country-region-selector": "^3.4.0",
+    "tailwindcss": "^3.0.24",
     "vue": "^3.2.13",
     "vue-axios": "^3.4.1",
     "vue-country-region-select": "^2.0.16",
     "vue-router": "^4.0.3",
     "vue-tabz": "^1.1.5",
     "vue3-google-oauth2": "^1.0.6",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
