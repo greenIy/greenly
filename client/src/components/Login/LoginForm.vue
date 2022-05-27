@@ -21,17 +21,17 @@
                         <div class="invalid-feedback">Palavra-passe incorreta.</div>
                         </div>
                     </div>
-                    <p class="text-muted small" style="font-size: 85%"><router-link to="">Esqueceste-te da tua palavra-passe?</router-link></p>
+                    <p class="text-muted small" style="font-size: 85%"><router-link class="greenly-link" to="">Esqueceste-te da tua palavra-passe?</router-link></p>
                     <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
                     <div class="or-seperator"><i>ou</i></div>
                         <p class="text-center">Inicia sessão através de uma rede social</p>
                         <div class="text-center social-btn">
-                            <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                            <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
+                             <a @click="googleSignIn" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
+                            <a @click="loginWithFacebook" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
                         </div>
                 </form>
             </div>
-            <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right">Regista-te aqui!</router-link></p>
+            <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right greenly-link">Regista-te aqui!</router-link></p>
         </div>
     </div>
 </template>
@@ -47,6 +47,8 @@ import AuthService from '../../router/auth';
 library.add(faFacebookSquare, faGoogle, faEye, faEyeSlash, faLeaf);
 
 import http from "../../../http-common";
+import { initFbsdk } from "@/config/facebook_oAuth";
+
 
 export default({
   name: 'loginForm',
@@ -59,7 +61,58 @@ export default({
             }
         }
     },
+    mounted(){
+        initFbsdk();
+    },
     methods: {
+
+        // Login with Google
+        async googleSignIn() {
+            try {
+                const authCode = await this.$gAuth.getAuthCode();
+                http.post("/auth/google", JSON.stringify({
+                    code: authCode})
+                ).then(async(response) => {
+                    if (response.status == 200) {
+                        localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                        localStorage.setItem('userId', JSON.stringify(response.data.id));
+                        this.$router.push({path: '/'})
+
+                        // Modificar a store do VueX de forma a refletir o estado de autenticação
+                        this.$store.dispatch('setUser', await AuthService.getUser())
+                        this.$store.dispatch('setState', true);
+                    }
+                })
+
+
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+        loginWithFacebook() {
+            window.FB.login(response => {
+                // obtain access token from the response
+                if (response.authResponse) {
+                    const accessToken = response.authResponse.accessToken;
+                    http.post("/auth/facebook", JSON.stringify({
+                        access_token: accessToken,
+                        })
+                    ).then(async(response) => {
+                        if (response.status === 200) {
+                            localStorage.setItem('accessToken', JSON.stringify(response.data.token));
+                            localStorage.setItem('userId', JSON.stringify(response.data.id));
+                            this.$router.push({path: '/'})
+
+                            // Modificar a store do VueX de forma a refletir o estado de autenticação
+                            this.$store.dispatch('setUser', await AuthService.getUser())
+                            this.$store.dispatch('setState', true);
+                            }
+                        })
+                }
+            }, {scope: 'public_profile,email'});
+        },
+
         wrongCredentials(message) {
             if (message == "User with specified e-mail not found.") {
                 document.getElementById("email").classList.add("is-invalid")
@@ -68,11 +121,12 @@ export default({
             }
             document.getElementById("password").value = "";
         },
+
         loginUser() {
             http.post("/auth/login", JSON.stringify({
-                    email: this.loginInfo.email,
-                    password: this.loginInfo.password }))
-                    .then(async (response) => {
+                email: this.loginInfo.email,
+                password: this.loginInfo.password }))
+                .then(async (response) => {
                         if (response.status == 200) {
                             localStorage.setItem('accessToken', JSON.stringify(response.data.token));
                             localStorage.setItem('userId', JSON.stringify(response.data.id));
@@ -96,7 +150,7 @@ export default({
 
 <style scoped>
     .btn-primary {
-        background-color: #309C76;
+        background-color: #5e9f88;;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {
@@ -124,5 +178,9 @@ export default({
         position: relative;
         top: -11px;
         z-index: 1;
+    }
+
+    .greenly-link {
+        color:#5e9f88;
     }
 </style>

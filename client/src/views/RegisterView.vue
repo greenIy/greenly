@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="content-wrap">
-      <the-navbar/>
-      <register-pills/>
+      <TheNavbar/>
+      <RegisterPills/>
     </div>
-    <the-footer/>
+    <TheFooter/>
   </div>
 </template>
 

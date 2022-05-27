@@ -49,11 +49,11 @@ export default class AuthService {
          * Permite decidir qual será o destino do utilizador durante a navegação consoante o seu estado de autenticação
          */
         static async authenticate(to, from, next) {
-            const publicPages = ["/", "/products"]
+            const publicPages = ["/", "/produtos", "/produto", "/equipa"]
                 
             // TODO: Adicionar páginas relativas à autenticação por redes sociais
             // Páginas que são inacessíveis a utilizadores autenticados 
-            const noAuthenticationPages = ["/login", "/register"]
+            const noAuthenticationPages = ["/login", "/registar"]
         
             const isLoggedIn = await AuthService.isLoggedIn()
 
@@ -66,8 +66,10 @@ export default class AuthService {
                 store.dispatch('setUser', null)
                 store.dispatch('setState', false);
               }
-        
-            const requiresAuth = !publicPages.includes(to.path)
+
+              const requiresAuth = publicPages.some((allowedPage) => {
+                to.path.startsWith(allowedPage)
+            })
         
             const canHaveAuth = !noAuthenticationPages.includes(to.path)
         

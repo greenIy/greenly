@@ -7,7 +7,7 @@
                 </router-link>
             </div>
             <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
-                <input class="form-control" type="search" placeholder="" aria-label="Search" v-model="search">
+                <input class="form-control" type="search" placeholder="O que estás à procura?" aria-label="Search" v-model="search" @keyup.enter="submit(this.search)">
                 <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
             </div>
             <div v-if="!userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-2 ms-5">
@@ -77,30 +77,33 @@
                     <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
                 </router-link>
             </div>
+            <router-link  to="/login">
+                
+            </router-link>
         </div>
-        <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
-            <div class="pt-2">
-                <router-link to="/promocoes" class="mb-2 pr-2">
-                    promoções <span class="ms-3"> | </span>            
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/produtos" class="mb-2 mr-2">
-                    produtos <span class="ms-3"> | </span> 
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/servicos" class="mb-2 ml-2">
-                    serviços <span class="ms-3"> | </span> 
-                </router-link>
-            </div>
-            <div class="pt-2">
-                <router-link to="/fornecedores" class="mb-2">
-                    fornecedores
-                </router-link>
-            </div>
+        
+    <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
+        <div class="pt-2">
+            <router-link to="/promocoes" class="mb-2 pr-2">
+                promoções <span class="ms-3"> | </span>            
+            </router-link>
         </div>
-    
+        <div class="pt-2">
+            <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
+                produtos <span class="ms-3"> | </span> 
+            </router-link>
+        </div>
+        <div class="pt-2">
+            <router-link to="/servicos" class="mb-2 ml-2">
+                serviços <span class="ms-3"> | </span> 
+            </router-link>
+        </div>
+        <div class="pt-2">
+            <router-link to="/fornecedores" class="mb-2">
+                fornecedores
+            </router-link>
+        </div>
+    </div>
 </nav>
 </template>
 
@@ -113,13 +116,17 @@ import AuthService from '../../router/auth';
 
 
 export default {
-    name: 'TheNavbar',
-    data () {
-        return {
+  name: 'TheNavbar',
+  data () {
+    return {
         search: '',
         userIsLoggedIn: this.$store.getters.getState,
         user: this.$store.getters.getUser
     }
+  },
+  methods: {
+    submit(search) {
+        this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
     },
     methods: {
         submit(search) {
@@ -131,14 +138,16 @@ export default {
         }
 
     }
-};
+    }
+}
 </script>
 
 <style scoped>
     .navmenu {
-        background-color: #309C76;
+        background-color: #5e9f88;
         color: #fcfaf9;
     }
+
     .navmenu2 {
         background-color: #ffffff;
         color: #000000;
@@ -158,37 +167,44 @@ export default {
     .navmenu a:hover {
         color: #e4e4e4;
     }
+
     .navmenu2 a:hover {
-        color: #309C76;
+        color: #5e9f88;
     }
+
     .nav-links {
         font-size: 12px;
     }
+
     .container {
         width: 100%;
     }
+
     img {
         width: 90px;
         height: 35px;
     }
+
     .search-group {
         width: 825px!important;
     }
+
     input, button {
         border-radius: 20px;
         line-height: 15px;
         font-size: 15px;
     }
+    
     button {
         background-color: #dce5e1;
         border: 0px;
-        color: #309C76;
+        color: #5e9f88;
         box-shadow: none;
     }
     button:hover {
         background-color: #dce5e1;
         border: 0px;
-        color: #309C76;
+        color: #5e9f88;
     }
     .btn-outline-success{
         box-shadow:none;
@@ -196,6 +212,11 @@ export default {
     .form-control{
         box-shadow:none;
     }
+
+    .router-link-exact-active {
+       text-decoration: underline!important;
+    }
+
     .dropdown-header, .dropdown-item, .dropdown-item a {
         color: black !important;
     }

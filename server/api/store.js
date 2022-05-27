@@ -25,7 +25,8 @@ router.get('/products', getProductsValidator(), (req, res) => {
             req.query.category,
             req.query.keywords,
             req.query.sort,
-            {min: req.query.min_price, max: req.query.max_price}).
+            {min: req.query.min_price, max: req.query.max_price},
+            req.query.supplier).
         then((productData) => {
 
             if (productData) {
@@ -42,7 +43,8 @@ router.get('/products', getProductsValidator(), (req, res) => {
             res.status(200).json(productData)
         })
     } 
-    catch {
+    catch (e) {
+        console.log(e)
         res.status(500).send(defaultErr());
     }}
 )
@@ -172,7 +174,6 @@ router.put('/categories/:categoryId', authentication.check, authorization.check,
 
 router.delete('/categories/:categoryId', authentication.check, authorization.check, (req, res) => {
     persistence.deleteCategory(Number(req.params.categoryId)).then((success) => {
-
         if (success == 409) {
             return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories"})
         } else if (success) {
@@ -183,6 +184,18 @@ router.delete('/categories/:categoryId', authentication.check, authorization.che
     })
 });
 
+/* Supplier information route */
+// Any authenticated user can inquire about suppliers registered to the platform
+router.get('/suppliers', authentication.check, (req, res) => {
+    persistence.getAllSuppliers().then((result) => {
+        if (result) {
+            return res.status(200).json(result)
+        }
+        else {
+            res.status(500).send(defaultErr())
+        }
+    })
+})
 
 
 

@@ -64,25 +64,17 @@
                     
                     <div class="mt-3 mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="termsConditons" required>
-                        <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right">termos e condições de uso</router-link>.</label>
+                        <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right greenly-link">termos e condições de uso</router-link>.</label>
                         <br>
                     </div>
                     
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary w-75 p-2" id="registerButton">Registar como Fornecedor&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
                     </div>
-
-                    <div class="or-seperator"><i>ou</i></div>
-                    <p class="text-center">Regista-te através de uma rede social</p>
-                    <div class="text-center social-btn">
-                        <a href="#" class="btn btn-danger"><font-awesome-icon :icon="['fab', 'google']" size="lg"/>&nbsp; Google</a>
-                        <a href="#" class="btn btn-secondary"><font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>&nbsp; Facebook</a>
-                    </div>
-
                 </form>
             </div>
-            <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
-        </div>    
+        </div>
+        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
@@ -172,7 +164,7 @@ export default {
 
 <style scoped>
     .btn-primary {
-        background-color: #309C76;
+        background-color: #5e9f88;;
         border-color: white;
     }
     .btn-primary:hover, .social-btn .btn:hover {
@@ -201,4 +193,8 @@ export default {
         top: -11px;
         z-index: 1;
     }
+
+    .greenly-link {
+        color: #5e9f88;
+    } 
 </style>

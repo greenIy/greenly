@@ -2,7 +2,8 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import GAuth from 'vue3-google-oauth2';
 
 
 // Fontawesome imports
@@ -12,7 +13,13 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+// Axios imports
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
 const myApp = createApp(App);
+
+myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
@@ -60,6 +67,19 @@ myApp.use(store)
 router.beforeEach(AuthService.authenticate);
 
 myApp.use(router).mount('#app');
+
+window.document.title = "Greenly";
+
+// Google authentication
+const gauthOption = {
+    clientId: '569764819828-g3po196193avqfu9bc9puqp1ncihjipr.apps.googleusercontent.com',
+    scope: 'profile email',
+    prompt: 'select_account'
+}
+
+// Instanciação do componente GAuth
+myApp.use(GAuth, gauthOption);
+
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
 export default store;

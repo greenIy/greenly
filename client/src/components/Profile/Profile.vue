@@ -143,7 +143,7 @@ export default {
 
 <style scoped>
     .nav > .nav-item > .active {
-        background-color: #309C76;
+        background-color: #5e9f88;;
     }
     .nav-item {
         margin-bottom: 5px;

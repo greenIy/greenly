@@ -58,13 +58,13 @@
                 <br>
                 <p>
                     <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#accessTokenCollapse" aria-expanded="false" aria-controls="accessTokenCollapse">
-                        <font-awesome-icon :icon="['fa', 'unlock-keyhole']" /> &nbsp;Mostrar token
+                        <font-awesome-icon :icon="['fa', 'lock']" /> &nbsp;Mostrar token
                     </button>
                 </p>
                 <div style="min-height: 50px;">
                     <div class="collapse" id="accessTokenCollapse">
-                        <div class="card card-body" style="width: 100%; margin-bottom: 30px">
-                            {{ this.accessToken }}
+                        <div class="card card-body" style="width: 100%; margin-bottom: 30px; background-color: #EDEDED">
+                            <span class="small">{{ this.accessToken.replaceAll('"', '') }}</span>
                         </div>
                     </div>
                 </div>
@@ -120,8 +120,8 @@
 //import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faEye, faEyeSlash, faCheck, faUserXmark, faKey, faUnlockKeyhole} from '@fortawesome/free-solid-svg-icons';
-library.add(faEye, faEyeSlash, faCheck, faUserXmark, faKey, faUnlockKeyhole);
+import { faEye, faEyeSlash, faCheck, faUserXmark, faKey, faLock} from '@fortawesome/free-solid-svg-icons';
+library.add(faEye, faEyeSlash, faCheck, faUserXmark, faKey, faLock);
 
 import AuthService from '../../router/auth';
 import http from "../../../http-common"
