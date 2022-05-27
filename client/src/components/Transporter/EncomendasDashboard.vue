@@ -19,13 +19,14 @@
 
 <script>
 import draggable from "vuedraggable";
-import Order from "@/components/Supplier/Order.vue";
+import Order from "@/components/Transporter/Order.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSpinner, faTruck} from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faTruck , faCheck} from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faSpinner);
 library.add(faTruck);
+library.add(faCheck);
 
 export default {
   name: "Dashboard",
@@ -37,7 +38,7 @@ export default {
     return {
       columns: [
         {
-          title: "Encomendas em Processamento",
+          title: "Encomendas prontas para Transporte",
           logo: "spinner",
           tasks: [
             {
@@ -72,7 +73,7 @@ export default {
           ]
         },
         {
-          title: "Encomendas para Transporte",
+          title: "Encomendas em Transporte",
           logo: "truck",
           tasks: [
             {
@@ -101,6 +102,42 @@ export default {
             },
              {
               id: 10,
+              title: "Provide documentation on integrations",
+              date: "Sep 12",
+              type: "Backend"
+            },
+          ]
+        },
+         {
+          title: "Encomendas Entregues",
+          logo: "check",
+          tasks: [
+            {
+              id: 11,
+              title: "Design shopping cart dropdown",
+              date: "Sep 9",
+              type: "Design"
+            },
+            {
+              id: 12,
+              title: "Add discount code to checkout page",
+              date: "Sep 14",
+              type: "Feature Request"
+            },
+            {
+              id: 13,
+              title: "Provide documentation on integrations",
+              date: "Sep 12",
+              type: "Backend"
+            },
+            {
+              id: 14,
+              title: "Provide documentation on integrations",
+              date: "Sep 12",
+              type: "Backend"
+            },
+             {
+              id: 15,
               title: "Provide documentation on integrations",
               date: "Sep 12",
               type: "Backend"
