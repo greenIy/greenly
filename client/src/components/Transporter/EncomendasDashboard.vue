@@ -1,8 +1,10 @@
 <template>
   <div class="container d-flex justify-content-center my-5">
-    <div class="row">
-    <div v-for="column in columns" :key="column.title" class=" card d-inline-block col-lg-6 d-flex align-items-stretch column-width mx-3 rounded">
-        <h6 class="card-header mx-auto "><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', column.logo]" />{{column.title}} </h6>
+    <div class="row g-0">
+    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 d-flex align-items-stretch column-width mx-3 rounded">
+      <div class="card-header">
+        <h6><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', column.logo]" />{{column.title}} </h6>
+      </div>
         <div role="button" class="card-body ">
           <draggable :list="column.tasks" :animation="200" ghost-class="ghost-card" group="tasks">
                 <template #item="{element}">
@@ -21,12 +23,13 @@
 import draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSpinner, faTruck , faCheck} from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faTruck , faCheck , faHourglass} from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faSpinner);
 library.add(faTruck);
 library.add(faCheck);
+library.add(faHourglass);
 
 export default {
   name: "Dashboard",
@@ -39,7 +42,7 @@ export default {
       columns: [
         {
           title: "Encomendas prontas para Transporte",
-          logo: "spinner",
+          logo: "hourglass",
           tasks: [
             {
               id: 1,
