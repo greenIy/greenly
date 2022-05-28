@@ -1,16 +1,14 @@
 <template>
   <div class="container d-flex justify-content-center my-5">
     <div class="row g-0">
-    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 d-flex align-items-stretch column-width mx-3 rounded">
+    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 column-width mx-3 rounded">
       <div class="card-header">
-        <h6><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', column.logo]" />{{column.title}} </h6>
+        <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
       </div>
         <div role="button" class="card-body ">
-          <draggable :list="column.tasks" :animation="200" ghost-class="ghost-card" group="tasks">
+          <draggable :list="column.tasks" :animation="200" group="tasks">
                 <template #item="{element}">
-                <order class="d-inline-block col-lg-6 d-flex align-items-stretch content w-100 my-3 cursor-move" :class="{ 'not-draggable': !enabled }"
-                :element="element"
-                ></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move" :element="element"></order>
                 </template>
           </draggable>
         </div>
@@ -20,7 +18,7 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
+import Draggable from "vuedraggable";
 import Order from "@/components/Supplier/Order.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner, faTruck} from "@fortawesome/free-solid-svg-icons";
@@ -32,14 +30,14 @@ library.add(faTruck);
 export default {
   name: "Dashboard",
   components: {
-    draggable,
+    Draggable,
     Order,
   },
   data() {
     return {
       columns: [
         {
-          title: "Encomendas em Processamento",
+          title: "ENCOMENDAS EM PROCESSAMENTO",
           logo: "spinner",
           tasks: [
             {
@@ -74,7 +72,7 @@ export default {
           ]
         },
         {
-          title: "Encomendas para Transporte",
+          title: "ENCOMENDAS PARA TRANSPORTE",
           logo: "truck",
           tasks: [
             {
@@ -120,13 +118,6 @@ export default {
   min-width: 380px;
   width: 380px;
 }
-/* Unfortunately @apply cannot be setup in codesandbox, 
-but you'd use "@apply border opacity-50 border-blue-500 bg-gray-200" here */
-.ghost-card {
-  opacity: 0.5;
-  background: #F7FAFC;
-  border: 1px solid #4299e1;
-}
 .card{
     background-color:#ffffff;
 }
@@ -136,6 +127,4 @@ but you'd use "@apply border opacity-50 border-blue-500 bg-gray-200" here */
 .icon{
     color:#919090;
 }
-
-
 </style>

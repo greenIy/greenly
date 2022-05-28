@@ -5,18 +5,18 @@
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Centros de Distribuição</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Encomendas</a>
+                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Centros de Distribuição</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link"  data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Veículos</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Veículos</a>
                     </li>
                     </ul>
-                    <div v-if="active_el==1">Centros de distribuição INFO ... Por FAZER</div>
-                    <div v-if="active_el==2" ><EncomendasDashboard /></div>
-                    <div v-if="active_el==3" >Veículos INFO ... Por FAZER</div>
+                    <div v-if="active_el==1"><EncomendasDashboard /></div>
+                    <div v-if="active_el==2">Centros de distribuição INFO ... Por FAZER</div>
+                    <div v-if="active_el==3">Veículos INFO ... Por FAZER</div>
             </div>
             <TheFooter />
         </body>
