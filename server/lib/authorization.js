@@ -2,7 +2,8 @@
     Functions included pertain to user verification and resource limitation.
 */
 
-const authentication = require("./authentication"); // One-time-usage for administrator creation
+const persistence       = require("./persistence")
+const authentication    = require("./authentication"); // One-time-usage for administrator creation
 
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
@@ -15,6 +16,7 @@ async function check(req, res, next) {
         "/store/products/:productId":           "SINGLE_PRODUCT",
         "/store/orders":                        "ALL_ORDERS",
         "/store/orders/:orderId":               "SINGLE_ORDER",
+        "/store/orders/:orderId/:itemId":       "SINGLE_ORDER_ITEM",
         "/store/categories":                    "ALL_CATEGORIES",
         "/store/categories/:categoryId":        "SINGLE_CATEGORY",
         "/user/:userId/cart":                   "ALL_CART_ITEMS",
@@ -123,6 +125,50 @@ async function check(req, res, next) {
                 if ((req.params.userId == req.user.id) ||
                     (isAdministrator(req.user))) {
                     return next();
+                }
+            }
+
+            break;
+
+        case "ALL_ORDERS":
+            // This is valid for: GET
+            // As long as they're authenticated, anyone can access ALL_ORDERS, they'll only get orders that pertain to themselves
+            return next();
+
+        case "SINGLE_ORDER":
+            if (intent == "GET") {
+                // Checking if the user has permission to see details regarding the order 
+
+                let isRelated = await persistence.checkUserOrderRelationship(req.user, req.params.orderId)
+
+                if (isRelated) {
+                    return next()
+                }
+            }
+
+            break;
+
+        case "SINGLE_ORDER_ITEM":
+            // This is valid for: GET, PUT
+            // To access details regarding a single order, the user has to be related to the order
+
+            if (intent == "PUT") {
+                // Checking if the user has permission to see details regarding the order
+
+                let isRelatedToOrder = await persistence.checkUserOrderRelationship(
+                    req.user,
+                    req.params.orderId)
+
+                if (isRelatedToOrder) {
+                    // Also checking if the item they're attempting to update belongs to them
+                    let isRelatedToItem = await persistence.checkUserItemRelationship(
+                        req.user,
+                        req.params.orderId,
+                        req.params.itemId)
+
+                    if (isRelatedToItem) {
+                        return next()
+                    }
                 }
             }
 

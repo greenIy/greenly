@@ -362,19 +362,16 @@ router.post('/:userId/orders', authentication.check, authorization.check, create
     })
 })
 
-// TODO: Add authorization rules and validator
 router.get('/:userId/orders', authentication.check, authorization.check, (req, res) => {
     try {
-        persistence.getOrdersByUserID(
-            Number(req.params.userId)
+        persistence.getOrdersByUser(
+            req.user
         ).then((result) => {
             if (result == null) {
                 return res.status(500).send(defaultErr())
             }
 
             return res.status(200).json(result)
-
-
         })   
     } catch (e) {
         return res.status(500).send(defaultErr())

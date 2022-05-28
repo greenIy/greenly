@@ -2,7 +2,7 @@
     Functions included pertain to database access and manipulation.
 */
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Prisma } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
@@ -19,6 +19,11 @@ const prisma = new PrismaClient({
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
+
+Prisma.Decimal.prototype.toJSON = function() {
+    return this.toNumber();
+}
+
 const maps = new Client();
 
 /* Checking database availability */
@@ -81,9 +86,16 @@ async function determineOptimalVehicle(transporter, destination) {
             }
         })
 
+        // Considering only distribution centers with at least one vehicle
+
         let distributionCenters = await prisma.distribution_Center.findMany({
             where: {
-                transporter: transporter.id
+                transporter: transporter.id,
+                Vehicle: {
+                    some: {
+                        transporter: transporter.id
+                    }
+                }
             },
             select: {
                 id: true,
@@ -125,9 +137,7 @@ async function determineOptimalVehicle(transporter, destination) {
 
         let parsedDistances = distances.data.rows.map((row) => {
             let distance = row.elements[0].distance
-            if (distance != null) {
-                console.log('distance :>> ', distance);
-        
+            if (distance != null) {        
                 return distance.value
             }
         }).filter((distance) => (distance != undefined))
@@ -160,13 +170,12 @@ async function determineOptimalVehicle(transporter, destination) {
                     where: {
                         status: "AWAITING_TRANSPORT",
                         transporter: transporter.id,
-                        vehicle: vehicles[0].id
+                        vehicle: vehicle.id
                     }
                 })
             })
         ))]
             
-        console.log('leastBusyVehicle :>> ', leastBusyVehicle);
         return leastBusyVehicle.id
 
     } catch (e) {
@@ -1591,38 +1600,127 @@ async function removeProductFromWishlist(userID, productID) {
 }
 
 /* Order Functions */
-// TODO: Calculate computed items here
-async function getOrdersByUserID(userID) {
+/**
+ * This function is meant to be used by user-types with access to
+ * order-management features (i.e. all except consumers).
+ * Consumers will only receive their orders.
+ * Suppliers will only receive orders with OrderItems in which they're registered as supplier.
+ * Transporters will only receive orders with OrderItems in which they're registed as transporter.
+ * Administrators will receive every order.
+ * @param user - The user in question 
+ */
+ async function getOrdersByUser(user) {
     try {
-        let orders = await prisma.order.findMany({
-            where: {
-                consumer: userID
-            },
-        })
+        let orders;
 
-        orders = await Promise.all(orders.map(async (order) => {
-            let orderItems = await prisma.order_Item.findMany({
-                where: {
-                    order: order.id
-                }
-            })
-            
+        switch (user.type) {
+            case "CONSUMER": {
+                orders = await prisma.order.findMany({
+                    where: {
+                        consumer: user.id
+                    },
+                    include: {
+                        Order_Item: true
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                break;
+            }
+            case "SUPPLIER": {
+
+                // Suppliers should get every order related to them except the ones which haven't been paid for
+
+                orders = await prisma.order.findMany({
+                    where: {
+                        Order_Item: {
+                            some: {
+                                supplier: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    include: {
+                        Order_Item: {
+                            where: {
+                                supplier: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                orders
+
+                break;
+            }
+
+            case "TRANSPORTER": {
+
+                // Transporters should get every order related to them except the ones which haven't been paid for
+                orders = await prisma.order.findMany({
+                    where: {
+                        Order_Item: {
+                            some: {
+                                transporter: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    include: {
+                        Order_Item: {
+                            where: {
+                                transporter: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+                break;
+            }
+
+            case "ADMINISTRATOR": {
+                orders = await prisma.order.findMany({
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                break;
+            }
+        }
+
+        // Cleaning data
+
+        orders = await Promise.all(orders.map(async (order) => {            
             // Cleaning data
-            orderItems.forEach((item) => {
-                item.supply_price = parseFloat(item.supply_price) 
-                item.transport_price = parseFloat(item.transport_price) 
-                item.supplier_resource_usage = parseFloat(item.supplier_resource_usage) 
-                item.supplier_renewable_resources = parseFloat(item.supplier_renewable_resources) 
-                item.transporter_resource_usage = parseFloat(item.transporter_resource_usage) 
-                item.transporter_emissions = parseFloat(item.transporter_emissions)
-            })
 
-            order.items = orderItems
+            order.items = order.Order_Item
+
+            delete order.Order_Item
 
             return order
         }))
 
         return orders
+
+
     } catch (e) {
         console.log(e)
         return null;
@@ -1720,7 +1818,7 @@ async function createOrder(userID, shippingAddressID, billingAddressID, observat
         }))
 
         // Clearing the cart
-        // await clearCart(userID)
+        await clearCart(userID)
 
         return newOrder.id
 
@@ -1738,7 +1836,7 @@ async function getOrderByID(id) {
         select: {
             consumer: true,
             date: true,
-            destination: true,
+            shipping_address: true,
             observations: true,
             Order_Item: {
                 orderBy: {
@@ -1757,9 +1855,223 @@ async function getOrderByID(id) {
     }
 
     return null
-
 }
 
+/** This function works dynamically, returning only the information
+ *  a user should be able to see regarding a specific order,
+ *  similarly to getUserOrders */
+async function getFilteredOrderByID(user, orderID) {
+
+    let order;
+
+    switch (user.type) {
+        // A consumer should view the entire order
+        case "CONSUMER": {
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: true
+                },
+            })
+
+            break;
+        }
+        case "SUPPLIER": {
+            // A supplier should only be able to view orderItems which pertain to himself
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: {
+                        where: {
+                            supplier: user.id,
+                            NOT: {
+                                status: "AWAITING_PAYMENT"
+                            }
+                        }
+                    }
+                }
+            })
+
+            break;
+        }
+
+        case "TRANSPORTER": {
+            // A transporter should only be able to view orderItems which pertain to himself
+
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: {
+                        where: {
+                            transporter: user.id,
+                            NOT: {
+                                status: "AWAITING_PAYMENT"
+                            }
+                        }
+                    }
+                }
+            })
+            break;
+        }
+
+        case "ADMINISTRATOR": {
+            // An administrator should be able to view the entire order
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                }
+            })
+
+            break;
+        }
+    }
+
+
+
+    // Cleaning and adding data
+
+    let consumer = await prisma.user.findUnique({
+        where: {
+            id: order.consumer
+        }, select: {
+            id: true,
+            first_name: true,
+            email: true,
+            phone: true
+        }
+    })
+
+    let shippingAddress = await prisma.address.findUnique({
+        where: {
+            id: order.shipping_address
+        },
+        select: {
+            street: true,
+            country: true,
+            city: true,
+            latitude: true,
+            longitude: true,
+            postal_code: true
+        }
+    })
+
+    let billingAddress = await prisma.address.findUnique({
+        where: {
+            id: order.billing_address
+        },
+        select: {
+            street: true,
+            country: true,
+            city: true,
+            latitude: true,
+            longitude: true,
+            postal_code: true,
+            nif: true
+        }
+    })
+
+    // Cleaning 
+
+    order.consumer = consumer
+
+    order.shipping_address = shippingAddress
+
+    order.billing_address = billingAddress
+
+    order.items = await Promise.all(order.Order_Item.map(async (item) => {
+        // Additional information
+
+        let supplier = await prisma.user.findUnique({
+            where: {
+                id: item.supplier
+            },
+            include: {
+                Company: true
+            }
+        })
+
+        let transporter = await prisma.user.findUnique({
+            where: {
+                id: item.transporter
+            },
+            include: {
+                Company: true
+            }
+        })
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: item.warehouse,
+                    supplier: item.supplier
+                }
+            },
+            include: {
+                Address: {
+                    select: {
+                        street: true,
+                        country: true,
+                        city: true,
+                        latitude: true,
+                        longitude: true,
+                        postal_code: true
+                    }
+                }
+            }
+        })
+
+        let vehicle = await prisma.vehicle.findUnique({
+            where: {
+                id_transporter: {
+                    id: item.vehicle,
+                    transporter: item.transporter
+                }
+            },
+            select: {
+                id: true,
+                license_plate: true,
+                resource_usage: true,
+                average_emissions: true,
+                fuel_type: true,
+                payload_capacity: true,
+                distribution_center: true
+            }
+        })
+
+        // Additional supplier info
+        item.supplier = {
+            id: item.supplier,
+            name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+        }
+
+        // Additional transporter info
+        item.transporter = {
+            id: item.transporter,
+            name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+        }
+
+        item.warehouse = {
+            id: item.warehouse,
+            address: warehouse.Address
+        }
+
+        item.vehicle = vehicle
+
+        return item
+    }))
+
+    delete order.Order_Item
+
+    return order
+}
+
+// This function is used upon payment to change every order item status from "AWAITING_PAYMENT" to "PROCESSING"
 async function changeOrderStatus(orderId, targetStatus) {
 
     let order = await getOrderByID(orderId)
@@ -1821,6 +2133,178 @@ async function decrementSupplyStock(orderId) {
     }))
 }
 
+
+async function updateOrderItem(user, orderID, itemID, targetStatus) {
+
+    // Obtaining specified order and orderItem
+    let order = await getOrderByID(orderID);
+
+    let orderItem = order.items[order.items.findIndex((item) => item.id == itemID)]
+
+    if (!orderItem) {
+        return "ITEM_NOT_FOUND"
+    }
+
+    if (orderItem.status == "AWAITING_PAYMENT") {
+        return "AWAITING_PAYMENT"
+    }
+
+    // The order (sorting) of statuses is important: a consumer cannot cancel an order if it's already in transit.
+    let orderStatuses = [
+        "AWAITING_PAYMENT", 
+        "PROCESSING", 
+        "AWAITING_TRANSPORT", 
+        "IN_TRANSIT",
+        "CANCELED",
+        "FAILURE",
+        "COMPLETE"
+    ]
+
+    let isValidStatus;
+
+    // Checking if the target status is valid for the specified user
+
+    switch (user.type) {
+        case "CONSUMER":
+            isValidStatus = [
+                "CANCELED"]
+                .includes(targetStatus)
+            break;
+
+        case "SUPPLIER":
+            isValidStatus = [
+                "CANCELED", 
+                "AWAITING_TRANSPORT"]
+                .includes(targetStatus)
+            break;
+
+        case "TRANSPORTER":
+            isValidStatus = [
+                "FAILURE", 
+                "COMPLETE", 
+                "IN_TRANSIT"]
+                .includes(targetStatus)
+            break;
+
+        case "ADMINISTRATOR":
+            isValidStatus = [
+                "CANCELED"]
+                .includes(targetStatus)
+            break;
+
+    }
+
+    if (!isValidStatus) {
+        return "INSUFFICIENT_PERMISSIONS"
+    }
+
+    // Checking if the status isn't going backwards
+
+    if (!(
+            orderStatuses.indexOf(targetStatus) >
+            orderStatuses.indexOf(orderItem.status))) {
+
+        return "REGRESSIVE_STATUS"
+    }
+
+
+    // TODO: Resume here
+
+}
+
+/**
+ * This function can be used to determine if a user is related to an order, and, if so, if he should be able to view its details.
+ * @param {*} user - The user in question 
+ * @param {*} orderID - The order in question
+ * @returns - A boolean value which signifies if the user is in any way related to the order.
+ */
+async function checkUserOrderRelationship(user, orderID) {
+    let order = await prisma.order.findUnique({
+        where: {
+            id: orderID
+        }
+    })
+
+    // In case the order doesn't exist
+    if (!order) {
+        return false;
+    }
+
+    switch (user.type) {
+        case "CONSUMER": {
+            return order.consumer == user.id
+        };
+        
+        case "SUPPLIER": {
+
+            // Check if the supplier serves any OrderItems in this order
+            let relatedOrderItems = await prisma.order_Item.count({
+                where: {
+                    order: orderID,
+                    supplier: user.id
+                }
+            })
+
+            return relatedOrderItems > 0
+        }
+
+        case "TRANSPORTER": {
+            // Check if the transporter serves any OrderItems in this order
+            let relatedOrderItems = await prisma.order_Item.count({
+                where: {
+                    order: orderID,
+                    transporter: user.id
+                }
+            })
+
+            return relatedOrderItems > 0
+        }
+
+        case "ADMINISTRATOR": {
+            return true;
+        }
+    }
+}
+
+/**
+ * This function can be used to check if a user is related to a specific orderItem, in case they're trying to edit its status
+ */
+async function checkUserItemRelationship(user, orderID, itemID) {
+    let orderItem = await prisma.order_Item.findUnique({
+        where: {
+            id_order: {
+                order: orderID,
+                id: itemID
+            },
+        },
+        include: {
+            Order: true
+        }
+    })
+
+    switch (user.type) {
+        case "CONSUMER": {
+            return orderItem.Order.consumer == user.id
+        };
+        
+        case "SUPPLIER": {
+            // Checking if the user supplies the specified orderItem
+
+            return orderItem.supplier == user.id
+        }
+
+        case "TRANSPORTER": {
+            // Check if the user transports the orderItem
+
+            return orderItem.transporter == user.id
+        }
+
+        case "ADMINISTRATOR": {
+            return true;
+        }
+    }
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -1865,9 +2349,14 @@ module.exports = {
     clearWishlist,
 
     // Order Functions
-    getOrdersByUserID,
+    getOrdersByUser,
     getOrderByID,
+    getFilteredOrderByID,
     createOrder,
     changeOrderStatus,
-    decrementSupplyStock
+    decrementSupplyStock,
+    checkUserOrderRelationship,
+    updateOrderItem,
+    checkUserItemRelationship
+
 }

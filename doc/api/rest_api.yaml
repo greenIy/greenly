@@ -2340,13 +2340,13 @@ components:
       type: string
       description: Identificador do estado atual da encomenda
       enum:
-      - awaiting_payment
-      - processing
-      - awaiting_transport
-      - transit
-      - complete
-      - failure
-      - canceled
+      - AWAITING_PAYMENT
+      - PROCESSING
+      - AWAITING_TRANSPORT
+      - IN_TRANSIT
+      - COMPLETE
+      - FAILURE
+      - CANCELED
     
     ## PRODUCT DEFINITIONS
     SentProduct:

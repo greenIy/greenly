@@ -477,6 +477,38 @@ function createOrderValidator() {
     ]
 }
 
+function getSingleOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        param('itemId').isInt().toInt(),
+        body("status")
+            .notEmpty()
+            .isString()
+            .isIn(["CANCELED", "AWAITING_TRANSPORT", "FAILURE", "COMPLETE", "IN_TRANSIT"])
+            .withMessage("Invalid target status."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -504,6 +536,8 @@ module.exports = {
     addProductToWishlistValidator,
 
     // Order validators
-    createOrderValidator
+    createOrderValidator,
+    getSingleOrderValidator,
+    updateOrderValidator
 
 }

@@ -7,7 +7,9 @@ const router    = express.Router();
 const { 
     getProductsValidator,
     createCategoryValidator,              
-    updateCategoryValidator } = require('../lib/validation.js');
+    updateCategoryValidator,
+    getSingleOrderValidator,
+    updateOrderValidator } = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
 const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
@@ -187,8 +189,8 @@ router.delete('/categories/:categoryId', authentication.check, authorization.che
 });
 
 /* Supplier information route */
-// Any authenticated user can inquire about suppliers registered to the platform
-router.get('/suppliers', authentication.check, (req, res) => {
+// Any  user can inquire about suppliers registered to the platform
+router.get('/suppliers', (req, res) => {
     persistence.getAllSuppliers().then((result) => {
         if (result) {
             return res.status(200).json(result)
@@ -247,6 +249,69 @@ router.post('/payments/webhook', async (req, res) => {
 
     return res.status(200).json({received: true})
     
+})
+
+/* Order Routes */
+
+// TODO: Build validation and authorization rules for each route, add middleware to routes here
+
+router.get('/orders', authentication.check, async (req, res) => {
+    persistence.getOrdersByUser(req.user).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            default:
+                return res.status(200).json(result)
+        }
+    })
+})
+
+router.get('/orders/:orderId', authentication.check, getSingleOrderValidator(), authorization.check, async (req, res) => {
+
+    persistence.getFilteredOrderByID(req.user, req.params.orderId).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "NOT_FOUND":
+                return res.status(404).send({message: "The specified order identifier is invalid."})
+            default:
+                return res.status(200).json(result)
+        }
+    })
+
+})
+
+router.put('/orders/:orderId/:itemId', authentication.check, updateOrderValidator(), authorization.check,  async (req, res) => {
+    persistence.updateOrderItem(
+        req.user, 
+        req.params.orderId, 
+        req.params.itemId,
+        req.body.status).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+
+            case "ITEM_NOT_FOUND":
+                return res.status(404).send({
+                    message: "The specified item identifier is invalid for the specified order."})
+
+            case "AWAITING_PAYMENT":
+                return res.status(400).send({
+                    message: "You can't change this item's status since this item has not yet been paid for."})
+
+            case "INSUFFICIENT_PERMISSIONS":
+                return res.status(400).send({
+                    message: "You don't have permission to change the item's status from its current status to the specified status."})
+
+            case "REGRESSIVE_STATUS":
+                return res.status(400).send({
+                    message: "The specified order item is already passed the specified status. Please specifiy a status ahead of the current status."})
+            default:
+                return res.status(200).send({
+                    message: "Item succesfully updated."
+                })
+        }
+    })
 })
 
 module.exports = router;
