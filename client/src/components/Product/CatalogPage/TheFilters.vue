@@ -40,7 +40,7 @@
           </div>
         </div>
       </li>
- <!--       <li>
+      <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
@@ -51,7 +51,7 @@
             </router-link>
           </div>
         </div>
-      </li> -->
+      </li>
     </ul>
   </div>
 </template>
