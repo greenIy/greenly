@@ -36,7 +36,6 @@ export default {
     EncomendasDashboard,
   },
   data() {
-      console.log("adeus");
     return {
       user: {
         accept: false,

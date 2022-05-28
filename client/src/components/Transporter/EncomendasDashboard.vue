@@ -6,7 +6,7 @@
         <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', column.logo]" /><small>{{column.title}} </small></h6>
       </div>
         <div role="button" class="card-body ">
-          <draggable :list="column.tasks" :animation="200" group="tasks">
+          <draggable :list="column.tasks" :animation="200" group="tasks" :move="checkMove" :class="column.state">
                 <template #item="{element}">
                   <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move" :element="element"></order>
                 </template>
@@ -38,113 +38,151 @@ export default {
       columns: [
         {
           title: "ENCOMENDAS PARA TRANSPORTE",
+          state: "AWAITING_TRANSPORT",
           logo: "hourglass",
           tasks: [
             {
               id: 1,
-              title: "Add discount code to checkout page",
+              title: "teste",
               date: "Sep 14",
-              type: "Feature Request"
+              type: "Feature Request",
+              state: "AWAITING_TRANSPORT",
             },
             {
               id: 2,
               title: "Provide documentation on integrations",
-              date: "Sep 12"
+              date: "Sep 12",
+              state: "AWAITING_TRANSPORT",
             },
             {
               id: 3,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design"
+              type: "Design",
+              state: "AWAITING_TRANSPORT",
             },
             {
               id: 4,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              type: "Feature Request",
+              state: "AWAITING_TRANSPORT",
             },
             {
               id: 5,
               title: "Test checkout flow",
               date: "Sep 15",
-              type: "QA"
+              type: "QA",
+              state: "AWAITING_TRANSPORT",
             }
           ]
         },
         {
           title: "ENCOMENDAS EM TRANSPORTE",
           logo: "truck",
+          state: "IN_TRANSIT",
           tasks: [
             {
               id: 6,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design"
+              type: "Design",
+              state: "IN_TRANSIT",
             },
             {
               id: 7,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              type: "Feature Request",
+              state: "IN_TRANSIT",
             },
             {
               id: 8,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              type: "Backend",
+              state: "IN_TRANSIT",
             },
             {
               id: 9,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              type: "Backend",
+              state: "IN_TRANSIT",
             },
              {
               id: 10,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              type: "Backend",
+              state: "IN_TRANSIT",
             },
           ]
         },
          {
           title: "ENCOMENDAS ENTREGUES",
           logo: "check",
+          state: "COMPLETE",
           tasks: [
             {
               id: 11,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design"
+              type: "Design",
+              state: "COMPLETE",
             },
             {
               id: 12,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              type: "Feature Request",
+              state: "COMPLETE",
             },
             {
               id: 13,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              type: "Backend",
+              state: "COMPLETE",
             },
             {
               id: 14,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              type: "Backend",
+              state: "COMPLETE",
             },
              {
               id: 15,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              state: "COMPLETE",
             },
           ]
         },
       ]
     };
+  },
+  methods: {
+    checkMove: function (evt) {
+      let valid = false;
+      let next;
+      if(evt.from.className === 'AWAITING_TRANSPORT') {
+        next = 'IN_TRANSIT';
+        valid = evt.to.className === next;
+      } else if (evt.from.className === 'IN_TRANSIT') {
+        next = 'COMPLETE';
+        valid = evt.to.className === next;
+      }
+
+     if (valid) {
+       // ESPERAR O ZÉ TERMINAR PARA CHAMAR A ENCOMENDA PELO ID E ALTERARMOS O ESTADO !!!!
+      }
+
+      return valid;
+    },
+  },
+  computed: {
   }
 };
 </script>
