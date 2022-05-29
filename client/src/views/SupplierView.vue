@@ -3,6 +3,7 @@
     <TheNavbar />
         <body>
             <div class="content-wrap">
+              <div>
                 <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
@@ -17,6 +18,7 @@
                     <div v-if="active_el==1"><EncomendasDashboard /></div>
                     <div v-if="active_el==2">Inventários INFO ... Por FAZER </div>
                     <div v-if="active_el==3">Armazéns INFO ... Por FAZER</div>
+              </div>
             </div>
             <TheFooter />
         </body>

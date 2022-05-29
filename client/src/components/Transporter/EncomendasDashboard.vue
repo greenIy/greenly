@@ -45,7 +45,6 @@ export default {
               id: 1,
               title: "teste",
               date: "Sep 14",
-              type: "Feature Request",
               state: "AWAITING_TRANSPORT",
             },
             {
@@ -58,21 +57,18 @@ export default {
               id: 3,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design",
               state: "AWAITING_TRANSPORT",
             },
             {
               id: 4,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request",
               state: "AWAITING_TRANSPORT",
             },
             {
               id: 5,
               title: "Test checkout flow",
               date: "Sep 15",
-              type: "QA",
               state: "AWAITING_TRANSPORT",
             }
           ]
@@ -86,35 +82,30 @@ export default {
               id: 6,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design",
               state: "IN_TRANSIT",
             },
             {
               id: 7,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request",
               state: "IN_TRANSIT",
             },
             {
               id: 8,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend",
               state: "IN_TRANSIT",
             },
             {
               id: 9,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend",
               state: "IN_TRANSIT",
             },
              {
               id: 10,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend",
               state: "IN_TRANSIT",
             },
           ]
@@ -128,28 +119,24 @@ export default {
               id: 11,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design",
               state: "COMPLETE",
             },
             {
               id: 12,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request",
               state: "COMPLETE",
             },
             {
               id: 13,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend",
               state: "COMPLETE",
             },
             {
               id: 14,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend",
               state: "COMPLETE",
             },
              {
@@ -182,8 +169,6 @@ export default {
       return valid;
     },
   },
-  computed: {
-  }
 };
 </script>
 

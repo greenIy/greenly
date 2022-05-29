@@ -6,9 +6,9 @@
         <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
       </div>
         <div role="button" class="card-body ">
-          <draggable :list="column.tasks" :animation="200" group="tasks">
+          <draggable :list="column.tasks" :animation="200" group="tasks" :move="checkMove" :class="column.state">
                 <template #item="{element}">
-                  <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move" :element="element"></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move"  :element="element"></order>
                 </template>
           </draggable>
         </div>
@@ -38,78 +38,96 @@ export default {
       columns: [
         {
           title: "ENCOMENDAS EM PROCESSAMENTO",
+          state: "PROCESSING",
           logo: "spinner",
           tasks: [
             {
               id: 1,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              state: "PROCESSING"
             },
             {
               id: 2,
               title: "Provide documentation on integrations",
-              date: "Sep 12"
+              date: "Sep 12",
+              state: "PROCESSING"
             },
             {
               id: 3,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design"
+              state: "PROCESSING"
             },
             {
               id: 4,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              state: "PROCESSING"
             },
             {
               id: 5,
               title: "Test checkout flow",
               date: "Sep 15",
-              type: "QA"
+              state: "PROCESSING"
             }
           ]
         },
         {
           title: "ENCOMENDAS PARA TRANSPORTE",
+          state: "AWAITING_TRANSPORT",
           logo: "truck",
           tasks: [
             {
               id: 6,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
-              type: "Design"
+              state: "AWAITING_TRANSPORT"
             },
             {
               id: 7,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              type: "Feature Request"
+              state: "AWAITING_TRANSPORT"
             },
             {
               id: 8,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              state: "AWAITING_TRANSPORT"
             },
             {
               id: 9,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              state: "AWAITING_TRANSPORT"
             },
              {
               id: 10,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              type: "Backend"
+              state: "AWAITING_TRANSPORT"
             },
           ]
         },
       ]
     };
-  }
+  },
+  methods: {
+    checkMove: function (evt) {
+      let valid = false;
+      let next;
+      if(evt.from.className === 'PROCESSING') {
+        next = 'AWAITING_TRANSPORT';
+        valid = evt.to.className === next;
+      } 
+     if (valid) {
+       // ESPERAR O ZÉ TERMINAR PARA CHAMAR A ENCOMENDA PELO ID E ALTERARMOS O ESTADO !!!!
+      }
+
+      return valid;
+    },
+  },
 };
 </script>
 
