@@ -2,15 +2,15 @@
 <div>
   <div class="bg-white shadow rounded pt-3 border border-white" >
     <div>
-      <h5 class="card-title ms-3">Encomenda #{{element.id}} </h5>
+      <h5 class="card-title ms-3">Encomenda #{{element.id}}, Item #{{element.item.id}} </h5>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item">Produto: #6 Bacon</li>
-        <li class="list-group-item">Quantidade: </li>
-        <li class="list-group-item">Comprador: id nome</li>
-        <li class="list-group-item">Armazém: </li>
+        <li class="list-group-item">Produto: <span class="position-absolute end-0 me-3"> {{element.item.product.name}}</span> </li>
+        <li class="list-group-item">Quantidade: <span class="position-absolute end-0 me-3"> {{element.item.quantity}} un.</span></li>
+        <li class="list-group-item">Comprador: <span class="position-absolute end-0 me-3"> {{element.consumer.first_name}} {{element.consumer.last_name}}</span></li>
+        <li class="list-group-item">Armazém: <span class="position-absolute end-0 me-3"> #{{element.item.warehouse}}</span></li>
       </ul>
-      <div class="card-footer bg-white">
-        <span class="plus me-3" @click="showModalP()"><u>Mostrar mais</u></span>
+      <div class="card-footer bg-white ">
+        <button class="plus rounded" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw me-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Mostrar Mais</button>
       </div>
       
     </div>
@@ -25,10 +25,11 @@
 import Draggable from "vuedraggable";
 import ProductModal from "@/components/Supplier/ProductModal.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faPlus , faUpRightAndDownLeftFromCenter} from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faPlus);
+library.add(faUpRightAndDownLeftFromCenter);
 
 export default {
   name: "Order",
@@ -57,7 +58,13 @@ export default {
 
 <style scoped>
 .plus{
-  color:#5e9f88;
+  background-color:#5e9f88;
+  color:white;
+  border:none;
+  font-size:17px;
+}
+.card-footer{
+  text-align:right;
 }
 </style>
 

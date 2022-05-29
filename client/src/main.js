@@ -86,5 +86,6 @@ myApp.use(GAuth, gauthOption);
 myApp.use(VueDraggable);
 
 
+
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
 export default store;

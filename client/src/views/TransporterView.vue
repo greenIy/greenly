@@ -14,12 +14,12 @@
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Veículos</a>
                     </li>
                     </ul>
-                    <div class="d-flex align-items-center">
+                    <div v-if="active_el==1" class="d-flex align-items-center">
                     <div class=" d-inline-block ms-5"> 
                       <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Procurar encomenda" aria-label="" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1">
                         <div class="input-group-prepend">
-                          <button class="btn btn-outline-secondary" type="button"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']" /></button>
+                          <button class="btn btn-secondary" type="button"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']" /></button>
                         </div>
                       </div>
                     </div>
