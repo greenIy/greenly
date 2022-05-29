@@ -1,9 +1,9 @@
 <template>
-  <div class="container d-flex justify-content-center my-5">
-    <div class="row g-0">
-    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 column-width mx-3 rounded">
+  <div class="d-flex justify-content-start my-4 mx-5 ">
+    <div class="row g-0 overflow-horizontally">
+    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 column-width me-4 rounded">
       <div class="card-header">
-        <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', column.logo]" /><small>{{column.title}} </small></h6>
+        <h6 class="my-auto"><font-awesome-icon class="fs-5 fa-fw icon me-2" :icon="['fas', column.logo]" /><small>{{column.title}} </small></h6>
       </div>
         <div role="button" class="card-body ">
           <draggable :list="column.tasks" :animation="200" group="tasks" :move="checkMove" :class="column.state">
@@ -21,11 +21,13 @@
 import Draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTruck , faCheck , faHourglass} from "@fortawesome/free-solid-svg-icons";
+import { faTruck , faCheck , faHourglass, faTruckRampBox, faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faTruck);
 library.add(faCheck);
 library.add(faHourglass);
+library.add(faTruckRampBox);
+library.add(faMapLocationDot);
 
 export default {
   name: "Dashboard",
@@ -37,9 +39,9 @@ export default {
     return {
       columns: [
         {
-          title: "ENCOMENDAS PARA TRANSPORTE",
+          title: "PRESTES A SER LEVANTADAS",
           state: "AWAITING_TRANSPORT",
-          logo: "hourglass",
+          logo: "truck-ramp-box",
           tasks: [
             {
               id: 1,
@@ -59,41 +61,48 @@ export default {
               date: "Sep 9",
               state: "AWAITING_TRANSPORT",
             },
+          ]
+        },
+         {
+          title: "À ESPERA DE TRANSPORTE",
+          state: "TRANSPORT_IMMINENT",
+          logo: "hourglass",
+          tasks: [
             {
               id: 4,
-              title: "Add discount code to checkout page",
+              title: "teste HHHH",
               date: "Sep 14",
-              state: "AWAITING_TRANSPORT",
+              state: "TRANSPORT_IMMINENT",
             },
             {
               id: 5,
-              title: "Test checkout flow",
-              date: "Sep 15",
-              state: "AWAITING_TRANSPORT",
-            }
+              title: "Provide documentation on integrations",
+              date: "Sep 12",
+              state: "TRANSPORT_IMMINENT",
+            },
+            {
+              id: 6,
+              title: "Design shopping cart dropdown",
+              date: "Sep 9",
+              state: "TRANSPORT_IMMINENT",
+            },
           ]
         },
         {
-          title: "ENCOMENDAS EM TRANSPORTE",
+          title: "EM TRANSPORTE",
           logo: "truck",
           state: "IN_TRANSIT",
           tasks: [
             {
-              id: 6,
+              id: 7,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
               state: "IN_TRANSIT",
             },
             {
-              id: 7,
+              id: 8,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              state: "IN_TRANSIT",
-            },
-            {
-              id: 8,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
               state: "IN_TRANSIT",
             },
             {
@@ -102,44 +111,51 @@ export default {
               date: "Sep 12",
               state: "IN_TRANSIT",
             },
-             {
+          ]
+        },
+        {
+          title: "PRESTES A SER ENTREGUES",
+          logo: "map-location-dot",
+          state: "LAST_MILE",
+          tasks: [
+            {
               id: 10,
+              title: "Design shopping cart dropdown",
+              date: "Sep 9",
+              state: "LAST_MILE",
+            },
+            {
+              id: 11,
+              title: "Add discount code to checkout page",
+              date: "Sep 14",
+              state: "LAST_MILE",
+            },
+            {
+              id: 12,
               title: "Provide documentation on integrations",
               date: "Sep 12",
-              state: "IN_TRANSIT",
+              state: "LAST_MILE",
             },
           ]
         },
          {
-          title: "ENCOMENDAS ENTREGUES",
+          title: "ENTREGUES",
           logo: "check",
           state: "COMPLETE",
           tasks: [
             {
-              id: 11,
+              id: 13,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
               state: "COMPLETE",
             },
             {
-              id: 12,
+              id: 14,
               title: "Add discount code to checkout page",
               date: "Sep 14",
               state: "COMPLETE",
             },
             {
-              id: 13,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              state: "COMPLETE",
-            },
-            {
-              id: 14,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              state: "COMPLETE",
-            },
-             {
               id: 15,
               title: "Provide documentation on integrations",
               date: "Sep 12",
@@ -174,8 +190,8 @@ export default {
 
 <style scoped>
 .column-width {
-  min-width: 380px;
-  width: 380px;
+  min-width: 300px;
+  width: 300px;
 }
 .card{
     background-color:#ffffff;
@@ -184,6 +200,10 @@ export default {
     background-color:#ffffff;
 }
 .icon{
-    color:#919090;
+    color:#666666;
+}
+.overflow-horizontally{
+  overflow-x:auto;
+  flex-wrap:nowrap;
 }
 </style>

@@ -4,7 +4,7 @@
       <p><b>#{{element.id}}</b></p>
       <p>Produto: Bacon</p>
       <p>Quantidade: 5</p>
-      <p class="Plus"><a><u>Mostrar mais</u></a></p>
+      <p class="plus"><a><u>Mostrar mais</u></a></p>
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style scoped>
-.Plus{
+.plus{
   color:#5e9f88;
   text-align: right;
 }

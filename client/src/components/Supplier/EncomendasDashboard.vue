@@ -1,7 +1,7 @@
 <template>
-  <div class="container d-flex justify-content-center my-5">
-    <div class="row g-0">
-    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 column-width mx-3 rounded">
+  <div class="d-flex justify-content-start my-4 mx-5">
+    <div class="row g-0 overflow-horizontally">
+    <div v-for="column in columns" :key="column.title" class="card d-inline-block col-lg-6 column-width me-4 rounded">
       <div class="card-header">
         <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
       </div>
@@ -21,11 +21,12 @@
 import Draggable from "vuedraggable";
 import Order from "@/components/Supplier/Order.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSpinner, faTruck} from "@fortawesome/free-solid-svg-icons";
+import { faBoxesPacking, faTruck, faTruckFast} from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faSpinner);
+library.add(faBoxesPacking);
 library.add(faTruck);
+library.add(faTruckFast);
 
 export default {
   name: "Dashboard",
@@ -37,16 +38,43 @@ export default {
     return {
       columns: [
         {
-          title: "ENCOMENDAS EM PROCESSAMENTO",
+          title: "EM PROCESSAMENTO",
           state: "PROCESSING",
-          logo: "spinner",
+          logo: "boxes-packing",
           tasks: [
             {
-              id: 1,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              state: "PROCESSING"
-            },
+              "id": 27,
+              "consumer": {
+                      "id": 201,
+                      "first_name": "João",
+                      "email": "test@test.com",
+                      "phone": null
+              },
+              "date": "2022-05-27T15:47:45.000Z",
+              "observations": "This is a really cool testing order",
+              "shipping_address": 201,
+              "billing_address": 201,
+              "items": [
+                  {
+                      "id": 1,
+                      "status": "PROCESSING",
+                      "order": 27,
+                      "supply_price": 1342.19,
+                      "transport_price": 28,
+                      "quantity": 1,
+                      "arrival_date": null,
+                      "supplier_resource_usage": 42,
+                      "supplier_renewable_resources": 6,
+                      "transporter_resource_usage": 19.63,
+                      "transporter_emissions": 169.75,
+                      "product": 1,
+                      "supplier": 181,
+                      "warehouse": 2,
+                      "transporter": 17,
+                      "vehicle": 1
+                  }
+        ]
+    },
             {
               id: 2,
               title: "Provide documentation on integrations",
@@ -59,54 +87,56 @@ export default {
               date: "Sep 9",
               state: "PROCESSING"
             },
+            
+          ]
+        },
+        {
+          title: "PRONTAS PARA TRANSPORTE",
+          state: "AWAITING_TRANSPORT",
+          logo: "truck",
+          tasks: [
             {
               id: 4,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              state: "PROCESSING"
+              state: "AWAITING_TRANSPORT"
             },
             {
               id: 5,
               title: "Test checkout flow",
               date: "Sep 15",
-              state: "PROCESSING"
-            }
-          ]
-        },
-        {
-          title: "ENCOMENDAS PARA TRANSPORTE",
-          state: "AWAITING_TRANSPORT",
-          logo: "truck",
-          tasks: [
+              state: "AWAITING_TRANSPORT"
+            },
             {
               id: 6,
               title: "Design shopping cart dropdown",
               date: "Sep 9",
               state: "AWAITING_TRANSPORT"
             },
+          ]
+        },
+        {
+          title: "PRESTES A SER LEVANTADAS",
+          state: "TRANSPORT_IMMINENT",
+          logo: "truck-fast",
+          tasks: [
             {
               id: 7,
               title: "Add discount code to checkout page",
               date: "Sep 14",
-              state: "AWAITING_TRANSPORT"
+              state: "TRANSPORT_IMMINENT"
             },
             {
               id: 8,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              state: "AWAITING_TRANSPORT"
+              title: "Test checkout flow",
+              date: "Sep 15",
+              state: "TRANSPORT_IMMINENT"
             },
             {
               id: 9,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              state: "AWAITING_TRANSPORT"
-            },
-             {
-              id: 10,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              state: "AWAITING_TRANSPORT"
+              title: "Design shopping cart dropdown",
+              date: "Sep 9",
+              state: "TRANSPORT_IMMINENT"
             },
           ]
         },
@@ -143,6 +173,10 @@ export default {
     background-color:#ffffff;
 }
 .icon{
-    color:#919090;
+    color:#666666;
+}
+.overflow-horizontally{
+  overflow-x:auto;
+  flex-wrap:nowrap;
 }
 </style>
