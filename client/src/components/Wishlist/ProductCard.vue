@@ -1,49 +1,88 @@
 <template>
-  <div class="product-card ml-2 mb-2 mr-2">
-    <div class="card-group card h-100 d-flex">
-      <div class="card h-100 hover-shadow d-flex">
-        <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
-        <div class="d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  />
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ product.category.name }}</h5>
-          <div>
-            <h4 class="card-title">
-              {{ product.name }}
-            </h4>
-          </div>
-          <p class="card-text text-truncate">{{ product.description }}</p>
-        </div>
-        </router-link>
-        <div class="card-body py-0 position-relative mt-1 mb-2">
-         <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
-        </div>
-        <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
-          <button class="btnH fav">
-            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
-            Favoritos
-          </button>
-          <form>
-            <div class="form-group form-check">
-              <label class="form-check-label product" for="accept">
-                <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox" />Comparar Produto</label>
+         
+        <!-- <div class="card mb-0" style="max-width: 540px;">
+          <button class="btnH remove position-relative top-0 start-0 border-0 ">
+            <font-awesome-icon @click="removed($event)" class="icons fa-cog " :icon="['fa', 'xmark']" />
+        </button>
+          <div class="row g-0">
+            <div class="col-md-2">
+              <img src="../../assets/Team/daniela.jpg" style="object-fit: fill; width: 100%;" class="rounded-start" alt="...">
             </div>
-          </form>
+            <div class="col-md-10">
+              <div class="card-body">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="card m-3 product-card d-flex justify-content-center">
+          <button class="btnH remove position-absolute top-0 end-0 p-2 pe-3 top-0 border-0 ">
+            <font-awesome-icon @click="removed(product.id)" class="icons fa-cog " :icon="['fa', 'xmark']" />
+          </button>
+          <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
+          <div class="row g-0 d-flex align-items-center align-self-center h-100 my-auto">
+            <div class="col-md-2 position-relative align-items-center">
+              <!-- <img class="w-100 rounded-start" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  /> -->
+              <div class="product-image"></div>
+            </div>
+            <div class="col-md-10 d-flex">
+                <div class="card-body">
+                  <div class="row align-items-center h-100">
+                    <div class="col-sm-4">
+                      <h1 class="card-title text-start text-wrap">{{ product.name }}</h1>
+                      <h3 class="card-title text-start text-wrap">
+                        {{ product.category.name }}
+                      </h3>
+                    </div>     
+                    <div class="col-sm-5">
+                      <p class="card-text  text-justify text-wrap fs-4">{{ product.description }}</p>
+                    </div>
+                    <div class="col-sm-3">
+                      <span><h2 class="card-text text-center text-wrap ">{{ product.lowest_price }}€</h2></span>
+                    </div>
+                  </div>  
+                </div>
+            </div>
+          </div>
+          </router-link>
         </div>
-      </div>
-    </div>
-  </div>
+
+
+
+        <!-- <div class="card h-100 hover-shadow d-flex align-items-stretch border-top-0">
+            <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
+            <div class="d-flex">
+                <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  />
+            </div>
+                <div class="card-body">
+                <h5 class="card-title">{{ product.category.name }}</h5>
+                <div>
+                    <h4 class="card-title">
+                    {{ product.name }}
+                    </h4>
+                </div>
+                <p class="card-text text-truncate">{{ product.description }}</p>
+                </div>
+            </router-link>
+            <div class="card-body py-0 position-relative mt-1 mb-2">
+                <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€</h4></span>
+            </div>
+        </div> -->
 </template>
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 library.add(faHeart);
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import http from "../../../http-common";
+
+library.add(faXmark);
 export default {
   name: "ProductCard",
-  props: {
-    product: Object,
-  },
+  props: ["product"],
   data() {
     return {
       isActive: false,
@@ -52,19 +91,39 @@ export default {
       },
     };
   },
+  created(){
+    this.updateProducts();
+  },
   methods: {
-    liked(event){
-      const svg = event.path[1]
-      if (svg.classList.contains('red')) {
-        svg.classList.remove("red");
-      } else {
-        svg.classList.add("red");
-      } 
+    updateProducts(){
+      console.log("oi");
+      this.$emit("getProducts");
+    }, 
+    removed(productId){
+        console.log("ola")
+        let userId = JSON.parse(localStorage.getItem('userId'));
+        //let productId = JSON.parse(product.id);
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        http.delete(`/user/${userId}/wishlist/${productId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+            if (response.status == 200) {
+                this.updateProducts()
+            }
+        })
     },
+    
   }
 };
 </script>
 <style scoped>
+.product-image{
+  width:15em; 
+  height:15em; 
+  background-color: grey;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 h4 {
   font-size: 14px;
 }
@@ -126,7 +185,9 @@ h5 {
   border: none;
 }
 .product-card {
-  margin-left: 4px;
-  margin-right: 4px;
+  min-height: 25em;
 } 
+.text-justify{
+  text-align: justify;
+}
 </style>

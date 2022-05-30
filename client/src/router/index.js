@@ -63,6 +63,7 @@ const routes = [
     name: 'wishlist',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/WishlistView.vue');
+    }
   },
   {
     path: '/profile',
@@ -71,6 +72,13 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
     },
   },
+  {
+    path: '/cart',
+    name: 'cart',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
+    },
+  }
 
 ];
 

@@ -2,33 +2,30 @@
     <body>
     <div class="page-container">
         <TheNavbar @search-information="searchInformation"/>
-                <h2 class="page-title text-center mt-2" > Favoritos</h2>
+                <h2 class="page-title text-center mt-2" > Carrinho</h2>
                     <Transition name="fade">
-                        <div class="infinite-scroll py-3 text-center" id="spinners-and-async-example" style="height: 80vh; overflow-y: scroll;">
-                            <div v-if="products.length" @currentPage="getCurrentPage">
-                                
+                        <div v-if="products.length" @currentPage="getCurrentPage">
+                            <div class="card-deck card">
                                 <ProductCard
                                     v-for="p in products"
                                     :key="p.id"
                                     :product="p"
-                                    @getProducts="getProducts"
                                 ></ProductCard>
-                            
                             </div>
-                        
+                        </div>
                         <div v-else class="content d-flex w-100">
                             <TheNoProduct></TheNoProduct>
                         </div>
-                        </div>
                     </Transition>
             <div v-if="products.length" class="text-center mt-3">
-                <button type="button" @click="removeAllProducts($event)" class="btn btn-outline-danger btn-lg">Limpar favoritos</button>
+                <button type="button" @click="removeAllProducts($event)" class="btn btn-outline-danger btn-lg">Limpar carrinho</button>
             </div>
         <!-- <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/> -->
         <TheFooter />
     </div>
     </body>
 </template>
+
 
 <script>
 // @ is an alias to /src
@@ -57,7 +54,6 @@ export default ({
         return {
             products: [],
             currentPage: 1, 
-            
         }
     },
 
