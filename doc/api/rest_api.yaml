@@ -3267,6 +3267,9 @@ components:
         transporter:
           type: integer
           description: Código identificador do transportador escolhido
+        warehouse:
+          type: integer
+          description: Código identificador do armazém que contém o produto escolhido
         quantity:
           type: integer
           description: Quantidade do item. Deverá ser um valor igual ou inferior à quantidade de stock disponível pelo fornecedor
