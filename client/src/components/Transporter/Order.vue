@@ -2,7 +2,7 @@
 <div>
   <div class="bg-white shadow rounded pt-3 border border-white" >
     <div>
-      <h5 class="card-title ms-3">Encomenda #{{element.id}}, Item #{{element.item.id}} </h5>
+      <h5 class="card-title ms-3"><small>Encomenda #{{element.id}}, Item #{{element.item.id}}</small> </h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Produto: <span class="position-absolute end-0 me-3"> {{element.item.product.name}}</span> </li>
         <li class="list-group-item">Quantidade: <span class="position-absolute end-0 me-3"> {{element.item.quantity}} un.</span></li>
@@ -10,20 +10,20 @@
         <li class="list-group-item">Veículo: <span class="position-absolute end-0 me-3"> #{{element.item.vehicle}}</span></li>
       </ul>
       <div class="card-footer bg-white">
-        <button class="plus rounded" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Mostrar Mais</button>
+        <button class="plus rounded my-auto" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Mostrar Mais</button>
       </div>
       
     </div>
   </div>
   <div v-if="modalP != false">
-    <ProductModal />
+    <ProductModal :element="element" />
   </div>
 </div>
 </template>
 <script>
 
 import Draggable from "vuedraggable";
-import ProductModal from "@/components/Supplier/ProductModal.vue";
+import ProductModal from "@/components/Transporter/ProductModal.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPlus , faUpRightAndDownLeftFromCenter} from "@fortawesome/free-solid-svg-icons";
 

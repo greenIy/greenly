@@ -65,6 +65,7 @@ export default {
      activate:function(el){
          this.active_el=el;
     },
+  
     },
 };
 </script>
