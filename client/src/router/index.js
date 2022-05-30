@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import ProfileView from '../views/ProfileView.vue';
 import ProductsView from '../views/ProductsView.vue';
 
 const routes = [
@@ -68,18 +69,47 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
-    },
-  },
-  {
-    path: '/carrinho',
-    name: 'cart',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
-    },
-  }
+    redirect: '/profile/personalInfo',
+    component: ProfileView,
 
+    children: [
+      { path: 'personalInfo',
+        name: 'personalInfo',
+        component: ProfileView,
+        },
+      { path: 'companyInfo',
+        name: 'companyInfo',
+        component: ProfileView,
+        },
+      { path: 'orders',
+        name: 'orders',
+        component: ProfileView,
+        },
+      { path: 'favoritos',
+        name: 'wishlist',
+        component: ProfileView,
+      },
+      { path: 'addresses',
+        name: 'addresses',
+        component: ProfileView,
+      },
+      { path: 'security',
+        name: 'security',
+        component: ProfileView,
+      },
+      { path: 'statistics',
+        name: 'statistics',
+        component: ProfileView,
+      },
+    ]
+    },
+    {
+      path: '/carrinho',
+      name: 'cart',
+      component() {
+        return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
+      },
+    }
 ];
 
 const router = createRouter({

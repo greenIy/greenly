@@ -1,10 +1,10 @@
 <template>
-    <div class="p-5" style="margin-top: 2px">
+    <div class="p-4">
         
-        <h3>Encomendas</h3>
+        <h4>Encomendas</h4>
         <hr>
         
-        <h2>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" size=""/></h2>
+        <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" /></h4>
 
 
     </div>
@@ -32,17 +32,8 @@ export default({
     },
     methods: {
         getUserInfo() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
-                .then(response => {
-                if (response.status == 200) {
-                    this.user = response.data
-                    return this.user
-                }
-                })  
-            }
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
         },
     },
 });

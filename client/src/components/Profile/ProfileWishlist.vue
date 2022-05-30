@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         
-        <h4>Estatísticas</h4>
+        <h4>Favoritos</h4>
         <hr>
         
         <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" /></h4>
@@ -21,7 +21,7 @@ import http from "../../../http-common"
 
 
 export default({
-    name: 'ProfileStatistics',
+    name: 'ProfileWishlist',
     mounted() {
         this.getUserInfo();
     },
