@@ -69,8 +69,6 @@ library.add(faAngleLeft);
     props: {
       categories: Array,
       currentCategories: Array,
-      minPrice: Number,
-      maxPrice: Number,
       page: {
         type: String
       },
@@ -84,13 +82,9 @@ library.add(faAngleLeft);
         categoryList: [],
         categorySelected: false,
         currentCategory: {},
-        priceMin: Number,
-        priceMax: Number,
         countC: 0,
         countP: 0,
         countF: 0,
-        currentMinPrice: this.minPrice,
-        currentMaxPrice: this.maxPrice,
         return: false,
       }
     },
@@ -142,7 +136,6 @@ library.add(faAngleLeft);
         }
 
         this.$router.push({ query: Object.assign({}, this.$route.query, { preco_min: `${ minPrice }` }) });
-        this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
@@ -150,14 +143,6 @@ library.add(faAngleLeft);
         }
 
         this.$router.push({ query: Object.assign({}, this.$route.query, { preco_max: `${ maxPrice }` }) });
-        this.$emit("sendMaxPrice", maxPrice);
-      },
-      getMinPrice() {
-        this.priceMin = this.minPrice;
-        //console.log()
-      },
-      getMaxPrice() {
-        this.priceMax = this.maxPrice;
       },
       getGoBackUrl() {
         let url = "";
@@ -219,18 +204,23 @@ library.add(faAngleLeft);
 .list-group-item {
   font-size: 12px;
 }
+
 .list-group-item input {
   font-size: 12px;
 }
+
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
 }
+
 #iconC{
   color:#5e9f88;
 }
+
 #iconP{
   color:#5e9f88;
 }
+
 #iconF{
   color:#5e9f88;
 }
