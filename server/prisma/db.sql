@@ -161,13 +161,21 @@ CREATE TABLE Vehicle (
 
 # CONSUMER, ORDER & SUPPLY RELATED TABLES
 CREATE TABLE `Order` (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    consumer    INT UNSIGNED NOT NULL,
-    date        DATE NOT NULL,
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    consumer        INT UNSIGNED NOT NULL,
+    date            DATETIME NOT NULL,
+    observations    VARCHAR(255),
+    shipping_address    INT UNSIGNED NOT NULL,
+    billing_address     INT UNSIGNED NOT NULL,
 
     FOREIGN KEY (consumer)
-       REFERENCES User(id)
+        REFERENCES User(id),
 
+    FOREIGN KEY (shipping_address)
+        REFERENCES Address(id),
+
+    FOREIGN KEY (billing_address)
+        REFERENCES Address(id)
 );
 
 CREATE TABLE Supply (
@@ -198,22 +206,38 @@ CREATE TABLE Order_Item (
     # Represents Supply inside Order
     # This structure allows items from multiple suppliers and transporters to be within the same order. (e.g. AliExpress)
 
-    id          INT UNSIGNED AUTO_INCREMENT,
-    quantity    INT UNSIGNED NOT NULL,
+    # Core details
+    id          INT UNSIGNED NOT NULL,
     status      ENUM('AWAITING_PAYMENT',
                      'PROCESSING',
                      'AWAITING_TRANSPORT',
+                     'TRANSPORT_IMMINENT',
                      'IN_TRANSIT',
+                     'LAST_MILE',
                      'COMPLETE',
                      'FAILURE',
                      'CANCELED')
                      NOT NULL,
     `order`     INT UNSIGNED NOT NULL,
 
+    supply_price    NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transport_price NUMERIC(10, 2) UNSIGNED NOT NULL,
+    quantity        INT UNSIGNED NOT NULL,
+    arrival_date    DATETIME,
+
+
+    # Environmental data has to be here since it could change in the future and affect past orders, so this data relates to the moment when the order was made
+    supplier_resource_usage         NUMERIC(10, 2) UNSIGNED NOT NULL,
+    supplier_renewable_resources    NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transporter_resource_usage      NUMERIC(10, 2) UNSIGNED NOT NULL,
+    transporter_emissions           NUMERIC(10, 2) UNSIGNED NOT NULL,
+
+    # Supply identifiers
     product     INT UNSIGNED NOT NULL,
     supplier    INT UNSIGNED NOT NULL,
     warehouse   INT UNSIGNED NOT NULL,
 
+    # Transporter identifiers
     transporter INT UNSIGNED NOT NULL,
     vehicle     INT UNSIGNED NOT NULL,
 
@@ -293,8 +317,8 @@ CREATE TABLE Cart (
     transporter INT UNSIGNED NOT NULL,
 
     # Properties
-    `index`       INT UNSIGNED NOT NULL,
-    quantity    INT UNSIGNED NOT NULL,
+    `index`         INT UNSIGNED NOT NULL,
+    quantity        INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (consumer, product, supplier, warehouse, transporter),
 
@@ -329,3 +353,43 @@ CREATE TABLE Wishlist (
         REFERENCES Product(id)
         ON DELETE CASCADE
 );
+
+# Notification
+
+CREATE TABLE Notification (
+    # Per-user index
+    id          INT UNSIGNED NOT NULL,
+
+    # User identifier
+    user        INT UNSIGNED NOT NULL,
+    
+    # Optional Order and Item Identifier
+    `order`     INT UNSIGNED NULL,
+    order_item  INT UNSIGNED NULL,
+
+    # Components
+    title       VARCHAR(255) NOT NULL,
+    content     VARCHAR(255) NOT NULL,
+    dismissed   BOOL         NOT NULL DEFAULT 0,
+    timestamp   DATETIME NOT NULL,
+    scope       ENUM('AWAITING_PAYMENT',
+                    'PROCESSING',
+                    'AWAITING_TRANSPORT',
+                    'TRANSPORT_IMMINENT',
+                    'IN_TRANSIT',
+                    'LAST_MILE',
+                    'COMPLETE',
+                    'FAILURE',
+                    'CANCELED')
+                    NOT NULL,
+
+
+    PRIMARY KEY(user, id),
+
+    FOREIGN KEY (user)
+        REFERENCES User(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (`order`, order_item)
+        REFERENCES Order_Item(`order`, id)
+)

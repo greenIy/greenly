@@ -1,7 +1,18 @@
 /* Variable checking */
 require("dotenv").config();
 
-const requiredEnvironmentVariables = ["GOOGLE_API_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "FACEBOOK_APP_ID", "FACEBOOK_APP_SECRET", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRATION"]
+const requiredEnvironmentVariables = [
+  "DATABASE_URL",
+  "JWT_SECRET",
+  "JWT_EXPIRATION",
+  "GOOGLE_API_KEY",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "FACEBOOK_APP_ID",
+  "FACEBOOK_APP_SECRET",
+  "STRIPE_PUBLISHABLE_KEY",
+  "STRIPE_CLIENT_SECRET",
+  "STRIPE_WEBHOOK_SECRET"]
 
 if (requiredEnvironmentVariables.some((value) => !(value in process.env))) { 
   console.log('❌ Missing environment variables. Double-check your .env file.');
