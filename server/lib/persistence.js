@@ -2184,6 +2184,23 @@ async function changeOrderStatus(orderID, targetStatus) {
             }
         })
 
+        let productInfo = await prisma.product.findUnique({
+            where: {
+                id: item.product
+            },
+            select: {
+                name: true
+            }
+        })
+
+        await createNotification(item.supplier, 
+            "Nova encomenda a processar!",
+            `O item #${item.id} (${productInfo.name} x ${item.quantity} un.), da encomenda #${orderID} precisa de ser processado!`,
+            "PROCESSING",
+            orderID,
+            item.id
+        );
+
         return itemUpdate
     }))
 
