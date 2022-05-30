@@ -426,7 +426,6 @@ async function getUserByID(id, withPassword=false) {
 }
 
 async function getUserByEmail(email, withPassword=false) {
-    // TODO: Fix 'with password'
     try {
         return user = await prisma.user.findUnique({
             where: {
@@ -1711,9 +1710,66 @@ async function removeProductFromWishlist(userID, productID) {
         orders = await Promise.all(orders.map(async (order) => {            
             // Cleaning data
 
+            let consumer = await prisma.user.findUnique({
+                where: {
+                    id: order.consumer
+                }, select: {
+                    id: true,
+                    first_name: true,
+                    email: true,
+                    phone: true
+                }
+            })
+
+            order.consumer = consumer
+
             order.items = order.Order_Item
 
             delete order.Order_Item
+
+            order.items = await Promise.all(order.items.map(async (item) => {
+                item.product = await prisma.product.findUnique({
+                    where: {
+                        id: item.product
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                })
+
+                let supplier = await prisma.user.findUnique({
+                    where: {
+                        id: item.supplier
+                    },
+                    include: {
+                        Company: true
+                    }
+                })
+        
+                let transporter = await prisma.user.findUnique({
+                    where: {
+                        id: item.transporter
+                    },
+                    include: {
+                        Company: true
+                    }
+                })
+
+                // Additional supplier info
+                item.supplier = {
+                    id: item.supplier,
+                    name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+                }
+
+                // Additional transporter info
+                item.transporter = {
+                    id: item.transporter,
+                    name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+                }
+
+                return item
+            }))
 
             return order
         }))
@@ -1987,6 +2043,16 @@ async function getFilteredOrderByID(user, orderID) {
     order.items = await Promise.all(order.Order_Item.map(async (item) => {
         // Additional information
 
+        let product = await prisma.product.findUnique({
+            where: {
+                id: item.product
+            },
+            select: {
+                id: true,
+                name: true,
+            }
+        })
+
         let supplier = await prisma.user.findUnique({
             where: {
                 id: item.supplier
@@ -2044,6 +2110,33 @@ async function getFilteredOrderByID(user, orderID) {
             }
         })
 
+        let notifications = await prisma.notification.findMany({
+            where: {
+                order: order.id
+            }
+        })
+
+        // Deducing states from notification list
+        let stateMap = notifications.map((notification) => {
+            return {
+                state: notification.scope, 
+                timestamp: notification.timestamp
+            }
+        })
+
+        // Filtering unique states
+
+        stateMap.filter((value, index, self) => {
+            return self.findIndex((element) => element.state == value.state) == index
+        })
+
+        // Adding CREATED state
+        stateMap.push({scope:"CREATED", timestamp: order.date})
+
+        console.dir(stateMap);
+
+        item.product = product
+
         // Additional supplier info
         item.supplier = {
             id: item.supplier,
@@ -2063,6 +2156,8 @@ async function getFilteredOrderByID(user, orderID) {
 
         item.vehicle = vehicle
 
+        item.progress = stateMap
+
         return item
     }))
 
@@ -2072,16 +2167,16 @@ async function getFilteredOrderByID(user, orderID) {
 }
 
 // This function is used upon payment to change every order item status from "AWAITING_PAYMENT" to "PROCESSING"
-async function changeOrderStatus(orderId, targetStatus) {
+async function changeOrderStatus(orderID, targetStatus) {
 
-    let order = await getOrderByID(orderId)
+    let order = await getOrderByID(orderID)
 
     await Promise.all(order.items.map(async (item) => {
         let itemUpdate = await prisma.order_Item.update({
             where: {
                 id_order: {
                     id: item.id,
-                    order: orderId
+                    order: orderID
                 }
             },
             data: {
@@ -2091,6 +2186,14 @@ async function changeOrderStatus(orderId, targetStatus) {
 
         return itemUpdate
     }))
+
+    createNotification(order.consumer, 
+        "Encomenda em processamento!",
+        `A sua encomenda #${orderID} está agora a ser preparada, em breve estará nas suas mãos!`,
+        "PROCESSING",
+        orderID,
+        1
+    );
 }
 
 // Used to decrement the stock of many supplies when an order enters "PROCESSING" status
@@ -2141,6 +2244,8 @@ async function updateOrderItem(user, orderID, itemID, targetStatus) {
 
     let orderItem = order.items[order.items.findIndex((item) => item.id == itemID)]
 
+    /* Checking preliminary conditions */
+
     if (!orderItem) {
         return "ITEM_NOT_FOUND"
     }
@@ -2149,52 +2254,84 @@ async function updateOrderItem(user, orderID, itemID, targetStatus) {
         return "AWAITING_PAYMENT"
     }
 
+    if (orderItem.status == "CANCELED") {
+        return "ITEM_CANCELED"
+    }
+
     // The order (sorting) of statuses is important: a consumer cannot cancel an order if it's already in transit.
     let orderStatuses = [
         "AWAITING_PAYMENT", 
         "PROCESSING", 
-        "AWAITING_TRANSPORT", 
-        "IN_TRANSIT",
+        "AWAITING_TRANSPORT",
+        "TRANSPORT_IMMINENT",
         "CANCELED",
+        "IN_TRANSIT",
+        "LAST_MILE",
         "FAILURE",
         "COMPLETE"
     ]
 
-    let isValidStatus;
+    let isValidTargetStatus;
+    let isValidOriginStatus;
 
     // Checking if the target status is valid for the specified user
 
     switch (user.type) {
         case "CONSUMER":
-            isValidStatus = [
+
+            // A user can cancel an order if it isn't yet in transit
+            isValidOriginStatus = orderStatuses.indexOf(orderItem.status) < orderStatuses.indexOf("IN_TRANSIT");
+
+            isValidTargetStatus = [
                 "CANCELED"]
                 .includes(targetStatus)
             break;
 
         case "SUPPLIER":
-            isValidStatus = [
+
+            // A supplier can only change the status of orders in "PROCESSING" status
+            isValidOriginStatus = orderItem.status == "PROCESSING"
+
+            isValidTargetStatus = [
                 "CANCELED", 
                 "AWAITING_TRANSPORT"]
                 .includes(targetStatus)
             break;
 
         case "TRANSPORTER":
-            isValidStatus = [
-                "FAILURE", 
-                "COMPLETE", 
-                "IN_TRANSIT"]
+
+            // A transporter can only change the order status if it's already at least in "AWAITING_TRANSPORT"
+
+            isValidOriginStatus = orderStatuses.indexOf(orderItem.status) >= orderStatuses.indexOf("AWAITING_TRANSPORT")
+
+            isValidTargetStatus = [
+                "TRANSPORT_IMMINENT",
+                "IN_TRANSIT",
+                "LAST_MILE",
+                "COMPLETE",
+                "FAILURE"]
                 .includes(targetStatus)
             break;
 
         case "ADMINISTRATOR":
-            isValidStatus = [
+            isValidTargetStatus = [
                 "CANCELED"]
                 .includes(targetStatus)
             break;
 
     }
 
-    if (!isValidStatus) {
+    console.log('isValidOriginStatus, isValidTargetStatus :>> ', isValidOriginStatus, isValidTargetStatus);
+
+    // Checking if the the user can change the status given the origin status
+
+    if (!isValidOriginStatus) {
+        return "INSUFFICIENT_PERMISSIONS"
+    }
+
+    // Checking if the user can change to target status
+
+    if (!isValidTargetStatus) {
         return "INSUFFICIENT_PERMISSIONS"
     }
 
@@ -2207,8 +2344,216 @@ async function updateOrderItem(user, orderID, itemID, targetStatus) {
         return "REGRESSIVE_STATUS"
     }
 
+    /* Event logic */
 
-    // TODO: Resume here
+    let updatedOrderItem = await prisma.order_Item.update({
+        where: {
+            id_order: {
+                order: orderID,
+                id: itemID
+            },
+        },
+        data: {
+            status: targetStatus
+        }
+    })
+
+    // Gathering additional data
+
+    let productInfo = await prisma.product.findUnique({
+        where: {
+            id: orderItem.product
+        },
+        select: {
+            name: true
+        }
+    })
+
+    let transporter = await prisma.user.findUnique({
+        where: {
+            id: orderItem.transporter
+        },
+        include: {
+            Company: true
+        }
+    })
+
+    let supplier = await prisma.user.findUnique({
+        where: {
+            id: orderItem.supplier
+        },
+        include: {
+            Company: true
+        }
+    })
+
+    let vehicle = await prisma.vehicle.findUnique({
+        where: {
+            id_transporter: {
+                id: orderItem.vehicle,
+                transporter: orderItem.transporter
+            }
+        },
+        select: {
+            license_plate: true,
+        }
+    })
+
+    let transporterInfo = {
+        id: orderItem.transporter,
+        name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+    }
+
+    let supplierInfo = {
+        id: orderItem.supplier,
+        name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+    }
+
+    // Sorting out event logic
+
+    switch (targetStatus) {
+        case "CANCELED": {
+            
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Encomenda cancelada!",
+                `A entrega do item #${itemID} (${productInfo.name}), da encomenda #${orderID}, foi cancelada!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;
+        }
+
+        case "AWAITING_TRANSPORT": {
+
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Progresso da encomenda atualizado!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, foi processado, estando agora à espera de ser levantado pelo transportador ${transporterInfo.name}!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            // Notifying the transporter that there's a new order which requires transport
+
+            createNotification(orderItem.transporter,
+                "Encomenda requer transporte!",
+                `O item #${itemID}, da encomenda #${orderID}, está à espera de ser recolhido no armazém #${orderItem.warehouse} do fornecedor ${supplierInfo.name} (${supplierInfo.id}), pelo veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID)
+
+            break;
+        }
+
+        case "TRANSPORT_IMMINENT": {
+
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Progresso da encomenda atualizado!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, está a ser levantado pelo transportador!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            // Notifying the supplier that the vehicle is arriving
+
+            createNotification(orderItem.supplier, 
+                "Encomenda prestes a ser recolhida!",
+                `O item #${itemID}, da encomenda #${orderID}, está prestes a ser recolhido no seu armazém #${orderItem.warehouse}, pelo transportador ${transporterInfo.name} (${transporterInfo.id}), no veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;
+        }
+
+        case "FAILURE": {
+
+            // Notifying the user that something went wrong with the order
+
+            createNotification(order.consumer, 
+                "Encomenda falhada!",
+                `A entrega do item #${itemID} (${productInfo.name}), da encomenda #${orderID}, falhou. Iremos contactá-lo brevemente ou enviar uma nova unidade.`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;  
+        }
+
+        case "IN_TRANSIT": {
+
+            // Notifying the user the order is on its way
+            
+            createNotification(order.consumer, 
+                "Encomenda a caminho!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, acabou de ser enviado!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;
+
+        }
+
+        case "LAST_MILE": {
+
+            // Notifying the user the order is almost there
+
+            createNotification(order.consumer, 
+                "Encomenda prestes a ser entregue!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID} está prestes a ser entregue pelo veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;            
+
+        }
+
+        case "COMPLETE": {
+
+            // Setting the arrival date
+    
+            await prisma.order_Item.update({
+                where: {
+                    id_order: {
+                        order: orderID,
+                        id: itemID
+                    },
+                },
+                data: {
+                    arrival_date: new Date()
+                },
+            })
+    
+            // Notifying the user the order has arrived
+
+            createNotification(order.consumer, 
+                "Encomenda entregue!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID} acabou de ser entregue!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;
+
+        }
+
+    }
 
 }
 
@@ -2305,6 +2650,96 @@ async function checkUserItemRelationship(user, orderID, itemID) {
     }
 }
 
+/* Notifications */
+
+async function createNotification(userID, title, content, scope, relatedOrderID, relatedItemID) {
+
+    let userNotificationCount = await prisma.notification.count({
+        where: {
+            user: userID
+        }
+    })
+
+    let notificationData = {
+        id: userNotificationCount + 1,
+        title: title,
+        content: content,
+        user: userID,
+        scope: scope,
+        dismissed: false,
+        timestamp: new Date()
+    }
+
+    if (relatedOrderID) {
+        notificationData.order = relatedOrderID
+
+        if (relatedItemID) {
+            notificationData.order_item = relatedItemID
+        }
+    }
+
+    await prisma.notification.create({
+        data: notificationData
+    })
+}
+
+/* Notification functions */
+
+async function getNotificationsByUser(userID) {
+    return await prisma.notification.findMany({
+        where: {
+            user: userID
+        },
+        orderBy: {
+            timestamp: 'desc'
+        }
+    })
+}
+
+async function dismissAllNotifications(userID) {
+    try {
+        await prisma.notification.updateMany({
+            where: {
+                user: userID
+            },
+            data: {
+                dismissed: true
+            }
+        })
+    
+        return true
+    } catch (e) {
+        return null
+    }
+}
+
+async function dismissNotification(userID, notificationID) {
+    try {
+        let dismissedNotification = await prisma.notification.update({
+            where: {
+                user_id: {
+                    user: userID,
+                    id: notificationID
+                }
+            },
+            data: {
+                dismissed: true
+            }
+        })
+    
+        if (!dismissedNotification) {
+            return "NOT_FOUND"
+        }
+    
+        return true
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+    
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -2357,6 +2792,11 @@ module.exports = {
     decrementSupplyStock,
     checkUserOrderRelationship,
     updateOrderItem,
-    checkUserItemRelationship
+    checkUserItemRelationship,
+
+    // Notification Functions
+    getNotificationsByUser,
+    dismissNotification,
+    dismissAllNotifications
 
 }

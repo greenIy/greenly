@@ -327,7 +327,6 @@ router.delete('/:userId/wishlist/:productId', authentication.check, authorizatio
 })
 
 /* Order functions */
-// TODO: Add authorization rules 
 router.post('/:userId/orders', authentication.check, authorization.check, createOrderValidator(), (req, res) => {
     persistence.createOrder(
         Number(req.params.userId),
@@ -373,6 +372,57 @@ router.get('/:userId/orders', authentication.check, authorization.check, (req, r
 
             return res.status(200).json(result)
         })   
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+/* Notification routes */
+router.get('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.getNotificationsByUser(
+            Number(req.params.userId)).then((result) => {
+            if (result == null) {
+                return res.status(500).send(defaultErr())
+            }
+
+            return res.status(200).json(result)
+        })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissAllNotifications(
+            Number(req.params.userId)).then((result) => {
+                if (result == null) {
+                    return res.status(500).send(defaultErr())
+                }
+                
+                return res.status(200).send({message: "Notifications successfully dismissed."})
+            })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications/:notificationId', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissNotification(
+            Number(req.params.userId),
+            Number(req.params.notificationId)).then((result) => {
+                switch (result) {
+                    case null:
+                        return res.status(500).send(defaultErr())
+                    case "NOT_FOUND":
+                        return res.status(404).send({message: "The notification identifier is invalid."})
+                    default:
+                        return res.status(200).send({message: "Notification successfully dismissed."})
+                }
+
+            })
     } catch (e) {
         return res.status(500).send(defaultErr())
     }

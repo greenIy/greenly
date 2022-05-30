@@ -2343,7 +2343,9 @@ components:
       - AWAITING_PAYMENT
       - PROCESSING
       - AWAITING_TRANSPORT
+      - TRANSPORT_IMMINENT
       - IN_TRANSIT
+      - LAST_MILE
       - COMPLETE
       - FAILURE
       - CANCELED

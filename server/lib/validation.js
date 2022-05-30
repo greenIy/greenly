@@ -11,7 +11,6 @@ const saltRounds = 10;
 /* User Validation Functions */
 
 function createUserValidator() {
-    // TODO: Don't forget to proof this (try/catch/detail exception) during database access
     return[
         body('first_name')
             .notEmpty()
@@ -496,7 +495,7 @@ function updateOrderValidator() {
         body("status")
             .notEmpty()
             .isString()
-            .isIn(["CANCELED", "AWAITING_TRANSPORT", "FAILURE", "COMPLETE", "IN_TRANSIT"])
+            .isIn(["CANCELED", "AWAITING_TRANSPORT", "TRANSPORT_IMMINENT",  "FAILURE", "IN_TRANSIT", "LAST_MILE", "COMPLETE"])
             .withMessage("Invalid target status."),
         (req, res, next) => {
             const errors = validationResult(req);

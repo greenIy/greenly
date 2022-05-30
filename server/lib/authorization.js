@@ -8,21 +8,23 @@ const authentication    = require("./authentication"); // One-time-usage for adm
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
     const resourceIdentification = {
-        "/user/":                               "ALL_USERS",
-        "/user/:userId":                        "SINGLE_USER",
-        "/user/:userId/addresses":              "ALL_ADDRESSES",
-        "/user/:userId/addresses/:addressId":   "SINGLE_ADDRESS",
-        "/user/:userId/orders":                 "ALL_USER_ORDERS",
-        "/store/products/:productId":           "SINGLE_PRODUCT",
-        "/store/orders":                        "ALL_ORDERS",
-        "/store/orders/:orderId":               "SINGLE_ORDER",
-        "/store/orders/:orderId/:itemId":       "SINGLE_ORDER_ITEM",
-        "/store/categories":                    "ALL_CATEGORIES",
-        "/store/categories/:categoryId":        "SINGLE_CATEGORY",
-        "/user/:userId/cart":                   "ALL_CART_ITEMS",
-        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM",
-        "/user/:userId/wishlist":               "ALL_WISHLIST_ITEMS",
-        "/user/:userId/wishlist/:productId":    "SINGLE_WISHLIST_ITEM"
+        "/user/":                                       "ALL_USERS",
+        "/user/:userId":                                "SINGLE_USER",
+        "/user/:userId/addresses":                      "ALL_ADDRESSES",
+        "/user/:userId/addresses/:addressId":           "SINGLE_ADDRESS",
+        "/user/:userId/notifications":                  "ALL_NOTIFICATIONS",
+        "/user/:userId/notifications/:notificationId":  "SINGLE_NOTIFICATION",
+        "/user/:userId/orders":                         "ALL_USER_ORDERS",
+        "/store/products/:productId":                   "SINGLE_PRODUCT",
+        "/store/orders":                                "ALL_ORDERS",
+        "/store/orders/:orderId":                       "SINGLE_ORDER",
+        "/store/orders/:orderId/:itemId":               "SINGLE_ORDER_ITEM",
+        "/store/categories":                            "ALL_CATEGORIES",
+        "/store/categories/:categoryId":                "SINGLE_CATEGORY",
+        "/user/:userId/cart":                           "ALL_CART_ITEMS",
+        "/user/:userId/cart/:index":                    "SINGLE_CART_ITEM",
+        "/user/:userId/wishlist":                       "ALL_WISHLIST_ITEMS",
+        "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM"
     }
 
     // Helper functions
@@ -111,6 +113,37 @@ async function check(req, res, next) {
                 (isAdministrator(req.user))) {
                 return next();
             }
+            break;
+
+        case "ALL_NOTIFICATIONS":
+            // This is valid for: GET, PUT
+
+            // Both users and administrators can access a user's notifications
+            if (intent == "GET") {
+                if  (req.params.userId == req.user.id || isAdministrator(req.user)) {
+                    return next()
+                }
+            }
+
+            // Only the user himself can dismiss all notifications
+            if (intent == "PUT") {
+                if (req.params.userId == req.user.id) {
+                    return next()
+                }
+            }
+
+            break;
+
+        case "SINGLE_NOTIFICATION":
+            // This is valid for: PUT
+            
+            // Only the user himself can dismiss a notification
+            if (intent == "PUT") {
+                if (req.params.userId == req.user.id) {
+                    return next()
+                }
+            }
+
             break;
 
         case "ALL_USER_ORDERS":

@@ -303,6 +303,10 @@ router.put('/orders/:orderId/:itemId', authentication.check, updateOrderValidato
                 return res.status(400).send({
                     message: "You don't have permission to change the item's status from its current status to the specified status."})
 
+            case "ITEM_CANCELED":
+                return res.status(400).send({
+                    message: "The status of this order item cannot be changed since it has already been canceled."})
+
             case "REGRESSIVE_STATUS":
                 return res.status(400).send({
                     message: "The specified order item is already passed the specified status. Please specifiy a status ahead of the current status."})

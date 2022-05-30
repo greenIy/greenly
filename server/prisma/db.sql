@@ -211,7 +211,9 @@ CREATE TABLE Order_Item (
     status      ENUM('AWAITING_PAYMENT',
                      'PROCESSING',
                      'AWAITING_TRANSPORT',
+                     'TRANSPORT_IMMINENT',
                      'IN_TRANSIT',
+                     'LAST_MILE',
                      'COMPLETE',
                      'FAILURE',
                      'CANCELED')
@@ -351,3 +353,43 @@ CREATE TABLE Wishlist (
         REFERENCES Product(id)
         ON DELETE CASCADE
 );
+
+# Notification
+
+CREATE TABLE Notification (
+    # Per-user index
+    id          INT UNSIGNED NOT NULL,
+
+    # User identifier
+    user        INT UNSIGNED NOT NULL,
+    
+    # Optional Order and Item Identifier
+    `order`     INT UNSIGNED NULL,
+    order_item  INT UNSIGNED NULL,
+
+    # Components
+    title       VARCHAR(255) NOT NULL,
+    content     VARCHAR(255) NOT NULL,
+    dismissed   BOOL         NOT NULL DEFAULT 0,
+    timestamp   DATETIME NOT NULL,
+    scope       ENUM('AWAITING_PAYMENT',
+                    'PROCESSING',
+                    'AWAITING_TRANSPORT',
+                    'TRANSPORT_IMMINENT',
+                    'IN_TRANSIT',
+                    'LAST_MILE',
+                    'COMPLETE',
+                    'FAILURE',
+                    'CANCELED')
+                    NOT NULL,
+
+
+    PRIMARY KEY(user, id),
+
+    FOREIGN KEY (user)
+        REFERENCES User(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (`order`, order_item)
+        REFERENCES Order_Item(`order`, id)
+)

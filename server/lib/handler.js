@@ -6,19 +6,15 @@ const persistence   = require("../lib/persistence")
 
 async function postPaymentHandler(orderId) {
 
-    // Alter order status
-    await persistence.changeOrderStatus(orderId, "PROCESSING")
+    let order = await persistence.getOrderByID(orderId)
 
-    // Decrement stock
-    await persistence.decrementSupplyStock(orderId)
+    if (order) {
+        // Alter order status
+        await persistence.changeOrderStatus(orderId, "PROCESSING")
 
-    // E-mail user
-    //TODO: E-mail users about how their order is being processed
-    
-    // Notify suppliers
-    //TODO: Notify suppliers regarding new orders to fulfill
-
-
+        // Decrement stock
+        await persistence.decrementSupplyStock(orderId)
+    }
 }
 
 async function handleEmail(target, intent, details) {
