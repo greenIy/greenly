@@ -8,7 +8,7 @@
             <i>Pode adicionar mais do que uma morada à sua conta Greenly.</i>
             <br>
             <i>Deve definir uma morada de entrega &nbsp;<font-awesome-icon :icon="['fa', 'truck']" style="color: #E3C12B"/>&nbsp; 
-            e uma morada de faturação &nbsp;<font-awesome-icon :icon="['fa', 'money-check-dollar']" style="color: #309C76"/>&nbsp;.</i>
+            e uma morada de faturação &nbsp;<font-awesome-icon :icon="['fa', 'money-check-dollar']" size="lg" style="color: #5E9F88"/>&nbsp;.</i>
         </div>
         <br>
 
@@ -27,7 +27,7 @@
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de entrega atual" v-on:click="addressAlreadySet('shipping')"/>
                                     <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0; margin-right: 5px" :icon="['fa', 'truck']" 
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de entrega" v-on:click="selectAddress(address); setAsShippingAddress()"/>
-                                    <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #309C76" :icon="['fa', 'money-check-dollar']" size="lg" 
+                                    <font-awesome-icon v-if="address.is_billing === true" style="cursor: pointer; color: #5E9F88" :icon="['fa', 'money-check-dollar']" size="lg" 
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Morada de faturação atual" v-on:click="addressAlreadySet('billing')"/>
                                     <font-awesome-icon v-else id="addressButtons" style="cursor: pointer; color: #A3A2A0" :icon="['fa', 'money-check-dollar']" size="lg" 
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como morada de faturação" v-on:click="selectAddress(address); setAsBillingAddress()"/>
@@ -234,7 +234,7 @@
 </template>
 
 <script>
-//import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.js';
+import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
@@ -242,7 +242,7 @@ library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faHouseChimney, faM
 
 import http from "../../../http-common"
 import AuthService from "../../router/auth"
-import countrySelect from '@/components/Profile/country-select'
+import countrySelect from '@/components/Profile/Country-select'
 
 
 export default({
@@ -485,7 +485,7 @@ export default({
 
 <style scoped>
     .btn-primary{
-        background-color: #309C76;
+        background-color: #5E9F88;
         border-color: white;
     }
     .modal-footer {
@@ -501,7 +501,7 @@ export default({
     #newAddressToast, #editAddressToast,
     #setBillingAddressToast, #setShippingAddressToast,
     #removeAddressToast {
-        background-color: #309C76 !important;
+        background-color: #5E9F88 !important;
     }
     #billingAlreadySetToast, #shippingAlreadySetToast {
         background-color: #E3C12B !important;
@@ -517,6 +517,6 @@ export default({
         border-radius: 100px;
         border: 5px solid transparent;
         background-clip: content-box;
-        background-color: #309C76;
+        background-color: #5E9F88;
     }
 </style>

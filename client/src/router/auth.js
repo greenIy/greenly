@@ -1,5 +1,5 @@
 import http from "../../http-common";
-import store from "../main"
+import { store } from "../main"
 
 export default class AuthService {
 
@@ -49,11 +49,11 @@ export default class AuthService {
          * Permite decidir qual será o destino do utilizador durante a navegação consoante o seu estado de autenticação
          */
         static async authenticate(to, from, next) {
-            const publicPages = ["/", "/produtos", "/produto", "/equipa"]
+            const publicPages = ["/produtos", "/produto", "/equipa"]
                 
             // TODO: Adicionar páginas relativas à autenticação por redes sociais
             // Páginas que são inacessíveis a utilizadores autenticados 
-            const noAuthenticationPages = ["/login", "/registar"]
+            const noAuthenticationPages = ["/login", "/registo"]
         
             const isLoggedIn = await AuthService.isLoggedIn()
 
@@ -66,13 +66,15 @@ export default class AuthService {
                 store.dispatch('setUser', null)
                 store.dispatch('setState', false);
               }
-
-              const requiresAuth = publicPages.some((allowedPage) => {
-                to.path.startsWith(allowedPage)
+              
+              const requiresAuth = !publicPages.some((allowedPage) => {
+                return to.path.startsWith(allowedPage) || to.path == "/"
             })
         
             const canHaveAuth = !noAuthenticationPages.includes(to.path)
-        
+            console.log(isLoggedIn)
+            console.log(canHaveAuth)
+            console.log(requiresAuth)
             // Caso o utilizador não esteja autenticado
             if (!isLoggedIn) {
                 // Caso a página alvo precise de autenticação
@@ -86,7 +88,7 @@ export default class AuthService {
             } else {
                 // Caso utilizadores autenticados não possam aceder à página
                 if (!canHaveAuth) {
-                    return next('/profile')
+                    return next('/perfil')
                 } else {
                     // Caso possam
                     return next();

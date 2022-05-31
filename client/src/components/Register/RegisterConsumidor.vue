@@ -50,7 +50,7 @@
                     </div>
                     <div class="mt-3 mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="termsConditons" required>
-                        <label class="form-check-label" style="cursor: pointer; font-size: 80%">Aceito os <u class="link-primary" data-bs-toggle="modal" data-bs-target="#termsAndConditions">termos e condições de uso.</u></label>
+                        <label class="form-check-label" style="cursor: pointer; font-size: 80%">Aceito os <u class="greenly-link" data-bs-toggle="modal" data-bs-target="#termsAndConditions">termos e condições de uso.</u></label>
                         <br>
                     </div>
 
@@ -67,7 +67,7 @@
 
                 </form>
             </div>
-            <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right">Inicia sessão aqui!</router-link></p>
+            <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
 
             <!-- Modal -->
             <div class="modal fade" id="termsAndConditions" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="termsAndConditionsLabel" aria-hidden="true">

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-
+import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faHammer } from '@fortawesome/free-solid-svg-icons';
