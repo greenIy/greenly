@@ -48,7 +48,7 @@ library.add(faMagnifyingGlass);
 
 
 export default {
-  name: 'equipa',
+  name: 'SupplierView',
   components: {
     TheNavbar,
     TheFooter,
@@ -71,14 +71,16 @@ export default {
 </script>
 
 <style scoped>
-.nav-pills .nav-link.active{
+.nav-pills .nav-link.active {
     background-color:#5e9f88!important;
     color:#ffffff!important;
 }
-.nav-link{
+
+.nav-link {
     color:#5e9f88!important;
 }
-.btnHist{
+
+.btnHist {
   background-color:#5e9f88!important;
   color:#ffffff!important;
 }

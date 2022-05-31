@@ -69,8 +69,8 @@ library.add(faXmark);
 export default {
   name: "TransportadorModal",
   props: {
-    modal:Boolean,
-    element:Object,
+    modal: Boolean,
+    element: Object,
   },
   data() {
     return {

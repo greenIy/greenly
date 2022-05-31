@@ -64,8 +64,7 @@ export default {
           orders: []
         },
       ],
-      receiveData: [
-]
+      receiveData: [],
     };
   },
   mounted(){

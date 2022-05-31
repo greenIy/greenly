@@ -1,6 +1,6 @@
 <template>
 <div class="modal transp-modal-xl" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
-   <div class="modal-dialog modal-xl modal-dialog-centered">
+   <div class="modal-dialog modal-xl modal-dialog-centered w-100 h-100">
     <div class=" d-flex modal-content">
       <div class="modal-header">
         <h5 class="modal-title"></h5> 
@@ -69,6 +69,7 @@ export default {
   name: "TransportadorModal",
   props: {
     modal:Boolean,
+    element: Object,
   },
   data() {
     return {
@@ -95,7 +96,6 @@ export default {
   color:white;
 }
 .modal-body{
-    height: 15rem;
     overflow-y: auto;
 }
 
