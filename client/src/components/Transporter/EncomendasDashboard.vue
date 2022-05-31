@@ -25,8 +25,11 @@
 <script>
 import Draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
+
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTruck , faCheck , faHourglass, faTruckRampBox, faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../../http-common";
 
 library.add(faTruck);
 library.add(faCheck);
@@ -74,153 +77,30 @@ export default {
           orders: []
         },
       ],
-      receiveData: [
-    {
-        "id": 1,
-        "consumer": {
-            "id": 201,
-            "first_name": "João",
-            "last_name": "Alves",
-            "email": "test@test.com",
-            "phone": null
-        },
-        "date": "2022-05-29T20:04:08.000Z",
-        "observations": "This is a really cool testing order",
-        "shipping_address": 201,
-        "billing_address": 201,
-        "items": [
-            {
-                "id": 1,
-                "status": "AWAITING_TRANSPORT",
-                "order": 1,
-                "supply_price": 2071,
-                "transport_price": 54,
-                "quantity": 1,
-                "arrival_date": null,
-                "supplier_resource_usage": 39,
-                "supplier_renewable_resources": 94,
-                "transporter_resource_usage": 21,
-                "transporter_emissions": 271.6,
-                "product": {
-                    "id": 1,
-                    "name": "Handcrafted Chair"
-                },
-                "supplier": {
-                    "id": 10,
-                    "name": "Branco"
-                },
-                "warehouse": 3,
-                "transporter": {
-                    "id": 113,
-                    "name": "Ferreira Fonseca e Filhos"
-                },
-                "vehicle": 1
-            },
-            {
-                "id": 2,
-                "status": "TRANSPORT_IMMINENT",
-                "order": 1,
-                "supply_price": 2071,
-                "transport_price": 54,
-                "quantity": 1,
-                "arrival_date": null,
-                "supplier_resource_usage": 39,
-                "supplier_renewable_resources": 94,
-                "transporter_resource_usage": 21,
-                "transporter_emissions": 271.6,
-                "product": {
-                    "id": 1,
-                    "name": "Handcrafted Chair"
-                },
-                "supplier": {
-                    "id": 10,
-                    "name": "Branco"
-                },
-                "warehouse": 3,
-                "transporter": {
-                    "id": 113,
-                    "name": "Ferreira Fonseca e Filhos"
-                },
-                "vehicle": 1
-            },
-            {
-                "id": 3,
-                "status": "LAST_MILE",
-                "order": 1,
-                "supply_price": 2071,
-                "transport_price": 54,
-                "quantity": 1,
-                "arrival_date": null,
-                "supplier_resource_usage": 39,
-                "supplier_renewable_resources": 94,
-                "transporter_resource_usage": 21,
-                "transporter_emissions": 271.6,
-                "product": {
-                    "id": 1,
-                    "name": "Handcrafted Chair"
-                },
-                "supplier": {
-                    "id": 10,
-                    "name": "Branco"
-                },
-                "warehouse": 3,
-                "transporter": {
-                    "id": 113,
-                    "name": "Ferreira Fonseca e Filhos"
-                },
-                "vehicle": 1
-            },
-                        {
-                "id": 4,
-                "status": "TRANSPORT_IMMINENT",
-                "order": 1,
-                "supply_price": 2071,
-                "transport_price": 54,
-                "quantity": 1,
-                "arrival_date": null,
-                "supplier_resource_usage": 39,
-                "supplier_renewable_resources": 94,
-                "transporter_resource_usage": 21,
-                "transporter_emissions": 271.6,
-                "product": {
-                    "id": 1,
-                    "name": "Handcrafted Chair"
-                },
-                "supplier": {
-                    "id": 10,
-                    "name": "Branco"
-                },
-                "warehouse": 3,
-                "transporter": {
-                    "id": 113,
-                    "name": "Ferreira Fonseca e Filhos"
-                },
-                "vehicle": 1
-            }
-        ]
-    }
-      ]
+      receiveData: [],
     };
   },
    mounted(){
-    this.processData(this.receiveData);
+    this.processData();
   },
   
   methods: {
-    processData(data){
-    
-      let processedData = this.parseOrders(data)
+    async processData(){
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+      this.receiveData = JSON.parse(JSON.stringify(response.data));
+
+      let processedData = this.parseOrders(this.receiveData);
 
       for (let order of processedData) {
         // TODO: Adicionar colunas no histórico, neste momento considera apenas colunas das principais
 
         let correspondingColumn = this.columns.findIndex((column) => (column.status == order.item.status))
-
         if (correspondingColumn != -1) {
           order.item_id = parseInt(`${order.id}${order.item.id}`)
           this.columns[correspondingColumn].orders.push(order)
         }
-
         // Quando tiverem colunas do arquivo (this.archiveColumns)
         // let correspondingArchiveColumn = this.archiveColumns.findIndex((column) => (column.status == order.item.status))
         // else {
@@ -247,8 +127,10 @@ export default {
         valid = evt.to.className === next;
       }
 
-     if (valid) {
-       // ESPERAR O ZÉ TERMINAR PARA CHAMAR A ENCOMENDA PELO ID E ALTERARMOS O ESTADO !!!!
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+      if (valid) {
+        let response = http.put(`/store/orders/${ evt.draggedContext.element.id }/${ evt.draggedContext.element.item.id }`, 
+        JSON.stringify({ status: `${ next }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}});
       }
 
       return valid;
@@ -258,14 +140,16 @@ export default {
       // Esta função pega numa encomenda e divide-a em vários orderItems para que estes possam ser apresentados em cards separados
       let orderItems = []
 
-      for (let order of orders) {
-          for (let item of order.items) {
-              // Deepcopying porque senão nada disto funciona
-              let orderItem = JSON.parse(JSON.stringify(order));
-              orderItem.item = item;
-              delete orderItem.items;
-              orderItems.push(orderItem);
-          }
+      if(orders.length) {
+        for (let order of orders) {
+            for (let item of order.items) {
+                // Deepcopying porque senão nada disto funciona
+                let orderItem = JSON.parse(JSON.stringify(order));
+                orderItem.item = item;
+                delete orderItem.items;
+                orderItems.push(orderItem);
+            }
+        }
       }
       return orderItems
     }
