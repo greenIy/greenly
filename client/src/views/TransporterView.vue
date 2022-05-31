@@ -75,12 +75,21 @@ export default {
     background-color:#5e9f88!important;
     color:#ffffff!important;
 }
-.nav-link{
+
+.nav-link {
     color:#5e9f88!important;
 }
-.btnHist{
+
+.btnHist {
   background-color:#5e9f88!important;
    color:#ffffff!important;
 }
 
+input:focus {
+    box-shadow: none;
+}
+
+button:focus {
+  box-shadow: none !important;
+}
 </style>

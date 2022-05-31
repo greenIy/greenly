@@ -10,7 +10,7 @@
         <li class="list-group-item">Veículo: <span class="position-absolute end-0 me-3"> #{{element.item.vehicle}}</span></li>
       </ul>
       <div class="card-footer bg-white">
-        <button class="plus rounded my-auto" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Mostrar Mais</button>
+        <button class="plus rounded my-auto" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Expandir</button>
       </div>
       
     </div>
