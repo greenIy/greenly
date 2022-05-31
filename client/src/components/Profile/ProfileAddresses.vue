@@ -498,6 +498,12 @@ export default({
         opacity: 1.0;
         transform: scale(1.05)
     }
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .card:hover{
+        box-shadow: 1px 10px 12px #d9d9d9;
+    }
     #newAddressToast, #editAddressToast,
     #setBillingAddressToast, #setShippingAddressToast,
     #removeAddressToast {
