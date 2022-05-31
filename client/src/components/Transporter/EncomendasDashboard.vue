@@ -159,8 +159,8 @@ export default {
 
 <style scoped>
 .column-width {
-  min-width: 18.4%;
-  width: 18.4%;
+  min-width: 18.3%;
+  width: 18.3%;
 }
 
 .card {

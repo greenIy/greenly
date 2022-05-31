@@ -1,9 +1,9 @@
 <template>
 <div class="modal transp-modal-xl" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
-   <div class="modal-dialog modal-xl modal-dialog-centered w-100 h-100">
+   <div class="modal-dialog modal-xl modal-dialog-centered w-100">
     <div class=" d-flex modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"></h5> 
+        <h5 class="modal-title ">Encomenda #{{this.element.id}}</h5> 
         <div class="mx-2" @click="closeModal('fecha')" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
@@ -96,7 +96,9 @@ export default {
   color:white;
 }
 .modal-body{
+    height: 25rem!important;
     overflow-y: auto;
 }
+
 
 </style>

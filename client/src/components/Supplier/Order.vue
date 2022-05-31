@@ -2,7 +2,7 @@
 <div>
   <div class="bg-white shadow rounded pt-3 border border-white" >
     <div>
-      <h5 class="card-title ms-3">Encomenda #{{element.id}}, Item #{{element.item.id}} </h5>
+      <h5 class="card-title ms-3"><small>Encomenda #{{element.id}}, Item #{{element.item.id}}</small> </h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Produto: <span class="position-absolute end-0 me-3"> {{element.item.product.name}}</span> </li>
         <li class="list-group-item">Quantidade: <span class="position-absolute end-0 me-3"> {{element.item.quantity}} un.</span></li>
