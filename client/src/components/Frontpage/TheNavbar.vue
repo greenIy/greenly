@@ -8,7 +8,7 @@
             </div>
             <div class="input-group search-group align-self-center mt-2 mb-2 ms-4">
                 <input class="form-control" type="search" placeholder="O que estás à procura?" aria-label="Search" v-model="search" @keyup.enter="submit(this.search)">
-                <button class="btn btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
+                <button class="btn btnSearchBar btn-outline-success" type="submit" @click="submit(this.search)">Pesquisar</button>
             </div>
             <div v-if="!userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-2 ms-5">
                 <router-link  to="/login">
@@ -39,29 +39,39 @@
             <div v-if="userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-3">
                 <div class="dropdown">
                     <span v-if="activeNotificationsLength() > 0" class="position-absolute top-0 start-100 translate-middle bg-custom badge rounded-pill bg-danger" style="padding: 6px">
-                        {{this.notificationsLength()}}
+                        {{this.activeNotificationsLength()}}
                         <span class="visually-hidden"></span>
                     </span>
-                    <a class="" v-on:click="getNotifications" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <font-awesome-icon :icon="['fas', 'bell']" size="xl"/>
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 350px;">
                         <div class="list-group list-group-flush" style="">
 
-                            <div v-for="noti in this.notifications" :key="noti.id"  class="card">
+                            <div v-for="noti in this.notifications" :key="noti.id">
                             <div v-if="noti.dismissed == false" class="card">
                                 <div class="card-body">
                                     <small class="noitificationDate">
                                         {{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)} 
                                           &nbsp;${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()}` }}
                                     </small>
-                                    <h6 class="noitificationDismiss" role="button"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
+                                    <h6 class="noitificationDismiss" role="button" v-on:click="selectNotification(noti); dismissNotification()"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
                                     <h5 class="card-title mt-3">{{ noti.title }}</h5>
                                     <p class="card-text">{{ noti.content }}</p>
                                 </div>
                             </div>
-                        </div>
+                            </div>
 
+                            <div v-if="activeNotificationsLength() == 0" class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <p>Não existem notificações por ler.</p>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <small type="button" data-bs-toggle="modal" data-bs-target="#notificationsModal"><u>Mostrar arquivadas</u></small>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- <a v-if="this.user.phone && addressesLength() != 0" class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
                                 <div class="d-flex justify-content-center align-items-center p-4">
@@ -122,6 +132,35 @@
             </router-link>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="notificationsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="notificationsModalLabel">Arquivadas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div v-for="noti in this.notifications" :key="noti.id">
+                <div class="card-body">
+                    <small class="noitificationDate">
+                        {{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)} 
+                            &nbsp;${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()}` }}
+                    </small>
+                    <h5 class="card-title mt-3">{{ noti.title }}</h5>
+                    <p class="card-text">{{ noti.content }}</p>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
 </nav>
 </template>
 
@@ -145,6 +184,7 @@ export default {
             userIsLoggedIn: this.$store.getters.getState,
             user: this.$store.getters.getUser,
             notifications: [],
+            selectedNotification: '',
         }
     },
     methods: {
@@ -164,7 +204,6 @@ export default {
                 .then((response) => {
                     if (response.status == 200) {
                         this.notifications = response.data;
-                        console.log(this.notifications)
                     }
                     }).catch((error) => {
                         console.log(error.response.data);
@@ -187,7 +226,6 @@ export default {
                     size += 1;
                 }
             }
-            console.log(size)
             return size
         },
         addressesLength() {
@@ -195,9 +233,30 @@ export default {
             var size = Object.keys(user.addresses).length;
             return size
         },
+        selectNotification(notification) {
+            this.selectedNotification = notification;
+        },
         dismissNotification() {
-            
-        }
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            let notificationId = this.selectedNotification.id;
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId){
+                http.put(`/user/${userId}/notifications/${notificationId}`, {}, headers)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.getNotifications()
+                    }
+                    }).catch((error) => {
+                        console.log(error.response.data);
+                        console.log("Failure!")
+                    })
+            }
+        },
         logoutUser() {
             AuthService.logoutUser()
             // TODO: Eventualmente fazer um pedido a /auth/logout aqui
@@ -245,18 +304,18 @@ export default {
     .search-group {
         width: 825px!important;
     }
-    input, button {
+    input, .btnSearchBar {
         border-radius: 20px;
         line-height: 15px;
         font-size: 15px;
     }
-    button {
+    .btnSearchBar {
         background-color: #dce5e1;
         border: 0px;
         color: #5e9f88;
         box-shadow: none;
     }
-    button:hover {
+    .btnSearchBar:hover {
         background-color: #dce5e1;
         border: 0px;
         color: #5e9f88;
@@ -278,4 +337,7 @@ export default {
         top: 16px;
         right: 15px;
     } 
+    .greenly-link {
+        color: #5e9f88;
+    }
 </style>

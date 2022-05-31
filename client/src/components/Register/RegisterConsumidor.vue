@@ -266,7 +266,6 @@ export default {
         top: -11px;
         z-index: 1;
     }
-
     .greenly-link {
         color: #5e9f88;
     }
