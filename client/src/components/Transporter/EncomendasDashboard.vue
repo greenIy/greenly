@@ -129,7 +129,7 @@ export default {
 
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       if (valid) {
-        let response = http.put(`/store/orders/${ evt.draggedContext.element.id }/${ evt.draggedContext.element.item.id }`, 
+        http.put(`/store/orders/${ evt.draggedContext.element.id }/${ evt.draggedContext.element.item.id }`, 
         JSON.stringify({ status: `${ next }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}});
       }
 
@@ -159,19 +159,19 @@ export default {
 
 <style scoped>
 .column-width {
-  min-width: 260px;
-  width: 260px;
+  min-width: 30%;
+  width: 30%;
 }
-.card{
+.card {
     background-color:#ffffff;
 }
-.card-header{
+.card-header {
     background-color:#ffffff;
 }
-.icon{
+.icon {
     color:#666666;
 }
-.overflow-horizontally{
+.overflow-horizontally {
   overflow-x:auto;
   flex-wrap:nowrap;
 }
