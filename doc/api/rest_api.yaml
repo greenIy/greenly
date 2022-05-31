@@ -447,6 +447,113 @@ paths:
       security:
         - bearerAuth: []
 
+  ## NOTIFICATION ROUTES
+
+  /user/{userId}/notifications:
+    get:
+      tags:
+      - user
+      summary: Obter notificações do utilizador userId
+      description: Devolve um array de notificações relativas às várias encomendas do utilizador
+      operationId: getUserNotifications
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador cuja lista de notificações se deseja obter
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+      - user
+      summary: Descartar todas as notificações
+      description: Permite descartar/ler todas as notificações ao mesmo tempo
+      operationId: dismissAllNotifications
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador cujas notificações se deseja descartar
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+  /user/{userId}/notifications/{notificationId}:
+    put:
+      tags:
+      - user
+      summary: Descartar uma notificação
+      description: Permite descartar/ler uma notificação específica
+      operationId: dismissSingleNotification
+      parameters:
+      - name: userId
+        in: path
+        description: userId do utilizador cuja notificação se deseja descartar
+        required: true
+        schema:
+          type: integer
+      - name: notificationId
+        in: path
+        description: código identificador da notificação do utilizador que se deseja descartar
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
+
   ## ORDER ROUTES
   /user/{userId}/orders:
     get:
@@ -470,20 +577,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        400:
-          description: userId inválido
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedOrder'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+      security:
+        - bearerAuth: []
     post:
       tags:
       - user
       summary: Criar encomenda
-      description: "Apenas pode ser feito pelo utilizador quando autenticado \nDeve\
-        \ corresponder a um utilizador do tipo consumer \n Durante esta criação, o\
-        \ valor inicial do campo status deve ser 'awaiting_payment'"
+      description: "Criação de uma encomenda com base na combinação de produtos/fornecedores/transportadores presente no carrinho. Apenas pode ser feito pelo utilizador quando autenticado \nDeve\
+        \ corresponder a um utilizador do tipo consumer."
       operationId: createOrder
       parameters:
       - name: userId
@@ -497,22 +613,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/SentOrder'
         required: true
       responses:
-        201:
+        200:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: Dados inválidos
-          content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-        404:
-          description: Utilizador não encontrado
-          content: {}
-      x-codegen-request-body-name: body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        400:
+          description: Poderá corresponder a vários erros (moradas inválida, stock indisponível)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Your cart is empty. You can add items to it by using the cart manipulation endpoints.
+                    - Invalid shipping destination. Make sure to use an address registered to your account.
+                    - Invalid billing address. Make sure to use an address registered to your account.
+                    - Some items included in your cart are no longer available in the quantities you requested. Please double-check your cart.
+      security:
+        - bearerAuth: []
   ## WISHLIST ROUTES
   /user/{userId}/wishlist:
     get:
@@ -1290,6 +1423,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReceivedSuppliers'
+
+
+  ## ORDER ROUTES
+  /store/orders:
+    get:
+      tags:
+      - store
+      summary: Obter encomendas
+      description: "Devolve informação dinâmica sobre todas as encomendas relativas ao utilizador de onde originou o pedido. Diferentes utilizadores irão ver diferentes encomendas. Fornecedores e transportadores apenas verão encomendas onde estão registados como fornecedor ou transportador, administradores têm acesso a todas as encomendas."
+      operationId: getOrders
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedOrder'
         401:
           description: "_Token_ inválido. Utilizador não autenticado"
           content:
@@ -1304,32 +1456,12 @@ paths:
                 $ref: '#/components/schemas/InsufficientPermissionsError'
       security:
         - bearerAuth: []
-
-
-  ## ORDER ROUTES
-  /store/orders:
-    get:
-      tags:
-      - store
-      summary: Obter todas as encomendas na loja
-      description: "Devolve informação sobre todas as encomendas na loja \nOperaçã\
-        o limitada a administradores"
-      operationId: getOrders
-      responses:
-        200:
-          description: Operação efetuada com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
   /store/orders/{orderId}:
     get:
       tags:
       - store
       summary: Obter encomenda específica pelo respetivo orderId
-      description: "Devolve um objeto Order, se essa order estiver associada ao utilizador\
-        \ que pediu  \nOperação limitada a administradores e utilizadores que estejam\
-        \ associados à encomenda orderId (independentemente do seu tipo)"
+      description: "Permitido apenas a utilizadores que estão relacionados de alguma forma com a encomenda (fornecem ou transportam algum produto). Irá devolver informação relativa apenas ao utilizador que efetua o pedido. Administradores têm acesso a todas as encomendas."
       operationId: getOrderById
       parameters:
       - name: orderId
@@ -1344,20 +1476,60 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        400:
-          description: orderId inválido
-          content: {}
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedOrder'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Encomenda não encontrada
-          content: {}
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:  
+                    type: string
+                    enum:
+                    - "The specified order identifier is invalid."
+      security:
+        - bearerAuth: []
+
+  /store/orders/{orderId}/{itemId}:
     put:
       tags:
       - store
-      summary: Atualizar encomenda
-      description: "Permite a alteração do estado da encomenda \nOperação limitada\
-        \ a administradores e utilizadores que estejam associados à encomenda orderId\
-        \ (independentemente do seu tipo)"
+      summary: Atualizar item dentro de encomenda
+      description: |- 
+        Permite a alteração do estado de um item dentro da encomenda.
+
+        Esta operação tem permissões dinâmicas, sendo permitida apenas a utilizadores que estejam relacionados de alguma forma com a encomenda, permitindo apenas acesso ao conjunto de itens que lhes dizem respeito.
+
+        Consumidores podem alterar o item para o estado "CANCELED" caso este ainda não esteja no estado "IN_TRANSIT".
+
+        Administradores podem alterar o item para o estado "CANCELED" a qualquer altura.
+
+        Fornecedores podem alterar o item para do estado "PROCESSING" para o estado "AWAITING_TRANSPORT", ou para o estado "CANCELED", em caso de rotura de stock.
+
+        Transportadores podem alterar o item, a partir do estado "AWAITING_TRANSPORT", para os seguintes estados:
+        - "TRANSPORT_IMMINENT", simbolizando a chegada iminente do veículo de transporte ao armazém do fornecedor.
+        - "IN_TRANSIT", simbolizando o levantamento da encomenda e inicio do transporte até ao destino.
+        - "LAST_MILE", simbolizando a chegada iminente do veículo de transporte à morada de destino.
+        - "COMPLETED", simbolizando a entrega da encomenda.
+
+        Adicionalmente, transportadores podem também alterar estado da encomenda para "FAILURE" em caso de acidente durante o transporte ou falha de entrega em mão ao consumidor.
+
+        Cada alteração de estado feita através desta rota desencadeia tipos de notificações diferentes, a entidades diferentes.
+
       operationId: updateOrder
       parameters:
       - name: orderId
@@ -1366,28 +1538,68 @@ paths:
         required: true
         schema:
           type: integer
+      - name: itemId
+        in: path
+        description: itemId do item a ser atualizado, dentro da encomenda
+        required: true
+        schema:
+          type: integer
       requestBody:
-        description: Atualiza o objeto OrderStatus que se encontra dentro da encomenda
-          orderId
+        description: Atualiza o estado do item em questão
         content:
-          '*/*':
+          application/json:
             schema:
-              $ref: '#/components/schemas/OrderStatus'
+              properties:
+                status:
+                  $ref: '#/components/schemas/OrderStatus'
         required: true
       responses:
-        204:
-          description: Encomenda atualizada com sucesso
-          content: {}
-        400:
-          description: orderId inválido
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceivedOrder'
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        400:
+          description: Problemas de várias causas
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:  
+                    type: string
+                    enum:
+                    - You don't have permission to change the item's status from its current status to the specified status.
+                    - "You can't change this item's status since this item has not yet been paid for."
+                    - The status of this order item cannot be changed since it has already been canceled.
+                    - The specified order item is already passed the specified status. Please specifiy a status ahead of the current status.
+
         404:
-          description: Encomenda não encontrada
-          content: {}
-      x-codegen-request-body-name: orderStatus
+          description: Item não encontrado
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:  
+                    type: string
+                    enum:
+                    - "The specified item identifier is invalid for the specified order."
+      security:
+        - bearerAuth: []
   ### TRANSPORTER ROUTES
   /transporter/{userId}/vehicles:
     get:
@@ -2299,54 +2511,276 @@ components:
           type: boolean
           description: Atributo que sinaliza se a morada é a morada principal de faturação do utilizador
 
-    ## ORDER DEFINITIONS
-    Order:
+    ## NOTIFICATION DEFINITIONS
+    Notification:
       type: object
       properties:
-        orderId:
-          type: string
-          description: Código identificador da encomenda
-        transporterId:
-          type: string
-          description: Código identificador do transportador
-        vehicleId:
-          type: string
-          description: Código identificador do veículo
-        status:
-          $ref: '#/components/schemas/OrderStatus'
-        userId:
+        id:
           type: integer
-          description: Código identificador da utilizador
-        dateCreated:
+          description: Código identificador da notificação, indexado por utilizador
+        user:
+          type: integer
+          description: Código identificador do utilizador
+        order:
+          type: integer
+          description: Código identificador da encomenda à qual a notificação é pertinente
+        order_item:
+          type: integer
+          description: Código identificador do item dentro da encomenda encomenda à qual a notificação é pertinente
+        title:
           type: string
-          description: Data do pedido da encomenda
-        items:
-          type: array
-          description: Itens pedidos na encomenda
-          items:
-            type: object
-            properties:
-              item:
-                $ref: '#/components/schemas/Item'
-              quantity:
-                type: integer
-                description: Quantidade encomendada de um item
-        payment:
-          $ref: '#/components/schemas/Payment'
-      description: Objeto utilizado para devolver informação sobre uma encomenda
+          description: Título da notificação
+        content:
+          type: string
+          description: Conteúdo da notificação
+        dismissed:
+          type: boolean
+          description: Simboliza se a notificação já foi ou não descartada
+        timestamp:
+          type: string
+          description: Data da emissão da notificação
+        scope:
+          type: string
+          description: Assunto ao qual a notificação diz respeito, com base num estado da encomenda
+          enum:
+          - AWAITING_PAYMENT
+          - PROCESSING
+          - AWAITING_TRANSPORT
+          - TRANSPORT_IMMINENT
+          - IN_TRANSIT
+          - LAST_MILE
+          - COMPLETE
+          - FAILURE
+          - CANCELED
+
+    ## ORDER DEFINITIONS
+    SentOrder:
+      type: object
+      properties:
+        shipping_address:
+          type: integer
+          description: Código identificador da morada do utilizador a utilizar como morada de envío. Deverá corresponder a uma morada previamente registada
+        billing_address:
+          type: integer
+          description: Código identificador da morada do utilizador a utilizar como morada fiscal. Deverá corresponder a uma morada previamente registada
+        observations:
+          type: string
+          description: Observações a incluir nesta encomenda
+      description: Objeto utilizado para enviar informação sobre uma nova encomenda
       xml:
         name: Order
+
+    ReceivedOrder:
+      type: object
+      properties:
+        id:
+          type: integer 
+          description: "Código identificador da encomenda"
+        consumer:
+          type: object
+          description: Objeto que representa o comprador da encomenda 
+          properties: 
+            id:
+              type: integer
+              description: Código identificador do comprador 
+            first_name:
+              type: string
+              description: Primeiro nome do comprador
+            last_name:
+              type: string
+              description: Último nome do comprador
+            email:
+              type: string
+              description: Endereço de e-mail do comprador
+            phone: 
+              type: string 
+              description: Contacto do comprador
+        date:
+          type: string
+          description: Data de criação da encomenda 
+        observations:
+          type: string
+          description: Obsevações específicadas durante a criação da encomenda
+        shipping_address:
+          type: integer
+          description: Código identificador da morada a utilizar como morada de envío
+        billing_address:
+          type: integer
+          description: Código identificador da morada a utilizar como morada fiscal
+        items:
+          type: array
+          description: Os vários itens que compõem a encomenda
+          items:
+            properties:
+              id:
+                type: integer
+                description: Código identificador do item dentro da encomenda
+              status:
+                $ref: '#/components/schemas/OrderStatus'
+              order:
+                type: integer
+                description: Código identificador da encomenda a que o item pertence
+              supply_price:
+                type: number
+                format: float
+                description: Preço do produto vendido pelo fornecedor na altura da compra
+              transport_price:
+                type: number
+                format: float
+                description: Preço cobrado pelo transportador na altura da compra
+              quantity:
+                type: integer
+                description: Quantidade do produto especificado
+              arrival_date:
+                type: string
+                description: Data de chegada da encomenda (será null até se encontrar no estado "COMPLETED")
+              supplier_resource_usage:
+                type: number
+                format: float
+                description: A utilização de recursos do fornecedor para o armazenamento do produto, em kWh (Quilowatt-hora), na altura da compra
+              supplier_renewable_resources:
+                type: number
+                format: float
+                description: A percentagem de recursos utilizados pelo fornecedor oriundos de fontes renováveis na altura da compra
+              transporter_resource_usage:
+                type: number
+                format: float
+                description: A utilização de recursos do transportador para o envio de um produto, em l/100km (litros de combustível aos 100km), na altura da compra
+              transporter_emissions:
+                type: number
+                format: float
+                description: As emissões poluentes do transportador para o envio de um produto, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada), na altura da compra
+              product:
+                type: object
+                description: Representa o produto presente na encomenda
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador do produto em questão
+                  name:
+                    type: string
+                    description: Nome do produto em questão
+              supplier:
+                type: object
+                description: Representa o fornecedor
+                properties:
+                  id:
+                    type: string
+                    description: Código identificador do fornecedor 
+                  name:
+                    type: string
+                    description: Nome do fornecedor
+              warehouse:
+                type: object
+                description: Representa o armazém em que o produto se encontra
+                properties:
+                  id:
+                    type: string
+                    description: Código identificador do armazém
+                  address:
+                    type: object    
+                    description: Morada do armazém em questão
+                    properties:
+                      street:
+                        type: string
+                        description: Rua da morada
+                      city:
+                        type: string
+                        description: Cidade da morada
+                      country:
+                        type: string
+                        description: País da morada
+                      postal_code:
+                        type: string
+                        description: Código postal da morada
+                      latitude:
+                        type: number
+                        description: A latitude da morada especificada (precisão de 6 decimais)
+                      longitude:
+                        type: number
+                        description: A longitude da morada especificada (precisão de 6 decimais)
+              transporter:
+                type: object
+                description: Representa o transportador
+                properties:
+                  id:
+                    type: string
+                    description: Código identificador do transportador 
+                  name:
+                    type: string
+                    description: Nome do transportador
+              vehicle:
+                type: object
+                description: Representa o veículo utilizado pelo transportador para fornecer a encomenda
+                properties: 
+                  id:
+                    type: integer
+                    description: Código identificador do veículo
+                  license_plate:
+                    type: string
+                    description: Matrícula do veículo
+                  resource_usage:
+                    type: number
+                    format: float
+                    description: Consumo médio do veículo (l/100km)
+                  average_emissions:
+                    type: number
+                    format: float
+                    description: CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
+                  fuel_type:
+                    type: string
+                    description: Tipo de combustível do veículo 
+                    enum:
+                    - PETROL
+                    - DIESEL
+                    - ELECTRIC
+                  payload_capacity:
+                    type: integer
+                    description: Capacidade de carga do veículo (em kg)
+                  distribution_center:
+                    type: integer
+                    description: Código identificador do centro de distribuição ao qual o veículo pertence
+              progress:
+                type: array
+                description: Representa as várias fases de progresso da encomenda
+                items:
+                  type: object
+                  properties:
+                    state:
+                      type: string
+                      description: Representa o estado da encomenda
+                      enum:
+                      - CREATED
+                      - AWAITING_PAYMENT
+                      - PROCESSING
+                      - AWAITING_TRANSPORT
+                      - TRANSPORT_IMMINENT
+                      - IN_TRANSIT
+                      - LAST_MILE
+                      - COMPLETE
+                      - FAILURE
+                      - CANCELED
+                    timestamp:
+                      type: string
+                      description: A data associada ao estado da encomenda
+                  
+      description: Objeto utilizado para enviar informação sobre uma nova encomenda
+      xml:
+        name: Order  
+
     OrderStatus:
       type: string
       description: Identificador do estado atual da encomenda
       enum:
-      - awaiting_payment
-      - processing
-      - awaiting_transport
-      - transit
-      - complete
-      - failure
-      - canceled
+      - AWAITING_PAYMENT
+      - PROCESSING
+      - AWAITING_TRANSPORT
+      - TRANSPORT_IMMINENT
+      - IN_TRANSIT
+      - LAST_MILE
+      - COMPLETE
+      - FAILURE
+      - CANCELED
     
     ## PRODUCT DEFINITIONS
     SentProduct:
@@ -2833,6 +3267,9 @@ components:
         transporter:
           type: integer
           description: Código identificador do transportador escolhido
+        warehouse:
+          type: integer
+          description: Código identificador do armazém que contém o produto escolhido
         quantity:
           type: integer
           description: Quantidade do item. Deverá ser um valor igual ou inferior à quantidade de stock disponível pelo fornecedor

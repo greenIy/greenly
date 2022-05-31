@@ -172,7 +172,6 @@ passport.use(
 );
 
 /* Easy-to-call validation function, calls JWT strategy and returns user object to request context */
-// TODO: Eventually call other strategies through here too
 const check = function (req, res, next) {
     passport.authenticate("jwt", {
         session: false

@@ -3,6 +3,7 @@ regen_db.sh
 
 # Population script 
 mock.sql
+*.geojson
 
 # Logs
 logs
