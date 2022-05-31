@@ -159,22 +159,28 @@ export default {
 
 <style scoped>
 .column-width {
-  min-width: 30%;
-  width: 30%;
+  min-width: 18.4%;
+  width: 18.4%;
 }
+
 .card {
     background-color:#ffffff;
 }
+
 .card-header {
     background-color:#ffffff;
 }
+
 .icon {
     color:#666666;
 }
+
 .overflow-horizontally {
   overflow-x:auto;
   flex-wrap:nowrap;
+  width: 105%;
 }
+
 .AWAITING_TRANSPORT, .PROCESSING, .TRANSPORT_IMMINENT, .IN_TRANSIT, .LAST_MILE, .COMPLETE {
   min-height: 45vh
 }

@@ -134,22 +134,28 @@ export default {
 
 <style scoped>
 .column-width {
-  min-width: 350px;
-  width: 350px;
+  min-width: 18.4%;
+  width: 18.4%;
 }
-.card{
+
+.card {
     background-color:#ffffff;
 }
-.card-header{
+
+.card-header {
     background-color:#ffffff;
 }
-.icon{
+
+.icon {
     color:#666666;
 }
-.overflow-horizontally{
+
+.overflow-horizontally {
   overflow-x:auto;
   flex-wrap:nowrap;
+  width: 105%;
 }
+
 .AWAITING_TRANSPORT, .PROCESSING, .TRANSPORT_IMMINENT {
   min-height: 45vh
 }
