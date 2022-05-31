@@ -16,7 +16,7 @@
     </div>
   </div>
   <div v-if="modalP != false">
-    <ProductModal />
+    <ProductModal :element="element" />
   </div>
 </div>
 </template>
