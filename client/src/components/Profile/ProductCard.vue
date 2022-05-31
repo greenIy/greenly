@@ -24,24 +24,24 @@
           </button>
           <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
           <div class="row g-0 d-flex align-items-center align-self-center h-100 my-auto">
-            <div class="col-md-2 position-relative align-items-center">
+            <div class="col-md-3 position-relative align-items-center">
               <!-- <img class="w-100 rounded-start" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  /> -->
               <div class="product-image"></div>
             </div>
-            <div class="col-md-10 d-flex">
+            <div class="col-md-9 d-flex">
                 <div class="card-body">
                   <div class="row align-items-center h-100">
-                    <div class="col-sm-4">
-                      <h1 class="card-title text-start text-wrap">{{ product.name }}</h1>
-                      <h3 class="card-title text-start text-wrap">
-                        {{ product.category.name }}
-                      </h3>
-                    </div>     
-                    <div class="col-sm-5">
-                      <p class="card-text  text-justify text-wrap fs-4">{{ product.description }}</p>
-                    </div>
                     <div class="col-sm-3">
-                      <span><h2 class="card-text text-center text-wrap ">{{ product.lowest_price }}€</h2></span>
+                      <h3 class="card-title text-start text-wrap">{{ product.name }}</h3>
+                      <h5 class="card-title text-start text-wrap">
+                        {{ product.category.name }}
+                      </h5>
+                    </div>     
+                    <div class="col-sm-7">
+                      <p class="card-text  text-justify text-wrap fs-6">{{ product.description }}</p>
+                    </div>
+                    <div class="col-sm-2">
+                      <span><h3 class="card-text text-center text-wrap fs-5">{{ product.lowest_price }}€</h3></span>
                     </div>
                   </div>  
                 </div>
@@ -185,7 +185,7 @@ h5 {
   border: none;
 }
 .product-card {
-  min-height: 25em;
+  min-height: 20em;
 } 
 .text-justify{
   text-align: justify;

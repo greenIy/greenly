@@ -238,8 +238,26 @@ export default {
         svg.classList.remove("red");
       } else {
         svg.classList.add("red");
+        this.addToWishlist()
       }
     },
+    addToWishlist() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+
+            if (accessToken){
+                http.post(`/user/${userId}/wishlist`, JSON.stringify(
+                  {
+                    product: this.product.id
+                  }
+                ),{ headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                    if (response.status == 200) {
+                        
+                    }
+                })
+
+            }
+        },
     async getInfo() {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
@@ -297,7 +315,7 @@ export default {
             document.getElementById("decrement").style.color="#ededed";
           }
           if (this.quantity < this.suppliers[this.idSupplier].quantity ){
-            document.getElementById("increment").style.color="#7c9d8e";
+            document.getElementById("increment").style.color="#5E9F88";
           }
         }
       }
@@ -305,7 +323,7 @@ export default {
         if(this.quantity < this.suppliers[this.idSupplier].quantity){
           this.quantity++;
           if(this.quantity==2){
-            document.getElementById("decrement").style.color="#7c9d8e";
+            document.getElementById("decrement").style.color="#5E9F88";
           }
           if (this.quantity== this.suppliers[this.idSupplier].quantity){
             document.getElementById("increment").style.color="#ededed";
@@ -410,7 +428,7 @@ export default {
 .btnS {
   border: none;
   color: white;
-  background-color: #7c9d8e;
+  background-color: #5E9F88;
   border-radius: 10px;
 }
 .btnS:hover {
@@ -487,7 +505,7 @@ label {
   margin-bottom: 5px;
 }
 #increment{
-  color:#7c9d8e;
+  color:#5E9F88;
 }
 #decrement{
   color:#ededed;

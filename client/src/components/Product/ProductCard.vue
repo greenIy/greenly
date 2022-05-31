@@ -40,7 +40,7 @@
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-
+import http from "../../../http-common";
 library.add(faHeart);
 
 export default {
@@ -63,8 +63,26 @@ export default {
         svg.classList.remove("red");
       } else {
         svg.classList.add("red");
+        this.addToWishlist();
       } 
     },
+    addToWishlist() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+
+            if (accessToken){
+                http.post(`/user/${userId}/wishlist`, JSON.stringify(
+                  {
+                    product: this.product.id
+                  }
+                ),{ headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                    if (response.status == 200) {
+                        
+                    }
+                })
+
+            }
+        },
   }
 };
 </script>

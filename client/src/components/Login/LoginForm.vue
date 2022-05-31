@@ -31,7 +31,7 @@
                         </div>
                 </form>
             </div>
-            <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/register" class="float-right greenly-link">Regista-te aqui!</router-link></p>
+            <p class="text-center text-muted small">Ainda não tens conta?  <router-link to="/registar" class="float-right greenly-link">Regista-te aqui!</router-link></p>
         </div>
     </div>
 </template>
