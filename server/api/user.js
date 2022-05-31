@@ -171,7 +171,6 @@ router.put('/:userId/addresses/:addressId', authentication.check, authorization.
 router.delete('/:userId/addresses/:addressId', authentication.check, authorization.check, (req, res) => {
     try {
         persistence.deleteAddress(
-            Number(req.params.userId),
             Number(req.params.addressId)
             ).then((success) => {
             if (success) {

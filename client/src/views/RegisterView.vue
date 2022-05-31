@@ -24,3 +24,10 @@ export default {
 };
 
 </script>
+
+
+<style scoped>
+  .content-wrap {
+    background-color: #EDEDED;
+  }
+</style>
