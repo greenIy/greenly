@@ -38,15 +38,32 @@
             </div>
             <div v-if="userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-3">
                 <div class="dropdown">
-                    <span v-if="!this.user.phone || addressesLength() == 0" class="position-absolute top-0 start-100 translate-middle bg-custom border border-light rounded-circle" style="padding: 6px">
+                    <span v-if="activeNotificationsLength() > 0" class="position-absolute top-0 start-100 translate-middle bg-custom badge rounded-pill bg-danger" style="padding: 6px">
+                        {{this.notificationsLength()}}
                         <span class="visually-hidden"></span>
                     </span>
-                    <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="" v-on:click="getNotifications" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <font-awesome-icon :icon="['fas', 'bell']" size="xl"/>
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 350px;">
                         <div class="list-group list-group-flush" style="">
-                            <a v-if="this.user.phone && addressesLength() != 0" class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
+
+                            <div v-for="noti in this.notifications" :key="noti.id"  class="card">
+                            <div v-if="noti.dismissed == false" class="card">
+                                <div class="card-body">
+                                    <small class="noitificationDate">
+                                        {{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)} 
+                                          &nbsp;${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()}` }}
+                                    </small>
+                                    <h6 class="noitificationDismiss" role="button"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
+                                    <h5 class="card-title mt-3">{{ noti.title }}</h5>
+                                    <p class="card-text">{{ noti.content }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                            <!-- <a v-if="this.user.phone && addressesLength() != 0" class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
                                 <div class="d-flex justify-content-center align-items-center p-4">
                                     Não tem notificações.
                                 </div>
@@ -68,7 +85,7 @@
                                     </div>
                                     <small>Por favor clique aqui para associar uma ou mais moradas ao seu perfil.</small>
                                 </a>
-                            </router-link>
+                            </router-link> -->
                         </div>
                     </ul>
                 </div>
@@ -110,37 +127,77 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket);
+import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket, faXmark} from '@fortawesome/free-solid-svg-icons';
+library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faBell, faArrowRightFromBracket, faXmark);
 
+import http from "../../../http-common"
 import AuthService from '../../router/auth';
-
 
 export default {
     name: 'TheNavbar',
     mounted() {
         this.getUserInfo();
+        this.getNotifications();
     },
     data () {
         return {
             search: '',
             userIsLoggedIn: this.$store.getters.getState,
             user: this.$store.getters.getUser,
+            notifications: [],
         }
     },
     methods: {
         submit(search) {
             this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
         },
+        getNotifications() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId){
+                http.get(`/user/${userId}/notifications`, headers)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.notifications = response.data;
+                        console.log(this.notifications)
+                    }
+                    }).catch((error) => {
+                        console.log(error.response.data);
+                        console.log("Failure!")
+                    })
+            }
+        },  
         getUserInfo() {
             this.user = this.$store.getters.getUser
             return this.$store.getters.getUser
+        },
+       notificationsLength() {
+            var size = Object.keys(this.notifications).length;
+            return size
+        },
+        activeNotificationsLength() {
+            var size = 0;
+            for (let noti = 0; noti < Object.keys(this.notifications).length; noti++) {
+                if (this.notifications[noti].dismissed == false) {
+                    size += 1;
+                }
+            }
+            console.log(size)
+            return size
         },
         addressesLength() {
             var user = this.getUserInfo()
             var size = Object.keys(user.addresses).length;
             return size
-        },  
+        },
+        dismissNotification() {
+            
+        }
         logoutUser() {
             AuthService.logoutUser()
             // TODO: Eventualmente fazer um pedido a /auth/logout aqui
@@ -215,5 +272,10 @@ export default {
     }
     .bg-custom {
         background-color: #E3C12B !important;
-    }  
+    }
+    .noitificationDismiss {
+        position: absolute;
+        top: 16px;
+        right: 15px;
+    } 
 </style>
