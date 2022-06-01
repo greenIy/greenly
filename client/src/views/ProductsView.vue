@@ -118,6 +118,10 @@ export default {
         request = request +  "&keywords=" + this.$route.query.pesquisa;
       }
 
+      if(this.$route.query.fornecedor) {
+        request = request +  "&supplier=" + this.$route.query.fornecedor;
+      }
+
       response = await http.get(request);
       this.products = response.data.products;
       this.productAmount = response.data.total_products;

@@ -46,7 +46,7 @@
         </div>   
         <div class="collapse" id="fornecedores-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-for="supplier in this.suppliers" :key="supplier" :to="{ path: $route.path + '/' + supplier.id, query: { ...$route.query } }" class="list-group-item list-group-item-action border-0">
+            <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
               &nbsp; {{ supplier.company.name }}
             </router-link>
           </div>
