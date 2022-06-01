@@ -1,21 +1,15 @@
 <template >
 <div>
-  <div class="bg-white shadow rounded pt-3 border border-white" >
+  <div class="bg-white shadow rounded pt-3 border border-white" @click="showModalP()">
     <div>
-      <h5 class="card-title ms-3"><small>Encomenda #{{element.id}}, Item #{{element.item.id}}</small> </h5>
+      <h6 class="card-title ms-3">Encomenda <small class="text-muted">#{{element.id}}</small>, Item <small class="text-muted">#{{element.item.id}}</small></h6>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Produto: <span class="position-absolute end-0 me-3"> {{element.item.product.name}}</span> </li>
-        <li class="list-group-item">Quantidade: <span class="position-absolute end-0 me-3"> {{element.item.quantity}} un.</span></li>
-        <li class="list-group-item">Comprador: <span class="position-absolute end-0 me-3"> {{element.consumer.first_name}} {{element.consumer.last_name}}</span></li>
-        <li class="list-group-item">Veículo: <span class="position-absolute end-0 me-3"> #{{element.item.vehicle}}</span></li>
-      </ul>
-      <div class="card-footer bg-white">
-        <button class="plus rounded my-auto" data-toggle="modal" data-target="#transp-modal-xl" @click="showModalP()"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', 'up-right-and-down-left-from-center']" />Expandir</button>
-      </div>
+      </ul>     
     </div>
   </div>
   <div v-if="modalP != false">
-    <ProductModal :element="element" />
+    <ProductModal :element="element" @sendModalT="closeModalT" />
   </div>
 </div>
 </template>
@@ -50,6 +44,11 @@ export default {
   methods:{
     showModalP(){
       this.modalP=true;
+    },
+    closeModalT(value){
+      if(value == "fecha"){
+        this.modalP=false;
+      }
     },
   },
 };

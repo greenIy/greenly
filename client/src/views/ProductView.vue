@@ -36,12 +36,12 @@
                                 <p class="text-p"><b>Stock:</b> {{ currentSupplier.quantity }} produtos</p>
                                 <p class="text-p"><b>Preço:</b> {{ currentSupplier.price }}€</p>
                               </div>
-                          </div>
+                          </div>@saveF="closeModalF"
                         </div>
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                       </div>
-                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers" :idSupplier="idSupplier" />
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF"  @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers" :idSupplier="idSupplier" />
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">

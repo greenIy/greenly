@@ -21,12 +21,9 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowRight} from '@fortawesome/free-solid-svg-icons';
-
 library.add(faArrowRight);
-
 export default {
   name: 'HomeView',
   components: {
@@ -47,22 +44,18 @@ export default {
     position: relative;
     min-height: 100vh;
   }
-
   .content-wrap {
     padding-bottom: 7.5rem;
   }
-
   /* Container needed to position the button. Adjust the width as needed */
   .img-container {
     position: relative;
   }
-
   /* Make the image responsive */
   .img-container img {
     width: 100%;
     height: auto;
   }
-
   /* Style the button and place it in the middle of the container/image */
   .img-container .btn {
     position: absolute;
@@ -78,23 +71,19 @@ export default {
     cursor: pointer;
     border-radius: 5px;
   }
-
   .img-title {
     position: absolute;
     top: 21%;
     left: 10%;
   }
-
   .img-title h2 {
     font-size: 70px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
-
   .img-container .btn:hover {
     background-color: #35c492;
     color: #076142;
   }
-
   #arrow-icon {
    vertical-align: middle;
   }

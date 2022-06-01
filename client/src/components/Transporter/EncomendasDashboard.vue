@@ -46,16 +46,16 @@ export default {
   data() {
     return {
       columns: [
-        {
-          title: "PRESTES A SER LEVANTADAS",
-          status: "AWAITING_TRANSPORT",
-          logo: "truck-ramp-box",
-          orders: [ ]
-        },
          {
           title: "À ESPERA DE TRANSPORTE",
           status: "TRANSPORT_IMMINENT",
           logo: "hourglass",
+          orders: [ ]
+        },
+        {
+          title: "PRESTES A SER LEVANTADAS",
+          status: "AWAITING_TRANSPORT",
+          logo: "truck-ramp-box",
           orders: [ ]
         },
         {
@@ -111,10 +111,10 @@ export default {
     checkMove: (evt) =>  {
       let valid = false;
       let next;
-      if(evt.from.className === 'AWAITING_TRANSPORT') {
-        next = 'TRANSPORT_IMMINENT';
+      if(evt.from.className === 'TRANSPORT_IMMINENT') {
+        next = 'AWAITING_TRANSPORT';
         valid = evt.to.className === next;
-      } else if (evt.from.className === 'TRANSPORT_IMMINENT') {
+      } else if (evt.from.className === 'AWAITING_TRANSPORT') {
         next = 'IN_TRANSIT';
         valid = evt.to.className === next;
       }

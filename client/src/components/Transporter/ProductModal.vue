@@ -1,5 +1,5 @@
 <template>
-<div class="modal transp-modal-xl" id=" transp-modal-xl" role="dialog" tabindex="-1" aria-hidden="true">
+<div class="modal transp-modal-xl" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
    <div class="modal-dialog modal-xl modal-dialog-centered w-100">
     <div class=" d-flex modal-content">
       <div class="modal-header">
@@ -11,7 +11,7 @@
       <div class="modal-body">
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
-             <h5 class="card-title">Item #{{element.item.id}}</h5>
+             <h5 class="card-title"><small class="text-muted">Item #{{element.item.id}}</small></h5>
             <div class="dropdown me-0">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{element.item.status}}
@@ -25,33 +25,57 @@
           </div>
         </div>
         <div>
-          <div class="pt-3">
-            <h5>Sobre o produto</h5>
-            <p class="card-text">Produto: {{element.item.product.name}}</p>
-            <p class="card-text">Observações: {{element.observations}}</p>
-            <p class="card-text">Quantidade: {{element.item.product.name}}</p>
-     
-            <h5 class="pt-3">Sobre o fornecedor</h5>
-            <p class="card-text">Fornecedor: {{element.item.supplier.name}}</p>
-            <p class="card-text">Preço: {{element.item.supply_price}}</p>
-            <p class="card-text">Recursos usados: {{element.item.supplier_resource_usage}}</p>
-            <p class="card-text">Recursos renováveis usados:{{supplier_renewable_resources}}</p>
-            <p class="card-text">Armazém: {{element.item.warehouse}}</p>
+          <ul class="nav nav-tabs mt-3">
+            <li class="nav-item ">
+              <a class="nav-link greenly-color" id="prod" @click="activate(1)" :class="{ active : active_el == 1 }" >Produto</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link greenly-color" @click="activate(2)" :class="{ active : active_el == 2 }">Consumidor</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link greenly-color" @click="activate(3)" :class="{ active : active_el == 3 }">Fornecedor</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link greenly-color" @click="activate(4)" :class="{ active : active_el == 4 }">Transportador</a>
+            </li>
+          </ul>
 
-            <h5 class="pt-3">Sobre a entrega</h5>
-            <p class="card-text">Consumidor: {{element.consumer.first_name}} {{element.consumer.last_name}}</p>
-            <p class="card-text">E-mail: {{element.consumer.email}}</p>
-            <p class="card-text">Transportador: {{element.item.transporter.name}}</p>
-            <p class="card-text">Recursos usados: {{element.item.transporter_resource_usage}}</p>
-            <p class="card-text">Recursos renováveis usados: {{element.item.transporter_emissions}}</p>
-            <p class="card-text">Veículo: #{{element.item.vehicle}}</p>
+          
+            <div class="pt-3 " v-if="active_el==1" >
+              <p class="card-text">Produto: {{element.item.product.name}}</p>
+              <p class="card-text">Quantidade: {{element.item.product.name}}</p>
+              <p class="card-text">Observações: {{element.observations}}</p>
+            </div>
+
+            <div class="pt-3" v-if="active_el==2">
+              <p class="card-text">Consumidor: {{element.consumer.first_name}} {{element.consumer.last_name}}</p>
+              <p class="card-text">E-mail: {{element.consumer.email}}</p>
+              <p class="card-text">Morada: #{{element.shipping_address}}</p>
+              <p class="card-text">Data da Encomenda: {{element.date}}</p>
+
+            </div>
+            <div class="pt-3" v-if="active_el==3">
+              <p class="card-text">Fornecedor: {{element.item.supplier.name}}</p>
+              <p class="card-text">Preço: {{element.item.supply_price}}€</p>
+              <p class="card-text">Recursos Usados: {{element.item.supplier_resource_usage}}</p>
+              <p class="card-text">Recursos Renováveis Usados:{{supplier_renewable_resources}}</p>
+              <p class="card-text">Armazém: #{{element.item.warehouse}}</p>
+            </div>
+
+            <div class="pt-3" v-if="active_el==4">
+              <p class="card-text">Transportador: {{element.item.transporter.name}}</p>
+              <p class="card-text">Preço: {{element.item.transport_price}}€</p>
+              <p class="card-text">Recursos Usados: {{element.item.transporter_resource_usage}}</p>
+              <p class="card-text">Recursos Renováveis Usados: {{element.item.transporter_emissions}}</p>
+              <p class="card-text">Veículo: #{{element.item.vehicle}}</p>
+            </div>
+
           </div>
         </div>
-      </div>
-      <div class="modal-footer mt-3">
+        <div class="modal-footer">
         <button type="button" class="btn save" @click="saveChanges()">Guardar Alterações</button>
       </div>
-    </div>
+    </div> 
   </div>
 </div>
 </template>
@@ -74,7 +98,7 @@ export default {
   },
   data() {
     return {
-    
+      active_el:1,
     }
   },
   methods:{
@@ -82,9 +106,18 @@ export default {
       this.$emit('sendModalT',params);
     },
     saveChanges(){
-    //this.$emit('sendTransporterSelected', this.idT);
     this.$emit('saveT',"salva");
-    }, 
+    },
+    activate:function(el){
+      if(this.active_el != 1 ){
+        document.getElementById("prod").classList.remove("active");
+        this.active_el = el;
+      }
+      else{
+        this.active_el = el;
+      }   
+    },
+     
   }
 };
 </script>
@@ -99,6 +132,9 @@ export default {
 .modal-body{
     height: 25rem!important;
     overflow-y: auto;
+}
+.greenly-color{
+  color:#000000;
 }
 
 </style>
