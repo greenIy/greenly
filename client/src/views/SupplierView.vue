@@ -72,17 +72,26 @@ export default {
 
 <style scoped>
 .nav-pills .nav-link.active {
-    background-color:#5e9f88!important;
-    color:#ffffff!important;
+  background-color:#5e9f88!important;
+  color:#ffffff!important;
 }
 
 .nav-link {
-    color:#5e9f88!important;
+  color:#5e9f88!important;
 }
 
 .btnHist {
   background-color:#5e9f88!important;
   color:#ffffff!important;
+  outline: none;
+}
+
+input:focus {
+  box-shadow: none;
+}
+
+button:focus {
+  box-shadow: none !important;
 }
 
 </style>

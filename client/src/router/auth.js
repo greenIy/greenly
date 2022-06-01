@@ -37,7 +37,7 @@ export default class AuthService {
             if (accessToken && userId){
                 let response = await http.get(`/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
                 if (response.status == 200) {
-                    console.log(response.data)
+                    //console.log(response.data)
                     return response.data
                 } else {
                     return null;

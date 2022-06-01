@@ -82,7 +82,8 @@ export default {
 
 .btnHist {
   background-color:#5e9f88!important;
-   color:#ffffff!important;
+  color:#ffffff!important;
+  outline: none;
 }
 
 input:focus {
