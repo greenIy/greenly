@@ -41,13 +41,13 @@
         </div>
       </li>
       <li>
-        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="false">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
-        <div class="collapse show" id="fornecedores-collapse">
+        <div class="collapse" id="fornecedores-collapse">
           <div class="list-group list-group-flush">
-            <router-link v-for="supplier in showSuppliers" :key="supplier" class="list-group-item list-group-item-action border-0">
-              &nbsp; {{ category.name }}
+            <router-link v-for="supplier in this.suppliers" :key="supplier" :to="{ path: $route.path + '/' + supplier.id, query: { ...$route.query } }" class="list-group-item list-group-item-action border-0">
+              &nbsp; {{ supplier.company.name }}
             </router-link>
           </div>
         </div>
@@ -69,13 +69,13 @@ library.add(faAngleLeft);
     props: {
       categories: Array,
       currentCategories: Array,
+      suppliers: Array,
       page: {
         type: String
       },
       category: {
         type: String
       },
-
     },
     data () { 
       return {
@@ -213,15 +213,15 @@ library.add(faAngleLeft);
   padding: .300rem .20rem .300rem .40rem;
 }
 
-#iconC{
+#iconC {
   color:#5e9f88;
 }
 
-#iconP{
+#iconP {
   color:#5e9f88;
 }
 
-#iconF{
+#iconF {
   color:#5e9f88;
 }
 </style>

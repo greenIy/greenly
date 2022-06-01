@@ -9,7 +9,7 @@
         <div class="row content justify-content-center" v-if="rendered">
           <div class="col-sm-2 col-md-2 mb-2 filtros ">
             <div class="content d-flex">
-              <TheFilters :categories="categories" :currentCategories="currentCategories"/>
+              <TheFilters :categories="categories" :currentCategories="currentCategories" :suppliers="suppliers"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
@@ -61,7 +61,6 @@ export default {
   },
   props: {
     product: Object,
-    allSuppliers:Array,
   },
   data() {
     return {
@@ -70,7 +69,7 @@ export default {
       productAmount: 0,
       currentCategories: [],
       productsInPage: 0,
-      allSuppliers: [],
+      suppliers: [],
       rendered: false,
     };
   },
@@ -80,6 +79,7 @@ export default {
   mounted() {
     this.getProducts();
     this.getCategories();
+    this.getSuppliers();
   },
   watch: {
     $route(to, from) {
@@ -115,7 +115,6 @@ export default {
       }
 
       if (this.$route.query.pesquisa){
-        console.log("eu entro aqui");
         request = request +  "&keywords=" + this.$route.query.pesquisa;
       }
 
@@ -127,15 +126,12 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
-   /*  async getSuppliers() {
-      let response;
-      let request;
-      request = "/store/suppliers";
-      response = await http.get(request);
-      this.allSuppliers = response.data;
-      console.log(this.allSuppliers)
+    async getSuppliers() {
+      let response = await http.get("/store/suppliers");
+      this.suppliers = JSON.parse(JSON.stringify(response.data));
+      console.log(this.suppliers);
 
-    }, */
+    },
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;
