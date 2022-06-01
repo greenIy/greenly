@@ -2,6 +2,8 @@
     Functions included pertain to event-induced logic.
 */
 
+/* Payment Handling */
+
 const persistence   = require("../lib/persistence")
 
 async function postPaymentHandler(orderId) {
@@ -15,10 +17,6 @@ async function postPaymentHandler(orderId) {
         // Decrement stock
         await persistence.decrementSupplyStock(orderId)
     }
-}
-
-async function handleEmail(target, intent, details) {
-    // TODO: Sort this out, requires using gmail's SMTP server since Amen's is paid
 }
 
 module.exports = {

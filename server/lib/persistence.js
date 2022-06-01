@@ -36,7 +36,7 @@ prisma.$connect().catch((reason) => {
 /* Helper functions */
 
 // Proper rounding function as oposed to JS Math
-function roundCoordinates(value, decimals) {
+function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }   
 
@@ -520,8 +520,8 @@ async function createAddress(userID,
             }
         })
 
-        lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-        lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+        lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+        lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
     } catch (e) {
         lat = 0;
         lng = 0;
@@ -613,8 +613,8 @@ async function updateAddress(userId, addressId, params) {
                     key: process.env.GOOGLE_API_KEY
                 }
             })
-            lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-            lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+            lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+            lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
 
         } catch (e) {
             console.log(e)
@@ -2761,6 +2761,77 @@ async function dismissNotification(userID, notificationID) {
     
 }
 
+/* Warehouse Functions */
+
+async function getWarehouses(userID) {
+    try {
+        
+        let warehouses = await prisma.warehouse.findMany({
+            where: {
+                supplier: userID
+            },
+            select: {
+                id: true,
+                address: true,
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+            }
+        })
+
+        // Cleaning and adding data
+
+        warehouses = await Promise.all(warehouses.map(async (warehouse) => {
+
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: warehouse.id
+                }, select: {
+                    id: true,
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+
+            let supplies = await prisma.supply.findMany({
+                where: {
+                    supplier: userID,
+                    warehouse: warehouse.id
+                }
+            })
+
+            console.dir(supplies);
+
+            // Calculating how many different products and individual units the warehouse has, along with its total value
+            let uniqueProductCount = supplies.length
+            let combinedStock = supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+            let totalValue = supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+            warehouse.address = address
+            warehouse.unique_product = uniqueProductCount
+            warehouse.combined_stock = combinedStock
+            warehouse.total_value = round(totalValue, 2)
+
+            // Usage data (estimated total daily energy usage)
+            let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+            warehouse.estimated_total_resource_usage = totalResourceUsage
+
+            return warehouse
+        }))
+
+        return warehouses
+
+    } catch (e) {
+        console.log(e);
+        return null
+    }
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -2818,6 +2889,9 @@ module.exports = {
     // Notification Functions
     getNotificationsByUser,
     dismissNotification,
-    dismissAllNotifications
+    dismissAllNotifications,
+
+    // Warehouse Functions
+    getWarehouses,
 
 }
