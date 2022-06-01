@@ -3,7 +3,7 @@
    <div class="modal-dialog modal-lg modal-dialog-centered w-100">
     <div class=" d-flex modal-content">
       <div class="modal-header">
-        <h5 class="modal-title ">Encomenda #{{this.element.id}}</h5> 
+        <h6 class="modal-title ">ENCOMENDA #{{this.element.id}}</h6> 
         <div class="mx-2" @click="closeModal('fecha')" >
           <font-awesome-icon class="fs-6 fa-fw" :icon="['fa', 'xmark']" />
         </div>
@@ -11,7 +11,7 @@
       <div class="modal-body">
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
-             <h5 class="card-title"><small>Item #{{element.item.id}}</small></h5>
+             <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
             <div class="dropdown me-0">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{element.item.status}}
@@ -62,24 +62,20 @@
               <table class="table table-striped table-responsive">
                   <tbody>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Consumidor</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Consumidor</small></span></th>
                       <td scope="row"><span>{{element.consumer.first_name}} {{element.consumer.last_name}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'at']" /><small>E-mail</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'at']" /><small>E-mail</small></span></th>
                       <td scope="row"><span>{{element.consumer.email}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Morada de Entrega</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Morada de Entrega</small></span></th>
                       <td scope="row"><span>#{{element.shipping_address}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Morada de Faturação</small></span> </th>
-                      <td scope="row"><span>#{{element.billing_address}}</span></td>
-                    </tr>
-                    <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'calendar']" /><small>Data da Encomenda</small></span></th>
-                      <td scope="row"><span>{{element.date}}</span></td>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'calendar']" /><small>Data da Encomenda</small></span></th>
+                      <td scope="row"><span>{{this.date}}</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -89,23 +85,23 @@
               <table class="table table-striped table-responsive">
                   <tbody>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Fornecedor</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Fornecedor</small></span></th>
                       <td scope="row"><span>{{element.item.supplier.name}}</span> </td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" /><small>Preço</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" /><small>Preço</small></span></th>
                       <td scope="row"><span>{{element.item.supply_price}}€</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Recursos</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos</small></span></th>
                       <td scope="row"><span>{{element.item.supplier_resource_usage}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Recursos Renováveis</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Recursos Renováveis</small></span></th>
                       <td scope="row"><span>{{element.item.supplier_renewable_resources}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'warehouse']" /><small>Armazém</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'warehouse']" /><small>Armazém</small></span></th>
                       <td scope="row"><span>#{{element.item.warehouse}}</span></td>
                     </tr>
                   </tbody>
@@ -116,23 +112,23 @@
               <table class="table table-striped table-responsive">
                   <tbody>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Transportador</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" /><small>Transportador</small> </span></th>
                       <td scope="row"><span>{{element.item.transporter.name}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" /><small>Preço</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" /><small>Preço</small> </span></th>
                       <td scope="row"> <span>{{element.item.transport_price}}€</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Recursos</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos</small> </span></th>
                       <td scope="row"><span>{{element.item.transporter_resource_usage}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'house']" /><small>Recursos Renováveis</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Recursos Renováveis</small> </span></th>
                       <td scope="row"><span>{{element.item.transporter_emissions}}</span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'truck']" /><small>Veículo</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'truck']" /><small>Veículo</small> </span></th>
                       <td scope="row"><span>#{{element.item.vehicle}}</span></td>
                     </tr>
                   </tbody>
@@ -152,7 +148,7 @@
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark, faBoxOpen , faPlusMinus, faFilePen, faAt, faUser, faHouse, faCalendar 
-, faMoneyBillWave, faWarehouse} from "@fortawesome/free-solid-svg-icons";
+, faMoneyBillWave, faWarehouse , faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faCubes);
 library.add(faTruck);
@@ -166,6 +162,8 @@ library.add(faHouse);
 library.add(faCalendar);
 library.add(faMoneyBillWave);
 library.add(faWarehouse);
+library.add(faGasPump);
+library.add(faSun);
 
 export default {
   name: "TransportadorModal",
@@ -176,6 +174,7 @@ export default {
   data() {
     return {
       active_el:1,
+      date:String,
     }
   },
   methods:{
@@ -194,6 +193,15 @@ export default {
         this.active_el = el;
       }   
     },
+     getData(element){
+      this.date = new Date(element.date);
+      let yyyy = this.date.getFullYear();
+      let mm = this.date.getMonth() + 1;
+      let dd = this.date.getDate();
+
+      this.date = dd + '/' + mm + '/' + yyyy;
+
+    }
      
   }
 };
