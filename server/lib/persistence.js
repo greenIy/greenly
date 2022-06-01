@@ -1327,7 +1327,11 @@ async function addItemToCart(
         }
 
         try {
-            let itemCount = await prisma.cart.count()
+            let itemCount = await prisma.cart.count({
+                where: {
+                    consumer: Number(userId)
+                }
+            })
 
             await prisma.cart.create({
                 data: {

@@ -1,6 +1,9 @@
 # Utility scripts
 regen_db.sh
 
+# Cache
+__pycache__
+
 # Population script 
 mock.sql
 *.geojson
