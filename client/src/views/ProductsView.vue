@@ -7,26 +7,26 @@
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
               :product="products"/>
         <div class="row content justify-content-center" v-if="rendered">
-          <div class="col-sm-2 col-md-2 mb-2 filtros ">
+          <div class="col-sm-2 col-md-2 mb-2 filtros">
             <div class="content d-flex">
               <TheFilters :categories="categories" :currentCategories="currentCategories" :suppliers="suppliers"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
           <Transition name="fade">
-            <div v-if="products.length" class="content d-flex w-100 ">
+            <div v-if="products.length" class="content d-flex w-100">
               <ProductCard
               v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
             </div>
-            <div v-else class="content d-flex w-100 ">
+            <div v-else class="content d-flex w-100">
               <TheNoProduct></TheNoProduct>
             </div>
           </Transition>
           </div>
-          </div>
+        </div>
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
     </div>
@@ -165,12 +165,13 @@ export default {
 
 <style scoped>
 .content {
-  flex-wrap:wrap
+  flex-wrap: wrap
 }
 .filtros{
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
   border-radius: .25rem;
+  height: 946px;
 }
 
 .v-enter-active,

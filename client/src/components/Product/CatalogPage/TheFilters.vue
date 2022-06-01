@@ -45,7 +45,7 @@
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
         <div class="collapse" id="fornecedores-collapse">
-          <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush overflow-auto filtro-fornecedor">
             <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
               &nbsp; {{ supplier.company.name }}
             </router-link>
@@ -223,5 +223,9 @@ library.add(faAngleLeft);
 
 #iconF {
   color:#5e9f88;
+}
+
+#fornecedores-collapse .filtro-fornecedor {
+  height: 298px;
 }
 </style>
