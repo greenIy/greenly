@@ -48,7 +48,7 @@
                 <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-secondary">{{ this.activeNotificationsLength() }}</span></button>
+                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Arquivadas</button>
@@ -59,17 +59,19 @@
                                 <div v-for="noti in this.notifications" :key="noti.id">
                                     <div v-if="noti.dismissed == false" >
                                         <div class="list-group">
-                                            <span class="list-group-item list-group-item-action">
+                                            <router-link to="/perfil/encomendas" style="margin-left: 0">
+                                            <span role="button" class="list-group-item list-group-item-action">
                                                 <h6 class="noitificationDismiss" role="button" v-on:click="selectNotification(noti); dismissNotification()"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
                                                 <div class="w-100 justify-content-between mt-2">
                                                     <small>
-                                                        {{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
+                                                       <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;` }}&nbsp;<font-awesome-icon :icon="['fa', 'clock']"/>&nbsp;{{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
                                                     </small>
                                                     <h5 class="mt-2">{{ noti.title }}</h5>
                                                     
                                                 </div>
                                                 <p class="mt-2">{{ noti.content }}</p>
                                             </span>
+                                            </router-link>
                                         </div>
                                     </div>
                                 </div>
@@ -89,16 +91,18 @@
                                 <div v-for="noti in this.notifications" :key="noti.id">
                                     <div v-if="noti.dismissed == true" >
                                         <div class="list-group">
-                                            <span class="list-group-item list-group-item-action">
+                                            <router-link to="/perfil/encomendas" style="margin-left: 0">
+                                            <span role="button" class="list-group-item list-group-item-action">
                                                 <div class="w-100 justify-content-between mt-2">
                                                     <small>
-                                                        {{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
+                                                        <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;` }}&nbsp;<font-awesome-icon :icon="['fa', 'clock']"/>&nbsp;{{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
                                                     </small>
                                                     <h5 class="mt-2">{{ noti.title }}</h5>
                                                     
                                                 </div>
                                                 <p class="mt-2">{{ noti.content }}</p>
                                             </span>
+                                            </router-link>
                                         </div>
                                     </div>
                                 </div>
@@ -182,8 +186,8 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faXmark} from '@fortawesome/free-solid-svg-icons';
-library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faXmark);
+import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark} from '@fortawesome/free-solid-svg-icons';
+library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark);
 
 import http from "../../../http-common"
 import AuthService from '../../router/auth';
@@ -207,6 +211,10 @@ export default {
         submit(search) {
             this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
         },
+        getUserInfo() {
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
+        },
         getNotifications() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
@@ -227,11 +235,7 @@ export default {
                     })
             }
         },  
-        getUserInfo() {
-            this.user = this.$store.getters.getUser
-            return this.$store.getters.getUser
-        },
-       notificationsLength() {
+        notificationsLength() {
             var size = Object.keys(this.notifications).length;
             return size
         },
