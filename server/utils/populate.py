@@ -29,6 +29,8 @@ API_BASE_URL = "http://api.greenly.pt"
 API_PORT = 80
 USER_CREATION_ENDPOINT = "/user"
 LOGIN_ENDPOINT = "/auth/login"
+VERIFY_SSL = False
+
 q = Queue()
 table = Table(title="Added Users", show_lines=True)
 
@@ -148,14 +150,14 @@ def sendUser(user):
 
     
     try:
-        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload)
+        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload, verify=VERIFY_SSL)
 
-        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload)
+        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload, verify=VERIFY_SSL)
 
         authenticatedHeaders = {'Authorization': f'Bearer {authResponse.json()["token"]}'}
 
         # Address creation requires authentication
-        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders)
+        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders, verify=VERIFY_SSL)
     except ConnectionError:
         os.system('clear')
         print(f"{API_BASE_URL}:{API_PORT} didn't respond.")
@@ -171,7 +173,7 @@ def genProductsSQL(amount, adminToken):
     # Obtaining updated user information
     authenticatedHeaders = {'Authorization': f'Bearer {adminToken}'}
 
-    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders)
+    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders, verify=VERIFY_SSL)
 
     if response.status_code == 403:
         print("Invalid administrator token. Operation canceled.")
