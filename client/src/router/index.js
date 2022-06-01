@@ -79,6 +79,13 @@ const routes = [
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
     },
   },
+  {
+    path: '/fornecedores',
+    name: 'suppliers',
+    component() {
+      return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
+    },
+  },
 
 ];
 

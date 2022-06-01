@@ -36,7 +36,7 @@
                                 <p class="text-p"><b>Stock:</b> {{ currentSupplier.quantity }} produtos</p>
                                 <p class="text-p"><b>Preço:</b> {{ currentSupplier.price }}€</p>
                               </div>
-                          </div>@saveF="closeModalF"
+                          </div>
                         </div>
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>

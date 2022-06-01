@@ -2,9 +2,9 @@
 <div>
   <div class="bg-white shadow rounded pt-3 border border-white" @click="showModalS()">
     <div>
-      <h6 class="card-title ms-3">Encomenda <small class="text-muted">#{{element.id}}</small>, Item <small class="text-muted">#{{element.item.id}}</small></h6>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">Produto: <span class="position-absolute end-0 me-3"> {{element.item.product.name}}</span> </li>
+      <h6 class="card-title ms-3"><small >#{{element.id}}, Item #{{element.item.id}}</small></h6>
+       <ul class="list-group list-group-flush">
+        <li class="list-group-item"><span ><font-awesome-icon class="fs-6 fa-fw" :icon="['fas', 'box-open']" /> <small class="text-muted">{{element.item.product.name}} </small></span> </li>
       </ul>     
     </div>
   </div>
@@ -18,11 +18,11 @@
 import Draggable from "vuedraggable";
 import ProductModal from "@/components/Supplier/ProductModal.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlus , faUpRightAndDownLeftFromCenter} from "@fortawesome/free-solid-svg-icons";
+import { faPlus , faBoxOpen} from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faPlus);
-library.add(faUpRightAndDownLeftFromCenter);
+library.add(faBoxOpen);
 
 export default {
   name: "Order",
@@ -64,5 +64,6 @@ export default {
 .card-footer{
   text-align:right;
 }
+
 </style>
 
