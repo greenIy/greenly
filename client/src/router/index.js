@@ -66,15 +66,15 @@ const routes = [
     },
   },
   {
-    path: '/supplier',
-    name: 'supplier',
+    path: '/painel/fornecedor',
+    name: 'fornecedor',
     component() {
       return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
   },
   {
-    path: '/transporter',
-    name: 'transporter',
+    path: '/painel/transportador',
+    name: 'transportador',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
     },
