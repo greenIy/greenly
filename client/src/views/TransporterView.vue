@@ -17,9 +17,9 @@
                     <div v-if="active_el==1" class="d-flex align-items-center">
                     <div class=" d-inline-block ms-5"> 
                       <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1">
+                        <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
                         <div class="input-group-prepend">
-                          <button class="btn btn-secondary" type="button"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']" /></button>
+                          <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
                         </div>
                       </div>
                     </div>
@@ -62,10 +62,12 @@ export default {
     };
   },
     methods: {
-     activate:function(el){
-         this.active_el=el;
-    },
-  
+      activate:function(el){
+        this.active_el=el;
+      },
+      submit(search) {
+        this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
+      },
     },
 };
 </script>
