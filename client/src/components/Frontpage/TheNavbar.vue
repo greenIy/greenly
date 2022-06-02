@@ -26,9 +26,8 @@
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
-                        <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                        <li></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
+                        <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
                         <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/dashboard" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Dashboard </a></router-link></li>
                         <hr class="dropdown-divider">
                         <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item ms-0" style="color: red !important"><font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />&nbsp; Terminar sessão</a></router-link></li>
@@ -196,13 +195,13 @@ export default {
     name: 'TheNavbar',
     mounted() {
         this.getUserInfo();
-        this.getNotifications();
+        this.getUserNotifications();
     },
     data () {
         return {
             search: '',
             userIsLoggedIn: this.$store.getters.getState,
-            user: this.$store.getters.getUser,
+            user: {},
             notifications: [],
             selectedNotification: '',
         }
@@ -213,9 +212,9 @@ export default {
         },
         getUserInfo() {
             this.user = this.$store.getters.getUser
-            return this.$store.getters.getUser
+            return this.user
         },
-        getNotifications() {
+        getUserNotifications() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             const headers = {
@@ -278,7 +277,7 @@ export default {
                 http.put(`/user/${userId}/notifications/${notificationId}`, {}, headers)
                 .then((response) => {
                     if (response.status == 200) {
-                        this.getNotifications()
+                        this.getUserNotifications()
                     }
                     }).catch((error) => {
                         console.log(error.response.data);
