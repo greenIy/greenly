@@ -2,7 +2,7 @@
 <nav>
     <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
         <div class="align-self-center mt-2 mb-2">
-            <router-link to="/" class="navbar-brand">
+            <router-link to="/produtos" class="navbar-brand">
                 <img alt="Logo do greenly" src="../../assets/logo_dark.png">
             </router-link>
         </div>

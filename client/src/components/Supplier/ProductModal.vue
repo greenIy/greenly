@@ -12,9 +12,12 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-             <select class="dropDownS" id="selectState" @change="this.changeStatus()">
-              <option value="actual" selected="selected" style="background-color:#ffffff;color:#000000">{{element.item.status}}</option>
-              <option value="next" style="background-color:#ffffff;color:#000000">Español</option>
+             <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" @change="this.changeStatus()"  disabled>
+              <option :value="element.item.status"  selected="selected" style="background-color:#ffffff;color:#000000">{{element.item.status}}</option>
+            </select>
+             <select v-if="complete != true" class="dropDownS" id="selectState" @change="this.changeStatus()">
+              <option :value="element.item.status"  selected="selected" style="background-color:#ffffff;color:#000000">{{element.item.status}}</option>
+              <option value="next"  style="background-color:#ffffff;color:#000000">Español</option>
             </select>
           </div>
         </div>
@@ -168,15 +171,18 @@ export default {
   },
   created() {
     this.getData(this.element);
-    this.verify();
     this.getMoreDetails();
+  },
+   mounted() {
+     this.verify();
   },
   data() {
     return {
       active_el:1,
       date:String,
       shipping_address:Object,
-      warehouse:Object
+      warehouse:Object,
+      complete:false,
       
     }
   },
@@ -207,7 +213,11 @@ export default {
 
     },
     verify(){
-       
+      let x = document.getElementById("selectState").options[0].value;
+       console.log(x);
+      if (x == "COMPLETE"){
+        this.complete = true;
+      }
     },
     async getMoreDetails() {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -242,7 +252,12 @@ export default {
   outline: none;
 }
 .textAlign-right{
-  text-align:right!important;
-  
+  text-align:right!important; 
+}
+.disable-classe {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
 }
 </style>

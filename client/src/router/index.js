@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+//Não se pode apagar o HomeView para se manter os style do projeto
 import HomeView from '../views/HomeView.vue';
 import ProductsView from '../views/ProductsView.vue';
 
@@ -6,7 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: ProductsView,
   },
   {
     path: '/login',

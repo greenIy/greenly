@@ -24,7 +24,8 @@
                         </div>
                       </div>
                       <div class="d-inline-block ms-4">
-                        <button type="button" class="btn btnHist" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                        <button type="button" class="btn btnHist" v-if="history == false" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                        <button type="button" class="btn btnHist" v-if="history == true" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Atuais </button>
                       </div>
                     </div>
                     <div v-if="active_el==1 && history == false"><EncomendasDashboard /></div>
@@ -44,10 +45,11 @@ import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import EncomendasDashboard from "@/components/Transporter/EncomendasDashboard.vue";
 import History from "@/components/Transporter/History.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faClockRotateLeft , faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import { faClockRotateLeft , faMagnifyingGlass, faBoxOpen} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faClockRotateLeft);
 library.add(faMagnifyingGlass);
+library.add(faBoxOpen);
 
 export default {
   name: 'equipa',
@@ -75,6 +77,9 @@ export default {
       },
       showHistory(){
         this.history=true;
+      },
+      hideHistory(){
+        this.history=false;
       }
     },
 };
