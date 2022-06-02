@@ -24,12 +24,14 @@
                       </div>
                     </div>
                     <div class="d-inline-block ms-4">
-                      <button type="button" class="btn btnHist"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']"/>Histórico </button>
+                      <button type="button" class="btn btnHist" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']"/>Histórico </button>
                     </div>
                     </div>
-                    <div v-if="active_el==1"><EncomendasDashboard /></div>
-                    <div v-if="active_el==2">Inventários INFO ... Por FAZER </div>
-                    <div v-if="active_el==3">Armazéns INFO ... Por FAZER</div>
+                    <div v-if="active_el==1 && history == false"><EncomendasDashboard /></div>
+                    <div v-if="active_el==2 && history == false">Centros de distribuição INFO ... Por FAZER</div>
+                    <div v-if="active_el==3 && history == false">Veículos INFO ... Por FAZER</div>
+
+                    <History v-if="history!=false" />
             </div>
             <TheFooter />
         </body>
@@ -39,6 +41,7 @@
 <script>
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
+import History from "@/components/Supplier/History.vue";
 import EncomendasDashboard from "@/components/Supplier/EncomendasDashboard.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
@@ -53,6 +56,7 @@ export default {
     TheNavbar,
     TheFooter,
     EncomendasDashboard,
+    History,
   },
   data() {
     return {
@@ -60,6 +64,7 @@ export default {
         accept: false,
       },
       active_el: 1,
+      history:false,
     };
   },
     methods: {
@@ -69,6 +74,9 @@ export default {
       submit(search) {
         this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
       },
+      showHistory(){
+        this.history=true;
+      }
     },
 };
 </script>

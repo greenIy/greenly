@@ -15,21 +15,23 @@
                     </li>
                     </ul>
                     <div v-if="active_el==1" class="d-flex align-items-center">
-                    <div class=" d-inline-block ms-5"> 
-                      <div class="input-group">
-                        <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
-                        <div class="input-group-prepend">
-                          <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                      <div class=" d-inline-block ms-5"> 
+                        <div class="input-group">
+                          <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
+                          <div class="input-group-prepend">
+                            <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                          </div>
                         </div>
                       </div>
+                      <div class="d-inline-block ms-4">
+                        <button type="button" class="btn btnHist" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                      </div>
                     </div>
-                    <div class="d-inline-block ms-4">
-                      <button type="button" class="btn btnHist"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
-                    </div>
-                    </div>
-                    <div v-if="active_el==1"><EncomendasDashboard /></div>
-                    <div v-if="active_el==2">Centros de distribuição INFO ... Por FAZER</div>
-                    <div v-if="active_el==3">Veículos INFO ... Por FAZER</div>
+                    <div v-if="active_el==1 && history == false"><EncomendasDashboard /></div>
+                    <div v-if="active_el==2 && history == false">Centros de distribuição INFO ... Por FAZER</div>
+                    <div v-if="active_el==3 && history == false">Veículos INFO ... Por FAZER</div>
+
+                    <History v-if="history!=false" />
             </div>
             <TheFooter />
         </body>
@@ -40,6 +42,7 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import EncomendasDashboard from "@/components/Transporter/EncomendasDashboard.vue";
+import History from "@/components/Transporter/History.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 
@@ -52,6 +55,7 @@ export default {
     TheNavbar,
     TheFooter,
     EncomendasDashboard,
+    History,
   },
   data() {
     return {
@@ -59,6 +63,7 @@ export default {
         accept: false,
       },
       active_el:1,
+      history:false,
     };
   },
     methods: {
@@ -68,6 +73,9 @@ export default {
       submit(search) {
         this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
       },
+      showHistory(){
+        this.history=true;
+      }
     },
 };
 </script>

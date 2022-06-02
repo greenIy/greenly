@@ -21,47 +21,50 @@
     </div>
   </div>
 </template>
-
 <script>
+
 import Draggable from "vuedraggable";
-import Order from "@/components/Supplier/Order.vue";
-
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBoxesPacking, faTruck, faTruckFast} from "@fortawesome/free-solid-svg-icons";
+import { faPlus , faBoxOpen, faXmark, faCircleExclamation,faCheck } from "@fortawesome/free-solid-svg-icons";
 
-import http from "../../../http-common";
 
-library.add(faBoxesPacking);
-library.add(faTruck);
-library.add(faTruckFast);
+library.add(faPlus);
+library.add(faBoxOpen);
+library.add(faXmark);
+library.add(faCircleExclamation);
+library.add(faCheck);
 
 export default {
-  name: "Dashboard",
+  name: "Order",
   components: {
     Draggable,
-    Order,
   },
-  data() {
+  props: {
+    element:Object,
+    task: {
+      type: Object,
+      default: () => ({})
+    }
+  },data() {
     return {
       columns: [
-        {
-          title: "EM PROCESSAMENTO",
-          status: "PROCESSING",
-          logo: "boxes-packing",
-          orders: []
-
+          {
+          title: "ENTREGUES",
+          status: "COMPLETE",
+          logo: "check",
+          orders: [ ]
         },
-        {
-          title: "PRONTAS PARA TRANSPORTE",
-          status: "AWAITING_TRANSPORT",
-          logo: "truck",
-          orders: []
+         {
+          title: "CANCELADAS",
+          status: "CANCELED",
+          logo: "xmark",
+          orders: [ ]
         },
-        {
-          title: "PRESTES A SER LEVANTADAS",
-          status: "TRANSPORT_IMMINENT",
-          logo: "truck-fast",
-          orders: []
+          {
+          title: "FALHADAS",
+          status: "FAILURE",
+          logo: "circle-exclamation",
+          orders: [ ]
         },
       ],
       receiveData: [],
@@ -70,20 +73,14 @@ export default {
   mounted(){
     this.processData();
   },
-  watch: {
-    '$route.query.id_encomenda'() {
-      this.processData();
-    },
-  },
   methods: {
-      async processData(){
+    async processData(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
       // Ajeitar essa gambiarra !!!!!
       this.columns[0].orders = [];
       this.columns[1].orders = [];
       this.columns[2].orders = [];
-   
 
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.receiveData = JSON.parse(JSON.stringify(response.data));
@@ -91,7 +88,6 @@ export default {
       let processedData = this.parseOrders(this.receiveData);
 
       for (let order of processedData) {
-        // TODO: Adicionar colunas no histórico, neste momento considera apenas colunas das principais
 
         let correspondingColumn;
 
@@ -105,21 +101,13 @@ export default {
           order.item_id = parseInt(`${order.id}${order.item.id}`)
           this.columns[correspondingColumn].orders.push(order)
         }
-        // Quando tiverem colunas do arquivo (this.archiveColumns)
-        // let correspondingArchiveColumn = this.archiveColumns.findIndex((column) => (column.status == order.item.status))
-        // else {
-        //   this.archiveColumns[correspondingArchiveColumn].orders.push(order)
-        // }
+  
       }
     },
-    checkMove: (evt) => {
-    
+    checkMove: (evt) =>  {
       let valid = false;
       let next;
-      if(evt.from.className === 'PROCESSING') {
-        next = 'AWAITING_TRANSPORT';
-        valid = evt.to.className === next;
-      }
+      
 
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       if (valid) {
@@ -134,27 +122,33 @@ export default {
       // Esta função pega numa encomenda e divide-a em vários orderItems para que estes possam ser apresentados em cards separados
       let orderItems = []
 
-      for (let order of orders) {
-          for (let item of order.items) {
-              // Deepcopying porque senão nada disto funciona
-              let orderItem = JSON.parse(JSON.stringify(order));
-              orderItem.item = item;
-              delete orderItem.items;
-              orderItems.push(orderItem);
-          }
+      if(orders.length) {
+        for (let order of orders) {
+            for (let item of order.items) {
+                // Deepcopying porque senão nada disto funciona
+                let orderItem = JSON.parse(JSON.stringify(order));
+                orderItem.item = item;
+                delete orderItem.items;
+                orderItems.push(orderItem);
+            }
+        }
       }
       return orderItems
     }
   },
 };
+ 
+
 </script>
 
 <style scoped>
 .column-width {
-  min-width: 19.3%;
-  width: 19.3%;
+  min-width: 18.3%;
+  width: 18.3%;
 }
-
+.FAILURE, .CANCELED, .COMPLETE{
+  min-height: 45vh
+}
 .card {
     background-color:#ffffff;
 }
@@ -172,8 +166,5 @@ export default {
   flex-wrap:nowrap;
   width: 105%;
 }
-
-.AWAITING_TRANSPORT, .PROCESSING, .TRANSPORT_IMMINENT {
-  min-height: 45vh
-}
 </style>
+
