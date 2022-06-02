@@ -506,7 +506,35 @@ function updateOrderValidator() {
     ]
 }
 
+/* Warehouse Validators */
 
+function createWarehouseValidator() {
+    return [
+        body('address')
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
 
 module.exports = {
     // User validators
@@ -537,6 +565,9 @@ module.exports = {
     // Order validators
     createOrderValidator,
     getSingleOrderValidator,
-    updateOrderValidator
+    updateOrderValidator,
+
+    // Warehouse validators
+    createWarehouseValidator
 
 }

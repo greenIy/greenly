@@ -2342,8 +2342,6 @@ async function updateOrderItem(user, orderID, itemID, targetStatus) {
 
     }
 
-    console.log('isValidOriginStatus, isValidTargetStatus :>> ', isValidOriginStatus, isValidTargetStatus);
-
     // Checking if the the user can change the status given the origin status
 
     if (!isValidOriginStatus) {
@@ -2675,14 +2673,19 @@ async function checkUserItemRelationship(user, orderID, itemID) {
 
 async function createNotification(userID, title, content, scope, relatedOrderID, relatedItemID) {
 
-    let userNotificationCount = await prisma.notification.count({
+    let lastestNotification = await prisma.notification.findFirst({
         where: {
             user: userID
+        },
+        orderBy: {
+            id: 'desc'
         }
     })
 
+    let notificationCount = lastestNotification ? lastestNotification.id : 0
+
     let notificationData = {
-        id: userNotificationCount + 1,
+        id: notificationCount + 1,
         title: title,
         content: content,
         user: userID,
@@ -2804,8 +2807,6 @@ async function getWarehouses(userID) {
                 }
             })
 
-            console.dir(supplies);
-
             // Calculating how many different products and individual units the warehouse has, along with its total value
             let uniqueProductCount = supplies.length
             let combinedStock = supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
@@ -2828,6 +2829,66 @@ async function getWarehouses(userID) {
 
     } catch (e) {
         console.log(e);
+        return null
+    }
+}
+
+async function createWarehouse(userID, addressID, capacity, resourceUsage, renewableResources) {
+    
+    try {
+        let address = await prisma.address.findUnique({
+            where: {
+                id: addressID
+            }
+        })
+
+        // In case the selected address doesn't exist or doesn't belong to the user
+
+        if (!address || address.user != userID) {
+            return "INVALID_ADDRESS"
+        }
+
+        // In case this address is already being used by the user for another warehouse
+
+        let addressAlreadyInUse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID,
+                address: addressID
+            }
+        })
+
+        if (addressAlreadyInUse) {
+            return "ADDRESS_IN_USE"
+        }
+        
+
+        let latestWarehouse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let warehouseCount = latestWarehouse ? latestWarehouse.id : 0
+
+        let newWarehouse = await prisma.warehouse.create({
+            data: {
+                id: warehouseCount + 1,
+                supplier: userID,
+                address: addressID,
+                capacity: capacity,
+                resource_usage: resourceUsage,
+                renewable_resources: renewableResources
+            }
+        })
+
+        return newWarehouse.id
+
+
+    } catch (e) {
+        console.log('e :>> ', e);
         return null
     }
 }
@@ -2893,5 +2954,6 @@ module.exports = {
 
     // Warehouse Functions
     getWarehouses,
+    createWarehouse
 
 }
