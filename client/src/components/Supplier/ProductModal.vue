@@ -213,6 +213,37 @@ export default {
             }
           ]
         },
+        {
+          current_status: "COMPLETE",
+          alias: "ENTREGUES",
+          next_status:[
+            {
+              name: "",
+              alias: ""
+            }
+          ]
+        },
+        {
+          current_status: "CANCELED",
+          alias: "CANCELADAS",
+          next_status:[
+            {
+              name: "",
+              alias: ""
+            }
+          ]
+        },
+        {
+          current_status: "FAILURE",
+          alias: "FALHADAS",
+          logo: "circle-exclamation",
+          next_status:[
+          {
+            name: "",
+            alias: ""
+          }
+          ]
+        },
       ]
     }
   },
@@ -251,7 +282,8 @@ export default {
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
-      if (x == "COMPLETE"){
+      
+      if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE") {
         this.complete = true;
       }
     },
