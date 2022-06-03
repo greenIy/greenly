@@ -1724,6 +1724,40 @@ async function removeProductFromWishlist(userID, productID) {
                     phone: true
                 }
             })
+            let shippingAddress = await prisma.address.findUnique({
+                where: {
+                    id: order.shipping_address
+                },
+                select: {
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+        
+            let billingAddress = await prisma.address.findUnique({
+                where: {
+                    id: order.billing_address
+                },
+                select: {
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true,
+                    nif: true
+                }
+            })
+        
+            // Cleaning 
+                
+            order.shipping_address = shippingAddress
+        
+            order.billing_address = billingAddress
 
             order.consumer = consumer
 
