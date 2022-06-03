@@ -43,6 +43,9 @@ export default {
     Draggable,
     Order,
   },
+  props: {
+    receiveData: Array,
+  },
   data() {
     return {
       columns: [
@@ -77,31 +80,25 @@ export default {
           orders: []
         },
       ],
-      receiveData: [],
     };
   },
-   mounted(){
+  mounted() {
     this.processData();
   },
   watch: {
     '$route.query.id_encomenda'() {
       this.processData();
     },
+    'receiveData'() {
+      this.processData();
+    }
   },
   methods: {
     async processData(){
-      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-
-      this.cleanArray();
-
-      let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
-      this.receiveData = JSON.parse(JSON.stringify(response.data));
-
+      //console.log(this.receiveData);
       let processedData = this.parseOrders(this.receiveData);
 
       for (let order of processedData) {
-        // TODO: Adicionar colunas no histórico, neste momento considera apenas colunas das principais
-
         let correspondingColumn;
 
         if (this.$route.query.id_encomenda) { // caso o utilizador tenha pesquisado por uma encomenda específica
@@ -114,11 +111,6 @@ export default {
           order.item_id = parseInt(`${order.id}${order.item.id}`)
           this.columns[correspondingColumn].orders.push(order)
         }
-        // Quando tiverem colunas do arquivo (this.archiveColumns)
-        // let correspondingArchiveColumn = this.archiveColumns.findIndex((column) => (column.status == order.item.status))
-        // else {
-        //   this.archiveColumns[correspondingArchiveColumn].orders.push(order)
-        // }
       }
     },
     checkMove: (evt) =>  {

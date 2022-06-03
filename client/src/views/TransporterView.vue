@@ -28,11 +28,11 @@
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso </button>
                       </div>
                     </div>
-                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard /></div>
+                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData"/></div>
                     <div v-if="active_el==2 && this.$route.name == 'transportador'">Centros de distribuição INFO ... Por FAZER</div>
                     <div v-if="active_el==3 && this.$route.name == 'transportador'">Veículos INFO ... Por FAZER</div>
 
-                    <History v-if="this.$route.name == 'transportador_historico'"/>
+                    <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
             <TheFooter />
         </body>
@@ -44,8 +44,11 @@ import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import EncomendasDashboard from "@/components/Transporter/EncomendasDashboard.vue";
 import History from "@/components/Transporter/History.vue";
+
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass, faBoxOpen} from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../http-common";
 
 library.add(faClockRotateLeft);
 library.add(faMagnifyingGlass);
@@ -65,28 +68,32 @@ export default {
         accept: false,
       },
       active_el:1,
+      receiveData: [],
     };
   },
-    methods: {
-      async processData(){
+  beforeMount(){
+    this.getData();
+  },
+  methods: {
+    async getData(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.receiveData = JSON.parse(JSON.stringify(response.data));
-      },
-      activate:function(el){
-        this.active_el=el;
-      },
-      submit(search) {
-        this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
-      },
-      showHistory() {
-        this.$router.push({ path: '/painel/transportador/historico'});
-      },
-      hideHistory(){
-        this.$router.push({ path: '/painel/transportador'});
-      }
     },
+    activate:function(el){
+      this.active_el=el;
+    },
+    submit(search) {
+      this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
+    },
+    showHistory() {
+      this.$router.push({ path: '/painel/transportador/historico'});
+    },
+    hideHistory(){
+      this.$router.push({ path: '/painel/transportador'});
+    }
+  },
 };
 </script>
 

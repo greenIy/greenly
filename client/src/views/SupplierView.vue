@@ -15,24 +15,25 @@
                     </li>
                     </ul>
                     <div v-if="active_el==1" class="d-flex align-items-center">
-                    <div class=" d-inline-block ms-5"> 
-                      <div class="input-group">
-                        <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
-                        <div class="input-group-prepend">
-                          <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                      <div class=" d-inline-block ms-5"> 
+                        <div class="input-group">
+                          <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
+                          <div class="input-group-prepend">
+                            <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                          </div>
                         </div>
                       </div>
+                      <div class="d-inline-block ms-4">
+                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso </button>
+                      </div>
                     </div>
-                    <div class="d-inline-block ms-4">
-                      <button type="button" class="btn btnHist" v-if="history == false" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
-                        <button type="button" class="btn btnHist" v-if="history == true" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso</button>
-                    </div>
-                    </div>
-                    <div v-if="active_el==1 && history == false"><EncomendasDashboard /></div>
-                    <div v-if="active_el==2 && history == false">Centros de distribuição INFO ... Por FAZER</div>
-                    <div v-if="active_el==3 && history == false">Veículos INFO ... Por FAZER</div>
 
-                    <History v-if="history!=false" />
+                    <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData"/></div>
+                    <div v-if="active_el==2 && this.$route.name == 'fornecedor'">Centros de distribuição INFO ... Por FAZER</div>
+                    <div v-if="active_el==3 && this.$route.name == 'fornecedor'">Veículos INFO ... Por FAZER</div>
+
+                    <History v-if="this.$route.name == 'fornecedor_historico'" :receiveData="receiveData"/>
             </div>
             <TheFooter />
         </body>
@@ -44,8 +45,11 @@ import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import History from "@/components/Supplier/History.vue";
 import EncomendasDashboard from "@/components/Supplier/EncomendasDashboard.vue";
+
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../http-common";
 
 library.add(faClockRotateLeft);
 library.add(faMagnifyingGlass);
@@ -65,24 +69,31 @@ export default {
         accept: false,
       },
       active_el: 1,
-      history:false,
+      receiveData: [],
     };
   },
-    methods: {
-      activate:function(el){
-        this.active_el=el;
-      },
-      submit(search) {
-        this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
-      },
-      showHistory(){
-        this.history=true;
-        this.$router.push({ path: '/painel/fornecedor/historico'});
-      },
-      hideHistory(){
-        this.history=false;
-        this.$router.push({ path: '/painel/fornecedor'});
-      }
+  beforeMount(){
+    this.getData();
+  },
+  methods: {
+    async getData(){
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+      this.receiveData = JSON.parse(JSON.stringify(response.data));
+    },
+    activate:function(el){
+      this.active_el=el;
+    },
+    submit(search) {
+      this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
+    },
+    showHistory(){
+      this.$router.push({ path: '/painel/fornecedor/historico'});
+    },
+    hideHistory(){
+      this.$router.push({ path: '/painel/fornecedor'});
+    }
     },
 };
 </script>

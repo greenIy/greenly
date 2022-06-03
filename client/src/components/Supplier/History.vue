@@ -24,10 +24,11 @@
 <script>
 
 import Draggable from "vuedraggable";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlus , faBoxOpen, faXmark, faCircleExclamation,faCheck } from "@fortawesome/free-solid-svg-icons";
+import Order from "@/components/Supplier/Order.vue";
 
-import http from "../../../http-common";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCheck, faPlus , faBoxOpen, faXmark, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
 
 library.add(faPlus);
 library.add(faBoxOpen);
@@ -36,17 +37,16 @@ library.add(faCircleExclamation);
 library.add(faCheck);
 
 export default {
-  name: "Order",
+  name: "History",
   components: {
     Draggable,
+    Order
   },
   props: {
     element:Object,
-    task: {
-      type: Object,
-      default: () => ({})
-    }
-  },data() {
+    receiveData: Array,
+  },
+  data() {
     return {
       columns: [
           {
@@ -68,25 +68,18 @@ export default {
           orders: [ ]
         },
       ],
-      receiveData: [],
     };
   },
-  mounted(){
-    this.processData();
+  watch: {
+    'receiveData'() {
+      this.processData();
+    }
   },
   methods: {
     async processData(){
-      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-
-      this.cleanArray();
-
-      let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
-      this.receiveData = JSON.parse(JSON.stringify(response.data));
-
       let processedData = this.parseOrders(this.receiveData);
 
       for (let order of processedData) {
-
         let correspondingColumn;
 
         if (this.$route.query.id_encomenda) { // caso o utilizador tenha pesquisado por uma encomenda específica
@@ -99,13 +92,11 @@ export default {
           order.item_id = parseInt(`${order.id}${order.item.id}`)
           this.columns[correspondingColumn].orders.push(order)
         }
-  
       }
     },
     checkMove: (evt) =>  {
       let valid = false;
       let next;
-      
 
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       if (valid) {
@@ -116,7 +107,6 @@ export default {
       return valid;
     },
     parseOrders(orders){
-
       // Esta função pega numa encomenda e divide-a em vários orderItems para que estes possam ser apresentados em cards separados
       let orderItems = []
 
