@@ -12,12 +12,12 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-            <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" @change="this.changeStatus()"  disabled>
+            <select v-if="complete != false" class="dropDownS disable-classe" id="selectState"  disabled>
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
             </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState" @change="this.changeStatus()">
+             <select v-if="complete != true" class="dropDownS" id="selectState">
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
-              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
+              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;" @click="changeStatus()">{{ getNextStatus()[1] }}</option>
             </select>
           </div>
         </div>
@@ -141,9 +141,11 @@
 <script>
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBoxOpen , faPlusMinus, faFilePen, faAt, faUser, faHouse, faCalendar 
 , faMoneyBillWave, faWarehouse , faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../../http-common"
+
 
 library.add(faCubes);
 library.add(faTruck);
@@ -259,19 +261,28 @@ export default {
     },
     changeStatus(){
       let sel = document.getElementById("selectState");
-      console.log(sel.options[sel.selectedIndex].text)
 
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
+        JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
+          (result) => {
+            location.reload();
+          }
+        );
+      //console.log(response);
+      //console.log(response.request.status);
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
-       console.log(x);
+
       if (x == "COMPLETE"){
         this.complete = true;
       }
     },
     async getMoreDetails() {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-      let response = await http.get("/store/orders/"+this.element.id, { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+      let response = await http.get("/store/orders/"+ this.element.id, { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.shippingAddress = JSON.parse(JSON.stringify(response.data.shipping_address));
       this.warehouse = JSON.parse(JSON.stringify(response.data.items[0].warehouse));
     },

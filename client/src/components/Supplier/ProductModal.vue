@@ -12,12 +12,12 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-             <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" @change="this.changeStatus()"  disabled>
+             <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" disabled>
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
             </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState" @change="this.changeStatus()">
+             <select v-if="complete != true" class="dropDownS" id="selectState">
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
-              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
+              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;" @click="changeStatus()">{{ getNextStatus()[1] }}</option>
             </select>
           </div>
         </div>
@@ -239,6 +239,15 @@ export default {
     },
     changeStatus(){
       let sel = document.getElementById("selectState");
+      
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
+        JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
+          (result) => {
+            location.reload();
+          }
+        );
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
