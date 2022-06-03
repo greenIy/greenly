@@ -330,6 +330,8 @@ async function deleteUser(id) {
                 * All transports by transporter
         */
 
+        // TODO: PROOF FOR SOFT-DELETE
+
         if (getUserByID(id)) {
 
             await prisma.address.deleteMany({
@@ -639,6 +641,10 @@ async function updateAddress(userId, addressId, params) {
 }
 
 async function deleteAddress(id) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
     try {
         await prisma.address.delete({
             where: {
@@ -3062,12 +3068,61 @@ async function updateWarehouse(userID, warehouseID, params) {
             data: updatedWarehouseData
         })
 
+    } catch (e) {
+        return null
+    }
+}
 
+async function deleteWarehouse(userID, warehouseID) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
+    try {
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            select: {
+                Supply: {
+                    where: {
+                        supplier: userID
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // A warehouse cannot be removed if there are still supplies registered to it
+
+        if (warehouse.Supply.length) {
+            return "WAREHOUSE_NOT_EMPTY"
+        }
+
+        // Removing the warehouse
+    
+        let removedWarehouse = await prisma.warehouse.delete({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            }
+        })
 
     } catch (e) {
         console.log('e :>> ', e);
         return null
     }
+
 }
 
 /* All functions to be made available to the rest of the project should be listed here */
@@ -3133,6 +3188,7 @@ module.exports = {
     getWarehouses,
     getWarehouse,
     createWarehouse,
-    updateWarehouse
+    updateWarehouse,
+    deleteWarehouse
 
 }

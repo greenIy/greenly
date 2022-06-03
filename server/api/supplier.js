@@ -101,6 +101,21 @@ router.put('/:userId/warehouses/:warehouseId', authentication.check, authorizati
 
 router.delete('/:userId/warehouses/:warehouseId', authentication.check, authorization.check, (req, res) => {
     
+    persistence.deleteWarehouse(
+        Number(req.params.userId),
+        Number(req.params.warehouseId),
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_WAREHOUSE":
+                return res.status(404).send({message: "Warehouse not found. Make sure to specify a warehouse registered to your account."})
+            case "WAREHOUSE_NOT_EMPTY":
+                return res.status(409).send({message: "This warehouse cannot be deleted since there are supplies registered to it. Remove all supplies in this warehouse attempting to delete it."})
+            default:
+                return res.status(202).send({message: "Successfully deleted warehouse."})
+        }
+    })
 })
 
 module.exports = router;
