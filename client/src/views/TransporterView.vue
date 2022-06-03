@@ -24,15 +24,15 @@
                         </div>
                       </div>
                       <div class="d-inline-block ms-4">
-                        <button type="button" class="btn btnHist" v-if="history == false" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
-                        <button type="button" class="btn btnHist" v-if="history == true" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso </button>
+                        <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                        <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso </button>
                       </div>
                     </div>
-                    <div v-if="active_el==1 && history == false"><EncomendasDashboard /></div>
-                    <div v-if="active_el==2 && history == false">Centros de distribuição INFO ... Por FAZER</div>
-                    <div v-if="active_el==3 && history == false">Veículos INFO ... Por FAZER</div>
+                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard /></div>
+                    <div v-if="active_el==2 && this.$route.name == 'transportador'">Centros de distribuição INFO ... Por FAZER</div>
+                    <div v-if="active_el==3 && this.$route.name == 'transportador'">Veículos INFO ... Por FAZER</div>
 
-                    <History v-if="history!=false" />
+                    <History v-if="this.$route.name == 'transportador_historico'"/>
             </div>
             <TheFooter />
         </body>
@@ -65,22 +65,25 @@ export default {
         accept: false,
       },
       active_el:1,
-      history:false,
     };
   },
     methods: {
+      async processData(){
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+      this.receiveData = JSON.parse(JSON.stringify(response.data));
+      },
       activate:function(el){
         this.active_el=el;
       },
       submit(search) {
         this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
       },
-      showHistory(){
-        this.history=true;
+      showHistory() {
         this.$router.push({ path: '/painel/transportador/historico'});
       },
       hideHistory(){
-        this.history=false;
         this.$router.push({ path: '/painel/transportador'});
       }
     },
