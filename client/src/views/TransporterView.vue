@@ -19,8 +19,8 @@
                         <div class="input-group">
                           <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @input="onchange(this.search)">
                           <div class="input-group-prepend">
-                            <button v-if="this.$route.query.id_encomenda" class="btn btn-secondary" type="button" v-on="onchange(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'xmark']"/></button>
-                            <button v-else class="btn btn-secondary" type="button" v-on="onchange(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                            <button v-if="this.$route.query.id_encomenda" class="btn btn-secondary" type="button"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'xmark']"/></button>
+                            <button v-else class="btn btn-secondary" type="button" @click="removeFilter('')"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
                           </div>
                         </div>
                       </div>
@@ -92,6 +92,10 @@ export default {
       } else if (this.$route.name === 'transportador') {
         this.$router.push({ path: '/painel/transportador' });
       }
+    },
+    removeFilter(search) {
+      console.log(search);
+      this.$router.push({ path: '/painel/transportador' });
     },
     showHistory() {
       this.$router.push({ path: '/painel/transportador/historico'});
