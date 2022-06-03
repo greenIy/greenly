@@ -48,12 +48,13 @@ import History from "@/components/Supplier/History.vue";
 import EncomendasDashboard from "@/components/Supplier/EncomendasDashboard.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faClockRotateLeft , faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import { faClockRotateLeft , faMagnifyingGlass, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 import http from "../../http-common";
 
 library.add(faClockRotateLeft);
 library.add(faMagnifyingGlass);
+library.add(faXmark);
 
 
 export default {
