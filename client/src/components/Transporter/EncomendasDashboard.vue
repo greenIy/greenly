@@ -53,30 +53,35 @@ export default {
           title: "À ESPERA DE TRANSPORTE",
           status: "TRANSPORT_IMMINENT",
           logo: "hourglass",
+          next_status: "AWAITING_TRANSPORT",
           orders: [ ]
         },
         {
           title: "PRESTES A SER LEVANTADAS",
           status: "AWAITING_TRANSPORT",
           logo: "truck-ramp-box",
+          next_status: "IN_TRANSIT",
           orders: [ ]
         },
         {
           title: "EM TRANSPORTE",
           logo: "truck",
           status: "IN_TRANSIT",
+          next_status: "LAST_MILE",
           orders: [ ]
         },
         {
           title: "PRESTES A SER ENTREGUES",
           logo: "map-location-dot",
           status: "LAST_MILE",
+          next_status: "COMPLETE",
           orders: [ ]
         },
          {
           title: "ENTREGUES",
           logo: "check",
           status: "COMPLETE",
+          next_status: "",
           orders: []
         },
       ],

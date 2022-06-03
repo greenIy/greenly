@@ -13,11 +13,11 @@
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
              <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" @change="this.changeStatus()"  disabled>
-              <option :value="element.item.status"  selected="selected" style="background-color:#ffffff;color:#000000">{{element.item.status}}</option>
+              <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
             </select>
              <select v-if="complete != true" class="dropDownS" id="selectState" @change="this.changeStatus()">
-              <option :value="element.item.status"  selected="selected" style="background-color:#ffffff;color:#000000">{{element.item.status}}</option>
-              <option value="next"  style="background-color:#ffffff;color:#000000">Español</option>
+              <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
+              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
             </select>
           </div>
         </div>
@@ -167,7 +167,6 @@ export default {
   props: {
     modal:Boolean,
     element: Object,
-    
   },
   created() {
     this.getData(this.element);
@@ -183,7 +182,38 @@ export default {
       shipping_address:Object,
       warehouse:Object,
       complete:false,
-      
+      status: [
+        { 
+          current_status: "PROCESSING",
+          alias: "EM PROCESSAMENTO",
+          next_status: [
+            {
+              name: "AWAITING_TRANSPORT", 
+              alias: "PRONTAS PARA TRANSPORTE"
+            }
+          ]
+        },
+        {
+          current_status: "AWAITING_TRANSPORT",
+          alias: "PRONTAS PARA TRANSPORTE",
+          next_status:[
+            {
+              name: "TRANSPORT_IMMINENT",
+              alias: "PRESTES A SER LEVANTADAS"
+            }
+          ]
+        },
+        {
+          current_status: "TRANSPORT_IMMINENT",
+          alias: "PRESTES A SER LEVANTADAS",
+          next_status:[
+            {
+              name: "",
+              alias: ""
+            }
+          ]
+        },
+      ]
     }
   },
   methods:{
@@ -224,7 +254,21 @@ export default {
       let response = await http.get("/store/orders/"+this.element.id, { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.shippingAddress = JSON.parse(JSON.stringify(response.data.shipping_address));
       this.warehouse = JSON.parse(JSON.stringify(response.data.items[0].warehouse));
-    }
+    },
+    getNextStatus() {
+      for (let curr of this.status) {
+        if(this.element.item.status == curr.current_status) {
+          return [curr.next_status[0].name, curr.next_status[0].alias];
+        }
+      }
+    },
+    getCurrentStatus() {
+      for (let curr of this.status) {
+        if(this.element.item.status == curr.current_status) {
+          return [curr.current_status, curr.alias];
+        }
+      }
+    },
   }
 };
 </script>
