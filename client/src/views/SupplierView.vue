@@ -88,7 +88,6 @@ export default {
       this.active_el=el;
     },
     onchange(search) {
-      console.log("oi");
       if (search != undefined && search != '') {
         this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'fornecedor') {

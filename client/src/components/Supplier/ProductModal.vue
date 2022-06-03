@@ -239,12 +239,9 @@ export default {
     },
     changeStatus(){
       let sel = document.getElementById("selectState");
-      console.log(sel.options[sel.selectedIndex].text)
-
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
-       console.log(x);
       if (x == "COMPLETE"){
         this.complete = true;
       }
