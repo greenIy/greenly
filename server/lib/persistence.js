@@ -2819,7 +2819,7 @@ async function getWarehouses(userID) {
             let totalValue = supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
 
             warehouse.address = address
-            warehouse.unique_product = uniqueProductCount
+            warehouse.unique_products = uniqueProductCount
             warehouse.combined_stock = combinedStock
             warehouse.total_value = round(totalValue, 2)
 
@@ -2914,7 +2914,7 @@ async function getWarehouse(userID, warehouseID) {
         let combinedStock = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
         let totalValue = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
 
-        warehouse.unique_product = uniqueProductCount
+        warehouse.unique_products = uniqueProductCount
         warehouse.combined_stock = combinedStock
         warehouse.total_value = round(totalValue, 2)
 

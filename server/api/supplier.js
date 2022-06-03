@@ -111,9 +111,9 @@ router.delete('/:userId/warehouses/:warehouseId', authentication.check, authoriz
             case "INVALID_WAREHOUSE":
                 return res.status(404).send({message: "Warehouse not found. Make sure to specify a warehouse registered to your account."})
             case "WAREHOUSE_NOT_EMPTY":
-                return res.status(409).send({message: "This warehouse cannot be deleted since there are supplies registered to it. Remove all supplies in this warehouse attempting to delete it."})
+                return res.status(409).send({message: "This warehouse cannot be deleted since there are supplies registered to it. Remove all supplies in this warehouse before attempting to delete it."})
             default:
-                return res.status(202).send({message: "Successfully deleted warehouse."})
+                return res.status(204).send({message: "Successfully deleted warehouse."})
         }
     })
 })
