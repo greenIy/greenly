@@ -8,6 +8,7 @@ const routes = [
     path: '/',
     name: 'home',
     component: ProductsView,
+    redirect: '/produtos'
   },
   {
     path: '/login',
@@ -74,8 +75,22 @@ const routes = [
     },
   },
   {
+    path: '/painel/fornecedor/historico',
+    name: 'fornecedor_historico',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
     path: '/painel/transportador',
     name: 'transportador',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/transportador/historico',
+    name: 'transportador_historico',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
     },

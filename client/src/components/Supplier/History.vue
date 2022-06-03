@@ -27,6 +27,7 @@ import Draggable from "vuedraggable";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPlus , faBoxOpen, faXmark, faCircleExclamation,faCheck } from "@fortawesome/free-solid-svg-icons";
 
+import http from "../../../http-common";
 
 library.add(faPlus);
 library.add(faBoxOpen);
@@ -77,10 +78,7 @@ export default {
     async processData(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
-      // Ajeitar essa gambiarra !!!!!
-      this.columns[0].orders = [];
-      this.columns[1].orders = [];
-      this.columns[2].orders = [];
+      this.cleanArray();
 
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.receiveData = JSON.parse(JSON.stringify(response.data));
@@ -134,7 +132,12 @@ export default {
         }
       }
       return orderItems
-    }
+    },
+    cleanArray() {
+      for(let i = 0; i < 3; i++) {
+        this.columns[i].orders = [];
+      }
+    },
   },
 };
  

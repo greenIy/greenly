@@ -92,12 +92,7 @@ export default {
     async processData(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
-      // Ajeitar essa gambiarra !!!!!
-      this.columns[0].orders = [];
-      this.columns[1].orders = [];
-      this.columns[2].orders = [];
-      this.columns[3].orders = [];
-      this.columns[4].orders = [];
+      this.cleanArray();
 
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.receiveData = JSON.parse(JSON.stringify(response.data));
@@ -170,7 +165,12 @@ export default {
         }
       }
       return orderItems
-    }
+    },
+    cleanArray() {
+      for(let i = 0; i < 5; i++) {
+        this.columns[i].orders = [];
+      }
+    },
   },
 };
 </script>
