@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-start my-4 mx-5">
+  <div class="d-flex justify-content-start my-3 mx-5">
     <div class="row g-0 overflow-horizontally">
     <div v-for="column in this.columns" :key="column.status" class="card d-inline-block col-lg-6 column-width me-4 rounded">
       <div class="card-header">
@@ -13,7 +13,7 @@
               itemKey="item_id"
               :move="checkMove">
               <template #item="{ element }">
-                  <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move"  :element="element"></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element"></order>
               </template>
             </Draggable>
           </div>
@@ -156,6 +156,10 @@ export default {
 
 .card-header {
     background-color:#ffffff;
+}
+
+.card-body {
+  padding: 0.1rem 1rem;
 }
 
 .icon {
