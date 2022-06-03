@@ -95,7 +95,6 @@ export default {
   },
   methods: {
     async processData(){
-      //console.log(this.receiveData);
       let processedData = this.parseOrders(this.receiveData);
 
       this.cleanArray();

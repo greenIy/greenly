@@ -70,6 +70,9 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.processData();
+  },
   watch: {
     'receiveData'() {
       this.processData();
@@ -77,6 +80,7 @@ export default {
   },
   methods: {
     async processData(){
+      console.log(this.receiveData);
       let processedData = this.parseOrders(this.receiveData);
 
       for (let order of processedData) {

@@ -63,6 +63,9 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.processData();
+  },
   watch: {
     'receiveData'() {
       this.processData();
@@ -71,7 +74,7 @@ export default {
   methods: {
     async processData(){
       let processedData = this.parseOrders(this.receiveData);
-
+      console.log(this.receiveData);
       for (let order of processedData) {
         let correspondingColumn;
 

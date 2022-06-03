@@ -17,14 +17,15 @@
                     <div v-if="active_el==1" class="d-flex align-items-center">
                       <div class=" d-inline-block ms-5"> 
                         <div class="input-group">
-                          <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @keyup.enter="submit(this.search)">
+                          <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @input="onchange(this.search)">
                           <div class="input-group-prepend">
-                            <button class="btn btn-secondary" type="button" @click="submit(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
+                            <button v-if="this.$route.query.id_encomenda" class="btn btn-secondary" type="button" v-on="onchange(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'xmark']"/></button>
+                            <button v-else class="btn btn-secondary" type="button" v-on="onchange(this.search)"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'magnifying-glass']"/></button>
                           </div>
                         </div>
                       </div>
                       <div class="d-inline-block ms-4">
-                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Histórico </button>
+                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Arquivo</button>
                           <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box-open']" />Encomendas Em Curso </button>
                       </div>
                     </div>
@@ -85,8 +86,13 @@ export default {
     activate:function(el){
       this.active_el=el;
     },
-    submit(search) {
-      this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
+    onchange(search) {
+      console.log("oi");
+      if (search != undefined && search != '') {
+        this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
+      } else if (this.$route.name === 'fornecedor') {
+        this.$router.push({ path: '/painel/fornecedor' });
+      }
     },
     showHistory(){
       this.$router.push({ path: '/painel/fornecedor/historico'});
