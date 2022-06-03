@@ -13,7 +13,7 @@
               itemKey="item_id"
               :move="checkMove">
               <template #item="{ element }">
-                  <order class="d-inline-block col-lg-6 w-100 my-3 cursor-move"  :element="element"></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element"></order>
               </template>
             </Draggable>
           </div>
@@ -84,6 +84,8 @@ export default {
     async processData(){
       let processedData = this.parseOrders(this.receiveData);
 
+      this.cleanArray();
+      
       for (let order of processedData) {
         let correspondingColumn;
 

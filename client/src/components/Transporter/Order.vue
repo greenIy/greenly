@@ -1,6 +1,6 @@
 <template >
 <div>
-  <div class="bg-white shadow rounded pt-3 border border-white" @click="showModalP()">
+  <div class="bg-white shadow rounded pt-2 border border-white" @click="showModalP()">
     <div>
       <h6 class="card-title ms-3"><small >#{{element.id}}, Item #{{element.item.id}}</small></h6>
       <ul class="list-group list-group-flush">
