@@ -93,6 +93,10 @@ export default {
         this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'fornecedor') {
         this.$router.push({ path: '/painel/fornecedor' });
+      } else if (search != undefined && search != '' && this.$route.name === 'fornecedor_historico') {
+        this.$router.push({ path: '/painel/fornecedor/historico', query: { id_encomenda: `${ search }` } });
+      } else if (this.$route.name === 'fornecedor_historico') {
+        this.$router.push({ path: '/painel/fornecedor/historico' });
       }
     },
     showHistory(){

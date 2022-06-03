@@ -74,14 +74,18 @@ export default {
     this.processData();
   },
   watch: {
+    '$route.query.id_encomenda'() {
+      this.processData();
+    },
     'receiveData'() {
       this.processData();
     }
   },
   methods: {
     async processData(){
-      console.log(this.receiveData);
       let processedData = this.parseOrders(this.receiveData);
+
+      this.cleanArray();
 
       for (let order of processedData) {
         let correspondingColumn;

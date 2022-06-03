@@ -87,10 +87,14 @@ export default {
       this.active_el=el;
     },
     onchange(search) {
-      if (search != undefined && search != '') {
+      if (search != undefined && search != '' && this.$route.name === 'transportador') {
         this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'transportador') {
         this.$router.push({ path: '/painel/transportador' });
+      } else if (search != undefined && search != '' && this.$route.name === 'transportador_historico') {
+        this.$router.push({ path: '/painel/transportador/historico', query: { id_encomenda: `${ search }` } });
+      } else if (this.$route.name === 'transportador_historico') {
+        this.$router.push({ path: '/painel/transportador/historico' });
       }
     },
     removeFilter(search) {
