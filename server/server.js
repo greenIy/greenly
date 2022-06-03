@@ -114,7 +114,7 @@ app.use(errorHandler);
 
 app.get('*', function(req, res){
   return res.status(404).send({
-    message: "Invalid endpoint."
+    message: "Invalid endpoint. Check available endpoints at docs.greenly.pt."
   })
 });
 

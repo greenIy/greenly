@@ -2833,6 +2833,100 @@ async function getWarehouses(userID) {
     }
 }
 
+async function getWarehouse(userID, warehouseID) {
+
+    try {
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            },
+            select: {
+                id: true,
+                Address: {
+                    select: {
+                        id: true,
+                        street: true,
+                        country: true,
+                        city: true,
+                        latitude: true,
+                        longitude: true,
+                        postal_code: true
+                    }
+                },
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+                Supply: {
+                    where: {
+                        supplier: userID
+                    },
+                    select: {
+                        Product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                Category: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                },
+                            }
+                        },
+                        quantity: true,
+                        price: true,
+                        expiration_date: true,
+                        production_date: true
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Cleaning data
+
+        delete Object.assign(warehouse, {supplies: warehouse.Supply}).Supply;
+
+        delete Object.assign(warehouse, {address: warehouse.Address}).Address;
+
+        warehouse.supplies.forEach((supply) => {
+            delete Object.assign(supply, {product: supply.Product}).Product;
+
+            delete Object.assign(supply.product, {category: supply.product.Category}).Category;
+        })
+
+        // Calculating how many different products and individual units the warehouse has, along with its total value
+        let uniqueProductCount = warehouse.supplies.length
+        let combinedStock = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+        let totalValue = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+        warehouse.unique_product = uniqueProductCount
+        warehouse.combined_stock = combinedStock
+        warehouse.total_value = round(totalValue, 2)
+
+        // Usage data (estimated total daily energy usage)
+        let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+        warehouse.estimated_total_resource_usage = totalResourceUsage
+        
+
+        return warehouse
+        
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
 async function createWarehouse(userID, addressID, capacity, resourceUsage, renewableResources) {
     
     try {
@@ -2860,7 +2954,6 @@ async function createWarehouse(userID, addressID, capacity, resourceUsage, renew
         if (addressAlreadyInUse) {
             return "ADDRESS_IN_USE"
         }
-        
 
         let latestWarehouse = await prisma.warehouse.findFirst({
             where: {
@@ -2885,6 +2978,90 @@ async function createWarehouse(userID, addressID, capacity, resourceUsage, renew
         })
 
         return newWarehouse.id
+
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+}
+
+async function updateWarehouse(userID, warehouseID, params) {
+    try {
+
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Determining which data to edit
+
+        let warehouseKeyMap = [
+            "address",
+            "capacity",
+            "resource_usage",
+            "renewable_resources"
+        ]
+
+        let updatedWarehouseData = {}
+
+        for (const [key, value] of Object.entries(params)) {
+            if (warehouseKeyMap.includes(key)) {                
+                updatedWarehouseData[key] = value
+            }
+        }
+        
+        // Checking if the new selected address is valid
+
+        if ("address" in updatedWarehouseData) {
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: updatedWarehouseData.address
+                }
+            })
+    
+            // In case the selected address doesn't exist or doesn't belong to the user
+    
+            if (!address || address.user != userID) {
+                return "INVALID_ADDRESS"
+            }
+    
+            // In case this address is already being used by the user for another warehouse (except the current one)
+    
+            let addressAlreadyInUse = await prisma.warehouse.findFirst({
+                where: {
+                    supplier: userID,
+                    address: updatedWarehouseData.address
+                }
+            })
+
+            if (addressAlreadyInUse && warehouse.address != address.id) {
+                return "ADDRESS_IN_USE"
+            }
+        }
+
+        // Updating the warehouse
+
+        let updatedWarehouse = await prisma.warehouse.update({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            data: updatedWarehouseData
+        })
+
 
 
     } catch (e) {
@@ -2954,6 +3131,8 @@ module.exports = {
 
     // Warehouse Functions
     getWarehouses,
-    createWarehouse
+    getWarehouse,
+    createWarehouse,
+    updateWarehouse
 
 }

@@ -44,7 +44,6 @@ async function check(req, res, next) {
     const intent = req.method
     const incomingRoute = req.baseUrl + req.route.path
 
-
     // Interpreting resource from path
     switch (resourceIdentification[incomingRoute]) {
         case "ALL_USERS":
@@ -280,10 +279,15 @@ async function check(req, res, next) {
             break;
 
         case "SINGLE_WAREHOUSE":
+            // This is valid for: GET, PUT, DELETE
+            // Only the supplier and administrators can manipulate user warehouses
 
+            if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
+                return next()
+            }
 
             break;
-    
+
         default:
             break;
     }

@@ -524,8 +524,40 @@ function createWarehouseValidator() {
             .toFloat(),
         body('renewable_resources')
             .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateWarehouseValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty()
             .isFloat({min: 0})
             .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .optional()
+            .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -568,6 +600,7 @@ module.exports = {
     updateOrderValidator,
 
     // Warehouse validators
-    createWarehouseValidator
+    createWarehouseValidator,
+    updateWarehouseValidator
 
 }
