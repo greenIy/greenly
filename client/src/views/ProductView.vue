@@ -129,12 +129,12 @@
                           <div class="col-md-5"></div>
                       </div>
                     </div>
-                    <div class="d-inline-block p-0 col-md-5" style="text-align:end;">
+                    <div class="d-inline-block p-0 col-md-4" style="text-align:end;">
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
-                    <div class="d-inline-block text-end col-md-2">
+                    <div class="d-inline-block text-end col-md-3">
                       <button class="btnS p-2">
-                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
+                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" /> Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
                     <button class="d-inline-block text-start col-md-1 btnH p-8 fav">
