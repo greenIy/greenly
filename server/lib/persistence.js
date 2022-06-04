@@ -1327,29 +1327,64 @@ async function addItemToCart(
         }
 
         try {
-            let itemCount = await prisma.cart.count({
+
+            let alreadyPresentCartItem = await prisma.cart.findUnique({
                 where: {
-                    consumer: Number(userId)
+                    consumer_product_supplier_warehouse_transporter: {
+                        consumer:       Number(userId),
+                        product:        Number(product),
+                        supplier:       Number(supplier),
+                        warehouse:      Number(warehouse),
+                        transporter:    Number(transporter)
+                    }
                 }
             })
 
-            await prisma.cart.create({
-                data: {
-                    index:          Number(itemCount) + 1,
-                    consumer:       Number(userId),
-                    product:        Number(product),
-                    supplier:       Number(supplier),
-                    warehouse:      Number(warehouse),
-                    transporter:    Number(transporter),
-                    quantity:       Number(quantity),
+            if (alreadyPresentCartItem) {
+                if (correspondingSupply.Supply.quantity < alreadyPresentCartItem.quantity + quantity) {
+                    // In case the user's order is larger than the available stock
+                    return "NO_STOCK";
                 }
-            })
-        } catch (e) {
-            if (e.code == "P2002") {
-                return "ALREADY_PRESENT"
+
+                // Update the current cartItem's quantity
+
+                await prisma.cart.update({
+                    where: {
+                        consumer_product_supplier_warehouse_transporter: {
+                            consumer:       Number(userId),
+                            product:        Number(product),
+                            supplier:       Number(supplier),
+                            warehouse:      Number(warehouse),
+                            transporter:    Number(transporter)
+                        }
+                    }, data: {
+                        quantity: alreadyPresentCartItem.quantity + quantity
+                    }
+                })
+
+
             } else {
-                return null;
+                let itemCount = await prisma.cart.count({
+                    where: {
+                        consumer: Number(userId)
+                    }
+                })
+    
+                await prisma.cart.create({
+                    data: {
+                        index:          Number(itemCount) + 1,
+                        consumer:       Number(userId),
+                        product:        Number(product),
+                        supplier:       Number(supplier),
+                        warehouse:      Number(warehouse),
+                        transporter:    Number(transporter),
+                        quantity:       Number(quantity),
+                    }
+                })
             }
+
+        } catch (e) {
+            return null;
         }
 
         return "SUCCESSFULLY_ADDED"
@@ -2170,8 +2205,6 @@ async function getFilteredOrderByID(user, orderID) {
 
         // Adding CREATED state
         stateMap.push({scope:"CREATED", timestamp: order.date})
-
-        console.dir(stateMap);
 
         item.product = product
 

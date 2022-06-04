@@ -206,7 +206,7 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
         req.body.supplier, 
         req.body.warehouse, 
         req.body.transporter, 
-        req.body.quantity,
+        Number(req.body.quantity),
     ).then((result) => {        
         switch (result) {
             case null:
@@ -215,8 +215,6 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
                 return res.status(400).send({message: "Requested quantity is higher than available stock."})
             case "INVALID_COMBINATION":
                 return res.status(400).send({message: "Invalid combination of product, supplier and transporter."})
-            case "ALREADY_PRESENT":
-                return res.status(409).send({message: "Specified item is already in cart."})
             default:
                 return res.status(200).send({message: "Item successfully added to cart."})
         }
