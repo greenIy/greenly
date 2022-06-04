@@ -51,18 +51,18 @@
                             </div>    
                         </div>
                     </div>
-                    <div class=" ">
-                        <div class="card p-3 my-1" >
-                            <h2>Resumo:</h2>
-                            <div >Consumos renováveis dos fornecedores: {{this.totalSupplierRenewableResources}}%</div>
-                            <div >Consumos dos fornecedores: {{this.totalSupplierResourceUsage}} kWh</div>
-                            <div >Consumos dos transportadores: {{this.totalTransporterResourceUsage}} l/100Km</div>
-                            <div >Emissões dos transportadores: {{this.totalTransporterEmissions}} CO2 g/Km/t</div>
-                            <div class="fw-bold fs-5">Total da encomenda: {{parseFloat(this.totalPrice).toFixed(2)}}€</div>
-                            <div class="text-end align-self-end ">
-                                <button type="button" @click="removeAllProducts($event)" class="btn btn-danger me-2 mb-5">Limpar carrinho <font-awesome-icon :icon="['fa', 'trash']" style="color: "/></button>
-                                <button type="button" @click="removeAllProducts($event)" class="btn btn-success ps-2 mb-5" style="background-color: #5E9F88"> Finalizar <font-awesome-icon :icon="['fa', 'check']"/></button>
-                            </div>
+                </div>
+                <div class=" ">
+                    <div class="card p-3 my-1" >
+                        <h2>Resumo:</h2>
+                        <div >Consumos renováveis dos fornecedores: {{this.totalSupplierRenewableResources}}%</div>
+                        <div >Consumos dos fornecedores: {{this.totalSupplierResourceUsage}} kWh</div>
+                        <div >Consumos dos transportadores: {{this.totalTransporterResourceUsage}} l/100Km</div>
+                        <div >Emissões dos transportadores: {{this.totalTransporterEmissions}} CO2 g/Km/t</div>
+                        <div class="fw-bold fs-5">Total da encomenda: {{parseFloat(this.totalPrice).toFixed(2)}}€</div>
+                        <div class="text-end align-self-end ">
+                            <button type="button" @click="removeAllProducts($event)" class="btn btn-danger me-2 mb-5">Limpar carrinho <font-awesome-icon :icon="['fa', 'trash']" style="color: "/></button>
+                            <button type="button" @click="removeAllProducts($event)" class="btn btn-success ps-2 mb-5" style="background-color: #5E9F88"> Finalizar <font-awesome-icon :icon="['fa', 'check']"/></button>
                         </div>
                     </div>
                 </div>

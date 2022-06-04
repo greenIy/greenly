@@ -21,7 +21,8 @@
         </div>
         <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
           <button class="btnH fav">
-            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
+            <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="xs"/>
+            <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
             Favoritos
           </button>
           <form>
@@ -48,43 +49,80 @@ export default {
   props: {
     product: Object,
   },
+  mounted() {
+    this.getWishlist()
+  },
   data() {
     return {
       isActive: false,
       user: {
         accept: false,
       },
+      wishlist: {},
     };
   },
   methods: {
-    liked(event){
-      const svg = event.path[1]
-      if (svg.classList.contains('red')) {
-        svg.classList.remove("red");
-      } else {
-        svg.classList.add("red");
-        this.addToWishlist();
-      } 
-    },
-    addToWishlist() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+    getWishlist() {
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
-
             if (accessToken){
-                http.post(`/user/${userId}/wishlist`, JSON.stringify(
-                  {
-                    product: this.product.id
-                  }
-                ),{ headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
                     if (response.status == 200) {
-                        
+                        this.wishlist = response.data
                     }
                 })
 
             }
-        },
+    },
+    isProductInWishlist(product) {
+      var isProductIn = false
+      for (let produto = 0; produto < Object.keys(this.wishlist).length; produto++) {
+        if (this.wishlist[produto].id == product.id) {
+          isProductIn = true
+        }
+      }
+      return isProductIn
+    },
+    addToWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+        if (accessToken){
+            http.post(`/user/${userId}/wishlist`, JSON.stringify(
+              {
+                product: this.product.id
+              }
+            ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 201) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
+    removeFromWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+
+        if (accessToken){
+            http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 200) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
   }
 };
+
 </script>
 <style scoped>
 h4 {

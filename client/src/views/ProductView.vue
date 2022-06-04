@@ -133,12 +133,13 @@
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
                     <div class="d-inline-block text-end col-md-2">
-                      <button class="btnS p-2">
-                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
+                      <button v-on:click="this.addProductToCart" class="btnS p-2">
+                        <font-awesome-icon  class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
-                    <button class="d-inline-block text-start col-md-1 btnH p-8 fav">
-                      <font-awesome-icon @click="liked($event)" class="icons fa-cog"  :icon="['fa', 'heart']"  size="lg" />
+                    <button class="btnH fav">
+                      <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="lg"/>
+                      <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                     </button>
                   </div>
                 </div>
@@ -191,6 +192,11 @@ export default {
     transporters: Array,
     totalPrice:Number,
     attributes:Array,
+    product: Object,
+    idWarehouse: Number
+  },
+  mounted() {
+    this.getWishlist()
   },
   data() {
     return {
@@ -212,6 +218,7 @@ export default {
       idTransporter: 0,
       totalPrice:0,
       attributes:[],
+      idWarehouse: 0,
       currentSupplier: {
         name: "",
         resource_usage: 0,
@@ -224,7 +231,8 @@ export default {
         average_resource_usage: 0,
         average_emissions: 0,
         price: "",
-      }
+      },
+      wishlist: {}
     };
   },
   created() {
@@ -232,32 +240,96 @@ export default {
     this.getSuppliers(); 
   }, 
   methods: {
-    liked(event) {
-      const svg = event.path[1];
-      if (svg.classList.contains("red")) {
-        svg.classList.remove("red");
-      } else {
-        svg.classList.add("red");
-        this.addToWishlist()
+    addProductToCart(){
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+      let userId = JSON.parse(localStorage.getItem('userId'));
+      console.dir({
+              product: this.product.id,
+              supplier: this.suppliers[this.idSupplier].supplier.id,
+              transporter: this.currentSupplier.transporters[this.idTransporter].transporter.id,
+              warehouse: this.suppliers[this.idSupplier].warehouse.id,
+              quantity: this.quantity
+            })
+      if (accessToken){
+          http.post(`/user/${userId}/cart`, JSON.stringify(
+            {
+              product: this.product.id,
+              supplier: this.suppliers[this.idSupplier].supplier.id,
+              transporter: this.currentSupplier.transporters[this.idTransporter].transporter.id,
+              warehouse: this.suppliers[this.idSupplier].warehouse.id,
+              quantity: this.quantity
+            }
+          ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+          .then((response) => {
+              console.log(response.data)
+              if (response.status == 201) {
+                console.log("Success")
+              }
+          }).catch((error) => {
+              console.log(error);
+              console.log("Failure!");
+          })
+
       }
     },
-    addToWishlist() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+    getWishlist() {
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
-
             if (accessToken){
-                http.post(`/user/${userId}/wishlist`, JSON.stringify(
-                  {
-                    product: this.product.id
-                  }
-                ),{ headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
                     if (response.status == 200) {
-                        
+                        this.wishlist = response.data
                     }
                 })
 
             }
-        },
+    },
+    isProductInWishlist(product) {
+      var isProductIn = false
+      for (let produto = 0; produto < Object.keys(this.wishlist).length; produto++) {
+        if (this.wishlist[produto].id == product.id) {
+          isProductIn = true
+        }
+      }
+      return isProductIn
+    },
+    addToWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+        if (accessToken){
+            http.post(`/user/${userId}/wishlist`, JSON.stringify(
+              {
+                product: this.product.id
+              }
+            ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 201) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
+    removeFromWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+
+        if (accessToken){
+            http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 200) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
     async getInfo() {
       this.loading = true;
       var response = await http.get("/store/products/" + this.$route.params.id);
