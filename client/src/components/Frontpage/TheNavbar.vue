@@ -24,9 +24,9 @@
                     <li><h6 class="dropdown-header"> {{ user.first_name + " " + user.last_name }}</h6></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></router-link></li>
-                    <li><router-link v-if="user.type === 'SUPPLIER'" to="/painel/fornecedor" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
-                    <li><router-link v-if="user.type === 'TRANSPORTER'" to="/painel/transportador" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
-                    <li><router-link v-if="user.type === 'CONSUMER'" to="/painel/consumidor" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
+                    <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
+                    <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
+                    <li><router-link v-if="user.type === 'CONSUMER'" :to="{ name: 'consumidor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
                     <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></router-link></li>
                     <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</a></router-link></li>
                     <li><hr class="dropdown-divider"></li>
