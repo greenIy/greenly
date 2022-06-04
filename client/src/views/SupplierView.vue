@@ -89,20 +89,20 @@ export default {
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'fornecedor') {
-        this.$router.push({ path: '/painel/fornecedor', query: { id_encomenda: `${ search }` } });
+        this.$router.push({ name: 'fornecedor', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'fornecedor') {
-        this.$router.push({ path: '/painel/fornecedor' });
+        this.$router.push({ name: 'fornecedor' });
       } else if (search != undefined && search != '' && this.$route.name === 'fornecedor_historico') {
-        this.$router.push({ path: '/painel/fornecedor/historico', query: { id_encomenda: `${ search }` } });
+        this.$router.push({ name: 'fornecedor_historico', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'fornecedor_historico') {
-        this.$router.push({ path: '/painel/fornecedor/historico' });
+        this.$router.push({ name: 'fornecedor_historico' });
       }
     },
     showHistory(){
-      this.$router.push({ path: '/painel/fornecedor/historico'});
+      this.$router.push({ name: 'fornecedor_historico'});
     },
     hideHistory(){
-      this.$router.push({ path: '/painel/fornecedor'});
+      this.$router.push({ name: 'fornecedor'});
     }
     },
 };

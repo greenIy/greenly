@@ -88,24 +88,24 @@ export default {
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'transportador') {
-        this.$router.push({ path: '/painel/transportador', query: { id_encomenda: `${ search }` } });
+        this.$router.push({ name: 'transportador', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'transportador') {
-        this.$router.push({ path: '/painel/transportador' });
+        this.$router.push({ name: 'transportador' });
       } else if (search != undefined && search != '' && this.$route.name === 'transportador_historico') {
-        this.$router.push({ path: '/painel/transportador/historico', query: { id_encomenda: `${ search }` } });
+        this.$router.push({ name: 'transportador_historico', query: { id_encomenda: `${ search }` } });
       } else if (this.$route.name === 'transportador_historico') {
-        this.$router.push({ path: '/painel/transportador/historico' });
+        this.$router.push({ name: 'transportador_historico' });
       }
     },
     removeFilter(search) {
       console.log(search);
-      this.$router.push({ path: '/painel/transportador' });
+      this.$router.push({ name: 'transportador' });
     },
     showHistory() {
-      this.$router.push({ path: '/painel/transportador/historico'});
+      this.$router.push({ name: 'transportador_historico'});
     },
     hideHistory(){
-      this.$router.push({ path: '/painel/transportador'});
+      this.$router.push({ name: 'transportador'});
     }
   },
 };
