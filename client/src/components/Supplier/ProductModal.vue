@@ -90,12 +90,12 @@
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.supply_price}}€</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos</small></span></th>
-                      <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_resource_usage}}</small></span></td>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos de Armazenamento</small></span></th>
+                      <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_resource_usage}}kWh/dia</small></span></td>
                     </tr>
                     <tr>
                       <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Recursos Renováveis</small></span></th>
-                      <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_renewable_resources}}</small></span></td>
+                      <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_renewable_resources}}%</small></span></td>
                     </tr>
                     <tr>
                       <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'warehouse']" /><small>Armazém</small></span></th>
@@ -117,12 +117,12 @@
                       <td scope="row" class="textAlign-right"> <span><small>{{element.item.transport_price}}€</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos</small> </span></th>
-                      <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_resource_usage}}</small></span></td>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos de Transporte</small> </span></th>
+                      <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_resource_usage}} l/100km</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Recursos Renováveis</small> </span></th>
-                      <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_emissions}}</small></span></td>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Emissões Poluentes</small> </span></th>
+                      <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_emissions}} CO₂ g/km/t</small></span></td>
                     </tr>
                     <tr>
                       <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'truck']" /><small>Veículo</small> </span></th>
@@ -270,6 +270,7 @@ export default {
     },
     changeStatus(){
       let sel = document.getElementById("selectState");
+      console.log(document.getElementById("selectState").options[0].value);
       
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
@@ -282,7 +283,7 @@ export default {
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
-      
+
       if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE") {
         this.complete = true;
       }
