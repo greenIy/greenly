@@ -98,18 +98,11 @@ const routes = [
     ]
     },
     {
-<<<<<<< HEAD
       path: '/carrinho',
       name: 'cart',
       component() {
         return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
-=======
-      path: '/checkout',
-      name: 'checkout',
-      component() {
-        return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
->>>>>>> origin/development
-      },
+      }
     }
 ];
 
