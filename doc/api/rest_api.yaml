@@ -2400,7 +2400,7 @@ paths:
         schema:
           type: integer
       responses:
-        204:
+        200:
           description: Armazém removido com sucesso
         401:
           description: "_Token_ inválido. Utilizador não autenticado"
