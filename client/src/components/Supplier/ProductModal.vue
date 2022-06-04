@@ -15,9 +15,9 @@
              <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" disabled>
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
             </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState">
+             <select v-if="complete != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
-              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;" @click="changeStatus()">{{ getNextStatus()[1] }}</option>
+              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
             </select>
           </div>
         </div>
@@ -268,8 +268,9 @@ export default {
 
       this.date = dd + '/' + mm + '/' + yyyy;
     },
-    changeStatus(){
+    changeStatus(event){
       let sel = document.getElementById("selectState");
+      console.log(event);
       console.log(document.getElementById("selectState").options[0].value);
       
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -277,14 +278,14 @@ export default {
       http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
-            location.reload();
+            this.$router.push({ name: 'fornecedor' });
           }
         );
     },
     verify(){
       let x = document.getElementById("selectState").options[0].value;
 
-      if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE") {
+      if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE" || x == "TRANSPORT_IMMINENT" || x == "AWAITING_TRANSPORT") {
         this.complete = true;
       }
     },

@@ -98,7 +98,6 @@ export default {
       }
     },
     removeFilter(search) {
-      console.log(search);
       this.$router.push({ name: 'transportador' });
     },
     showHistory() {

@@ -15,9 +15,9 @@
             <select v-if="complete != false" class="dropDownS disable-classe" id="selectState"  disabled>
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
             </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState">
+             <select v-if="complete != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
-              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;" @click="changeStatus()">{{ getNextStatus()[1] }}</option>
+              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
             </select>
           </div>
         </div>
@@ -280,15 +280,15 @@ export default {
       this.date = dd + '/' + mm + '/' + yyyy;
 
     },
-    changeStatus(){
+    changeStatus(event){
       let sel = document.getElementById("selectState");
-      console.log(document.getElementById("selectState").options[0].value);
+      
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
       http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
-            location.reload();
+            this.$router.push({ name: 'transportador' });
           }
         );
     },
@@ -302,6 +302,7 @@ export default {
     async getMoreDetails() {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       let response = await http.get("/store/orders/"+ this.element.id, { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+
       this.shippingAddress = JSON.parse(JSON.stringify(response.data.shipping_address));
       this.warehouse = JSON.parse(JSON.stringify(response.data.items[0].warehouse));
     },
