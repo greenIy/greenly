@@ -2135,9 +2135,7 @@ paths:
       tags:
       - supplier
       summary: Obter todos os armazéns associados ao fornecedor
-      description: "Devolve um array de objetos Warehouse, conforme os armazéns registados\
-        \ pelo fornecedor userId \nApenas pode ser feito pelo fornecedor quando autenticado,\
-        \ ou por um administrador"
+      description: "Devolve um array de objetos Warehouse, conforme os armazéns registados pelo fornecedor userId. Apenas pode ser feito pelo fornecedor quando autenticado, ou por um administrador"
       operationId: getWarehouses
       parameters:
       - name: userId
@@ -2152,19 +2150,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Warehouse'
+                properties:
+                  items:
+                    $ref: '#/components/schemas/SimplifiedReceivedWarehouse'
         400:
           description: userId inválido
           content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
+      security:
+        - bearerAuth: []
     post:
       tags:
       - supplier
       summary: Adicionar armazém
-      description: "Permite adicionar um novo armazém à coleção de armazéns do fornecedor\
-        \ \nApenas pode ser feito pelo fornecedor quando autenticado"
+      description: |-
+        Permite adicionar um novo armazém à coleção de armazéns do fornecedor. Deverá ser utilizado uma morada registada na conta do fornecedor userId, que não esteja ainda ser utilizada por outros armazéns.
+        
+        Apenas pode ser feito pelo fornecedor quando autenticado.
+
       operationId: addWarehouse
       parameters:
       - name: userId
@@ -2179,39 +2196,74 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Warehouse'
+              $ref: '#/components/schemas/SentWarehouse'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo armazém"
         400:
-          description: Dados inválidos
-          content: {}
+          description: Morada escolhida é inválida
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Invalid address. Make sure to use an address registered to your account."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Utilizador não encontrado
           content: {}
-      x-codegen-request-body-name: body
+        409:
+          description: Morada escolhida já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This address is already registered to another warehouse in your account."
+                    
+      security:
+        - bearerAuth: []
   /supplier/{userId}/warehouses/{warehouseId}:
     get:
       tags:
       - supplier
-      summary: Obter informação sobre um armazém warehouseId do fornecedor userId
+      summary: Obter informação sobre um armazém específico
       description: Devolve um objeto Warehouse, representando o armazém warehouseId
         e todos os seus detalhes
       operationId: getWarehouseById
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja informação se deseja saber \nDeve\
-          \ corresponder a um utilizador do tipo supplier"
+        description: "userId do utilizador cuja informação se deseja saber. Deve corresponder a um utilizador do tipo supplier"
         required: true
         schema:
           type: integer
       - name: warehouseId
         in: path
-        description: "warehouseId do armazém cuja informação se deseja saber \nDeve\
-          \ corresponder a um armazém associado ao utilizador userId"
+        description: "warehouseId do armazém cuja informação se deseja saber. Deve corresponder a um armazém associado ao utilizador userId."
         required: true
         schema:
           type: integer
@@ -2221,55 +2273,108 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Warehouse'
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ExpandedReceivedWarehouse'
         400:
-          description: userId ou warehouseId inválidos
+          description: userId inválido
           content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou armazém não encontrados
-          content: {}
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Warehouse not found. Make sure to specify a warehouse registered to your account."
+      security:
+        - bearerAuth: []
     put:
       tags:
       - supplier
       summary: Atualizar armazém
-      description: "Permite atualizar os detalhes de um armazém associado ao fornecedor\
-        \ \nApenas pode ser feito pelo fornecedor userId quando autenticado"
+      description: "Permite atualizar os detalhes de um armazém associado ao fornecedor. Apenas pode ser feito pelo fornecedor userId quando autenticado."
       operationId: updateWarehouse
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador associado ao armazém \nDeve corresponder\
-          \ a um utilizador do tipo supplier"
+        description: userId do utilizador associado ao armazém \nDeve corresponder a um utilizador do tipo "SUPPLIER".
         required: true
         schema:
           type: integer
       - name: warehouseId
         in: path
-        description: "warehouseId do armazém a ser atualizado \nDeve corresponder\
-          \ a um armazém associado ao utilizador userId"
+        description: "warehouseId do armazém a ser atualizado. Deve corresponder a um armazém associado ao utilizador userId"
         required: true
         schema:
           type: integer
       requestBody:
-        description: Atualiza o objeto Warehouse
+        description: Atualiza o armazém. Apenas precisam de ser especificados os atributos que se deseja atualizar. A morada selecionada deverá pertencer ao fornecedor e não deverá estar em uso em outros armazéns.
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/Warehouse'
+              $ref: '#/components/schemas/SentWarehouse'
         required: true
       responses:
-        204:
-          description: Armazém atualizado com sucesso
-          content: {}
+        201:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ExpandedReceivedWarehouse'
         400:
-          description: userId ou warehouseId inválidos
+          description: userId inválido
           content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou armazém não encontrados
-          content: {}
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Warehouse not found. Make sure to specify a warehouse registered to your account."
+        409:
+          description: Morada escolhida já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This address is already registered to another warehouse in your account."
+      security:
+        - bearerAuth: []
       x-codegen-request-body-name: body
     delete:
       tags:
@@ -2296,16 +2401,44 @@ paths:
       responses:
         204:
           description: Armazém removido com sucesso
-          content: {}
-        400:
-          description: userId ou warehouseId inválidos
-          content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou armazém não encontrados
-          content: {}
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Warehouse not found. Make sure to specify a warehouse registered to your account."
+        409:
+          description: Armazém ainda com produtos
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This warehouse cannot be deleted since there are supplies registered to it. Remove all supplies in this warehouse before attempting to delete it."
+        
+      security:
+        - bearerAuth: []
+
+
+
 components:
   schemas:
   ## USER DEFINITIONS
@@ -3106,8 +3239,7 @@ components:
       properties:
         resourceUsage:
           type: integer
-          description: Eletricidade utilizada para manter o item, medida em kW/h no
-            ponto histórico
+          description: Eletricidade utilizada para manter o item, medida em kWh/dia no ponto histórico
         nonRenewableResources:
           type: integer
           description: Percentagem de eletricidade utilizada para manter o item oriunda
@@ -3121,30 +3253,7 @@ components:
       description: Objeto utilizado para devolver o histórico de um item itemId
       xml:
         name: ItemHistory
-    Warehouse:
-      type: object
-      properties:
-        warehouseId:
-          type: string
-          description: Código identificador do armazém
-        capacity:
-          type: integer
-        address:
-          $ref: '#/components/schemas/ReceivedAddress'
-        resourceUsage:
-          type: integer
-          description: Eletricidade utilizada para mantimento, por produto, medida
-            em kW/h
-        nonRenewableResources:
-          type: integer
-          description: Percentagem de eletricidade utilizada oriunda de recursos não-renováveis
-        supplies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Item'
-      description: Objeto utilizado para devolver informações sobre um armazém
-      xml:
-        name: Warehouse
+
     DistributionCenter:
       type: object
       properties:
@@ -3316,6 +3425,223 @@ components:
             type: integer
             description: A quantidade de produtos que são fornecidos pelo fornecedor em questão
 
+    # Warehouse Definitions
+
+    SentWarehouse:
+      type: object
+      properties:
+        address:
+          type: integer
+          description: Código identificador da morada a utilizar para o armazém em questão
+        capacity:
+          type: number
+          format: float
+          description: Capacidade total do armazém (em m²)
+        resource_usage:
+          type: number
+          format: float
+          description: Quantidade média de energia utilizada para armazenar um produto por dia (em kWh/dia)
+        renewable_resources:
+          type: integer
+          description: Percentagem de energia utilizada pelo armazém que provém de fontes renováveis (entre 0 e 100)
+
+    SimplifiedReceivedWarehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Código identificador do armazém, indexado por fornecedor
+        capacity:
+          type: number
+          format: float
+          description: Capacidade total do armazém (em m²)
+        resource_usage:
+          type: number
+          format: float
+          description: Quantidade média de energia utilizada para armazenar um produto por dia (em kWh/dia)
+        renewable_resources:
+          type: integer
+          description: Percentagem de energia utilizada pelo armazém que provém de fontes renováveis (entre 0 e 100)
+        unique_products:
+          type: integer
+          description: Quantidade de produtos diferentes dos quais o armazém contém stock
+        combined_stock:
+          type: integer
+          description: Quantidade total de stock presente no armazém (junção de todos os produtos)
+        total_value:
+          type: number
+          format: float
+          description: Valor total do armazém, tendo em conta o valor de venda e quantidade de cada produto
+        estimated_total_resource_usage: 
+          type: number
+          format: float
+          description: Estimativa da utilização de energia total *diária* do armazém, tendo em conta a quantidade média de energia utilizada diariamente para armazenar um produto e a quantidade de produtos presente
+        address:
+          type: object    
+          description: Morada do armazém em questão
+          properties:
+            street:
+              type: string
+              description: Rua da morada
+            city:
+              type: string
+              description: Cidade da morada
+            country:
+              type: string
+              description: País da morada
+            postal_code:
+              type: string
+              description: Código postal da morada
+            latitude:
+              type: number
+              description: A latitude da morada especificada (precisão de 6 decimais)
+            longitude:
+              type: number
+              description: A longitude da morada especificada (precisão de 6 decimais)
+
+    ExpandedReceivedWarehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Código identificador do armazém, indexado por fornecedor
+        capacity:
+          type: number
+          format: float
+          description: Capacidade total do armazém (em m²)
+        resource_usage:
+          type: number
+          format: float
+          description: Quantidade média de energia utilizada para armazenar um produto por dia (em kWh/dia)
+        renewable_resources:
+          type: integer
+          description: Percentagem de energia utilizada pelo armazém que provém de fontes renováveis (entre 0 e 100)
+        unique_products:
+          type: integer
+          description: Quantidade de produtos diferentes dos quais o armazém contém stock
+        combined_stock:
+          type: integer
+          description: Quantidade total de stock presente no armazém (junção de todos os produtos)
+        total_value:
+          type: number
+          format: float
+          description: Valor total do armazém, tendo em conta o valor de venda e quantidade de cada produto
+        estimated_total_resource_usage: 
+          type: number
+          format: float
+          description: Estimativa da utilização de energia total *diária* do armazém, tendo em conta a quantidade média de energia utilizada diariamente para armazenar um produto e a quantidade de produtos presente
+        address:
+          type: object    
+          description: Morada do armazém em questão
+          properties:
+            street:
+              type: string
+              description: Rua da morada
+            city:
+              type: string
+              description: Cidade da morada
+            country:
+              type: string
+              description: País da morada
+            postal_code:
+              type: string
+              description: Código postal da morada
+            latitude:
+              type: number
+              description: A latitude da morada especificada (precisão de 6 decimais)
+            longitude:
+              type: number
+              description: A longitude da morada especificada (precisão de 6 decimais)
+        supplies:
+          type: array
+          description: Informação detalhada sobre o fornecimento de cada fornecedor
+            para cada este produto
+          items:
+            type: object
+            properties:
+              warehouse:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador do armazém em que o produto se encontra 
+                  resource_usage:
+                    type: integer
+                    description: Utilização média de recursos para o armazenamento de 1 item (em kWh)
+                  renewable_resources:
+                    type: integer
+                    description: Percentagem da energia utilizada em armazenamento proveniente de fontes renováveis
+              
+              quantity:
+                type: integer
+                description: Quantidade em stock que o fornecedor tem deste produto
+              price:
+                type: number
+                description: Preço a que o fornecedor está a vender o produto
+                format: float
+              production_date:
+                type: string
+                description: String representativo da data a que o produto foi feito
+              expiration_date:
+                type: string
+                description: String representativo da data de validade do produto
+              supplier:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Código identificador da empresa do fornecedor
+                  name:
+                    type: string
+                    description: Nome da empresa
+                description: Informação do fornecedor
+              transports:
+                type: array
+                description: Informação sobre todos os transportadores que podem transportar este produto, quando vendido por este fornecedor
+                items:
+                  type: object
+                  properties:
+                    transporter:
+                      type: object
+                      description: Informação sobre o transportador
+                      properties:
+                        id:
+                          type: integer
+                          description: Código identificador do transportador
+                        name:
+                          type: string
+                          description: Nome da empresa
+                        average_emissions:
+                          type: integer
+                          description: Média de emissões da frota do transportador (em CO2 g/km/t)
+                        average_resource_usage:
+                          type: integer
+                          description: Média de consumo de combustível da frota do transportador (em l/100km)
+                    price:
+                      type: number
+                      description: A preço do transporte
+                      format: float
+              history:
+                type: array
+                description: Informação histórica sobre a venda deste produto por
+                  parte deste fornecedor
+                items:
+                  type: object
+                  properties:
+                    moment:
+                      type: string
+                      description: String representativo do momento a que esta informação
+                        histórica corresponde
+                    quantity:
+                      type: integer
+                      description: Quantidade deste produto em inventário por parte
+                        do fornecedor, no momento
+                    price:
+                      type: number
+                      description: Preço a que este fornecedor vendia o produto, no
+                        momento
+                      format: float
+  
     Payment:
       type: object
       properties:

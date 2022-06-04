@@ -506,7 +506,67 @@ function updateOrderValidator() {
     ]
 }
 
+/* Warehouse Validators */
 
+function createWarehouseValidator() {
+    return [
+        body('address')
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateWarehouseValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .optional()
+            .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
 
 module.exports = {
     // User validators
@@ -537,6 +597,10 @@ module.exports = {
     // Order validators
     createOrderValidator,
     getSingleOrderValidator,
-    updateOrderValidator
+    updateOrderValidator,
+
+    // Warehouse validators
+    createWarehouseValidator,
+    updateWarehouseValidator
 
 }

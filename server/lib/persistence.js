@@ -36,7 +36,7 @@ prisma.$connect().catch((reason) => {
 /* Helper functions */
 
 // Proper rounding function as oposed to JS Math
-function roundCoordinates(value, decimals) {
+function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }   
 
@@ -330,6 +330,8 @@ async function deleteUser(id) {
                 * All transports by transporter
         */
 
+        // TODO: PROOF FOR SOFT-DELETE
+
         if (getUserByID(id)) {
 
             await prisma.address.deleteMany({
@@ -520,8 +522,8 @@ async function createAddress(userID,
             }
         })
 
-        lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-        lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+        lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+        lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
     } catch (e) {
         lat = 0;
         lng = 0;
@@ -613,8 +615,8 @@ async function updateAddress(userId, addressId, params) {
                     key: process.env.GOOGLE_API_KEY
                 }
             })
-            lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-            lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+            lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+            lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
 
         } catch (e) {
             console.log(e)
@@ -639,6 +641,10 @@ async function updateAddress(userId, addressId, params) {
 }
 
 async function deleteAddress(id) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
     try {
         await prisma.address.delete({
             where: {
@@ -2409,8 +2415,6 @@ async function updateOrderItem(user, orderID, itemID, targetStatus) {
 
     }
 
-    console.log('isValidOriginStatus, isValidTargetStatus :>> ', isValidOriginStatus, isValidTargetStatus);
-
     // Checking if the the user can change the status given the origin status
 
     if (!isValidOriginStatus) {
@@ -2742,14 +2746,19 @@ async function checkUserItemRelationship(user, orderID, itemID) {
 
 async function createNotification(userID, title, content, scope, relatedOrderID, relatedItemID) {
 
-    let userNotificationCount = await prisma.notification.count({
+    let lastestNotification = await prisma.notification.findFirst({
         where: {
             user: userID
+        },
+        orderBy: {
+            id: 'desc'
         }
     })
 
+    let notificationCount = lastestNotification ? lastestNotification.id : 0
+
     let notificationData = {
-        id: userNotificationCount + 1,
+        id: notificationCount + 1,
         title: title,
         content: content,
         user: userID,
@@ -2828,6 +2837,361 @@ async function dismissNotification(userID, notificationID) {
     
 }
 
+/* Warehouse Functions */
+
+async function getWarehouses(userID) {
+    try {
+        
+        let warehouses = await prisma.warehouse.findMany({
+            where: {
+                supplier: userID
+            },
+            select: {
+                id: true,
+                address: true,
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+            }
+        })
+
+        // Cleaning and adding data
+
+        warehouses = await Promise.all(warehouses.map(async (warehouse) => {
+
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: warehouse.id
+                }, select: {
+                    id: true,
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+
+            let supplies = await prisma.supply.findMany({
+                where: {
+                    supplier: userID,
+                    warehouse: warehouse.id
+                }
+            })
+
+            // Calculating how many different products and individual units the warehouse has, along with its total value
+            let uniqueProductCount = supplies.length
+            let combinedStock = supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+            let totalValue = supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+            warehouse.address = address
+            warehouse.unique_products = uniqueProductCount
+            warehouse.combined_stock = combinedStock
+            warehouse.total_value = round(totalValue, 2)
+
+            // Usage data (estimated total daily energy usage)
+            let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+            warehouse.estimated_total_resource_usage = totalResourceUsage
+
+            return warehouse
+        }))
+
+        return warehouses
+
+    } catch (e) {
+        console.log(e);
+        return null
+    }
+}
+
+async function getWarehouse(userID, warehouseID) {
+
+    try {
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            },
+            select: {
+                id: true,
+                Address: {
+                    select: {
+                        id: true,
+                        street: true,
+                        country: true,
+                        city: true,
+                        latitude: true,
+                        longitude: true,
+                        postal_code: true
+                    }
+                },
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+                Supply: {
+                    where: {
+                        supplier: userID
+                    },
+                    select: {
+                        Product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                Category: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                },
+                            }
+                        },
+                        quantity: true,
+                        price: true,
+                        expiration_date: true,
+                        production_date: true
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Cleaning data
+
+        delete Object.assign(warehouse, {supplies: warehouse.Supply}).Supply;
+
+        delete Object.assign(warehouse, {address: warehouse.Address}).Address;
+
+        warehouse.supplies.forEach((supply) => {
+            delete Object.assign(supply, {product: supply.Product}).Product;
+
+            delete Object.assign(supply.product, {category: supply.product.Category}).Category;
+        })
+
+        // Calculating how many different products and individual units the warehouse has, along with its total value
+        let uniqueProductCount = warehouse.supplies.length
+        let combinedStock = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+        let totalValue = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+        warehouse.unique_products = uniqueProductCount
+        warehouse.combined_stock = combinedStock
+        warehouse.total_value = round(totalValue, 2)
+
+        // Usage data (estimated total daily energy usage)
+        let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+        warehouse.estimated_total_resource_usage = totalResourceUsage
+        
+
+        return warehouse
+        
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function createWarehouse(userID, addressID, capacity, resourceUsage, renewableResources) {
+    
+    try {
+        let address = await prisma.address.findUnique({
+            where: {
+                id: addressID
+            }
+        })
+
+        // In case the selected address doesn't exist or doesn't belong to the user
+
+        if (!address || address.user != userID) {
+            return "INVALID_ADDRESS"
+        }
+
+        // In case this address is already being used by the user for another warehouse
+
+        let addressAlreadyInUse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID,
+                address: addressID
+            }
+        })
+
+        if (addressAlreadyInUse) {
+            return "ADDRESS_IN_USE"
+        }
+
+        let latestWarehouse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let warehouseCount = latestWarehouse ? latestWarehouse.id : 0
+
+        let newWarehouse = await prisma.warehouse.create({
+            data: {
+                id: warehouseCount + 1,
+                supplier: userID,
+                address: addressID,
+                capacity: capacity,
+                resource_usage: resourceUsage,
+                renewable_resources: renewableResources
+            }
+        })
+
+        return newWarehouse.id
+
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+}
+
+async function updateWarehouse(userID, warehouseID, params) {
+    try {
+
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Determining which data to edit
+
+        let warehouseKeyMap = [
+            "address",
+            "capacity",
+            "resource_usage",
+            "renewable_resources"
+        ]
+
+        let updatedWarehouseData = {}
+
+        for (const [key, value] of Object.entries(params)) {
+            if (warehouseKeyMap.includes(key)) {                
+                updatedWarehouseData[key] = value
+            }
+        }
+        
+        // Checking if the new selected address is valid
+
+        if ("address" in updatedWarehouseData) {
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: updatedWarehouseData.address
+                }
+            })
+    
+            // In case the selected address doesn't exist or doesn't belong to the user
+    
+            if (!address || address.user != userID) {
+                return "INVALID_ADDRESS"
+            }
+    
+            // In case this address is already being used by the user for another warehouse (except the current one)
+    
+            let addressAlreadyInUse = await prisma.warehouse.findFirst({
+                where: {
+                    supplier: userID,
+                    address: updatedWarehouseData.address
+                }
+            })
+
+            if (addressAlreadyInUse && warehouse.address != address.id) {
+                return "ADDRESS_IN_USE"
+            }
+        }
+
+        // Updating the warehouse
+
+        let updatedWarehouse = await prisma.warehouse.update({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            data: updatedWarehouseData
+        })
+
+    } catch (e) {
+        return null
+    }
+}
+
+async function deleteWarehouse(userID, warehouseID) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
+    try {
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            select: {
+                Supply: {
+                    where: {
+                        supplier: userID
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // A warehouse cannot be removed if there are still supplies registered to it
+
+        if (warehouse.Supply.length) {
+            return "WAREHOUSE_NOT_EMPTY"
+        }
+
+        // Removing the warehouse
+    
+        let removedWarehouse = await prisma.warehouse.delete({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            }
+        })
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -2885,6 +3249,13 @@ module.exports = {
     // Notification Functions
     getNotificationsByUser,
     dismissNotification,
-    dismissAllNotifications
+    dismissAllNotifications,
+
+    // Warehouse Functions
+    getWarehouses,
+    getWarehouse,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse
 
 }

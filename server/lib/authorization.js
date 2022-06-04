@@ -8,6 +8,7 @@ const authentication    = require("./authentication"); // One-time-usage for adm
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
     const resourceIdentification = {
+        /* User Routes */
         "/user/":                                       "ALL_USERS",
         "/user/:userId":                                "SINGLE_USER",
         "/user/:userId/addresses":                      "ALL_ADDRESSES",
@@ -15,21 +16,30 @@ async function check(req, res, next) {
         "/user/:userId/notifications":                  "ALL_NOTIFICATIONS",
         "/user/:userId/notifications/:notificationId":  "SINGLE_NOTIFICATION",
         "/user/:userId/orders":                         "ALL_USER_ORDERS",
+        "/user/:userId/cart":                           "ALL_CART_ITEMS",
+        "/user/:userId/cart/:index":                    "SINGLE_CART_ITEM",
+        "/user/:userId/wishlist":                       "ALL_WISHLIST_ITEMS",
+        "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM",
+
+        /* Store Routes */
         "/store/products/:productId":                   "SINGLE_PRODUCT",
         "/store/orders":                                "ALL_ORDERS",
         "/store/orders/:orderId":                       "SINGLE_ORDER",
         "/store/orders/:orderId/:itemId":               "SINGLE_ORDER_ITEM",
         "/store/categories":                            "ALL_CATEGORIES",
         "/store/categories/:categoryId":                "SINGLE_CATEGORY",
-        "/user/:userId/cart":                           "ALL_CART_ITEMS",
-        "/user/:userId/cart/:index":                    "SINGLE_CART_ITEM",
-        "/user/:userId/wishlist":                       "ALL_WISHLIST_ITEMS",
-        "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM"
+
+        /* Supplier Routes */
+        "/supplier/:userId/warehouses":                 "ALL_WAREHOUSES",
+        "/supplier/:userId/warehouses/:warehouseId":    "SINGLE_WAREHOUSE",
+        
     }
 
     // Helper functions
-    const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
-    const isConsumer = (user) => {return user.type == "CONSUMER"}
+    const isAdministrator   = (user) => {return user.type == "ADMINISTRATOR"}
+    const isConsumer        = (user) => {return user.type == "CONSUMER"}
+    const isSupplier        = (user) => {return user.type == "SUPPLIER"}
+    const isTransporter     = (user) => {return user.type == "TRANSPORTER"}
 
     const intent = req.method
     const incomingRoute = req.baseUrl + req.route.path
@@ -253,6 +263,26 @@ async function check(req, res, next) {
             // This is valid for: DELETE
             // Wishlist is only accessible to consumers
             if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_WAREHOUSES":
+            // This is valid for: GET
+            // Only the supplier and administrators can check all user warehouses
+
+            if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_WAREHOUSE":
+            // This is valid for: GET, PUT, DELETE
+            // Only the supplier and administrators can manipulate user warehouses
+
+            if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
                 return next()
             }
 
