@@ -12,13 +12,13 @@
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyEmail" class="form-label">E-mail da empresa<span style='color: #FF0000;'>*</span></label>
-                    <input type="email" class="form-control" id="companyEmail" v-model="company.email" placeholder="E-mail" readonly required>
+                    <input type="email" class="form-control" id="companyEmail" v-bind:value="company.email" placeholder="E-mail" readonly required>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="inputCompanyBio" class="form-label">Descrição da empresa <span style='color: #FF0000;'>*</span></label>
-                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyBio" v-model="company.bio" placeholder="Descrição" readonly required></textarea>
+                    <textarea type="text" rows="3" cols="50" class="form-control" id="companyBio" v-bind:value="company.bio" placeholder="Descrição" readonly required></textarea>
                 </div>
             </div>
 
@@ -64,13 +64,14 @@
 </template>
 
 <script>
-//import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
+import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 library.add(faPen, faFloppyDisk, faXmark);
 
 import http from "../../../http-common"
+import AuthService from "../../router/auth"
 
 export default({
     name: 'ProfileCompanyInfo',
@@ -104,6 +105,12 @@ export default({
             document.getElementById("companyName").readOnly = true
             document.getElementById("companyEmail").readOnly = true
             document.getElementById("companyBio").readOnly = true
+
+            AuthService.getUser().then((result) => {
+                document.getElementById("companyName").value = result.company.name;
+                document.getElementById("companyEmail").value = result.company.email;
+                document.getElementById("companyBio").value = result.company.bio;
+            })
         },
         saveCompanyInfo() {
             this.cancelCompanyInfo()
@@ -121,26 +128,53 @@ export default({
                     "Authorization": `Bearer ${accessToken}`
                 }
             }
-            this.company.name = document.getElementById("companyName").value
-            this.company.email = document.getElementById("companyEmail").value
-            this.company.bio = document.getElementById("companyBio").value
+            var newCompanyName = document.getElementById("companyName").value
+            var newCompanyEmail = document.getElementById("companyEmail").value
+            var newCompanyBio = document.getElementById("companyBio").value
             if (accessToken && userId){
-            http.put(`/user/${userId}`,
-                    JSON.stringify({
-                            name: this.company.name,
-                            bio: this.company.bio,
-                            email: this.company.email,
-                        }), headers)
-                    .then((response) => {
-                        if (response.status == 200) {
-                            this.saveCompanyInfo()
-                            console.log("Success!")
-                        }
-                    }).catch((error) => {
-                        console.log(error);
-                        console.log("Failure!");
-                    })
+                if (newCompanyEmail === this.company.email) {
+                    http.put(`/user/${userId}`,
+                        JSON.stringify({
+                            company: {
+                                name: newCompanyName,
+                                bio: newCompanyBio,
+                            }
+                            }), headers)
+                        .then((response) => {
+                            if (response.status == 200) {
+                                this.newCompanyName = newCompanyName;
+                                this.newCompanyBio = newCompanyBio;
+                                this.saveCompanyInfo()
+                            }
+                        }).catch((error) => {
+                            console.log(error);
+                            console.log("Failure!");
+                        })
+                } else {
+                    http.put(`/user/${userId}`,
+                        JSON.stringify({
+                            company: {
+                                name: newCompanyName,
+                                email: newCompanyEmail,
+                                bio: newCompanyBio,
+                            }
+                            }), headers)
+                        .then((response) => {
+                            if (response.status == 200) {
+                                this.newCompanyName = newCompanyName;
+                                this.companyEmail = newCompanyEmail;
+                                this.newCompanyBio = newCompanyBio;
+                                this.saveCompanyInfo()
+                            }
+                        }).catch((error) => {
+                            console.log(error);
+                            console.log("Failure!");
+                        })
+                }
             }
+        },
+        removeIsInvalid() {
+            document.getElementById("email").classList.remove("is-invalid");
         }
     },
 });
@@ -149,10 +183,10 @@ export default({
 
 <style scoped>
     .btn-primary{
-        background-color: #309C76;
+        background-color: #5E9F88;
         border-color: white;
     }
     #successToast {
-        background-color: #309C76 !important;
+        background-color: #5E9F88 !important;
     }
 </style>

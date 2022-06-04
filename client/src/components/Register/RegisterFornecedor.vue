@@ -64,7 +64,7 @@
                     
                     <div class="mt-3 mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="termsConditons" required>
-                        <label class="form-check-label" style="font-size: 80%" for="termsConditions">Aceito os <router-link to="/termsConditions" class="float-right greenly-link">termos e condições de uso</router-link>.</label>
+                        <label class="form-check-label" style="cursor: pointer; font-size: 80%">Aceito os <u class="greenly-link" data-bs-toggle="modal" data-bs-target="#termsAndConditions">termos e condições de uso.</u></label>
                         <br>
                     </div>
                     
@@ -73,8 +73,31 @@
                     </div>
                 </form>
             </div>
+            <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
+
+            <!-- Modal -->
+            <div class="modal fade" id="termsAndConditions" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="termsAndConditionsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Termos e condições de uso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>1 - Importantíssimo</h5>
+                    <p>&nbsp; &nbsp; &nbsp;  - Gostar de php</p>
+                    <br><br><br><br><br><br><br>
+                    <small class="position-absolute bottom-0 end-0 p-2 pe-3">Última atualização: 18/05/2022</small>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeTermsAndConditionsButton" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" v-on:click="acceptTermsAndConditions">Li e aceito</button>
+                </div>
+                </div>
+            </div>
+            </div>
         </div>
-        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
@@ -104,6 +127,11 @@ export default {
         }
     },
     methods: {
+        acceptTermsAndConditions() {
+            document.getElementById("termsConditons").checked = true;
+            var closeTermsAndConditionsModal = document.getElementById("closeTermsAndConditionsButton");
+            closeTermsAndConditionsModal.click()
+        },
         checkPasswords() {
             if(document.getElementById("password").value == document.getElementById("passwordConfirm").value) {
                 return true

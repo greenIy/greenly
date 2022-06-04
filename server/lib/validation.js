@@ -1,3 +1,7 @@
+/*  Greenly Validation Library
+    Functions included pertain to data validation, filtering and type-safety.
+*/
+
 /* Parameter Validation Package */
 const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
@@ -7,7 +11,6 @@ const saltRounds = 10;
 /* User Validation Functions */
 
 function createUserValidator() {
-    // TODO: Don't forget to proof this (try/catch/detail exception) during database access
     return[
         body('first_name')
             .notEmpty()
@@ -188,7 +191,8 @@ function createAddressValidator() {
             .isString(),
         body('nif')
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -220,7 +224,8 @@ function updateAddressValidator() {
         body('nif')
             .optional()
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -245,7 +250,8 @@ function getProductsValidator() {
             .toInt(),
         query("page")
             .optional()
-            .isInt({min:1}),
+            .isInt({min:1})
+            .toInt(),
         query("category")
             .optional()
             .isInt()
@@ -448,6 +454,120 @@ function addProductToWishlistValidator() {
     ]
 }
 
+function createOrderValidator() {
+    return [
+        body("shipping_address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("billing_address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("observations")
+            .optional()
+            .isString().isLength({ max: 255 }),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function getSingleOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        param('itemId').isInt().toInt(),
+        body("status")
+            .notEmpty()
+            .isString()
+            .isIn(["CANCELED", "AWAITING_TRANSPORT", "TRANSPORT_IMMINENT",  "FAILURE", "IN_TRANSIT", "LAST_MILE", "COMPLETE"])
+            .withMessage("Invalid target status."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+/* Warehouse Validators */
+
+function createWarehouseValidator() {
+    return [
+        body('address')
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateWarehouseValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty()
+            .isFloat({min: 0})
+            .toFloat(),
+        body('renewable_resources')
+            .optional()
+            .notEmpty()
+            .isInt({min: 0})
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -472,7 +592,15 @@ module.exports = {
     updateCartItemValidator,
 
     // Wishlist validators
-    addProductToWishlistValidator
+    addProductToWishlistValidator,
 
+    // Order validators
+    createOrderValidator,
+    getSingleOrderValidator,
+    updateOrderValidator,
+
+    // Warehouse validators
+    createWarehouseValidator,
+    updateWarehouseValidator
 
 }

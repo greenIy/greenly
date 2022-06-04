@@ -2,29 +2,44 @@
     Functions included pertain to user verification and resource limitation.
 */
 
-const authentication = require("./authentication"); // One-time-usage for administrator creation
+const persistence       = require("./persistence")
+const authentication    = require("./authentication"); // One-time-usage for administrator creation
 
 async function check(req, res, next) {
     // Identify resource type (locked routes only): User, Order, Warehouse, Distribution Center, Vehicle
     const resourceIdentification = {
-        "/user/":                               "ALL_USERS",
-        "/user/:userId":                        "SINGLE_USER",
-        "/user/:userId/addresses":              "ALL_ADDRESSES",
-        "/user/:userId/addresses/:addressId":   "SINGLE_ADDRESS",
-        "/store/products/:productId":           "SINGLE_PRODUCT",
-        "/store/orders":                        "ALL_ORDERS",
-        "/store/orders/:orderId":               "SINGLE_ORDER",
-        "/store/categories":                    "ALL_CATEGORIES",
-        "/store/categories/:categoryId":        "SINGLE_CATEGORY",
-        "/user/:userId/cart":                   "ALL_CART_ITEMS",
-        "/user/:userId/cart/:index":            "SINGLE_CART_ITEM",
-        "/user/:userId/wishlist":               "ALL_WISHLIST_ITEMS",
-        "/user/:userId/wishlist/:productId":    "SINGLE_WISHLIST_ITEM"
+        /* User Routes */
+        "/user/":                                       "ALL_USERS",
+        "/user/:userId":                                "SINGLE_USER",
+        "/user/:userId/addresses":                      "ALL_ADDRESSES",
+        "/user/:userId/addresses/:addressId":           "SINGLE_ADDRESS",
+        "/user/:userId/notifications":                  "ALL_NOTIFICATIONS",
+        "/user/:userId/notifications/:notificationId":  "SINGLE_NOTIFICATION",
+        "/user/:userId/orders":                         "ALL_USER_ORDERS",
+        "/user/:userId/cart":                           "ALL_CART_ITEMS",
+        "/user/:userId/cart/:index":                    "SINGLE_CART_ITEM",
+        "/user/:userId/wishlist":                       "ALL_WISHLIST_ITEMS",
+        "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM",
+
+        /* Store Routes */
+        "/store/products/:productId":                   "SINGLE_PRODUCT",
+        "/store/orders":                                "ALL_ORDERS",
+        "/store/orders/:orderId":                       "SINGLE_ORDER",
+        "/store/orders/:orderId/:itemId":               "SINGLE_ORDER_ITEM",
+        "/store/categories":                            "ALL_CATEGORIES",
+        "/store/categories/:categoryId":                "SINGLE_CATEGORY",
+
+        /* Supplier Routes */
+        "/supplier/:userId/warehouses":                 "ALL_WAREHOUSES",
+        "/supplier/:userId/warehouses/:warehouseId":    "SINGLE_WAREHOUSE",
+        
     }
 
     // Helper functions
-    const isAdministrator = (user) => {return user.type == "ADMINISTRATOR"}
-    const isConsumer = (user) => {return user.type == "CONSUMER"}
+    const isAdministrator   = (user) => {return user.type == "ADMINISTRATOR"}
+    const isConsumer        = (user) => {return user.type == "CONSUMER"}
+    const isSupplier        = (user) => {return user.type == "SUPPLIER"}
+    const isTransporter     = (user) => {return user.type == "TRANSPORTER"}
 
     const intent = req.method
     const incomingRoute = req.baseUrl + req.route.path
@@ -110,6 +125,98 @@ async function check(req, res, next) {
             }
             break;
 
+        case "ALL_NOTIFICATIONS":
+            // This is valid for: GET, PUT
+
+            // Both users and administrators can access a user's notifications
+            if (intent == "GET") {
+                if  (req.params.userId == req.user.id || isAdministrator(req.user)) {
+                    return next()
+                }
+            }
+
+            // Only the user himself can dismiss all notifications
+            if (intent == "PUT") {
+                if (req.params.userId == req.user.id) {
+                    return next()
+                }
+            }
+
+            break;
+
+        case "SINGLE_NOTIFICATION":
+            // This is valid for: PUT
+            
+            // Only the user himself can dismiss a notification
+            if (intent == "PUT") {
+                if (req.params.userId == req.user.id) {
+                    return next()
+                }
+            }
+
+            break;
+
+        case "ALL_USER_ORDERS":
+            // Only the user himself can create new orders
+            if (intent == "POST") {
+                if (req.params.userId == req.user.id && isConsumer(req.user)) {
+                    return next()
+                }
+            } 
+            // Only the user himself or an administrator can see all user orders
+            else if (intent == "GET") {
+                if ((req.params.userId == req.user.id) ||
+                    (isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+        case "ALL_ORDERS":
+            // This is valid for: GET
+            // As long as they're authenticated, anyone can access ALL_ORDERS, they'll only get orders that pertain to themselves
+            return next();
+
+        case "SINGLE_ORDER":
+            if (intent == "GET") {
+                // Checking if the user has permission to see details regarding the order 
+
+                let isRelated = await persistence.checkUserOrderRelationship(req.user, req.params.orderId)
+
+                if (isRelated) {
+                    return next()
+                }
+            }
+
+            break;
+
+        case "SINGLE_ORDER_ITEM":
+            // This is valid for: GET, PUT
+            // To access details regarding a single order, the user has to be related to the order
+
+            if (intent == "PUT") {
+                // Checking if the user has permission to see details regarding the order
+
+                let isRelatedToOrder = await persistence.checkUserOrderRelationship(
+                    req.user,
+                    req.params.orderId)
+
+                if (isRelatedToOrder) {
+                    // Also checking if the item they're attempting to update belongs to them
+                    let isRelatedToItem = await persistence.checkUserItemRelationship(
+                        req.user,
+                        req.params.orderId,
+                        req.params.itemId)
+
+                    if (isRelatedToItem) {
+                        return next()
+                    }
+                }
+            }
+
+            break;
+
         case "ALL_CATEGORIES":
             // This is only valid for: POST
             if ((isAdministrator(req.user))) {
@@ -156,6 +263,26 @@ async function check(req, res, next) {
             // This is valid for: DELETE
             // Wishlist is only accessible to consumers
             if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_WAREHOUSES":
+            // This is valid for: GET
+            // Only the supplier and administrators can check all user warehouses
+
+            if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_WAREHOUSE":
+            // This is valid for: GET, PUT, DELETE
+            // Only the supplier and administrators can manipulate user warehouses
+
+            if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
                 return next()
             }
 

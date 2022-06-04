@@ -2,7 +2,7 @@
     <div class="p-4">
         <h4>Informações Pessoais</h4>
         <hr>
-        <i>As suas infromações pessoais não são publicos aos restantes consumidores da plataforma Greenly.<br>Apenas
+        <i>As suas informações pessoais não são publicas aos restantes consumidores da plataforma Greenly.<br>Apenas
            os admistradores, fornecedores e transportadores que estiveram e/ou estarão envolivdos num processo de entrega de umas das suas
            encomendas têm também acesso a estas informações.
         </i>
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-//import {Toast} from 'bootstrap/dist/js/bootstrap.bundle.js';
+import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -120,8 +120,12 @@ export default({
             document.getElementById("lastName").readOnly = true
             document.getElementById("email").readOnly = true
             document.getElementById("phoneNumber").readOnly = true
+            
             AuthService.getUser().then((result) => {
+                document.getElementById("firstName").value = result.first_name;
+                document.getElementById("lastName").value = result.last_name;
                 document.getElementById("email").value = result.email;
+                document.getElementById("phoneNumber").value = result.phone;
             })
             this.removeIsInvalid()
 
@@ -203,10 +207,10 @@ export default({
 
 <style scoped>
     .btn-primary{
-        background-color: #309C76;
+        background-color: #5E9F88;
         border-color: white;
     }
     #successToast {
-        background-color: #309C76 !important;
+        background-color: #5E9F88 !important;
     }
 </style>

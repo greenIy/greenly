@@ -53,29 +53,29 @@ const routes = [
     },
   },
   {
-    path: '/registar',
-    name: 'registar',
+    path: '/registo',
+    name: 'registo',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
   
   {
-    path: '/profile',
-    name: 'profile',
-    redirect: '/profile/personalInfo',
+    path: '/perfil',
+    name: 'perfil',
+    redirect: '/perfil/detalhes',
     component: ProfileView,
 
     children: [
-      { path: 'personalInfo',
+      { path: 'detalhes',
         name: 'personalInfo',
         component: ProfileView,
         },
-      { path: 'companyInfo',
+      { path: 'empresa',
         name: 'companyInfo',
         component: ProfileView,
         },
-      { path: 'orders',
+      { path: 'encomendas',
         name: 'orders',
         component: ProfileView,
         },
@@ -83,25 +83,32 @@ const routes = [
         name: 'wishlist',
         component: ProfileView,
       },
-      { path: 'addresses',
+      { path: 'moradas',
         name: 'addresses',
         component: ProfileView,
       },
-      { path: 'security',
+      { path: 'seguranca',
         name: 'security',
         component: ProfileView,
       },
-      { path: 'statistics',
+      { path: 'estatisticas',
         name: 'statistics',
         component: ProfileView,
       },
     ]
     },
     {
+<<<<<<< HEAD
       path: '/carrinho',
       name: 'cart',
       component() {
         return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
+=======
+      path: '/checkout',
+      name: 'checkout',
+      component() {
+        return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+>>>>>>> origin/development
       },
     }
 ];

@@ -25,11 +25,12 @@
                             <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                         </a>
                         <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
-                            <li><router-link to="/profile/personalInfo" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
-                            <li v-if="user.type == 'CONSUMER'"><router-link to="/profile/orders" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
-                            <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Painel de encomendas</a></router-link></li>
-                            <li v-if="user.type == 'CONSUMER'"><router-link to="/profile/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
+                            <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
+                            <li></li>
+                            <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
+                            <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/dashboard" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Dashboard </a></router-link></li>
+                            <hr class="dropdown-divider">
                             <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item" style="color: red !important; width: 85%">Terminar sessão</a></router-link></li>
                         </ul>
                     </div>
@@ -37,7 +38,7 @@
             </div>
             <div v-if="userIsLoggedIn" class="align-self-center nav-links mt-2 mb-2 ml-3">
                 <div class="dropdown">
-                    <span class="position-absolute top-0 start-100 translate-middle bg-custom border border-light rounded-circle" style="padding: 6px">
+                    <span v-if="!this.user.phone || addressesLength() == 0" class="position-absolute top-0 start-100 translate-middle bg-custom border border-light rounded-circle" style="padding: 6px">
                         <span class="visually-hidden"></span>
                     </span>
                     <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -45,12 +46,12 @@
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 350px;">
                         <div class="list-group list-group-flush" style="">
-                            <!-- <a class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
+                            <a v-if="this.user.phone && addressesLength() != 0" class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
                                 <div class="d-flex justify-content-center align-items-center p-4">
                                     Não tem notificações.
                                 </div>
-                            </a> -->
-                            <router-link to="/profile/personalInfo" style="margin: 0;">
+                            </a>
+                            <router-link v-if="!this.user.phone" to="/perfil/detalhes" style="margin: 0;">
                                 <a class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">Perfil incompleto (telemóvel)</h6>
@@ -59,7 +60,7 @@
                                     <small>Por favor clique aqui para associar um número de telemóvel ao seu perfil.</small>
                                 </a>
                             </router-link>
-                            <router-link to="/profile/addresses" style="margin: 0;">
+                            <router-link v-if="addressesLength() == 0" to="/perfil/moradas" style="margin: 0;">
                                 <a class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">Perfil incompleto (morada)</h6>
@@ -116,28 +117,34 @@ import AuthService from '../../router/auth';
 
 
 export default {
-  name: 'TheNavbar',
-  data () {
-    return {
-        search: '',
-        userIsLoggedIn: this.$store.getters.getState,
-        user: this.$store.getters.getUser
-    }
-  },
-  methods: {
-    submit(search) {
-        this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
+    name: 'TheNavbar',
+    mounted() {
+        this.getUserInfo();
+    },
+    data () {
+        return {
+            search: '',
+            userIsLoggedIn: this.$store.getters.getState,
+            user: this.$store.getters.getUser,
+        }
     },
     methods: {
         submit(search) {
-            this.$emit('search-information', search);
+            this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
         },
+        getUserInfo() {
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
+        },
+        addressesLength() {
+            var user = this.getUserInfo()
+            var size = Object.keys(user.addresses).length;
+            return size
+        },  
         logoutUser() {
             AuthService.logoutUser()
             // TODO: Eventualmente fazer um pedido a /auth/logout aqui
         }
-
-    }
     }
 }
 </script>
@@ -147,7 +154,6 @@ export default {
         background-color: #5e9f88;
         color: #fcfaf9;
     }
-
     .navmenu2 {
         background-color: #ffffff;
         color: #000000;
@@ -162,39 +168,31 @@ export default {
         color: #000000;
         text-decoration: none;
         margin-left: 20px;
-
     }
     .navmenu a:hover {
         color: #e4e4e4;
     }
-
     .navmenu2 a:hover {
         color: #5e9f88;
     }
-
     .nav-links {
         font-size: 12px;
     }
-
     .container {
         width: 100%;
     }
-
     img {
         width: 90px;
         height: 35px;
     }
-
     .search-group {
         width: 825px!important;
     }
-
     input, button {
         border-radius: 20px;
         line-height: 15px;
         font-size: 15px;
     }
-    
     button {
         background-color: #dce5e1;
         border: 0px;
@@ -212,15 +210,10 @@ export default {
     .form-control{
         box-shadow:none;
     }
-
-    .router-link-exact-active {
-       text-decoration: underline!important;
-    }
-
     .dropdown-header, .dropdown-item, .dropdown-item a {
         color: black !important;
     }
     .bg-custom {
-        background-color: #222725 !important;
+        background-color: #E3C12B !important;
     }  
 </style>
