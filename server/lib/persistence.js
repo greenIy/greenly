@@ -2861,7 +2861,7 @@ async function getWarehouses(userID) {
 
             let address = await prisma.address.findUnique({
                 where: {
-                    id: warehouse.id
+                    id: warehouse.address
                 }, select: {
                     id: true,
                     street: true,
@@ -3186,11 +3186,316 @@ async function deleteWarehouse(userID, warehouseID) {
         })
 
     } catch (e) {
+        return null
+    }
+
+}
+
+/* Distribution Center Functions */
+
+async function getDistributionCenters(userID) {
+
+    try {
+        
+        let centers = await prisma.distribution_Center.findMany({
+            where: {
+                transporter: userID
+            },
+            select: {
+                id: true,
+                address: true,
+                capacity: true
+            }
+        })
+
+        // Cleaning and adding data
+
+        centers = await Promise.all(centers.map(async (center) => {
+
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: center.address
+                }, select: {
+                    id: true,
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+
+            let vehicles = await prisma.vehicle.findMany({
+                where: {
+                    transporter: userID,
+                    distribution_center: center.id
+                }
+            })
+
+            center.address = address
+            center.total_vehicles = vehicles.length
+
+            return center
+
+        }))
+
+        return centers
+
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+async function getDistributionCenter(userID, centerID) {
+
+    try {
+        
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: centerID
+                }
+            },
+            select: {
+                id: true,
+                capacity: true,
+                address: true
+            }
+        })
+
+        let address = await prisma.address.findUnique({
+            where: {
+                id: center.address
+            }, select: {
+                id: true,
+                street: true,
+                country: true,
+                city: true,
+                latitude: true,
+                longitude: true,
+                postal_code: true
+            }
+        })
+
+        let vehicles = await prisma.vehicle.findMany({
+            where: {
+                transporter: userID,
+                distribution_center: center.id
+            }, select: {
+                id: true,
+                resource_usage: true,
+                average_emissions: true,
+                license_plate: true,
+                fuel_type: true,
+                payload_capacity: true
+            }
+        })
+
+        center.address = address
+        center.vehicles = vehicles
+        center.total_vehicles = vehicles.length
+
+        return center
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+async function createDistributionCenter(userID, addressID, capacity) {
+    try {
+        
+        let address = await prisma.address.findUnique({
+            where: {
+                id: addressID
+            }
+        })
+
+        // In case the selected address doesn't exist or doesn't belong to the user
+
+        if (!address || address.user != userID) {
+            return "INVALID_ADDRESS"
+        }
+
+        // In case this address is already being used by the user for another distribution center
+
+        let addressAlreadyInUse = await prisma.distribution_Center.findFirst({
+            where: {
+                transporter: userID,
+                address: addressID
+            }
+        })
+
+        if (addressAlreadyInUse) {
+            return "ADDRESS_IN_USE"
+        }
+
+        let latestCenter = await prisma.distribution_Center.findFirst({
+            where: {
+                transporter: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let centerCount = latestCenter ? latestCenter.id : 0
+
+        let newCenter = await prisma.distribution_Center.create({
+            data: {
+                id: centerCount + 1,
+                transporter: userID,
+                address: addressID,
+                capacity: capacity,
+            }
+        })
+
+        return newCenter.id
+        
+    } catch (e) {
+        return null
+    }
+}
+
+async function updateDistributionCenter(userID, centerID, params) {
+
+    try {
+    
+        // Proofing
+
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            }
+        })
+
+        if (!center) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
+        // Determining which data to edit
+
+        let centerKeyMap = [
+            "address",
+            "capacity"
+        ]
+
+        let updatedCenterData = {}
+
+        for (const [key, value] of Object.entries(params)) {
+            if (centerKeyMap.includes(key)) {                
+                updatedCenterData[key] = value
+            }
+        }
+        
+        // Checking if the new selected address is valid
+
+        if ("address" in updatedCenterData) {
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: updatedCenterData.address
+                }
+            })
+    
+            // In case the selected address doesn't exist or doesn't belong to the user
+    
+            if (!address || address.user != userID) {
+                return "INVALID_ADDRESS"
+            }
+    
+            // In case this address is already being used by the user for another center (except the current one)
+    
+            let addressAlreadyInUse = await prisma.distribution_Center.findFirst({
+                where: {
+                    transporter: userID,
+                    address: updatedCenterData.address
+                }
+            })
+
+            if (addressAlreadyInUse && center.address != address.id) {
+                return "ADDRESS_IN_USE"
+            }
+        }
+
+        // Updating the center
+
+        let updatedCenter = await prisma.distribution_Center.update({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            },
+            data: updatedCenterData
+        })
+
+    } catch (e) {
         console.log('e :>> ', e);
         return null
     }
 
 }
+
+async function deleteDistributionCenter(userID, centerID) {
+    // TODO: PROOF FOR SOFT-DELETE
+
+    try {
+        // Proofing
+
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            },
+            select: {
+                Vehicle: {
+                    where: {
+                        transporter: userID,
+                        distribution_center: centerID
+                    }
+                }
+            }
+        })
+
+        if (!center) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
+        // A center cannot be removed if there are still supplies registered to it
+
+        if (center.Vehicle.length) {
+            return "DISTRIBUTION_CENTER_NOT_EMPTY"
+        }
+
+        // Removing the center
+    
+        let removedCenter = await prisma.distribution_Center.delete({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: centerID
+                }
+            }
+        })
+
+        return removedCenter
+
+    } catch (e) {
+        return null
+    }
+
+}
+
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -3256,6 +3561,13 @@ module.exports = {
     getWarehouse,
     createWarehouse,
     updateWarehouse,
-    deleteWarehouse
+    deleteWarehouse,
+
+    // Distribution Center Functions
+    getDistributionCenters,
+    getDistributionCenter,
+    createDistributionCenter,
+    updateDistributionCenter,
+    deleteDistributionCenter
 
 }

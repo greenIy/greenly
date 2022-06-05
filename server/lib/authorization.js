@@ -32,6 +32,10 @@ async function check(req, res, next) {
         /* Supplier Routes */
         "/supplier/:userId/warehouses":                 "ALL_WAREHOUSES",
         "/supplier/:userId/warehouses/:warehouseId":    "SINGLE_WAREHOUSE",
+
+        /* Transporter Routes */
+        "/transporter/:userId/centers":                 "ALL_DISTRIBUTION_CENTERS",
+        "/transporter/:userId/centers/:centerId":       "SINGLE_DISTRIBUTION_CENTER"
         
     }
 
@@ -283,6 +287,26 @@ async function check(req, res, next) {
             // Only the supplier and administrators can manipulate user warehouses
 
             if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_DISTRIBUTION_CENTERS":
+            // This is valid for: GET
+            // Only the transporter and administrators can check all user distribution centers
+
+            if (((req.params.userId == req.user.id) && isTransporter(req.user)) || (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_DISTRIBUTION_CENTER":
+            // This is valid for: GET, PUT, DELETE
+            // Only the transporter and administrators can manipulate user distribution centers
+
+            if (((req.params.userId == req.user.id) && isTransporter(req.user)) || (isAdministrator(req.user))) {
                 return next()
             }
 
