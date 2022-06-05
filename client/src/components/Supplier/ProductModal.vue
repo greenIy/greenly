@@ -18,8 +18,8 @@
               <select v-if="canceled != false" class="dropDownS disable-classe cancelOrder" id="selectState"  disabled>
                 <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
               </select>
-              <select v-if="nextOrder != false" class="dropDownS disable-classe" id="selectState"  disabled>
-                <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:##6c757d;color:#000000;">  {{ getCurrentStatus()[1] }}</option>
+              <select v-if="nextOrder != false" class="disable-classe" id="selectState" style="background-color:#6c757d;padding: 0.375rem 0.75rem;font-size: 1rem;border-radius: 0.25rem;color:#ffffff; outline: none;" disabled>
+                <option :value="getCurrentStatus()[0]"  selected="selected" >  {{ getCurrentStatus()[1] }}</option>
               </select>
               <select v-if="complete != true && canceled != true && nextOrder != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
                 <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
