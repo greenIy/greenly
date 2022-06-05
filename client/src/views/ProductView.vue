@@ -96,7 +96,6 @@
                       <th scope="col">{{a.title}}</th>
                       <td scope="row">{{a.content}}</td>
                     </tr>
-               
                   </tbody>
                 </table>
               </div>

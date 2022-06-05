@@ -12,10 +12,13 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-            <select v-if="complete != false" class="dropDownS disable-classe" id="selectState"  disabled>
-              <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
+            <select v-if="complete != false" class="dropDownS disable-classe sucessOrder" id="selectState"  disabled>
+              <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
             </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
+             <select v-if="canceled != false" class="dropDownS disable-classe cancelOrder" id="selectState"  disabled>
+              <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
+            </select>
+             <select v-if="complete != true && canceled != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
               <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
               <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
             </select>
@@ -41,7 +44,7 @@
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>
-                  <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box-open']" /><small>Produto</small></span></th>
+                  <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box']" /><small>Produto</small></span></th>
                   <td scope="row" class="textAlign-right"><span><small>{{element.item.product.name}}</small></span></td>
                 </tr>
                 <tr>
@@ -90,7 +93,7 @@
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.supply_price}}€</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos de Armazenamento</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'industry']" /><small>Recursos de Armazenamento</small></span></th>
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_resource_usage}} kWh/dia</small></span></td>
                     </tr>
                     <tr>
@@ -141,7 +144,7 @@
 <script>
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCubes, faTruck, faXmark, faBoxOpen , faPlusMinus, faFilePen, faAt, faUser, faHouse, faCalendar 
+import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faIndustry, faAt, faUser, faHouse, faCalendar 
 , faMoneyBillWave, faWarehouse , faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
 
 import http from "../../../http-common"
@@ -150,9 +153,10 @@ import http from "../../../http-common"
 library.add(faCubes);
 library.add(faTruck);
 library.add(faXmark);
-library.add(faBoxOpen);
+library.add(faBox);
 library.add(faPlusMinus);
 library.add(faFilePen);
+library.add(faIndustry);
 library.add(faAt);
 library.add(faUser);
 library.add(faHouse);
@@ -183,6 +187,7 @@ export default {
       shipping_address:Object,
       warehouse:Object,
       complete:false,
+      canceled:false,
       status: [
         { 
           current_status: "TRANSPORT_IMMINENT",
@@ -295,8 +300,11 @@ export default {
     verify(){
       let x = document.getElementById("selectState").options[0].value;
 
-      if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE") {
+      if (x == "COMPLETE") {
         this.complete = true;
+      }
+      else if(x == "CANCELED" || x == "FAILURE"){
+        this.canceled = true;
       }
     },
     async getMoreDetails() {
@@ -332,14 +340,14 @@ export default {
   color:white;
 }
 .modal-body{
-    height: 23rem!important;
+    height: 24rem!important;
     overflow-y: auto;
 }
 .greenly-color{
   color:#000000;
 }
 .dropDownS{
-  background-color:#6c757d;
+  background-color:#E3C12B;
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   border-radius: 0.25rem;
@@ -354,5 +362,11 @@ export default {
   -moz-appearance: none;
   /* for Chrome */
   -webkit-appearance: none;
+}
+.sucessOrder{
+  background-color:#5e9f88!important;
+}
+.cancelOrder{
+  background-color:#f42100!important;
 }
 </style>

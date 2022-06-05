@@ -12,15 +12,21 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-             <select v-if="complete != false" class="dropDownS disable-classe" id="selectState" disabled>
-              <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000">{{ getCurrentStatus()[1] }}</option>
-            </select>
-             <select v-if="complete != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
-              <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
-              <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
-            </select>
+              <select v-if="complete != false" class="dropDownS disable-classe sucessOrder" id="selectState"  disabled>
+                <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
+              </select>
+              <select v-if="canceled != false" class="dropDownS disable-classe cancelOrder" id="selectState"  disabled>
+                <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
+              </select>
+              <select v-if="nextOrder != false" class="dropDownS disable-classe" id="selectState"  disabled>
+                <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:##6c757d;color:#000000;">  {{ getCurrentStatus()[1] }}</option>
+              </select>
+              <select v-if="complete != true && canceled != true && nextOrder != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
+                <option :value="getCurrentStatus()[0]"  selected="selected" style="background-color:#ffffff;color:#000000;">{{ getCurrentStatus()[1] }}</option>
+                <option :value="getNextStatus()[0]"  style="background-color:#ffffff;color:#000000;">{{ getNextStatus()[1] }}</option>
+              </select>
+            </div>
           </div>
-        </div>
         <div>
           <ul class="nav nav-tabs mt-3">
             <li class="nav-item ">
@@ -40,7 +46,7 @@
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>
-                  <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box-open']" />Produto</small></span></th>
+                  <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box']" />Produto</small></span></th>
                   <td scope="row" class="textAlign-right"><span><small>{{element.item.product.name}}</small></span></td>
                 </tr>
                 <tr>
@@ -90,7 +96,7 @@
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.supply_price}}€</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" /><small>Recursos de Armazenamento</small></span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'industry']" /><small>Recursos de Armazenamento</small></span></th>
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.supplier_resource_usage}}kWh/dia</small></span></td>
                     </tr>
                     <tr>
@@ -142,18 +148,19 @@
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import http from "../../../http-common"
-import { faCubes, faTruck, faXmark,  faBoxOpen , faPlusMinus, faFilePen, faAt, faUser, faHouse, faCalendar 
+import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
 , faMoneyBillWave, faWarehouse, faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faCubes);
 library.add(faTruck);
 library.add(faXmark);
-library.add(faBoxOpen);
+library.add(faBox);
 library.add(faPlusMinus);
 library.add(faFilePen);
 library.add(faAt);
 library.add(faUser);
 library.add(faHouse);
+library.add(faIndustry);
 library.add(faCalendar);
 library.add(faMoneyBillWave);
 library.add(faWarehouse);
@@ -182,6 +189,8 @@ export default {
       shipping_address:Object,
       warehouse:Object,
       complete:false,
+      canceled:false,
+      nextOrder:false,
       status: [
         { 
           current_status: "PROCESSING",
@@ -285,8 +294,14 @@ export default {
     verify(){
       let x = document.getElementById("selectState").options[0].value;
 
-      if (x == "COMPLETE" || x == "CANCELED" || x == "FAILURE" || x == "TRANSPORT_IMMINENT" || x == "AWAITING_TRANSPORT") {
+      if (x == "COMPLETE") {
         this.complete = true;
+      }
+      else if(x == "TRANSPORT_IMMINENT" || x == "AWAITING_TRANSPORT"){
+        this.nextOrder = true;
+      }
+      else if(x == "CANCELED" || x == "FAILURE"){
+        this.canceled = true;
       }
     },
     async getMoreDetails() {
@@ -321,14 +336,15 @@ export default {
   color:white;
 }
 .modal-body{
-    height: 23rem!important;
+    height: 24rem!important;
     overflow-y: auto;
 }
 .greenly-color{
   color:#000000;
+  background-color:none!important;
 }
 .dropDownS{
-  background-color:#6c757d;
+  background-color:#E3C12B;
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   border-radius: 0.25rem;
@@ -343,5 +359,11 @@ export default {
   -moz-appearance: none;
   /* for Chrome */
   -webkit-appearance: none;
+}
+.sucessOrder{
+  background-color:#5e9f88!important;
+}
+.cancelOrder{
+  background-color:#f42100!important;
 }
 </style>
