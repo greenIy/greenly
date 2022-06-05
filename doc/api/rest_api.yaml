@@ -1787,9 +1787,7 @@ paths:
       tags:
       - transporter
       summary: Obter centros de distribuição associados ao transportador userId
-      description: "Devolve um array de objetos DistributionCenter, conforme os centros\
-        \ de distribuição registados pelo transportador userId \nApenas pode ser feito\
-        \ pelo transportador quando autenticado, ou por um administrador"
+      description: "Devolve um array de centros de distribuição registados pelo transportador userId. Apenas pode ser feito pelo transportador quando autenticado, ou por um administrador"
       operationId: getDistributionCenters
       parameters:
       - name: userId
@@ -1805,20 +1803,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DistributionCenter'
+                properties:
+                  items:
+                    $ref: '#/components/schemas/SimplifiedDistributionCenter'
         400:
           description: userId inválido
           content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
+      security:
+        - bearerAuth: []
     post:
       tags:
       - transporter
       summary: Adicionar centro de distribuição
-      description: "Adiciona um novo objeto DistributionCenter ao conjunto de centro\
-        \ de distribuição do transportador \nApenas pode ser feito pelo transportador\
-        \ quando autenticado, ou por um administrador"
+      description: "Adiciona um novo centro de distribuição ao conjunto de centros de distribuição do transportador. Apenas pode ser feito pelo transportador quando autenticado, ou por um administrador"
       operationId: addDistributionCenter
       parameters:
       - name: userId
@@ -1829,46 +1841,79 @@ paths:
         schema:
           type: integer
       requestBody:
-        description: Cria um objeto DistributionCenter, adicionando-o à coleção de
-          centros de distribuição do transportador
+        description: Cria um novo centro de distribuição, adicionando-o à coleção de
+          centros de distribuição do transportador. A morada selecionada deverá estar registada na conta do transportador e não deverá estar em utilização por outro centro de distribuição.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DistributionCenter'
+              $ref: '#/components/schemas/SentDistributionCenter'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo centro de distribuição"
         400:
-          description: Dados inválidos
-          content: {}
+          description: Morada escolhida é inválida
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Invalid address. Make sure to use an address registered to your account."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Utilizador não encontrado
           content: {}
-      x-codegen-request-body-name: body
+        409:
+          description: Morada escolhida já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This address is already registered to another distribution center in your account."
+      security:
+        - bearerAuth: []
+
   /transporter/{userId}/centers/{centerId}:
     get:
       tags:
       - transporter
-      summary: Obter informação sobre um centro de distribuição centerId do transportador
+      summary: Obter informação sobre um centro de distribuição do transportador
         userId
-      description: "Devolve um objeto DistributionCenter \nApenas pode ser feito pelo\
-        \ transportador quando autenticado, ou por um administrador"
+      description: "Devolve um centro de distribuição, incluindo todos os veículos associados. Apenas pode ser feito pelo transportador quando autenticado, ou por um administrador"
       operationId: getCenterById
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cuja informação se deseja saber \nDeve\
-          \ corresponder a um utilizador do tipo transporter"
+        description: "userId do utilizador cuja informação se deseja saber. Deve corresponder a um utilizador do tipo transporter."
         required: true
         schema:
           type: integer
       - name: centerId
         in: path
-        description: "centerId do centro de distribuição cuja informação se deseja\
-          \ saber \nDeve corresponder a um centro de distribuição associado ao utilizador\
-          \ userId"
+        description: "centerId do centro de distribuição cuja informação se deseja saber. Deve corresponder a um centro de distribuição associado ao utilizador userId"
         required: true
         schema:
           type: integer
@@ -1878,92 +1923,166 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DistributionCenter'
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ExpandedDistributionCenter'
         400:
-          description: userId ou centerId inválidos
+          description: userId inválido
           content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou centro de distribuição não encontrados
-          content: {}
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Distribution center not found. Make sure to specify a distribution center registered to your account."
+      security:
+        - bearerAuth: []
     put:
       tags:
       - transporter
       summary: Atualizar centro de distribuição
-      description: "Permite atualizar um centro de distribuição centerId associado\
-        \ ao transportador \nApenas pode ser feito pelo transportador userId quando\
-        \ autenticado"
+      description: "Permite atualizar um centro de distribuição centerId associado ao transportador. Apenas pode ser feito pelo transportador userId quando autenticado ou por um administrador."
       operationId: updateDistributionCenter
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador associado ao centro de distribuição \n\
-          Deve corresponder a um utilizador do tipo transporter"
+        description: "userId do utilizador associado ao centro de distribuição. Deve corresponder a um utilizador do tipo transporter"
         required: true
         schema:
           type: integer
       - name: centerId
         in: path
-        description: "centerId do centro de distribuição a ser atualizado \nDeve corresponder\
-          \ a um centro de distribuição associado ao utilizador userId"
+        description: "centerId do centro de distribuição a ser atualizado. Deve corresponder a um centro de distribuição associado ao utilizador userId"
         required: true
         schema:
           type: integer
       requestBody:
-        description: Atualiza o objeto DistributionCenter
+        description: Atualiza o objeto centro de distribuição. Apenas deverão ser incluidos os atributos que se deseja alterar. A morada selecionada deverá estar registada na conta do transportador e não deverá estar em utilização por outro centro de distribuição.
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/DistributionCenter'
+              $ref: '#/components/schemas/SentDistributionCenter'
         required: true
       responses:
-        204:
-          description: Centro de distribuição atualizado com sucesso
-          content: {}
+        201:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ExpandedDistributionCenter'
         400:
-          description: userId ou centerId inválidos
+          description: userId inválido
           content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou centro de distribuição não encontrados
-          content: {}
-      x-codegen-request-body-name: body
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Distribution center not found. Make sure to specify a distribution center registered to your account."
+        409:
+          description: Morada escolhida já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This address is already registered to another distribution center in your account."
+      security:
+        - bearerAuth: []
     delete:
       tags:
       - transporter
       summary: Remover centro de distribuição
-      description: "Permite remover um centro de distribuição centerId associado ao\
-        \ transportador \nApenas pode ser feito pelo transportador userId quando autenticado"
+      description: "Permite remover um centro de distribuição centerId associado ao transportador. Apenas pode ser feito pelo transportador userId quando autenticado ou por um administrador"
       operationId: deleteDistributionCenter
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador associado ao centro de distribuição \n\
-          Deve corresponder a um utilizador do tipo transporter"
+        description: "userId do utilizador associado ao centro de distribuição. Deve corresponder a um utilizador do tipo transporter"
         required: true
         schema:
           type: integer
       - name: centerId
         in: path
-        description: "centerId do centro de distribuição a ser removido \nDeve corresponder\
-          \ a um centro de distribuição associado ao utilizador userId"
+        description: "centerId do centro de distribuição a ser removido. Deve corresponder a um centro de distribuição associado ao utilizador userId"
         required: true
         schema:
           type: integer
       responses:
-        204:
+        200:
           description: Centro de distribuição removido com sucesso
-          content: {}
-        400:
-          description: userId ou centerId inválidos
-          content: {}
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou centro de distribuição não encontrados
-          content: {}
+          description: Armazém não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Distribution center not found. Make sure to specify a distribution center registered to your account."
+        409:
+          description: Centro de distribuição ainda com veículos
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This distribution center cannot be deleted since there are vehicles registered to it. Remove all vehicles in this distribution center before attempting to delete it."
+      security:
+        - bearerAuth: []
+
+
   ### SUPPLIER ROUTES
   ## INVENTORY
   /supplier/{userId}/inventory:
@@ -3255,22 +3374,6 @@ components:
       xml:
         name: ItemHistory
 
-    DistributionCenter:
-      type: object
-      properties:
-        capacity:
-          type: integer
-          description: Capacidade de veículos de um centro de distribuição
-        address:
-          $ref: '#/components/schemas/ReceivedAddress'
-        vehicles:
-          type: array
-          description: Informação sobre os veículos que estão no centro de distribuição
-          items:
-            $ref: '#/components/schemas/Vehicle'
-      description: Objeto utilizado para devolver informações sobre um centro de distribuição
-      xml:
-        name: DistributionCenter
     ReceivedCart:
       type: object
       properties:
@@ -3662,6 +3765,101 @@ components:
         uma encomenda
       xml:
         name: Payment
+
+    # Distribution Center Definitions
+
+    SimplifiedDistributionCenter:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Código identificador do centro de distribuição
+        address:
+          type: object    
+          description: Morada do armazém em questão
+          properties:
+            street:
+              type: string
+              description: Rua da morada
+            city:
+              type: string
+              description: Cidade da morada
+            country:
+              type: string
+              description: País da morada
+            postal_code:
+              type: string
+              description: Código postal da morada
+            latitude:
+              type: number
+              description: A latitude da morada especificada (precisão de 6 decimais)
+            longitude:
+              type: number
+              description: A longitude da morada especificada (precisão de 6 decimais)
+        capacity:
+          type: integer
+          description: Representação de veículos de um centro de distribuição
+        total_vehicles:
+          type: integer
+          description: Número de veículos associados ao centro de distribuição
+      description: Objeto utilizado para devolver informações sobre um centro de distribuição
+      xml:
+        name: DistributionCenter
+
+    ExpandedDistributionCenter:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Código identificador do centro de distribuição
+        address:
+          type: object    
+          description: Morada do armazém em questão
+          properties:
+            street:
+              type: string
+              description: Rua da morada
+            city:
+              type: string
+              description: Cidade da morada
+            country:
+              type: string
+              description: País da morada
+            postal_code:
+              type: string
+              description: Código postal da morada
+            latitude:
+              type: number
+              description: A latitude da morada especificada (precisão de 6 decimais)
+            longitude:
+              type: number
+              description: A longitude da morada especificada (precisão de 6 decimais)
+        capacity:
+          type: integer
+          description: Representação de veículos de um centro de distribuição
+        total_vehicles:
+          type: integer
+          description: Número de veículos associados ao centro de distribuição
+        vehicles:
+          type: array
+          description: Conjunto de veículos associados ao centro de distribuição
+          items:
+            $ref: '#/components/schemas/Vehicle'
+      description: Objeto utilizado para devolver informações sobre um centro de distribuição
+      xml:
+        name: DistributionCenter
+
+    SentDistributionCenter:
+      type: object
+      properties:
+        address:
+          type: integer
+          description: Código identificador da morada a utilizar para o centro de distribuição em questão
+        capacity:
+          type: number
+          format: float
+          description: Capacidade total do centro de distribuição (em m²)
+    
 
     ## TODO: Transform this into responses
     ## CONFIRMATIONS AND ERRORS
