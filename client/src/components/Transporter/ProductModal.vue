@@ -44,7 +44,7 @@
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>
-                  <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box']" /><small>Produto</small></span></th>
+                  <th scope="col"><span><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'shopping-bag']" /><small>Produto</small></span></th>
                   <td scope="row" class="textAlign-right"><span><small>{{element.item.product.name}}</small></span></td>
                 </tr>
                 <tr>
@@ -145,7 +145,7 @@
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faIndustry, faAt, faUser, faHouse, faCalendar 
-, faMoneyBillWave, faWarehouse , faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
+, faMoneyBillWave, faWarehouse , faGasPump, faSun, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 
 import http from "../../../http-common"
 
@@ -165,6 +165,7 @@ library.add(faMoneyBillWave);
 library.add(faWarehouse);
 library.add(faGasPump);
 library.add(faSun);
+library.add(faShoppingBag);
 
 export default {
   name: "TransportadorModal",
@@ -195,13 +196,13 @@ export default {
           next_status: [
             {
               name: "AWAITING_TRANSPORT", 
-              alias: "PRESTES A SER LEVANTADAS"
+              alias: "PRESTE A SER LEVANTADA"
             }
           ]
         },
         {
           current_status: "AWAITING_TRANSPORT",
-          alias: "PRESTES A SER LEVANTADAS",
+          alias: "PRESTE A SER LEVANTADA",
           next_status:[
             {
               name: "IN_TRANSIT",
@@ -225,13 +226,13 @@ export default {
           next_status:[
             {
               name: "COMPLETE",
-              alias: "ENTREGUES"
+              alias: "ENTREGUE"
             }
           ]
         },
         {
           current_status: "COMPLETE",
-          alias: "ENTREGUES",
+          alias: "ENTREGUE",
           next_status:[
             {
               name: "",
@@ -241,7 +242,7 @@ export default {
         },
         {
           current_status: "CANCELED",
-          alias: "CANCELADAS",
+          alias: "CANCELADA",
           next_status:[
             {
               name: "",
@@ -251,7 +252,7 @@ export default {
         },
         {
           current_status: "FAILURE",
-          alias: "FALHADAS",
+          alias: "FALHADA",
           logo: "circle-exclamation",
           next_status:[
           {
@@ -345,6 +346,7 @@ export default {
 }
 .greenly-color{
   color:#000000;
+  background-color:#ffffff!important;
 }
 .dropDownS{
   background-color:#E3C12B;

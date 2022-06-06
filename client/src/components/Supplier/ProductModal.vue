@@ -46,7 +46,7 @@
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>
-                  <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'box']" />Produto</small></span></th>
+                  <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'shopping-bag']" />Produto</small></span></th>
                   <td scope="row" class="textAlign-right"><span><small>{{element.item.product.name}}</small></span></td>
                 </tr>
                 <tr>
@@ -149,7 +149,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
-, faMoneyBillWave, faWarehouse, faGasPump, faSun} from "@fortawesome/free-solid-svg-icons";
+, faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faCubes);
 library.add(faTruck);
@@ -166,6 +166,7 @@ library.add(faMoneyBillWave);
 library.add(faWarehouse);
 library.add(faGasPump);
 library.add(faSun);
+library.add(faShoppingBag);
 
 
 
@@ -198,23 +199,23 @@ export default {
           next_status: [
             {
               name: "AWAITING_TRANSPORT", 
-              alias: "PRONTAS PARA TRANSPORTE"
+              alias: "PRONTA PARA TRANSPORTE"
             }
           ]
         },
         {
           current_status: "AWAITING_TRANSPORT",
-          alias: "PRONTAS PARA TRANSPORTE",
+          alias: "PRONTA PARA TRANSPORTE",
           next_status:[
             {
               name: "TRANSPORT_IMMINENT",
-              alias: "PRESTES A SER LEVANTADAS"
+              alias: "PRESTE A SER LEVANTADA"
             }
           ]
         },
         {
           current_status: "TRANSPORT_IMMINENT",
-          alias: "PRESTES A SER LEVANTADAS",
+          alias: "PRESTE A SER LEVANTADA",
           next_status:[
             {
               name: "",
@@ -224,7 +225,7 @@ export default {
         },
         {
           current_status: "COMPLETE",
-          alias: "ENTREGUES",
+          alias: "ENTREGUE",
           next_status:[
             {
               name: "",
@@ -234,7 +235,7 @@ export default {
         },
         {
           current_status: "CANCELED",
-          alias: "CANCELADAS",
+          alias: "CANCELADA",
           next_status:[
             {
               name: "",
@@ -244,7 +245,7 @@ export default {
         },
         {
           current_status: "FAILURE",
-          alias: "FALHADAS",
+          alias: "FALHADA",
           logo: "circle-exclamation",
           next_status:[
           {
@@ -341,7 +342,7 @@ export default {
 }
 .greenly-color{
   color:#000000;
-  background-color:none!important;
+  background-color:#ffffff!important;
 }
 .dropDownS{
   background-color:#E3C12B;

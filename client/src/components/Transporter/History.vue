@@ -27,12 +27,12 @@ import Draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlus , faBoxOpen, faXmark, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faPlus , faBoxOpen, faCircleXmark, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faPlus);
 library.add(faBoxOpen);
-library.add(faXmark);
+library.add(faCircleXmark);
 library.add(faCircleExclamation);
 
 export default {
@@ -51,7 +51,7 @@ export default {
          {
           title: "CANCELADAS",
           status: "CANCELED",
-          logo: "xmark",
+          logo: "circle-xmark",
           orders: []
         },
           {

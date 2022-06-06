@@ -27,14 +27,14 @@ import Draggable from "vuedraggable";
 import Order from "@/components/Supplier/Order.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheck, faPlus , faBoxOpen, faXmark, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faPlus , faBoxOpen, faCircleXmark, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(faPlus);
 library.add(faBoxOpen);
-library.add(faXmark);
+library.add(faCircleXmark);
 library.add(faCircleExclamation);
-library.add(faCheck);
+library.add(faCircleCheck);
 
 export default {
   name: "History",
@@ -52,13 +52,13 @@ export default {
           {
           title: "ENTREGUES",
           status: "COMPLETE",
-          logo: "check",
+          logo: "circle-check",
           orders: [ ]
         },
          {
           title: "CANCELADAS",
           status: "CANCELED",
-          logo: "xmark",
+          logo: "circle-xmark",
           orders: [ ]
         },
           {

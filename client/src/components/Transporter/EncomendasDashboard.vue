@@ -27,15 +27,15 @@ import Draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTruck , faCheck , faHourglass, faTruckRampBox, faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faTruck , faCircleCheck , faClock, faTruckRampBox, faHouseSignal } from "@fortawesome/free-solid-svg-icons";
 
 import http from "../../../http-common";
 
 library.add(faTruck);
-library.add(faCheck);
-library.add(faHourglass);
+library.add(faCircleCheck);
+library.add(faClock);
 library.add(faTruckRampBox);
-library.add(faMapLocationDot);
+library.add(faHouseSignal);
 
 export default {
   name: "Dashboard",
@@ -52,7 +52,7 @@ export default {
          {
           title: "À ESPERA DE TRANSPORTE",
           status: "TRANSPORT_IMMINENT",
-          logo: "hourglass",
+          logo: "clock",
           next_status: "AWAITING_TRANSPORT",
           orders: [ ]
         },
@@ -72,14 +72,14 @@ export default {
         },
         {
           title: "PRESTES A SER ENTREGUES",
-          logo: "map-location-dot",
+          logo: "house-signal",
           status: "LAST_MILE",
           next_status: "COMPLETE",
           orders: [ ]
         },
          {
           title: "ENTREGUES",
-          logo: "check",
+          logo: "circle-check",
           status: "COMPLETE",
           next_status: "",
           orders: []
