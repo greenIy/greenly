@@ -121,6 +121,26 @@ router.delete('/:userId/centers/:centerId', authentication.check, authorization.
 
 })
 
-// TODO: Add route.delete
+/* Vehicle Routes */
+
+router.get('/:userId/vehicles', authentication.check, authorization.check, (req, res) => {
+// TODO: Get should have a distribution center filter
+    persistence.getVehicles(
+        Number(req.params.userId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            default:
+                return res.status(200).json(result)
+        }
+    })
+
+});
+
+// TODO: Expanded GET should return all related orders
+
+
+
 
 module.exports = router;
