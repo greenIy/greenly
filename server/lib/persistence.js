@@ -2297,24 +2297,20 @@ async function decrementSupplyStock(orderId) {
     // Iterating through items in order to decrease stock
     await Promise.all(order.items.map(async (orderItem) => {
 
+        // TODO: PROOF FOR STOCK RUPTURE
         // Decrementing corresponding supply's stock by the ordered amount
-        let updatedSupply = await prisma.supply.update({
+        let correspondingSupply = await prisma.supply.findUnique({
             where: {
                 product_supplier_warehouse: {
                     product: orderItem.product,
                     supplier: orderItem.supplier,
                     warehouse: orderItem.warehouse
                 }
-            },
-            data: {
-                quantity: {
-                    decrement: orderItem.quantity
-                }
             }
         })
 
-        if (updatedSupply.quantity < 0) {
-            updatedSupply = await prisma.supply.update({
+        if (correspondingSupply.quantity - orderItem.quantity < 0) {
+            await prisma.supply.update({
                 where: {
                     product: orderItem.product,
                     supplier: orderItem.supplier,
@@ -2322,6 +2318,21 @@ async function decrementSupplyStock(orderId) {
                 },
                 data: {
                     quantity: 0
+                }
+            })
+        } else {
+            await prisma.supply.update({
+                where: {
+                    product_supplier_warehouse: {
+                        product: orderItem.product,
+                        supplier: orderItem.supplier,
+                        warehouse: orderItem.warehouse
+                    }
+                },
+                data: {
+                    quantity: {
+                        decrement: orderItem.quantity
+                    }
                 }
             })
         }
@@ -3496,6 +3507,87 @@ async function deleteDistributionCenter(userID, centerID) {
 
 }
 
+async function getVehicles(userID) {
+
+    try {
+        
+        let vehicles = await prisma.vehicle.findMany({ 
+            where: {
+                transporter: userID
+            },
+            select: {
+                id: true,
+                resource_usage: true,
+                license_plate: true,
+                distribution_center: true
+
+            }
+        })
+
+        // Gathering and cleaning data
+
+        await Promise.all(vehicles.map(async (vehicle) => {
+
+            let assignedOrders = await prisma.order_Item.findMany({
+                where: {
+                    vehicle: vehicle.id,
+                    transporter: userID
+                }
+            })
+
+            let distributionCenter = await prisma.distribution_Center.findUnique({
+                where: {
+                    id_transporter: {
+                        id: vehicle.distribution_center,
+                        transporter: userID
+                    }
+                },
+                select: {
+                    id: true,
+                    capacity: true,
+                    Address: {
+                        select: {
+                            id: true,
+                            street: true,
+                            country: true,
+                            city: true,
+                            latitude: true,
+                            longitude: true,
+                            postal_code: true
+                        }
+                    }
+                }
+            })
+            
+            // Cleaning
+            delete Object.assign(distributionCenter, {address: distributionCenter.Address}).Address;
+
+
+            // Counting related orders
+            vehicle.total_orders_assigned = assignedOrders.length
+
+            // Calculating orders in transit
+            vehicle.orders_in_transit = assignedOrders.reduce(
+                (accumulator, item) => (["IN_TRANSIT", "LAST_MILE"].includes(item.status) ? accumulator + 1 : accumulator), 0)
+            
+            // Calculating orders completed
+            vehicle.orders_completed = assignedOrders.reduce(
+                (accumulator, item) => (item.status == "COMPLETE" ? accumulator + 1 : accumulator), 0)
+
+            vehicle.distribution_center = distributionCenter
+
+            return vehicle
+        }))
+
+        return vehicles
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -3568,6 +3660,9 @@ module.exports = {
     getDistributionCenter,
     createDistributionCenter,
     updateDistributionCenter,
-    deleteDistributionCenter
+    deleteDistributionCenter,
+
+    // Vehicles Functions
+    getVehicles,
 
 }

@@ -1523,7 +1523,7 @@ paths:
         - "TRANSPORT_IMMINENT", simbolizando a chegada iminente do veículo de transporte ao armazém do fornecedor.
         - "IN_TRANSIT", simbolizando o levantamento da encomenda e inicio do transporte até ao destino.
         - "LAST_MILE", simbolizando a chegada iminente do veículo de transporte à morada de destino.
-        - "COMPLETED", simbolizando a entrega da encomenda.
+        - "COMPLETE", simbolizando a entrega da encomenda.
 
         Adicionalmente, transportadores podem também alterar estado da encomenda para "FAILURE" em caso de acidente durante o transporte ou falha de entrega em mão ao consumidor.
 
@@ -2884,7 +2884,7 @@ components:
                 description: Quantidade do produto especificado
               arrival_date:
                 type: string
-                description: Data de chegada da encomenda (será null até se encontrar no estado "COMPLETED")
+                description: Data de chegada da encomenda (será null até se encontrar no estado "COMPLETE")
               supplier_resource_usage:
                 type: number
                 format: float
