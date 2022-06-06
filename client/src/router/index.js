@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 //Não se pode apagar o HomeView para se manter os style do projeto
 import HomeView from '../views/HomeView.vue';
 import ProductsView from '../views/ProductsView.vue';
+import { createStore } from 'vuex';
 
 const routes = [
   {
@@ -110,6 +111,46 @@ const router = createRouter({
   routes,
 });
 
+// Criação da store VueX que irá albergar informação sobre o estado de autenticação e sobre o utilizador
+let store = createStore({
+  state: {
+      isLoggedIn: false,
+      user: {}
+  },
+  mutations: {
+      UPDATE_STATUS(state, payload) {
+          state.isLoggedIn = payload
+      },
+      SET_USER(state, payload) {
+          state.user = payload
+      }
+  },
+  actions: {
+      setState(context, payload) {
+          let isLoggedIn = context.state.isLoggedIn
+          isLoggedIn = payload
+          context.commit('UPDATE_STATUS', isLoggedIn)
+      },
+      setUser(context, payload) {
+          context.commit('SET_USER', payload)
+      }
+  },
+  getters: {
+      getState: function (state) {
+          return state.isLoggedIn
+      },
+      getUser: function (state) {
+          return state.user
+      }
+  }
+})
 
 
-export default router;
+
+// Exportação da store para que possa ser utilizada pelo serviço de autenticação
+
+export {
+  router,
+  store
+} 
+

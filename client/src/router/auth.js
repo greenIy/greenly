@@ -1,5 +1,5 @@
 import http from "../../http-common";
-import store from "../main"
+import { store } from "./index"
 
 export default class AuthService {
 
