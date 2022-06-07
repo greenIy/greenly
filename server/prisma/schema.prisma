@@ -231,11 +231,11 @@ model User {
 
 model Vehicle {
   id                  Int                 @default(autoincrement()) @db.UnsignedInt
-  resource_usage      Int                 @db.UnsignedInt
   license_plate       String              @db.VarChar(6)
-  average_emissions   Int                 @db.UnsignedInt
   fuel_type           Vehicle_fuel_type
-  payload_capacity    Int                 @db.UnsignedInt
+  resource_usage      Decimal             @db.Decimal(10, 2)
+  average_emissions   Decimal             @db.Decimal(10, 2)
+  payload_capacity    Decimal             @db.Decimal(10, 2)
   transporter         Int                 @db.UnsignedInt
   distribution_center Int                 @db.UnsignedInt
   Distribution_Center Distribution_Center @relation(fields: [distribution_center], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicle_ibfk_2")
@@ -251,7 +251,7 @@ model Warehouse {
   id                  Int      @default(autoincrement()) @db.UnsignedInt
   address             Int      @db.UnsignedInt
   capacity            Int      @db.UnsignedInt
-  resource_usage      Int      @db.UnsignedInt
+  resource_usage      Decimal  @db.Decimal(10, 2)
   supplier            Int      @db.UnsignedInt
   renewable_resources Int      @db.UnsignedInt
   Address             Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")

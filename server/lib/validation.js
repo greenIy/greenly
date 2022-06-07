@@ -611,6 +611,86 @@ function updateDistributionCenterValidator() {
     ]
 }
 
+function createVehicleValidator() {
+    return [
+        body('distribution_center')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateVehicleValidator() {
+    return [
+        body('distribution_center')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .optional()
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 
 module.exports = {
     // User validators
@@ -649,6 +729,10 @@ module.exports = {
 
     // Distribution Center Validators
     createDistributionCenterValidator,
-    updateDistributionCenterValidator
+    updateDistributionCenterValidator,
+
+    // Vehicle Validators
+    createVehicleValidator,
+    updateVehicleValidator
 
 }
