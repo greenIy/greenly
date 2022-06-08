@@ -40,18 +40,18 @@
           </div>
         </div>
       </li>
- <!--       <li>
-        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="true">
+      <li>
+        <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="false">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
         </div>   
-        <div class="collapse show" id="fornecedores-collapse">
-          <div class="list-group list-group-flush">
-            <router-link v-for="supplier in showSuppliers" :key="supplier" class="list-group-item list-group-item-action border-0">
-              &nbsp; {{ category.name }}
+        <div class="collapse" id="fornecedores-collapse">
+          <div class="list-group list-group-flush overflow-auto filtro-fornecedor">
+            <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
+              &nbsp; {{ supplier.company.name }}
             </router-link>
           </div>
         </div>
-      </li> -->
+      </li>
     </ul>
   </div>
 </template>
@@ -69,28 +69,22 @@ library.add(faAngleLeft);
     props: {
       categories: Array,
       currentCategories: Array,
-      minPrice: Number,
-      maxPrice: Number,
+      suppliers: Array,
       page: {
         type: String
       },
       category: {
         type: String
       },
-
     },
     data () { 
       return {
         categoryList: [],
         categorySelected: false,
         currentCategory: {},
-        priceMin: Number,
-        priceMax: Number,
         countC: 0,
         countP: 0,
         countF: 0,
-        currentMinPrice: this.minPrice,
-        currentMaxPrice: this.maxPrice,
         return: false,
       }
     },
@@ -116,7 +110,6 @@ library.add(faAngleLeft);
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.return = true;
         this.$router.push({ path: '/produtos' + this.getGoBackUrl(), query: { ...this.$route.query } });
-        console.log("eu entro aqui");
       },
       transformC() {
         this.countC++;
@@ -142,7 +135,6 @@ library.add(faAngleLeft);
         }
 
         this.$router.push({ query: Object.assign({}, this.$route.query, { preco_min: `${ minPrice }` }) });
-        this.$emit("sendMinPrice", minPrice);
       },
       updateProductsByMaxPrice(maxPrice) {
         if(maxPrice === "") {
@@ -150,14 +142,6 @@ library.add(faAngleLeft);
         }
 
         this.$router.push({ query: Object.assign({}, this.$route.query, { preco_max: `${ maxPrice }` }) });
-        this.$emit("sendMaxPrice", maxPrice);
-      },
-      getMinPrice() {
-        this.priceMin = this.minPrice;
-        //console.log()
-      },
-      getMaxPrice() {
-        this.priceMax = this.maxPrice;
       },
       getGoBackUrl() {
         let url = "";
@@ -219,19 +203,28 @@ library.add(faAngleLeft);
 .list-group-item {
   font-size: 12px;
 }
+
 .list-group-item input {
   font-size: 12px;
 }
+
 .form-control {
   padding: .300rem .20rem .300rem .40rem;
 }
-#iconC{
+
+#iconC {
   color:#5e9f88;
 }
-#iconP{
+
+#iconP {
   color:#5e9f88;
 }
-#iconF{
+
+#iconF {
   color:#5e9f88;
+}
+
+#fornecedores-collapse .filtro-fornecedor {
+  height: 298px;
 }
 </style>

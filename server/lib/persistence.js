@@ -2,7 +2,7 @@
     Functions included pertain to database access and manipulation.
 */
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Prisma } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
@@ -19,6 +19,11 @@ const prisma = new PrismaClient({
     // Log database operations if -m flag is present
     log: argv.m || argv.databaseMonitoring ? ['query', 'info', 'warn', 'error'] : []
 });
+
+Prisma.Decimal.prototype.toJSON = function() {
+    return this.toNumber();
+}
+
 const maps = new Client();
 
 /* Checking database availability */
@@ -31,7 +36,7 @@ prisma.$connect().catch((reason) => {
 /* Helper functions */
 
 // Proper rounding function as oposed to JS Math
-function roundCoordinates(value, decimals) {
+function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }   
 
@@ -81,9 +86,16 @@ async function determineOptimalVehicle(transporter, destination) {
             }
         })
 
+        // Considering only distribution centers with at least one vehicle
+
         let distributionCenters = await prisma.distribution_Center.findMany({
             where: {
-                transporter: transporter.id
+                transporter: transporter.id,
+                Vehicle: {
+                    some: {
+                        transporter: transporter.id
+                    }
+                }
             },
             select: {
                 id: true,
@@ -125,9 +137,7 @@ async function determineOptimalVehicle(transporter, destination) {
 
         let parsedDistances = distances.data.rows.map((row) => {
             let distance = row.elements[0].distance
-            if (distance != null) {
-                console.log('distance :>> ', distance);
-        
+            if (distance != null) {        
                 return distance.value
             }
         }).filter((distance) => (distance != undefined))
@@ -160,13 +170,12 @@ async function determineOptimalVehicle(transporter, destination) {
                     where: {
                         status: "AWAITING_TRANSPORT",
                         transporter: transporter.id,
-                        vehicle: vehicles[0].id
+                        vehicle: vehicle.id
                     }
                 })
             })
         ))]
             
-        console.log('leastBusyVehicle :>> ', leastBusyVehicle);
         return leastBusyVehicle.id
 
     } catch (e) {
@@ -321,6 +330,8 @@ async function deleteUser(id) {
                 * All transports by transporter
         */
 
+        // TODO: PROOF FOR SOFT-DELETE
+
         if (getUserByID(id)) {
 
             await prisma.address.deleteMany({
@@ -417,7 +428,6 @@ async function getUserByID(id, withPassword=false) {
 }
 
 async function getUserByEmail(email, withPassword=false) {
-    // TODO: Fix 'with password'
     try {
         return user = await prisma.user.findUnique({
             where: {
@@ -512,8 +522,8 @@ async function createAddress(userID,
             }
         })
 
-        lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-        lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+        lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+        lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
     } catch (e) {
         lat = 0;
         lng = 0;
@@ -605,8 +615,8 @@ async function updateAddress(userId, addressId, params) {
                     key: process.env.GOOGLE_API_KEY
                 }
             })
-            lat = roundCoordinates(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
-            lng = roundCoordinates(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
+            lat = round(geocoded.data.results[0].geometry.location.lat, roundingPrecision);
+            lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
 
         } catch (e) {
             console.log(e)
@@ -631,6 +641,10 @@ async function updateAddress(userId, addressId, params) {
 }
 
 async function deleteAddress(id) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
     try {
         await prisma.address.delete({
             where: {
@@ -1319,25 +1333,64 @@ async function addItemToCart(
         }
 
         try {
-            let itemCount = await prisma.cart.count()
 
-            await prisma.cart.create({
-                data: {
-                    index:          Number(itemCount) + 1,
-                    consumer:       Number(userId),
-                    product:        Number(product),
-                    supplier:       Number(supplier),
-                    warehouse:      Number(warehouse),
-                    transporter:    Number(transporter),
-                    quantity:       Number(quantity),
+            let alreadyPresentCartItem = await prisma.cart.findUnique({
+                where: {
+                    consumer_product_supplier_warehouse_transporter: {
+                        consumer:       Number(userId),
+                        product:        Number(product),
+                        supplier:       Number(supplier),
+                        warehouse:      Number(warehouse),
+                        transporter:    Number(transporter)
+                    }
                 }
             })
-        } catch (e) {
-            if (e.code == "P2002") {
-                return "ALREADY_PRESENT"
+
+            if (alreadyPresentCartItem) {
+                if (correspondingSupply.Supply.quantity < alreadyPresentCartItem.quantity + quantity) {
+                    // In case the user's order is larger than the available stock
+                    return "NO_STOCK";
+                }
+
+                // Update the current cartItem's quantity
+
+                await prisma.cart.update({
+                    where: {
+                        consumer_product_supplier_warehouse_transporter: {
+                            consumer:       Number(userId),
+                            product:        Number(product),
+                            supplier:       Number(supplier),
+                            warehouse:      Number(warehouse),
+                            transporter:    Number(transporter)
+                        }
+                    }, data: {
+                        quantity: alreadyPresentCartItem.quantity + quantity
+                    }
+                })
+
+
             } else {
-                return null;
+                let itemCount = await prisma.cart.count({
+                    where: {
+                        consumer: Number(userId)
+                    }
+                })
+    
+                await prisma.cart.create({
+                    data: {
+                        index:          Number(itemCount) + 1,
+                        consumer:       Number(userId),
+                        product:        Number(product),
+                        supplier:       Number(supplier),
+                        warehouse:      Number(warehouse),
+                        transporter:    Number(transporter),
+                        quantity:       Number(quantity),
+                    }
+                })
             }
+
+        } catch (e) {
+            return null;
         }
 
         return "SUCCESSFULLY_ADDED"
@@ -1591,38 +1644,218 @@ async function removeProductFromWishlist(userID, productID) {
 }
 
 /* Order Functions */
-// TODO: Calculate computed items here
-async function getOrdersByUserID(userID) {
+/**
+ * This function is meant to be used by user-types with access to
+ * order-management features (i.e. all except consumers).
+ * Consumers will only receive their orders.
+ * Suppliers will only receive orders with OrderItems in which they're registered as supplier.
+ * Transporters will only receive orders with OrderItems in which they're registed as transporter.
+ * Administrators will receive every order.
+ * @param user - The user in question 
+ */
+ async function getOrdersByUser(user) {
     try {
-        let orders = await prisma.order.findMany({
-            where: {
-                consumer: userID
-            },
-        })
+        let orders;
 
-        orders = await Promise.all(orders.map(async (order) => {
-            let orderItems = await prisma.order_Item.findMany({
+        switch (user.type) {
+            case "CONSUMER": {
+                orders = await prisma.order.findMany({
+                    where: {
+                        consumer: user.id
+                    },
+                    include: {
+                        Order_Item: true
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                break;
+            }
+            case "SUPPLIER": {
+
+                // Suppliers should get every order related to them except the ones which haven't been paid for
+
+                orders = await prisma.order.findMany({
+                    where: {
+                        Order_Item: {
+                            some: {
+                                supplier: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    include: {
+                        Order_Item: {
+                            where: {
+                                supplier: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                orders
+
+                break;
+            }
+
+            case "TRANSPORTER": {
+
+                // Transporters should get every order related to them except the ones which haven't been paid for
+                orders = await prisma.order.findMany({
+                    where: {
+                        Order_Item: {
+                            some: {
+                                transporter: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    include: {
+                        Order_Item: {
+                            where: {
+                                transporter: user.id,
+                                NOT: {
+                                    status: "AWAITING_PAYMENT"
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+                break;
+            }
+
+            case "ADMINISTRATOR": {
+                orders = await prisma.order.findMany({
+                    orderBy: {
+                        date: 'desc'
+                    }
+                })
+
+                break;
+            }
+        }
+
+        // Cleaning data
+
+        orders = await Promise.all(orders.map(async (order) => {            
+            // Cleaning data
+
+            let consumer = await prisma.user.findUnique({
                 where: {
-                    order: order.id
+                    id: order.consumer
+                }, select: {
+                    id: true,
+                    first_name: true,
+                    email: true,
+                    phone: true
                 }
             })
-            
-            // Cleaning data
-            orderItems.forEach((item) => {
-                item.supply_price = parseFloat(item.supply_price) 
-                item.transport_price = parseFloat(item.transport_price) 
-                item.supplier_resource_usage = parseFloat(item.supplier_resource_usage) 
-                item.supplier_renewable_resources = parseFloat(item.supplier_renewable_resources) 
-                item.transporter_resource_usage = parseFloat(item.transporter_resource_usage) 
-                item.transporter_emissions = parseFloat(item.transporter_emissions)
+            let shippingAddress = await prisma.address.findUnique({
+                where: {
+                    id: order.shipping_address
+                },
+                select: {
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
             })
+        
+            let billingAddress = await prisma.address.findUnique({
+                where: {
+                    id: order.billing_address
+                },
+                select: {
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true,
+                    nif: true
+                }
+            })
+        
+            // Cleaning 
+                
+            order.shipping_address = shippingAddress
+        
+            order.billing_address = billingAddress
 
-            order.items = orderItems
+            order.consumer = consumer
+
+            order.items = order.Order_Item
+
+            delete order.Order_Item
+
+            order.items = await Promise.all(order.items.map(async (item) => {
+                item.product = await prisma.product.findUnique({
+                    where: {
+                        id: item.product
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                })
+
+                let supplier = await prisma.user.findUnique({
+                    where: {
+                        id: item.supplier
+                    },
+                    include: {
+                        Company: true
+                    }
+                })
+        
+                let transporter = await prisma.user.findUnique({
+                    where: {
+                        id: item.transporter
+                    },
+                    include: {
+                        Company: true
+                    }
+                })
+
+                // Additional supplier info
+                item.supplier = {
+                    id: item.supplier,
+                    name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+                }
+
+                // Additional transporter info
+                item.transporter = {
+                    id: item.transporter,
+                    name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+                }
+
+                return item
+            }))
 
             return order
         }))
 
         return orders
+
+
     } catch (e) {
         console.log(e)
         return null;
@@ -1720,7 +1953,7 @@ async function createOrder(userID, shippingAddressID, billingAddressID, observat
         }))
 
         // Clearing the cart
-        // await clearCart(userID)
+        await clearCart(userID)
 
         return newOrder.id
 
@@ -1738,7 +1971,7 @@ async function getOrderByID(id) {
         select: {
             consumer: true,
             date: true,
-            destination: true,
+            shipping_address: true,
             observations: true,
             Order_Item: {
                 orderBy: {
@@ -1757,19 +1990,270 @@ async function getOrderByID(id) {
     }
 
     return null
-
 }
 
-async function changeOrderStatus(orderId, targetStatus) {
+/** This function works dynamically, returning only the information
+ *  a user should be able to see regarding a specific order,
+ *  similarly to getUserOrders */
+async function getFilteredOrderByID(user, orderID) {
 
-    let order = await getOrderByID(orderId)
+    let order;
+
+    switch (user.type) {
+        // A consumer should view the entire order
+        case "CONSUMER": {
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: true
+                },
+            })
+
+            break;
+        }
+        case "SUPPLIER": {
+            // A supplier should only be able to view orderItems which pertain to himself
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: {
+                        where: {
+                            supplier: user.id,
+                            NOT: {
+                                status: "AWAITING_PAYMENT"
+                            }
+                        }
+                    }
+                }
+            })
+
+            break;
+        }
+
+        case "TRANSPORTER": {
+            // A transporter should only be able to view orderItems which pertain to himself
+
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                },
+                include: {
+                    Order_Item: {
+                        where: {
+                            transporter: user.id,
+                            NOT: {
+                                status: "AWAITING_PAYMENT"
+                            }
+                        }
+                    }
+                }
+            })
+            break;
+        }
+
+        case "ADMINISTRATOR": {
+            // An administrator should be able to view the entire order
+            order = await prisma.order.findUnique({
+                where: {
+                    id: orderID
+                }
+            })
+
+            break;
+        }
+    }
+
+
+
+    // Cleaning and adding data
+
+    let consumer = await prisma.user.findUnique({
+        where: {
+            id: order.consumer
+        }, select: {
+            id: true,
+            first_name: true,
+            email: true,
+            phone: true
+        }
+    })
+
+    let shippingAddress = await prisma.address.findUnique({
+        where: {
+            id: order.shipping_address
+        },
+        select: {
+            street: true,
+            country: true,
+            city: true,
+            latitude: true,
+            longitude: true,
+            postal_code: true
+        }
+    })
+
+    let billingAddress = await prisma.address.findUnique({
+        where: {
+            id: order.billing_address
+        },
+        select: {
+            street: true,
+            country: true,
+            city: true,
+            latitude: true,
+            longitude: true,
+            postal_code: true,
+            nif: true
+        }
+    })
+
+    // Cleaning 
+
+    order.consumer = consumer
+
+    order.shipping_address = shippingAddress
+
+    order.billing_address = billingAddress
+
+    order.items = await Promise.all(order.Order_Item.map(async (item) => {
+        // Additional information
+
+        let product = await prisma.product.findUnique({
+            where: {
+                id: item.product
+            },
+            select: {
+                id: true,
+                name: true,
+            }
+        })
+
+        let supplier = await prisma.user.findUnique({
+            where: {
+                id: item.supplier
+            },
+            include: {
+                Company: true
+            }
+        })
+
+        let transporter = await prisma.user.findUnique({
+            where: {
+                id: item.transporter
+            },
+            include: {
+                Company: true
+            }
+        })
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: item.warehouse,
+                    supplier: item.supplier
+                }
+            },
+            include: {
+                Address: {
+                    select: {
+                        street: true,
+                        country: true,
+                        city: true,
+                        latitude: true,
+                        longitude: true,
+                        postal_code: true
+                    }
+                }
+            }
+        })
+
+        let vehicle = await prisma.vehicle.findUnique({
+            where: {
+                id_transporter: {
+                    id: item.vehicle,
+                    transporter: item.transporter
+                }
+            },
+            select: {
+                id: true,
+                license_plate: true,
+                resource_usage: true,
+                average_emissions: true,
+                fuel_type: true,
+                payload_capacity: true,
+                distribution_center: true
+            }
+        })
+
+        let notifications = await prisma.notification.findMany({
+            where: {
+                order: order.id
+            }
+        })
+
+        // Deducing states from notification list
+        let stateMap = notifications.map((notification) => {
+            return {
+                state: notification.scope, 
+                timestamp: notification.timestamp
+            }
+        })
+
+        // Filtering unique states
+
+        stateMap.filter((value, index, self) => {
+            return self.findIndex((element) => element.state == value.state) == index
+        })
+
+        // Adding CREATED state
+        stateMap.push({scope:"CREATED", timestamp: order.date})
+
+        item.product = product
+
+        // Additional supplier info
+        item.supplier = {
+            id: item.supplier,
+            name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+        }
+
+        // Additional transporter info
+        item.transporter = {
+            id: item.transporter,
+            name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+        }
+
+        item.warehouse = {
+            id: item.warehouse,
+            address: warehouse.Address
+        }
+
+        item.vehicle = vehicle
+
+        item.progress = stateMap
+
+        return item
+    }))
+
+    delete order.Order_Item
+
+    return order
+}
+
+// This function is used upon payment to change every order item status from "AWAITING_PAYMENT" to "PROCESSING"
+async function changeOrderStatus(orderID, targetStatus) {
+
+    let order = await getOrderByID(orderID)
 
     await Promise.all(order.items.map(async (item) => {
         let itemUpdate = await prisma.order_Item.update({
             where: {
                 id_order: {
                     id: item.id,
-                    order: orderId
+                    order: orderID
                 }
             },
             data: {
@@ -1777,8 +2261,33 @@ async function changeOrderStatus(orderId, targetStatus) {
             }
         })
 
+        let productInfo = await prisma.product.findUnique({
+            where: {
+                id: item.product
+            },
+            select: {
+                name: true
+            }
+        })
+
+        await createNotification(item.supplier, 
+            "Nova encomenda a processar!",
+            `O item #${item.id} (${productInfo.name} x ${item.quantity} un.), da encomenda #${orderID} precisa de ser processado!`,
+            "PROCESSING",
+            orderID,
+            item.id
+        );
+
         return itemUpdate
     }))
+
+    createNotification(order.consumer, 
+        "Encomenda em processamento!",
+        `A sua encomenda #${orderID} está agora a ser preparada, em breve estará nas suas mãos!`,
+        "PROCESSING",
+        orderID,
+        1
+    );
 }
 
 // Used to decrement the stock of many supplies when an order enters "PROCESSING" status
@@ -1820,6 +2329,1173 @@ async function decrementSupplyStock(orderId) {
         return updatedSupply
     }))
 }
+
+
+async function updateOrderItem(user, orderID, itemID, targetStatus) {
+
+    // Obtaining specified order and orderItem
+    let order = await getOrderByID(orderID);
+
+    let orderItem = order.items[order.items.findIndex((item) => item.id == itemID)]
+
+    /* Checking preliminary conditions */
+
+    if (!orderItem) {
+        return "ITEM_NOT_FOUND"
+    }
+
+    if (orderItem.status == "AWAITING_PAYMENT") {
+        return "AWAITING_PAYMENT"
+    }
+
+    if (orderItem.status == "CANCELED") {
+        return "ITEM_CANCELED"
+    }
+
+    // The order (sorting) of statuses is important: a consumer cannot cancel an order if it's already in transit.
+    let orderStatuses = [
+        "AWAITING_PAYMENT", 
+        "PROCESSING", 
+        "AWAITING_TRANSPORT",
+        "TRANSPORT_IMMINENT",
+        "CANCELED",
+        "IN_TRANSIT",
+        "LAST_MILE",
+        "FAILURE",
+        "COMPLETE"
+    ]
+
+    let isValidTargetStatus;
+    let isValidOriginStatus;
+
+    // Checking if the target status is valid for the specified user
+
+    switch (user.type) {
+        case "CONSUMER":
+
+            // A user can cancel an order if it isn't yet in transit
+            isValidOriginStatus = orderStatuses.indexOf(orderItem.status) < orderStatuses.indexOf("IN_TRANSIT");
+
+            isValidTargetStatus = [
+                "CANCELED"]
+                .includes(targetStatus)
+            break;
+
+        case "SUPPLIER":
+
+            // A supplier can only change the status of orders in "PROCESSING" status
+            isValidOriginStatus = orderItem.status == "PROCESSING"
+
+            isValidTargetStatus = [
+                "CANCELED", 
+                "AWAITING_TRANSPORT"]
+                .includes(targetStatus)
+            break;
+
+        case "TRANSPORTER":
+
+            // A transporter can only change the order status if it's already at least in "AWAITING_TRANSPORT"
+
+            isValidOriginStatus = orderStatuses.indexOf(orderItem.status) >= orderStatuses.indexOf("AWAITING_TRANSPORT")
+
+            isValidTargetStatus = [
+                "TRANSPORT_IMMINENT",
+                "IN_TRANSIT",
+                "LAST_MILE",
+                "COMPLETE",
+                "FAILURE"]
+                .includes(targetStatus)
+            break;
+
+        case "ADMINISTRATOR":
+            isValidTargetStatus = [
+                "CANCELED"]
+                .includes(targetStatus)
+            break;
+
+    }
+
+    // Checking if the the user can change the status given the origin status
+
+    if (!isValidOriginStatus) {
+        return "INSUFFICIENT_PERMISSIONS"
+    }
+
+    // Checking if the user can change to target status
+
+    if (!isValidTargetStatus) {
+        return "INSUFFICIENT_PERMISSIONS"
+    }
+
+    // Checking if the status isn't going backwards
+
+    if (!(
+            orderStatuses.indexOf(targetStatus) >
+            orderStatuses.indexOf(orderItem.status))) {
+
+        return "REGRESSIVE_STATUS"
+    }
+
+    /* Event logic */
+
+    let updatedOrderItem = await prisma.order_Item.update({
+        where: {
+            id_order: {
+                order: orderID,
+                id: itemID
+            },
+        },
+        data: {
+            status: targetStatus
+        }
+    })
+
+    // Gathering additional data
+
+    let productInfo = await prisma.product.findUnique({
+        where: {
+            id: orderItem.product
+        },
+        select: {
+            name: true
+        }
+    })
+
+    let transporter = await prisma.user.findUnique({
+        where: {
+            id: orderItem.transporter
+        },
+        include: {
+            Company: true
+        }
+    })
+
+    let supplier = await prisma.user.findUnique({
+        where: {
+            id: orderItem.supplier
+        },
+        include: {
+            Company: true
+        }
+    })
+
+    let vehicle = await prisma.vehicle.findUnique({
+        where: {
+            id_transporter: {
+                id: orderItem.vehicle,
+                transporter: orderItem.transporter
+            }
+        },
+        select: {
+            license_plate: true,
+        }
+    })
+
+    let transporterInfo = {
+        id: orderItem.transporter,
+        name: transporter.Company ? transporter.Company.name : `${transporter.first_name} ${transporter.last_name}`
+    }
+
+    let supplierInfo = {
+        id: orderItem.supplier,
+        name: supplier.Company ? supplier.Company.name : `${supplier.first_name} ${supplier.last_name}`
+    }
+
+    // Sorting out event logic
+
+    switch (targetStatus) {
+        case "CANCELED": {
+            
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Encomenda cancelada!",
+                `A entrega do item #${itemID} (${productInfo.name}), da encomenda #${orderID}, foi cancelada!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;
+        }
+
+        case "AWAITING_TRANSPORT": {
+
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Progresso da encomenda atualizado!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, foi processado, estando agora à espera de ser levantado pelo transportador ${transporterInfo.name}!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            // Notifying the transporter that there's a new order which requires transport
+
+            createNotification(orderItem.transporter,
+                "Encomenda requer transporte!",
+                `O item #${itemID}, da encomenda #${orderID}, está à espera de ser recolhido no armazém #${orderItem.warehouse} do fornecedor ${supplierInfo.name} (${supplierInfo.id}), pelo veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID)
+
+            break;
+        }
+
+        case "TRANSPORT_IMMINENT": {
+
+            // Notifying the user
+
+            createNotification(order.consumer, 
+                "Progresso da encomenda atualizado!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, está a ser levantado pelo transportador!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            // Notifying the supplier that the vehicle is arriving
+
+            createNotification(orderItem.supplier, 
+                "Encomenda prestes a ser recolhida!",
+                `O item #${itemID}, da encomenda #${orderID}, está prestes a ser recolhido no seu armazém #${orderItem.warehouse}, pelo transportador ${transporterInfo.name} (${transporterInfo.id}), no veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;
+        }
+
+        case "FAILURE": {
+
+            // Notifying the user that something went wrong with the order
+
+            createNotification(order.consumer, 
+                "Encomenda falhada!",
+                `A entrega do item #${itemID} (${productInfo.name}), da encomenda #${orderID}, falhou. Iremos contactá-lo brevemente ou enviar uma nova unidade.`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;  
+        }
+
+        case "IN_TRANSIT": {
+
+            // Notifying the user the order is on its way
+            
+            createNotification(order.consumer, 
+                "Encomenda a caminho!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID}, acabou de ser enviado!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;
+
+        }
+
+        case "LAST_MILE": {
+
+            // Notifying the user the order is almost there
+
+            createNotification(order.consumer, 
+                "Encomenda prestes a ser entregue!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID} está prestes a ser entregue pelo veículo de matrícula ${vehicle.license_plate}, tenha atenção!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+
+            break;            
+
+        }
+
+        case "COMPLETE": {
+
+            // Setting the arrival date
+    
+            await prisma.order_Item.update({
+                where: {
+                    id_order: {
+                        order: orderID,
+                        id: itemID
+                    },
+                },
+                data: {
+                    arrival_date: new Date()
+                },
+            })
+    
+            // Notifying the user the order has arrived
+
+            createNotification(order.consumer, 
+                "Encomenda entregue!",
+                `O item #${itemID} (${productInfo.name}), da encomenda #${orderID} acabou de ser entregue!`,
+                targetStatus,
+                orderID,
+                itemID
+            );
+    
+            break;
+
+        }
+
+    }
+
+}
+
+/**
+ * This function can be used to determine if a user is related to an order, and, if so, if he should be able to view its details.
+ * @param {*} user - The user in question 
+ * @param {*} orderID - The order in question
+ * @returns - A boolean value which signifies if the user is in any way related to the order.
+ */
+async function checkUserOrderRelationship(user, orderID) {
+    let order = await prisma.order.findUnique({
+        where: {
+            id: orderID
+        }
+    })
+
+    // In case the order doesn't exist
+    if (!order) {
+        return false;
+    }
+
+    switch (user.type) {
+        case "CONSUMER": {
+            return order.consumer == user.id
+        };
+        
+        case "SUPPLIER": {
+
+            // Check if the supplier serves any OrderItems in this order
+            let relatedOrderItems = await prisma.order_Item.count({
+                where: {
+                    order: orderID,
+                    supplier: user.id
+                }
+            })
+
+            return relatedOrderItems > 0
+        }
+
+        case "TRANSPORTER": {
+            // Check if the transporter serves any OrderItems in this order
+            let relatedOrderItems = await prisma.order_Item.count({
+                where: {
+                    order: orderID,
+                    transporter: user.id
+                }
+            })
+
+            return relatedOrderItems > 0
+        }
+
+        case "ADMINISTRATOR": {
+            return true;
+        }
+    }
+}
+
+/**
+ * This function can be used to check if a user is related to a specific orderItem, in case they're trying to edit its status
+ */
+async function checkUserItemRelationship(user, orderID, itemID) {
+    let orderItem = await prisma.order_Item.findUnique({
+        where: {
+            id_order: {
+                order: orderID,
+                id: itemID
+            },
+        },
+        include: {
+            Order: true
+        }
+    })
+
+    switch (user.type) {
+        case "CONSUMER": {
+            return orderItem.Order.consumer == user.id
+        };
+        
+        case "SUPPLIER": {
+            // Checking if the user supplies the specified orderItem
+
+            return orderItem.supplier == user.id
+        }
+
+        case "TRANSPORTER": {
+            // Check if the user transports the orderItem
+
+            return orderItem.transporter == user.id
+        }
+
+        case "ADMINISTRATOR": {
+            return true;
+        }
+    }
+}
+
+/* Notifications */
+
+async function createNotification(userID, title, content, scope, relatedOrderID, relatedItemID) {
+
+    let lastestNotification = await prisma.notification.findFirst({
+        where: {
+            user: userID
+        },
+        orderBy: {
+            id: 'desc'
+        }
+    })
+
+    let notificationCount = lastestNotification ? lastestNotification.id : 0
+
+    let notificationData = {
+        id: notificationCount + 1,
+        title: title,
+        content: content,
+        user: userID,
+        scope: scope,
+        dismissed: false,
+        timestamp: new Date()
+    }
+
+    if (relatedOrderID) {
+        notificationData.order = relatedOrderID
+
+        if (relatedItemID) {
+            notificationData.order_item = relatedItemID
+        }
+    }
+
+    await prisma.notification.create({
+        data: notificationData
+    })
+}
+
+/* Notification functions */
+
+async function getNotificationsByUser(userID) {
+    return await prisma.notification.findMany({
+        where: {
+            user: userID
+        },
+        orderBy: {
+            timestamp: 'desc'
+        }
+    })
+}
+
+async function dismissAllNotifications(userID) {
+    try {
+        await prisma.notification.updateMany({
+            where: {
+                user: userID
+            },
+            data: {
+                dismissed: true
+            }
+        })
+    
+        return true
+    } catch (e) {
+        return null
+    }
+}
+
+async function dismissNotification(userID, notificationID) {
+    try {
+        let dismissedNotification = await prisma.notification.update({
+            where: {
+                user_id: {
+                    user: userID,
+                    id: notificationID
+                }
+            },
+            data: {
+                dismissed: true
+            }
+        })
+    
+        if (!dismissedNotification) {
+            return "NOT_FOUND"
+        }
+    
+        return true
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+    
+}
+
+/* Warehouse Functions */
+
+async function getWarehouses(userID) {
+    try {
+        
+        let warehouses = await prisma.warehouse.findMany({
+            where: {
+                supplier: userID
+            },
+            select: {
+                id: true,
+                address: true,
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+            }
+        })
+
+        // Cleaning and adding data
+
+        warehouses = await Promise.all(warehouses.map(async (warehouse) => {
+
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: warehouse.address
+                }, select: {
+                    id: true,
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+
+            let supplies = await prisma.supply.findMany({
+                where: {
+                    supplier: userID,
+                    warehouse: warehouse.id
+                }
+            })
+
+            // Calculating how many different products and individual units the warehouse has, along with its total value
+            let uniqueProductCount = supplies.length
+            let combinedStock = supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+            let totalValue = supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+            warehouse.address = address
+            warehouse.unique_products = uniqueProductCount
+            warehouse.combined_stock = combinedStock
+            warehouse.total_value = round(totalValue, 2)
+
+            // Usage data (estimated total daily energy usage)
+            let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+            warehouse.estimated_total_resource_usage = totalResourceUsage
+
+            return warehouse
+        }))
+
+        return warehouses
+
+    } catch (e) {
+        console.log(e);
+        return null
+    }
+}
+
+async function getWarehouse(userID, warehouseID) {
+
+    try {
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            },
+            select: {
+                id: true,
+                Address: {
+                    select: {
+                        id: true,
+                        street: true,
+                        country: true,
+                        city: true,
+                        latitude: true,
+                        longitude: true,
+                        postal_code: true
+                    }
+                },
+                capacity: true,
+                renewable_resources: true,
+                resource_usage: true,
+                Supply: {
+                    where: {
+                        supplier: userID
+                    },
+                    select: {
+                        Product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                Category: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                },
+                            }
+                        },
+                        quantity: true,
+                        price: true,
+                        expiration_date: true,
+                        production_date: true
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Cleaning data
+
+        delete Object.assign(warehouse, {supplies: warehouse.Supply}).Supply;
+
+        delete Object.assign(warehouse, {address: warehouse.Address}).Address;
+
+        warehouse.supplies.forEach((supply) => {
+            delete Object.assign(supply, {product: supply.Product}).Product;
+
+            delete Object.assign(supply.product, {category: supply.product.Category}).Category;
+        })
+
+        // Calculating how many different products and individual units the warehouse has, along with its total value
+        let uniqueProductCount = warehouse.supplies.length
+        let combinedStock = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity, 0)
+        let totalValue = warehouse.supplies.reduce((accumulator, supply) => accumulator + supply.quantity * supply.price, 0)
+
+        warehouse.unique_products = uniqueProductCount
+        warehouse.combined_stock = combinedStock
+        warehouse.total_value = round(totalValue, 2)
+
+        // Usage data (estimated total daily energy usage)
+        let totalResourceUsage = round(warehouse.resource_usage * combinedStock, 2)
+
+        warehouse.estimated_total_resource_usage = totalResourceUsage
+        
+
+        return warehouse
+        
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function createWarehouse(userID, addressID, capacity, resourceUsage, renewableResources) {
+    
+    try {
+        let address = await prisma.address.findUnique({
+            where: {
+                id: addressID
+            }
+        })
+
+        // In case the selected address doesn't exist or doesn't belong to the user
+
+        if (!address || address.user != userID) {
+            return "INVALID_ADDRESS"
+        }
+
+        // In case this address is already being used by the user for another warehouse
+
+        let addressAlreadyInUse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID,
+                address: addressID
+            }
+        })
+
+        if (addressAlreadyInUse) {
+            return "ADDRESS_IN_USE"
+        }
+
+        let latestWarehouse = await prisma.warehouse.findFirst({
+            where: {
+                supplier: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let warehouseCount = latestWarehouse ? latestWarehouse.id : 0
+
+        let newWarehouse = await prisma.warehouse.create({
+            data: {
+                id: warehouseCount + 1,
+                supplier: userID,
+                address: addressID,
+                capacity: capacity,
+                resource_usage: resourceUsage,
+                renewable_resources: renewableResources
+            }
+        })
+
+        return newWarehouse.id
+
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+}
+
+async function updateWarehouse(userID, warehouseID, params) {
+    try {
+
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // Determining which data to edit
+
+        let warehouseKeyMap = [
+            "address",
+            "capacity",
+            "resource_usage",
+            "renewable_resources"
+        ]
+
+        let updatedWarehouseData = {}
+
+        for (const [key, value] of Object.entries(params)) {
+            if (warehouseKeyMap.includes(key)) {                
+                updatedWarehouseData[key] = value
+            }
+        }
+        
+        // Checking if the new selected address is valid
+
+        if ("address" in updatedWarehouseData) {
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: updatedWarehouseData.address
+                }
+            })
+    
+            // In case the selected address doesn't exist or doesn't belong to the user
+    
+            if (!address || address.user != userID) {
+                return "INVALID_ADDRESS"
+            }
+    
+            // In case this address is already being used by the user for another warehouse (except the current one)
+    
+            let addressAlreadyInUse = await prisma.warehouse.findFirst({
+                where: {
+                    supplier: userID,
+                    address: updatedWarehouseData.address
+                }
+            })
+
+            if (addressAlreadyInUse && warehouse.address != address.id) {
+                return "ADDRESS_IN_USE"
+            }
+        }
+
+        // Updating the warehouse
+
+        let updatedWarehouse = await prisma.warehouse.update({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            data: updatedWarehouseData
+        })
+
+    } catch (e) {
+        return null
+    }
+}
+
+async function deleteWarehouse(userID, warehouseID) {
+
+    // TODO: PROOF FOR SOFT-DELETE
+
+
+    try {
+        // Proofing
+
+        let warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: warehouseID,
+                    supplier: userID
+                }
+            },
+            select: {
+                Supply: {
+                    where: {
+                        supplier: userID
+                    }
+                }
+            }
+        })
+
+        if (!warehouse) {
+            return "INVALID_WAREHOUSE"
+        }
+
+        // A warehouse cannot be removed if there are still supplies registered to it
+
+        if (warehouse.Supply.length) {
+            return "WAREHOUSE_NOT_EMPTY"
+        }
+
+        // Removing the warehouse
+    
+        let removedWarehouse = await prisma.warehouse.delete({
+            where: {
+                id_supplier: {
+                    supplier: userID,
+                    id: warehouseID
+                }
+            }
+        })
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+/* Distribution Center Functions */
+
+async function getDistributionCenters(userID) {
+
+    try {
+        
+        let centers = await prisma.distribution_Center.findMany({
+            where: {
+                transporter: userID
+            },
+            select: {
+                id: true,
+                address: true,
+                capacity: true
+            }
+        })
+
+        // Cleaning and adding data
+
+        centers = await Promise.all(centers.map(async (center) => {
+
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: center.address
+                }, select: {
+                    id: true,
+                    street: true,
+                    country: true,
+                    city: true,
+                    latitude: true,
+                    longitude: true,
+                    postal_code: true
+                }
+            })
+
+            let vehicles = await prisma.vehicle.findMany({
+                where: {
+                    transporter: userID,
+                    distribution_center: center.id
+                }
+            })
+
+            center.address = address
+            center.total_vehicles = vehicles.length
+
+            return center
+
+        }))
+
+        return centers
+
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+async function getDistributionCenter(userID, centerID) {
+
+    try {
+        
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: centerID
+                }
+            },
+            select: {
+                id: true,
+                capacity: true,
+                address: true
+            }
+        })
+
+        let address = await prisma.address.findUnique({
+            where: {
+                id: center.address
+            }, select: {
+                id: true,
+                street: true,
+                country: true,
+                city: true,
+                latitude: true,
+                longitude: true,
+                postal_code: true
+            }
+        })
+
+        let vehicles = await prisma.vehicle.findMany({
+            where: {
+                transporter: userID,
+                distribution_center: center.id
+            }, select: {
+                id: true,
+                resource_usage: true,
+                average_emissions: true,
+                license_plate: true,
+                fuel_type: true,
+                payload_capacity: true
+            }
+        })
+
+        center.address = address
+        center.vehicles = vehicles
+        center.total_vehicles = vehicles.length
+
+        return center
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+async function createDistributionCenter(userID, addressID, capacity) {
+    try {
+        
+        let address = await prisma.address.findUnique({
+            where: {
+                id: addressID
+            }
+        })
+
+        // In case the selected address doesn't exist or doesn't belong to the user
+
+        if (!address || address.user != userID) {
+            return "INVALID_ADDRESS"
+        }
+
+        // In case this address is already being used by the user for another distribution center
+
+        let addressAlreadyInUse = await prisma.distribution_Center.findFirst({
+            where: {
+                transporter: userID,
+                address: addressID
+            }
+        })
+
+        if (addressAlreadyInUse) {
+            return "ADDRESS_IN_USE"
+        }
+
+        let latestCenter = await prisma.distribution_Center.findFirst({
+            where: {
+                transporter: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let centerCount = latestCenter ? latestCenter.id : 0
+
+        let newCenter = await prisma.distribution_Center.create({
+            data: {
+                id: centerCount + 1,
+                transporter: userID,
+                address: addressID,
+                capacity: capacity,
+            }
+        })
+
+        return newCenter.id
+        
+    } catch (e) {
+        return null
+    }
+}
+
+async function updateDistributionCenter(userID, centerID, params) {
+
+    try {
+    
+        // Proofing
+
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            }
+        })
+
+        if (!center) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
+        // Determining which data to edit
+
+        let centerKeyMap = [
+            "address",
+            "capacity"
+        ]
+
+        let updatedCenterData = {}
+
+        for (const [key, value] of Object.entries(params)) {
+            if (centerKeyMap.includes(key)) {                
+                updatedCenterData[key] = value
+            }
+        }
+        
+        // Checking if the new selected address is valid
+
+        if ("address" in updatedCenterData) {
+            let address = await prisma.address.findUnique({
+                where: {
+                    id: updatedCenterData.address
+                }
+            })
+    
+            // In case the selected address doesn't exist or doesn't belong to the user
+    
+            if (!address || address.user != userID) {
+                return "INVALID_ADDRESS"
+            }
+    
+            // In case this address is already being used by the user for another center (except the current one)
+    
+            let addressAlreadyInUse = await prisma.distribution_Center.findFirst({
+                where: {
+                    transporter: userID,
+                    address: updatedCenterData.address
+                }
+            })
+
+            if (addressAlreadyInUse && center.address != address.id) {
+                return "ADDRESS_IN_USE"
+            }
+        }
+
+        // Updating the center
+
+        let updatedCenter = await prisma.distribution_Center.update({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            },
+            data: updatedCenterData
+        })
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
+async function deleteDistributionCenter(userID, centerID) {
+    // TODO: PROOF FOR SOFT-DELETE
+
+    try {
+        // Proofing
+
+        let center = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    id: centerID,
+                    transporter: userID
+                }
+            },
+            select: {
+                Vehicle: {
+                    where: {
+                        transporter: userID,
+                        distribution_center: centerID
+                    }
+                }
+            }
+        })
+
+        if (!center) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
+        // A center cannot be removed if there are still supplies registered to it
+
+        if (center.Vehicle.length) {
+            return "DISTRIBUTION_CENTER_NOT_EMPTY"
+        }
+
+        // Removing the center
+    
+        let removedCenter = await prisma.distribution_Center.delete({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: centerID
+                }
+            }
+        })
+
+        return removedCenter
+
+    } catch (e) {
+        return null
+    }
+
+}
+
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -1865,9 +3541,33 @@ module.exports = {
     clearWishlist,
 
     // Order Functions
-    getOrdersByUserID,
+    getOrdersByUser,
     getOrderByID,
+    getFilteredOrderByID,
     createOrder,
     changeOrderStatus,
-    decrementSupplyStock
+    decrementSupplyStock,
+    checkUserOrderRelationship,
+    updateOrderItem,
+    checkUserItemRelationship,
+
+    // Notification Functions
+    getNotificationsByUser,
+    dismissNotification,
+    dismissAllNotifications,
+
+    // Warehouse Functions
+    getWarehouses,
+    getWarehouse,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+
+    // Distribution Center Functions
+    getDistributionCenters,
+    getDistributionCenter,
+    createDistributionCenter,
+    updateDistributionCenter,
+    deleteDistributionCenter
+
 }

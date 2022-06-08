@@ -171,7 +171,6 @@ router.put('/:userId/addresses/:addressId', authentication.check, authorization.
 router.delete('/:userId/addresses/:addressId', authentication.check, authorization.check, (req, res) => {
     try {
         persistence.deleteAddress(
-            Number(req.params.userId),
             Number(req.params.addressId)
             ).then((success) => {
             if (success) {
@@ -207,7 +206,7 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
         req.body.supplier, 
         req.body.warehouse, 
         req.body.transporter, 
-        req.body.quantity,
+        Number(req.body.quantity),
     ).then((result) => {        
         switch (result) {
             case null:
@@ -216,8 +215,6 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
                 return res.status(400).send({message: "Requested quantity is higher than available stock."})
             case "INVALID_COMBINATION":
                 return res.status(400).send({message: "Invalid combination of product, supplier and transporter."})
-            case "ALREADY_PRESENT":
-                return res.status(409).send({message: "Specified item is already in cart."})
             default:
                 return res.status(200).send({message: "Item successfully added to cart."})
         }
@@ -327,7 +324,6 @@ router.delete('/:userId/wishlist/:productId', authentication.check, authorizatio
 })
 
 /* Order functions */
-// TODO: Add authorization rules 
 router.post('/:userId/orders', authentication.check, authorization.check, createOrderValidator(), (req, res) => {
     persistence.createOrder(
         Number(req.params.userId),
@@ -362,20 +358,68 @@ router.post('/:userId/orders', authentication.check, authorization.check, create
     })
 })
 
-// TODO: Add authorization rules and validator
 router.get('/:userId/orders', authentication.check, authorization.check, (req, res) => {
     try {
-        persistence.getOrdersByUserID(
-            Number(req.params.userId)
+        persistence.getOrdersByUser(
+            req.user
         ).then((result) => {
             if (result == null) {
                 return res.status(500).send(defaultErr())
             }
 
             return res.status(200).json(result)
-
-
         })   
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+/* Notification routes */
+router.get('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.getNotificationsByUser(
+            Number(req.params.userId)).then((result) => {
+            if (result == null) {
+                return res.status(500).send(defaultErr())
+            }
+
+            return res.status(200).json(result)
+        })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissAllNotifications(
+            Number(req.params.userId)).then((result) => {
+                if (result == null) {
+                    return res.status(500).send(defaultErr())
+                }
+                
+                return res.status(200).send({message: "Notifications successfully dismissed."})
+            })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications/:notificationId', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissNotification(
+            Number(req.params.userId),
+            Number(req.params.notificationId)).then((result) => {
+                switch (result) {
+                    case null:
+                        return res.status(500).send(defaultErr())
+                    case "NOT_FOUND":
+                        return res.status(404).send({message: "The notification identifier is invalid."})
+                    default:
+                        return res.status(200).send({message: "Notification successfully dismissed."})
+                }
+
+            })
     } catch (e) {
         return res.status(500).send(defaultErr())
     }

@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         
-        <h4>Estatísticas</h4>
+        <h4>Favoritos</h4>
         <hr>
         
         <h4>Still on the works. . .&nbsp;<font-awesome-icon :icon="['fa', 'hammer']" /></h4>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-
+import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faHammer } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ import http from "../../../http-common"
 
 
 export default({
-    name: 'ProfileStatistics',
+    name: 'ProfileWishlist',
     mounted() {
         this.getUserInfo();
     },

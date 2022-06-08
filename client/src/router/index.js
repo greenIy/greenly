@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import ProfileView from '../views/ProfileView.vue';
 import ProductsView from '../views/ProductsView.vue';
 
 const routes = [
@@ -52,27 +53,56 @@ const routes = [
     },
   },
   {
-    path: '/registar',
-    name: 'registar',
+    path: '/registo',
+    name: 'registo',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
   {
-    path: '/profile',
-    name: 'profile',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/ProfileView.vue');
-    },
-  },
-  {
-    path: '/checkout',
-    name: 'checkout',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
-    },
-  }
+    path: '/perfil',
+    name: 'perfil',
+    redirect: '/perfil/detalhes',
+    component: ProfileView,
 
+    children: [
+      { path: 'detalhes',
+        name: 'personalInfo',
+        component: ProfileView,
+        },
+      { path: 'empresa',
+        name: 'companyInfo',
+        component: ProfileView,
+        },
+      { path: 'encomendas',
+        name: 'orders',
+        component: ProfileView,
+        },
+      { path: 'favoritos',
+        name: 'wishlist',
+        component: ProfileView,
+      },
+      { path: 'moradas',
+        name: 'addresses',
+        component: ProfileView,
+      },
+      { path: 'seguranca',
+        name: 'security',
+        component: ProfileView,
+      },
+      { path: 'estatisticas',
+        name: 'statistics',
+        component: ProfileView,
+      },
+    ]
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component() {
+        return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+      },
+    }
 ];
 
 const router = createRouter({

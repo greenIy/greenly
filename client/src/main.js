@@ -1,5 +1,5 @@
 // Bootstrap imports
-import 'bootstrap';
+import { Toast } from 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
 import { createStore } from 'vuex';
@@ -85,4 +85,4 @@ myApp.use(GAuth, gauthOption);
 myApp.use(Toast);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
-export default store;
+export {store, Toast}

@@ -1,6 +1,9 @@
 # Utility scripts
 regen_db.sh
 
+# Cache
+__pycache__
+
 # Population script 
 mock.sql
 *.geojson
@@ -78,6 +81,7 @@ typings/
 # dotenv environment variables file
 .env*
 .env.test
+.google-key.json
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
