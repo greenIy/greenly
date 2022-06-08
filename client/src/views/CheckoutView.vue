@@ -5,19 +5,21 @@
             <the-navbar/>
             <div class="tab-content p-5" id="checkout-content">
                 <h2>Checkout</h2>
-
                 <div v-if="activeTab === 'shipping'" class="row"> <!-- Shipping tab -->
-                    <div class="col-md-6">
+                    <div class="col-md-8">
+                        <KeepAlive>
                         <shipping-form :billing="billingAddress" :shipping="shippingAddress" @setBilling="setBillingAddress" @setShipping="setShippingAddress" @done="shippingCallback" />
-                    </div>
-                    <div class="col-md-6">
+                    </KeepAlive>
+
+                </div>
+                    <div class="col-md-4">
                         <cart-info/>
                     </div>
                 </div> <!-- End of shipping tab -->
 
                 <div v-if="activeTab === 'payment'" class="row"> <!-- Payment tab -->
                     <div class="col-md-6">
-                        <payment-form v-if="activeTab === 'payment'" :client-secret="stripeInfo.clientSecret" :stripe-key="stripeInfo.stripeKey" @go-back="changeTab" />
+                        <payment-form v-if="activeTab === 'payment'" :client-secret="stripeInfo.clientSecret" :stripe-key="stripeInfo.stripeKey" @go-back="changeTab" @toast-fail="toastFail"/>
                     </div>
                     <div class="col-md-6">
                         <cart-info/>
@@ -38,6 +40,7 @@
     import CartInfo from "@/components/Checkout/CartInfo";
     import ShippingForm from "@/components/Checkout/ShippingForm";
     import http from "../../http-common";
+    import { useToast } from "vue-toastification";
 
     export default {
         name: "CheckoutView",
@@ -49,6 +52,7 @@
             TheNavbar
         },
         data() {
+            const toast = useToast();
             return {
                 user: [],
                 activeTab: 'shipping',
@@ -59,7 +63,8 @@
                     clientSecret: ''
                 },
                 orderID: null,
-                orderStatus: null
+                orderStatus: null,
+                toast
             }
         },
         methods: {
@@ -103,7 +108,8 @@
                 let accessToken = JSON.parse(localStorage.getItem('accessToken'));
                 let userId = JSON.parse(localStorage.getItem('userId'));
                 let order = {
-                    address: this.shippingAddress.id,
+                    shipping_address: this.shippingAddress.id,
+                    billing_address: this.billingAddress.id,
                     observations: "ai e",
                 }
                 console.log("Attempting to create order: ", order);
@@ -145,6 +151,13 @@
                             }
                         })
                 }
+            },
+
+            toastFail(message){
+                this.toast.error(message, {
+                    position: 'top-left',
+                    duration: 10000
+                });
             },
 
             changeTab(tab) {

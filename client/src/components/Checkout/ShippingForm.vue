@@ -3,7 +3,7 @@
     <div class="shipping-addresses">
         <h3>Morada de envio: </h3>
         <div class="p-5 row row-cols-1 row-cols-md-3 g-4">
-            <div v-for="address in this.shippingAddresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedShippingAddress === address}" style="width: 300px; margin-right: 30px">
+            <div v-for="address in this.addresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedShippingAddress === address}" style="width: 300px; margin-right: 30px">
                 <!-- toggle class to show green background if selected -->
                 <div class="card-body" @click="selectShippingAddress(address)"  style="cursor: pointer;">
                     <address>
@@ -33,7 +33,7 @@
         <div class="billing-addresses">
             <h3>Morada fiscal:</h3>
             <div class="p-5 row row-cols-1 row-cols-md-3 g-4">
-                <div v-for="address in this.billingAddresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedBillingAddress === address}" style="width: 300px; margin-right: 30px">
+                <div v-for="address in this.addresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedBillingAddress === address}" style="width: 300px; margin-right: 30px">
                     <!-- toggle class to show green background if selected -->
                     <div class="card-body" @click="selectBillingAddress(address)"  style="cursor: pointer;">
                         <address>
@@ -62,7 +62,7 @@
 
     <!-- next button -->
     <div class="row justify-content-center">
-        <button class="btn btn-primary" @click="$emit('done')">Próximo</button>
+        <button class="btn btn-primary btn-lg btn-block btn-greenly" @click="$emit('done')">Próximo</button>
     </div>
 </template>
 
@@ -78,40 +78,41 @@ library.add(faHouseChimney, faSquare, faSquareCheck);
 export default {
     name: "ShippingForm",
     props: {
-        shipping: null,
-        billing: null,
+        shipping: {
+            type: Object,
+            required: true
+        },
+        billing: {
+            type: Object,
+            required: true
+        },
     },
     emits: ["setShipping", "setBilling", "done"],
     mounted() {
+
         this.getUserInfo();
     },
     data(props) {
+        let selectedShippingAddress = props.shipping;
+        let selectedBillingAddress = props.billing;
         return {
             user: [],
-            shippingAddresses: [],
-            billingAddresses: [],
-            selectedShippingAddress: props.shipping,
-            selectedBillingAddress: props.billing,
+            addresses: [],
+            selectedShippingAddress,
+            selectedBillingAddress
         }
     },
     methods: {
         getUserInfo() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
+            const self = this;
             if (accessToken) {
                 http.get(`/user/${userId}`, {headers: {"Authorization": `Bearer ${accessToken}`}})
                     .then(response => {
                         if (response.status == 200) {
-                            this.user = response.data;
-                            for(let address of this.user.addresses) {
-                                if(address.is_shipping === true) {
-                                    this.shippingAddresses.push(address);
-                                }
-                                if(address.is_billing === true) {
-                                    this.billingAddresses.push(address);
-                                }
-                            }
-                            return this.user
+                            self.user = response.data;
+                            self.addresses = self.user.addresses;
                         }
                     })
             }
@@ -150,6 +151,11 @@ export default {
 
 .selected{
     color: #5e9f88;
+}
+
+.btn-greenly {
+    background-color: #5e9f88;
+    border-color: #5e9f88;
 }
 
 </style>

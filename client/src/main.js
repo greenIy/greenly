@@ -4,7 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
 import { createStore } from 'vuex';
 import GAuth from 'vue3-google-oauth2';
-
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
@@ -80,6 +81,8 @@ const gauthOption = {
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
 
+// Instanciação do componente Toast
+myApp.use(Toast);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
 export default store;
