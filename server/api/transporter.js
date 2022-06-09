@@ -190,6 +190,24 @@ router.put('/:userId/vehicles/:vehicleId', authentication.check, authorization.c
         })
 })
 
+router.delete('/:userId/vehicles/:vehicleId', authentication.check, authorization.check, (req, res) => {
+
+    persistence.deleteVehicle(
+        Number(req.params.userId),
+        Number(req.params.vehicleId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_VEHICLE":
+                return res.status(404).send({message: "Vehicle not found. Make sure to specify a vehicle registered to your account."})
+            case "VEHICLE_BUSY":
+                return res.status(409).send({message: "This vehicle cannot be deleted since there are on-going orders assigned to it. Complete or cancel all orders related to this vehicle before attempting to delete it."})
+            default:
+                return res.status(200).send({message: "Successfully deleted vehicle."})
+        }
+    })
+})
 
 
 module.exports = router;

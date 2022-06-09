@@ -1256,12 +1256,14 @@ async function getCart(userID) {
             }
 
             // Adding vehicle averages to payload
-            item.average_transporter_emissions = parseFloat(vehicle_averages._avg.average_emissions.toFixed(2));
-            item.average_transporter_resource_usage = parseFloat(vehicle_averages._avg.resource_usage.toFixed(2));
+            item.average_transporter_emissions = Number(vehicle_averages._avg.average_emissions);
+            item.average_transporter_resource_usage = Number(vehicle_averages._avg.resource_usage);
 
             // Adding warehouse averages to payload
-            item.average_supplier_resource_usage = warehouse.resource_usage
+            item.average_supplier_resource_usage = Number(warehouse.resource_usage)
             item.supplier_renewable_resources = warehouse.renewable_resources
+
+            console.log('warehouse.resource_usage :>> ', item);
 
             // Additional product information
             // TODO: Eventually, also select the product's image here
@@ -1278,6 +1280,8 @@ async function getCart(userID) {
             totalSupplierResourceUsage      += item.average_supplier_resource_usage
             totalTransporterResourceUsage   += item.average_transporter_resource_usage
             totalTransporterEmissions       += item.average_transporter_emissions
+
+            console.log('item.average_supplier_resource_usage :>> ', item.average_supplier_resource_usage);
 
             return item
         }))
@@ -3759,6 +3763,65 @@ async function updateVehicle(userID, vehicleID, params) {
         })
 
     } catch (e) {
+        return null
+    }
+
+}
+
+async function deleteVehicle(userID, vehicleID) {
+
+    // TODO: Proof this for soft-delete
+
+    try {
+        
+        let vehicle = await prisma.vehicle.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            }
+        })
+
+        if (!vehicle) {
+            return "INVALID_VEHICLE"
+        }
+
+        let assignedOrders = await prisma.order_Item.findMany({
+            where: {
+                transporter: userID,
+                vehicle: vehicleID
+            }
+        })
+
+        // Checking if vehicle is currently required
+
+        let hasIncompleteOrders = assignedOrders.some((item) => {
+            return [
+                "AWAITING_PAYMENT", 
+                "PROCESSING",
+                "AWAITING_TRANSPORT",
+                "TRANSPORT_IMMINENT", 
+                "IN_TRANSIT", 
+                "LAST_MILE"].includes(item.status)
+        })
+
+        if (hasIncompleteOrders) {
+            return "VEHICLE_BUSY"
+        }
+
+        // Deleting vehicle
+
+        await prisma.vehicle.delete({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            }
+        })
+
+    } catch (e) {
         console.log('e :>> ', e);
         return null
     }
@@ -3845,6 +3908,7 @@ module.exports = {
     // Vehicles Functions
     getVehicles,
     createVehicle,
-    updateVehicle
+    updateVehicle,
+    deleteVehicle
 
 }
