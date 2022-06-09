@@ -3584,6 +3584,10 @@ async function getVehicles(userID) {
             vehicle.orders_completed = assignedOrders.reduce(
                 (accumulator, item) => (item.status == "COMPLETE" ? accumulator + 1 : accumulator), 0)
 
+            // Calculating orders failed
+            vehicle.orders_failed = assignedOrders.reduce(
+                (accumulator, item) => (item.status == "FAILURE" ? accumulator + 1 : accumulator), 0)
+
             vehicle.distribution_center = distributionCenter
 
             return vehicle

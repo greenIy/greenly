@@ -1605,15 +1605,12 @@ paths:
       tags:
       - transporter
       summary: Obter veículos associados ao transportador userId
-      description: "Devolve um array de objetos Vehicle, conforme os veículos registados\
-        \ pelo transportador userId \nApenas pode ser feito pelo transportador quando\
-        \ autenticado, ou por um administrador"
-      operationId: getTransporterVehicles
+      description: "Devolve um conjunto de veículos, conforme os veículos registados pelo transportador userId. Apenas pode ser feito pelo transportador quando autenticado, ou por um administrador"
+      operationId: getVehicles
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador cujos veículos se deseja obter \nDeve corresponder\
-          \ a um utilizador do tipo transporter"
+        description: "userId do utilizador cujos veículos se deseja obter. Deve corresponder a um utilizador do tipo 'transporter'"
         required: true
         schema:
           type: integer
@@ -1623,13 +1620,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Vehicle'
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ReceivedVehicle'
         400:
           description: userId inválido
           content: {}
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
+      security:
+        - bearerAuth: []
     post:
       tags:
       - transporter
@@ -1639,147 +1652,199 @@ paths:
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador a registar o veículo \nDeve corresponder\
-          \ a um utilizador do tipo transporter"
+        description: "userId do utilizador a registar o veículo. Deve corresponder a um utilizador do tipo transporter"
         required: true
         schema:
           type: integer
       requestBody:
-        description: Cria um objeto Product
+        description: Cria um novo veículo
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Vehicle'
+              $ref: '#/components/schemas/SentVehicle'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: Dados inválidos
-          content: {}
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo veículo"
         401:
-          description: Utilizador não autorizado
-          content: {}
-        409:
-          description: O produto já existe
-          content: {}
-      x-codegen-request-body-name: body
-  /transporter/{userId}/vehicles/{vehicleId}:
-    get:
-      tags:
-      - transporter
-      summary: Obter um veículo específico associado ao transportador usedId
-      description: "Devolve um objeto Vehicle, registado pelo transportador userId\
-        \ \nApenas pode ser feito pelo transportador quando autenticado, ou por um\
-        \ administrador"
-      operationId: getTransporterVehicleById
-      parameters:
-      - name: userId
-        in: path
-        description: "userId do utilizador que registou o veículo \nDeve corresponder\
-          \ a um utilizador do tipo transporter"
-        required: true
-        schema:
-          type: integer
-      - name: vehicleId
-        in: path
-        description: "vehicleId do veículo \nDeve corresponder a um veículo pertencente\
-          \ à frota do transportador"
-        required: true
-        schema:
-          type: integer
-      responses:
-        200:
-          description: Operação efetuada com sucesso
+          description: "_Token_ inválido. Utilizador não autenticado"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Vehicle'
-        400:
-          description: userId ou vehicleId inválidos
-          content: {}
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou veículo não encontrados
-          content: {}
+          description: Centro de distribuição escolhido é inválido
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Distribution center not found. Make sure to specify a distribution center registered to your account."
+        409:
+          description: Matrícula especificada já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "There is already a vehicle registered with this license plate."
+      security:
+        - bearerAuth: []
+
+  /transporter/{userId}/vehicles/{vehicleId}:
     put:
       tags:
       - transporter
       summary: Atualizar veículo
-      description: "Permite alterar detalhes de úm veículo já registado \nApenas pode\
-        \ ser feito pelo transportador userId quando autenticado"
+      description: "Permite alterar detalhes de um veículo já registado. Apenas pode ser feito pelo transportador userId quando autenticado, ou por um administrador"
       operationId: updateVehicle
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador que registou o veículo \nDeve corresponder\
-          \ a um utilizador do tipo transporter"
+        description: "userId do utilizador que registou o veículo. Deve corresponder a um utilizador do tipo 'transporter'"
         required: true
         schema:
           type: integer
       - name: vehicleId
         in: path
-        description: "vehicleId do veículo a atualizar \nDeve corresponder a um veí\
-          culo pertencente à frota do transportador"
+        description: "vehicleId do veículo a atualizar. Deve corresponder a um veículo pertencente à frota do transportador"
         required: true
         schema:
           type: integer
       requestBody:
-        description: Atualiza o objeto Vehicle
+        description: Atualiza os detalhes do veículo. Só deverão ser especificados os atributos que se deseja atualizar.
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/Vehicle'
+              $ref: '#/components/schemas/SentVehicle'
         required: true
       responses:
-        204:
-          description: Veículo atualizado com sucesso
-          content: {}
-        400:
-          description: userId ou vehicleId inválidos
-          content: {}
+        201:
+          description: Operação efetuada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully updated vehicle details."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou veículo não encontrados
-          content: {}
-      x-codegen-request-body-name: body
+          description: Veículo não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Vehicle not found. Make sure to specify a vehicle registered to your account."
+        409:
+          description: Matrícula especificada já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "There is already a vehicle registered with this license plate."
+      security:
+        - bearerAuth: []
     delete:
       tags:
       - transporter
       summary: Apagar veículo
-      description: "Permite apagar um veículo, removendo-o da frota do transportador\
-        \ \nApenas pode ser feito pelo transportador userId quando autenticado"
+      description: |- 
+        Permite apagar um veículo, removendo-o da frota do transportador. Apenas pode ser feito pelo transportador userId quando autenticado. O veículo específicado não deverá ter encomendas associadas que estejam ainda no estado de transporte ("IN_TRANSIT" ou "LAST_MILE").
       operationId: deleteVehicle
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador que registou o veículo \nDeve corresponder\
-          \ a um utilizador do tipo transporter"
+        description: "userId do utilizador que registou o veículo. Deve corresponder a um utilizador do tipo 'transporter'"
         required: true
         schema:
           type: integer
       - name: vehicleId
         in: path
-        description: "vehicleId do veículo a remover \nDeve corresponder a um veí\
-          culo pertencente à frota do transportador"
+        description: "vehicleId do veículo a remover. Deve corresponder a um veículo pertencente à frota do transportador"
         required: true
         schema:
           type: integer
       responses:
-        204:
-          description: Veículo removido com sucesso
-          content: {}
-        400:
-          description: userId ou vehicleId inválidos
-          content: {}
+        201:
+          description: Operação efetuada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully deleted vehicle."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou veículo não encontrados
-          content: {}
+          description: Veículo não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Vehicle not found. Make sure to specify a vehicle registered to your account."
+        409:
+          description: Matrícula especificada já em utilização
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "There is already a vehicle registered with this license plate."
+      security:
+        - bearerAuth: []
   ## DISTRIBUTION CENTER ROUTES
   /transporter/{userId}/centers:
     get:
@@ -2045,7 +2110,7 @@ paths:
           type: integer
       responses:
         200:
-          description: Centro de distribuição removido com sucesso
+          description: Centro de distribuição removido com sucesso.
         401:
           description: "_Token_ inválido. Utilizador não autenticado"
           content:
@@ -2987,7 +3052,7 @@ components:
                     - ELECTRIC
                   payload_capacity:
                     type: integer
-                    description: Capacidade de carga do veículo (em kg)
+                    description: Capacidade de carga do veículo (em toneladas)
                   distribution_center:
                     type: integer
                     description: Código identificador do centro de distribuição ao qual o veículo pertence
@@ -3797,7 +3862,7 @@ components:
               description: A longitude da morada especificada (precisão de 6 decimais)
         capacity:
           type: integer
-          description: Representação de veículos de um centro de distribuição
+          description: Espaço total do centro de distribuição
         total_vehicles:
           type: integer
           description: Número de veículos associados ao centro de distribuição
@@ -3859,6 +3924,106 @@ components:
           format: float
           description: Capacidade total do centro de distribuição (em m²)
     
+    ReceivedVehicle:
+      type: object
+      properties:
+        id: 
+          type: integer
+          description: Código identificador do veículo em questão (indexado por transportador)
+        resource_usage:
+          type: number
+          format: float
+          description: Média de consumo de combustível do veículo (em l/100km)
+        license_plate:
+          type: string
+          description: Matrícula do veículo
+        fuel_type:
+          type: string
+          description: Tipo de combustível utilizado pelo veículo
+          enum:
+            - "PETROL"
+            - "DIESEL"
+            - "ELECTRICITY"
+        payload_capacity:
+          type: number
+          format: float
+          description: Capacidade de carga do veículo (em toneladas)
+        average_emissions:
+          type: number
+          format: float
+          description: CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
+        distribution_center:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Código identificador do centro de distribuição
+            capacity:
+              type: integer
+              description: Espaço total do centro de distribuição
+            address:
+              type: object    
+              description: Morada do armazém em questão
+              properties:
+                street:
+                  type: string
+                  description: Rua da morada
+                city:
+                  type: string
+                  description: Cidade da morada
+                country:
+                  type: string
+                  description: País da morada
+                postal_code:
+                  type: string
+                  description: Código postal da morada
+                latitude:
+                  type: number
+                  description: A latitude da morada especificada (precisão de 6 decimais)
+                longitude:
+                  type: number
+                  description: A longitude da morada especificada (precisão de 6 decimais)
+        total_orders_assigned:
+          type: integer
+          description: Quantidade de encomendas associadas a este veículo
+        orders_in_transit:
+          type: integer
+          description: Quantidade de encomendas associadas a este veículo que estão no estado "IN_TRANSIT" ou "LAST_MILE"
+        orders_completed:
+          type: integer
+          description: Quantidade de encomendas associadas a este veículo que já estão completas
+        orders_failed:
+          type: integer
+          description: Quantidade de encomendas associadas a este veículo que falharam
+
+    SentVehicle:
+      type: object
+      properties:
+        distribution_center:
+          type: integer
+          description: Código identificador do centro de distribuição ao qual se pretende adicionar este veículo. Deverá corresponder a um centro de distribuição registado na conta do transportador userId.
+        license_plate:
+          type: string
+          description: Matrícula do veículo
+        payload_capacity:
+          type: number
+          format: float
+          description: Capacidade de carga do veículo (em toneladas)
+        resource_usage:
+          type: number
+          format: float
+          description: Média de consumo de combustível do veículo (em l/100km)
+        average_emissions:
+          type: number
+          format: float
+          description: CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
+        fuel_type:
+          type: string
+          description: Tipo de combustível utilizado pelo veículo
+          enum:
+            - "PETROL"
+            - "DIESEL"
+            - "ELECTRICITY"
 
     ## TODO: Transform this into responses
     ## CONFIRMATIONS AND ERRORS
