@@ -98,9 +98,6 @@ export default({
             this.user = this.$store.getters.getUser
             return this.user
         },
-        cloneUser(user) {
-            return JSON.parse(JSON.stringify(user))
-        },
         editUserInfo() {
             document.getElementById("editInfoButton").style.display = "none";
             document.getElementById("cancelInfoButton").style.display = "block"
@@ -212,5 +209,9 @@ export default({
     }
     #successToast {
         background-color: #5E9F88 !important;
+    }
+    :focus {
+        outline: 0 !important;
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
     }
 </style>
