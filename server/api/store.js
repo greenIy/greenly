@@ -179,7 +179,7 @@ router.put('/categories/:categoryId', authentication.check, authorization.check,
 router.delete('/categories/:categoryId', authentication.check, authorization.check, (req, res) => {
     persistence.deleteCategory(Number(req.params.categoryId)).then((success) => {
         if (success == 409) {
-            return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories"})
+            return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories."})
         } else if (success) {
             return res.status(202).send({message: "Category deleted successfully."})
         } else {

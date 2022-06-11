@@ -6,7 +6,6 @@
 const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 /* User Validation Functions */
 
@@ -506,6 +505,111 @@ function updateOrderValidator() {
     ]
 }
 
+/* Warehouse Validators */
+
+function createWarehouseValidator() {
+    return [
+        body('address')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('renewable_resources')
+            .notEmpty().bail()
+            .isInt({min: 0}).bail()
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateWarehouseValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('renewable_resources')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 0}).bail()
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+/* Distribution Center Validators */
+
+function createDistributionCenterValidator() {
+    return [
+        body('address')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateDistributionCenterValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
 
 
 module.exports = {
@@ -537,6 +641,14 @@ module.exports = {
     // Order validators
     createOrderValidator,
     getSingleOrderValidator,
-    updateOrderValidator
+    updateOrderValidator,
+
+    // Warehouse validators
+    createWarehouseValidator,
+    updateWarehouseValidator,
+
+    // Distribution Center Validators
+    createDistributionCenterValidator,
+    updateDistributionCenterValidator
 
 }

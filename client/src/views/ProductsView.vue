@@ -7,26 +7,26 @@
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
               :product="products"/>
         <div class="row content justify-content-center" v-if="rendered">
-          <div class="col-sm-2 col-md-2 mb-2 filtros ">
+          <div class="col-sm-2 col-md-2 mb-2 filtros">
             <div class="content d-flex">
-              <TheFilters :categories="categories" :currentCategories="currentCategories"/>
+              <TheFilters :categories="categories" :currentCategories="currentCategories" :suppliers="suppliers"/>
             </div>
           </div>
           <div class="col-sm-10 col-md-9">
           <Transition name="fade">
-            <div v-if="products.length" class="content d-flex w-100 ">
+            <div v-if="products.length" class="content d-flex w-100">
               <ProductCard
               v-for="p in products"
               :key="p.id"
               :product="p"
               ></ProductCard>
             </div>
-            <div v-else class="content d-flex w-100 ">
+            <div v-else class="content d-flex w-100">
               <TheNoProduct></TheNoProduct>
             </div>
           </Transition>
           </div>
-          </div>
+        </div>
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
     </div>
@@ -61,7 +61,6 @@ export default {
   },
   props: {
     product: Object,
-    allSuppliers:Array,
   },
   data() {
     return {
@@ -70,7 +69,7 @@ export default {
       productAmount: 0,
       currentCategories: [],
       productsInPage: 0,
-      allSuppliers: [],
+      suppliers: [],
       rendered: false,
     };
   },
@@ -80,6 +79,7 @@ export default {
   mounted() {
     this.getProducts();
     this.getCategories();
+    this.getSuppliers();
   },
   watch: {
     $route(to, from) {
@@ -115,8 +115,11 @@ export default {
       }
 
       if (this.$route.query.pesquisa){
-        console.log("eu entro aqui");
         request = request +  "&keywords=" + this.$route.query.pesquisa;
+      }
+
+      if(this.$route.query.fornecedor) {
+        request = request +  "&supplier=" + this.$route.query.fornecedor;
       }
 
       response = await http.get(request);
@@ -127,15 +130,12 @@ export default {
       //console.log(response.data);
       window.scrollTo(0, 0);
     },
-   /*  async getSuppliers() {
-      let response;
-      let request;
-      request = "/store/suppliers";
-      response = await http.get(request);
-      this.allSuppliers = response.data;
-      console.log(this.allSuppliers)
+    async getSuppliers() {
+      let response = await http.get("/store/suppliers");
+      this.suppliers = JSON.parse(JSON.stringify(response.data));
+      console.log(this.suppliers);
 
-    }, */
+    },
     async getCategories() {
       var response = await http.get("/store/categories");
       this.categories = response.data;
@@ -165,12 +165,13 @@ export default {
 
 <style scoped>
 .content {
-  flex-wrap:wrap
+  flex-wrap: wrap
 }
 .filtros{
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
   border-radius: .25rem;
+  height: 946px;
 }
 
 .v-enter-active,

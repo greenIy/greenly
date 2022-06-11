@@ -112,6 +112,11 @@ app.use('/transporter', transporter);
 // Centralizing error handling
 app.use(errorHandler);
 
+app.get('*', function(req, res){
+  return res.status(404).send({
+    message: "Invalid endpoint. Check available endpoints at docs.greenly.pt."
+  })
+});
 
 /* Starting server */
 
