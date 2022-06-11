@@ -1,10 +1,10 @@
 // Bootstrap imports
 import { Toast } from 'bootstrap';
+import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
 import { createStore } from 'vuex';
 import GAuth from 'vue3-google-oauth2';
-
 
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
@@ -18,7 +18,8 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 
 const myApp = createApp(App);
-
+const emitter = mitt();
+myApp.config.globalProperties.emitter = emitter;
 myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);

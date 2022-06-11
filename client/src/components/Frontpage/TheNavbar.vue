@@ -47,14 +47,14 @@
                 <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
+                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><font-awesome-icon :icon="['fa', 'inbox']"/>&nbsp;Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Arquivadas</button>
+                            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false"><font-awesome-icon :icon="['fa', 'clock-rotate-left']"/>&nbsp;Arquivadas</button>
                         </li>
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" style="overflow-y: auto; max-height: 550px;">
                                 <div v-for="noti in this.notifications" :key="noti.id">
                                     <div v-if="noti.dismissed == false" >
                                         <div class="list-group">
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" style="overflow-y: auto; height: 550px;">
+                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" style="overflow-y: auto; max-height: 550px;">
                                 <div v-for="noti in this.notifications" :key="noti.id">
                                     <div v-if="noti.dismissed == true" >
                                         <div class="list-group">
@@ -185,8 +185,8 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark} from '@fortawesome/free-solid-svg-icons';
-library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark);
+import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft} from '@fortawesome/free-solid-svg-icons';
+library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft);
 
 import http from "../../../http-common"
 import AuthService from '../../router/auth';
@@ -196,6 +196,7 @@ export default {
     mounted() {
         this.getUserInfo();
         this.getUserNotifications();
+        this.emitter.on('updateNotifications', () => {this.getUserNotifications()});
     },
     data () {
         return {
