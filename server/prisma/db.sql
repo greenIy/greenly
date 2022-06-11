@@ -104,8 +104,8 @@ CREATE TABLE Address (
 CREATE TABLE Warehouse (
     id              INT UNSIGNED AUTO_INCREMENT,
     address         INT UNSIGNED NOT NULL,
-    capacity        INT UNSIGNED NOT NULL,
-    resource_usage  INT UNSIGNED NOT NULL,
+    capacity        NUMERIC(10, 2) UNSIGNED NOT NULL,
+    resource_usage  NUMERIC(10, 2) UNSIGNED NOT NULL,
     supplier        INT UNSIGNED NOT NULL,
     renewable_resources INT UNSIGNED NOT NULL,
 
@@ -124,7 +124,7 @@ CREATE TABLE Warehouse (
 CREATE TABLE Distribution_Center (
     id          INT UNSIGNED AUTO_INCREMENT,
     address     INT UNSIGNED NOT NULL,
-    capacity    INT UNSIGNED NOT NULL,
+    capacity    NUMERIC(10, 2) UNSIGNED NOT NULL,
     transporter INT UNSIGNED NOT NULL,
 
     PRIMARY KEY (id, transporter), # Composite PK allows dist. center indexing per transporter.
@@ -140,11 +140,11 @@ CREATE TABLE Distribution_Center (
 
 CREATE TABLE Vehicle (
     id                  INT UNSIGNED AUTO_INCREMENT,
-    resource_usage      INT UNSIGNED NOT NULL,
     license_plate       VARCHAR(6) NOT NULL,
-    average_emissions   INT UNSIGNED NOT NULL,
     fuel_type           ENUM('ELECTRICITY', 'DIESEL', 'PETROL') NOT NULL,
-    payload_capacity    INT UNSIGNED NOT NULL,
+    resource_usage      NUMERIC(10, 2) UNSIGNED NOT NULL,
+    average_emissions   NUMERIC(10, 2) UNSIGNED NOT NULL,
+    payload_capacity    NUMERIC(10, 2) UNSIGNED NOT NULL,
 
     transporter         INT UNSIGNED NOT NULL,
     distribution_center INT UNSIGNED NOT NULL,

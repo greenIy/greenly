@@ -1256,12 +1256,14 @@ async function getCart(userID) {
             }
 
             // Adding vehicle averages to payload
-            item.average_transporter_emissions = parseFloat(vehicle_averages._avg.average_emissions.toFixed(2));
-            item.average_transporter_resource_usage = parseFloat(vehicle_averages._avg.resource_usage.toFixed(2));
+            item.average_transporter_emissions = Number(vehicle_averages._avg.average_emissions);
+            item.average_transporter_resource_usage = Number(vehicle_averages._avg.resource_usage);
 
             // Adding warehouse averages to payload
-            item.average_supplier_resource_usage = warehouse.resource_usage
+            item.average_supplier_resource_usage = Number(warehouse.resource_usage)
             item.supplier_renewable_resources = warehouse.renewable_resources
+
+            console.log('warehouse.resource_usage :>> ', item);
 
             // Additional product information
             // TODO: Eventually, also select the product's image here
@@ -1278,6 +1280,8 @@ async function getCart(userID) {
             totalSupplierResourceUsage      += item.average_supplier_resource_usage
             totalTransporterResourceUsage   += item.average_transporter_resource_usage
             totalTransporterEmissions       += item.average_transporter_emissions
+
+            console.log('item.average_supplier_resource_usage :>> ', item.average_supplier_resource_usage);
 
             return item
         }))
@@ -2297,24 +2301,20 @@ async function decrementSupplyStock(orderId) {
     // Iterating through items in order to decrease stock
     await Promise.all(order.items.map(async (orderItem) => {
 
+        // TODO: PROOF FOR STOCK RUPTURE
         // Decrementing corresponding supply's stock by the ordered amount
-        let updatedSupply = await prisma.supply.update({
+        let correspondingSupply = await prisma.supply.findUnique({
             where: {
                 product_supplier_warehouse: {
                     product: orderItem.product,
                     supplier: orderItem.supplier,
                     warehouse: orderItem.warehouse
                 }
-            },
-            data: {
-                quantity: {
-                    decrement: orderItem.quantity
-                }
             }
         })
 
-        if (updatedSupply.quantity < 0) {
-            updatedSupply = await prisma.supply.update({
+        if (correspondingSupply.quantity - orderItem.quantity < 0) {
+            await prisma.supply.update({
                 where: {
                     product: orderItem.product,
                     supplier: orderItem.supplier,
@@ -2322,6 +2322,21 @@ async function decrementSupplyStock(orderId) {
                 },
                 data: {
                     quantity: 0
+                }
+            })
+        } else {
+            await prisma.supply.update({
+                where: {
+                    product_supplier_warehouse: {
+                        product: orderItem.product,
+                        supplier: orderItem.supplier,
+                        warehouse: orderItem.warehouse
+                    }
+                },
+                data: {
+                    quantity: {
+                        decrement: orderItem.quantity
+                    }
                 }
             })
         }
@@ -3267,6 +3282,10 @@ async function getDistributionCenter(userID, centerID) {
             }
         })
 
+        if (!center) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
         let address = await prisma.address.findUnique({
             where: {
                 id: center.address
@@ -3496,6 +3515,326 @@ async function deleteDistributionCenter(userID, centerID) {
 
 }
 
+async function getVehicles(userID) {
+
+    try {
+        
+        let vehicles = await prisma.vehicle.findMany({ 
+            where: {
+                transporter: userID
+            },
+            select: {
+                id: true,
+                resource_usage: true,
+                license_plate: true,
+                fuel_type: true,
+                payload_capacity: true,
+                average_emissions: true,
+                distribution_center: true
+            }
+        })
+
+        // Gathering and cleaning data
+
+        await Promise.all(vehicles.map(async (vehicle) => {
+
+            let assignedOrders = await prisma.order_Item.findMany({
+                where: {
+                    vehicle: vehicle.id,
+                    transporter: userID
+                }
+            })
+
+            let distributionCenter = await prisma.distribution_Center.findUnique({
+                where: {
+                    id_transporter: {
+                        id: vehicle.distribution_center,
+                        transporter: userID
+                    }
+                },
+                select: {
+                    id: true,
+                    capacity: true,
+                    Address: {
+                        select: {
+                            id: true,
+                            street: true,
+                            country: true,
+                            city: true,
+                            latitude: true,
+                            longitude: true,
+                            postal_code: true
+                        }
+                    }
+                }
+            })
+            
+            // Cleaning
+            delete Object.assign(distributionCenter, {address: distributionCenter.Address}).Address;
+
+
+            // Counting related orders
+            vehicle.total_orders_assigned = assignedOrders.length
+
+            // Calculating orders in transit
+            vehicle.orders_in_transit = assignedOrders.reduce(
+                (accumulator, item) => (["IN_TRANSIT", "LAST_MILE"].includes(item.status) ? accumulator + 1 : accumulator), 0)
+            
+            // Calculating orders completed
+            vehicle.orders_completed = assignedOrders.reduce(
+                (accumulator, item) => (item.status == "COMPLETE" ? accumulator + 1 : accumulator), 0)
+
+            // Calculating orders failed
+            vehicle.orders_failed = assignedOrders.reduce(
+                (accumulator, item) => (item.status == "FAILURE" ? accumulator + 1 : accumulator), 0)
+
+            vehicle.distribution_center = distributionCenter
+
+            return vehicle
+        }))
+
+        return vehicles
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
+async function createVehicle(
+    userID,
+    distributionCenterID,
+    licensePlate,
+    payloadCapacity,
+    resourceUsage,
+    averageEmissions,
+    fuelType) {
+
+    try {
+
+        // Checking if the license plate is already registered
+
+        let licensePlateInUse = await prisma.vehicle.findFirst({
+            where: {
+                license_plate: licensePlate
+            }
+        })
+
+        if (licensePlateInUse) {
+            return "LICENSE_PLATE_CONFLICT"
+        }
+
+        let distributionCenter = await prisma.distribution_Center.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: distributionCenterID
+                }
+            }
+        })
+
+        if (!distributionCenter) {
+            return "INVALID_DISTRIBUTION_CENTER"
+        }
+
+        // Creating a new vehicle
+
+        let latestVehicle = await prisma.vehicle.findFirst({
+            where: {
+                transporter: userID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let vehicleCount = latestVehicle ? latestVehicle.id : 0
+
+        let newVehicle = await prisma.vehicle.create({
+            data: {
+                id: vehicleCount + 1,
+                transporter: userID,
+                distribution_center: distributionCenterID,
+                license_plate: licensePlate,
+                payload_capacity: payloadCapacity,
+                resource_usage: resourceUsage,
+                average_emissions: averageEmissions,
+                fuel_type: fuelType
+            }
+        })
+
+        return {
+            id: newVehicle.id
+        }
+
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
+async function updateVehicle(userID, vehicleID, params) {
+
+    try {
+        
+        // Proofing
+
+        let vehicle = await prisma.vehicle.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            }
+        })
+
+        if (!vehicle) {
+            return "INVALID_VEHICLE"
+        }
+
+        let updatedVehicleData = {}
+
+        let vehicleKeyMap = [
+            "distribution_center",
+            "license_plate",
+            "payload_capacity",
+            "resource_usage",
+            "average_emissions",
+            "fuel_type"
+        ]
+
+        for (const [key, value] of Object.entries(params)) {
+            if (vehicleKeyMap.includes(key)) {                
+                updatedVehicleData[key] = value
+            }
+        }
+
+        console.dir(updatedVehicleData);
+
+        // If a new distribution center is selected, make sure it's valid
+
+        if ("distribution_center" in updatedVehicleData) {
+
+            let validCenter = await prisma.distribution_Center.findUnique({ 
+                where: {
+                    id_transporter: {
+                        transporter: userID,
+                        id: updatedVehicleData["distribution_center"]
+                    }
+                }
+            })
+
+            if (!validCenter) {
+                return "INVALID_DISTRIBUTION_CENTER"
+            }
+
+        }
+
+        // If a new license plate is selected, make sure it isn't being used
+
+        if ("license_plate" in updatedVehicleData) {
+            
+            let licensePlateInUse = await prisma.vehicle.findFirst({
+                where: {
+                    license_plate: updatedVehicleData["license_plate"]
+                }
+            })
+
+            console.log('licensePlateInUse :>> ', licensePlateInUse);
+    
+            // If the license plate is in use (it's alright if its the current vehicle)
+            if (licensePlateInUse && 
+                !(licensePlateInUse.transporter == userID &&
+                     licensePlateInUse.id == vehicleID)) {
+                return "LICENSE_PLATE_CONFLICT"
+            }
+
+        }
+
+        // Updating the vehicle
+
+        let updatedVehicle = await prisma.vehicle.update({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            },
+            data: updatedVehicleData
+        })
+
+    } catch (e) {
+        return null
+    }
+
+}
+
+async function deleteVehicle(userID, vehicleID) {
+
+    // TODO: Proof this for soft-delete
+
+    try {
+        
+        let vehicle = await prisma.vehicle.findUnique({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            }
+        })
+
+        if (!vehicle) {
+            return "INVALID_VEHICLE"
+        }
+
+        let assignedOrders = await prisma.order_Item.findMany({
+            where: {
+                transporter: userID,
+                vehicle: vehicleID
+            }
+        })
+
+        // Checking if vehicle is currently required
+
+        let hasIncompleteOrders = assignedOrders.some((item) => {
+            return [
+                "AWAITING_PAYMENT", 
+                "PROCESSING",
+                "AWAITING_TRANSPORT",
+                "TRANSPORT_IMMINENT", 
+                "IN_TRANSIT", 
+                "LAST_MILE"].includes(item.status)
+        })
+
+        if (hasIncompleteOrders) {
+            return "VEHICLE_BUSY"
+        }
+
+        // Deleting vehicle
+
+        await prisma.vehicle.delete({
+            where: {
+                id_transporter: {
+                    transporter: userID,
+                    id: vehicleID
+                }
+            }
+        })
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+
+}
+
+
+
+
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -3568,6 +3907,12 @@ module.exports = {
     getDistributionCenter,
     createDistributionCenter,
     updateDistributionCenter,
-    deleteDistributionCenter
+    deleteDistributionCenter,
+
+    // Vehicles Functions
+    getVehicles,
+    createVehicle,
+    updateVehicle,
+    deleteVehicle
 
 }
