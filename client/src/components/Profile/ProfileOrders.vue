@@ -3,7 +3,7 @@
         
         <h4>Encomendas</h4>
         <hr>
-        <i>Todas as suas encomendas encontrar-se-ão nesta secção ordenadas cronologicamente.<br>É possivel cancelar individualmente
+        <i>Todas as suas encomendas encontrar-se-ão nesta secção, ordenadas cronologicamente.<br>É possivel cancelar individualmente
         um item de qualquer encomenda caso este ainda não se encontre em trânsito <font-awesome-icon :icon="['fa', 'truck-fast']"/> .
         </i>
         <br>

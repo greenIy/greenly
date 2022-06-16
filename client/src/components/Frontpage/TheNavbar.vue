@@ -24,7 +24,7 @@
                     <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                     </a>
-                    <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
+                    <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuLink">
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
@@ -44,7 +44,7 @@
                 <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <font-awesome-icon :icon="['fas', 'bell']" size="xl"/>
                 </a>
-                <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
+                <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><font-awesome-icon :icon="['fa', 'inbox']"/>&nbsp;Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
@@ -79,7 +79,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-center p-5">
                                             <h5 class="text-center">
-                                                Não existem novas notificações.
+                                                Não existem notificações novas.
                                             </h5>                                            
                                         </div>
                                     </span>
@@ -110,7 +110,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-between p-5">
                                             <h5 class="text-center">
-                                                Não existem novas notificações.
+                                                Não existem notificações arquivadas.
                                             </h5>                                            
                                         </div>
                                     </span>
