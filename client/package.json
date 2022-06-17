@@ -16,7 +16,6 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@googlemaps/js-api-loader": "^1.14.3",
     "@popperjs/core": "^2.11.5",
-    "@shopify/draggable": "^1.0.0-beta.8",
     "@vuelidate/core": "^2.0.0-alpha.40",
     "@vuelidate/validators": "^2.0.0-alpha.28",
     "autoprefixer": "10.4.5",
