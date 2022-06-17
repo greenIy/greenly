@@ -2341,7 +2341,7 @@ async function decrementSupplyStock(orderId) {
             })
         }
 
-        return updatedSupply
+        return correspondingSupply
     }))
 }
 
