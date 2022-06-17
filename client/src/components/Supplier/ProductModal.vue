@@ -28,7 +28,7 @@
             </div>
           </div>
         <div>
-          <ul class="nav nav-tabs mt-3">
+          <ul class="nav nav-tabs mt-4">
             <li class="nav-item ">
               <a class="nav-link greenly-color" id="prod" @click="activate(1)" :class="{ active : active_el == 1 }" >Produto</a>
             </li>
@@ -42,7 +42,7 @@
               <a class="nav-link greenly-color" @click="activate(4)" :class="{ active : active_el == 4 }">Transportador</a>
             </li>
           </ul>
-          <div class="mt-3" v-if="active_el==1" >
+          <div class="mt-4" v-if="active_el==1" >
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>

@@ -76,7 +76,7 @@
                 <br>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Consumidor&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
+            <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Consumidor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Imagem do produto" style="width:7%" /></button>
 
             <div class="or-seperator"><i>ou</i></div>
             <p class="text-center">Regista-te através de uma rede social</p>
@@ -86,7 +86,7 @@
             </div>
 
         </form>
-        <p class="text-center text-muted small">Já tens conta?  <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
+        <p class="text-center text-muted small">Já tens conta? <router-link to="/login" class="float-right greenly-link">Inicia sessão aqui!</router-link></p>
     </div>
 </template>
 
