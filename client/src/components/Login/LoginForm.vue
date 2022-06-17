@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <p class="text-muted small" style="font-size: 85%"><router-link class="greenly-link" to="">Esqueceste-te da tua palavra-passe?</router-link></p>
-                    <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Imagem do produto" style="width:7%" /></button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
                     <div class="or-seperator"><i>ou</i></div>
                         <p class="text-center">Inicia sessão através de uma rede social</p>
                         <div class="text-center social-btn">

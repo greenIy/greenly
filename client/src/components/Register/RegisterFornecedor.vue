@@ -69,7 +69,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Fornecedor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Imagem do produto" style="width:7%" /></button>
+                        <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Fornecedor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
                     </div>
                 </form>
             </div>
