@@ -21,13 +21,13 @@
         </div>
         <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
           <button class="btnH fav">
-            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
+            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" />
             Favoritos
           </button>
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" for="accept">
-                <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox" />Comparar Produto</label>
+                <input type="checkbox" v-model="user.accept" id="accept" @click="compare($event)" class="form-check-input checkbox" />Comparar Produto</label>
             </div>
           </form>
         </div>
@@ -47,10 +47,12 @@ export default {
   name: "ProductCard",
   props: {
     product: Object,
+    quantityP:Number,
   },
   data() {
     return {
       isActive: false,
+      quantity:0,
       user: {
         accept: false,
       },
@@ -64,6 +66,17 @@ export default {
       } else {
         svg.classList.add("red");
       } 
+    },
+    compare(event){
+      if (this.quantityP < 2){
+        this.quantity = this.quantityP;
+        this.quantity ++;
+        console.log(this.quantity);
+        this.$emit('updateQuantity', this.quantity);
+      }
+      else{
+        console.log("NAO POSSO ACRESCENTAR")
+      }
     },
   }
 };

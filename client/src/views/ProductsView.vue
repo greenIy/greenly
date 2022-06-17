@@ -18,7 +18,7 @@
               <ProductCard
               v-for="p in products"
               :key="p.id"
-              :product="p"
+              :product="p" :quantityP="quantityP"  @updateQuantity="updateQuantity"
               ></ProductCard>
             </div>
             <div v-else class="content d-flex w-100 ">
@@ -27,8 +27,10 @@
           </Transition>
           </div>
           </div>
+         
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
+       <CompareProduct v-if="quantityP != 0" :quantityP="quantityP" @updateQuantity="updateQuantity" />
     </div>
     <TheFooter />
   </div>
@@ -43,6 +45,7 @@ import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
 import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
+import CompareProduct from "@/components/Product/CompareProduct.vue";
 
 import http from "../../http-common";
 
@@ -55,7 +58,8 @@ export default {
     TheFooter,
     TheFilters,
     TheUtilityBar,
-    TheNoProduct
+    TheNoProduct,
+    CompareProduct,
   },
   props: {
     product: Object,
@@ -70,6 +74,7 @@ export default {
       productsInPage: 0,
       allSuppliers: [],
       rendered: false,
+      quantityP:0,
     };
   },
   beforeMount() {
@@ -143,6 +148,9 @@ export default {
         this.getProducts();
       }
     },
+    updateQuantity(value){
+      this.quantityP = value;
+    }
   },
   computed: {
     getPageAmount: function () {
