@@ -18,7 +18,7 @@
             <div class="d-flex justify-content-start">
                 <div class="d-flex bd-highlight mb-3 me-4">
                     <div class="p-2 bd-highlight"><img class="img-fluid" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela"></div>
-                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>TITULO</small></span> <div @click="remove"  class="p-2 bd-highlight">
+                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>{{ this.compare[0].name }}</small></span> <div @click="remove"  class="p-2 bd-highlight">
                     <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small></div></div>
                 </div>
                 <div class="vl mb-4"></div>
@@ -27,7 +27,7 @@
                 </div>
                 <div v-if="quantityP == 2" class="d-flex bd-highlight mb-3 ms-4">
                     <div class="p-2 bd-highlight"><img class="img-fluid" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela"></div>
-                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>TITULO</small></span> <div @click="remove"  class="p-2 bd-highlight">
+                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>Titulo</small></span> <div @click="remove"  class="p-2 bd-highlight">
                     <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small></div></div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
             <div class="d-flex justify-content-center">
                 <div class="d-flex bd-highlight mb-3 me-4">
                     <div class="p-2 bd-highlight"><img class="img-fluid" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela"></div>
-                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>TITULO</small></span> <div @click="remove"  class="p-2 bd-highlight">
+                    <div class="p-2 bd-highlight"><span class="text ms-2"><small>{{ compare[0].name }}</small></span> <div @click="remove" class="p-2 bd-highlight">
                     <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small></div></div>
                 </div>
                 <div class="vl mb-4"></div>
@@ -155,6 +155,7 @@
 </div>
 </template>
 <script>
+import http from "../../../http-common";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTrash, faClose} from "@fortawesome/free-solid-svg-icons";
@@ -165,29 +166,46 @@ library.add(faClose);
 export default {
   name: "CompareProduct",
   props: {
-   quantityP:Number,
+   quantityP: Number,
+   productsToCompare: Array,
   },
   data() {
     return { 
-     quantity:0,
-     compareModal:false,
+     quantity: 0,
+     compareModal: false,
+     compare: [],
     }
   },
-  methods:{
-      remove(){
-          this.quantity = this.quantityP;
-          this.quantity --;
-          this.$emit('updateQuantity', this.quantity);
-      },
-      close() {
-          this.quantity = this.quantityP;
-          this.quantity = 0;
-          this.$emit('updateQuantity', this.quantity);
-      },
-      openModal() {
-          this.compareModal = true;
-          console.log(this.compareModal);
-      }
+   mounted() {
+       this.getProduct();
+   },
+    watch: {
+        '$route.query.compare1'() {
+            this.getProduct();
+        },
+        '$route.query.compare2'() {
+            this.getProduct();
+        },
+    },
+  methods: {
+    async getProduct() {
+        let response = await http.get(`store/products/${this.$route.query.compare1}`);
+        this.compare.push(JSON.parse(JSON.stringify(response.data)));
+        console.log(response.data);
+    },
+    remove(){
+        this.quantity = this.quantityP;
+        this.quantity--;
+        this.$emit('updateQuantity', this.quantity);
+    },
+    close() {
+        this.quantity = this.quantityP;
+        this.quantity = 0;
+        this.$emit('updateQuantity', this.quantity);
+    },
+    openModal() {
+        this.compareModal = true;
+    }
   }
 };
 </script>

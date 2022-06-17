@@ -30,7 +30,7 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-       <CompareProduct v-if="quantityP != 0" :quantityP="quantityP" @updateQuantity="updateQuantity" />
+       <CompareProduct v-if="this.$route.query.compare1 || this.$route.query.compare2" :quantityP="quantityP" @updateQuantity="updateQuantity"/>
     </div>
     <TheFooter />
   </div>
@@ -75,6 +75,7 @@ export default {
       allSuppliers: [],
       rendered: false,
       quantityP:0,
+      compare: [],
     };
   },
   beforeMount() {
@@ -97,6 +98,7 @@ export default {
   },
   methods: {
     async getProducts() {
+      console.log("COMPARAAAAA", this.compare);
       let response;
       let request;
       let sort;
@@ -150,7 +152,7 @@ export default {
     },
     updateQuantity(value){
       this.quantityP = value;
-    }
+    },
   },
   computed: {
     getPageAmount: function () {

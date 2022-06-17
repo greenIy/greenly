@@ -27,7 +27,7 @@
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" for="accept">
-                <input type="checkbox" v-model="user.accept" id="accept" @click="compare($event)" class="form-check-input checkbox" />Comparar Produto</label>
+                <input type="checkbox" v-model="user.accept" id="accept" @click="compare($event)" class="form-check-input checkbox"/>Comparar Produto</label>
             </div>
           </form>
         </div>
@@ -70,9 +70,14 @@ export default {
     compare(event){
       if (this.quantityP < 2){
         this.quantity = this.quantityP;
-        this.quantity ++;
-        console.log(this.quantity);
+        this.quantity++;
         this.$emit('updateQuantity', this.quantity);
+
+        if (!this.$route.query.compare1) {
+          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
+        } else if (!this.$route.query.compare2) {
+          this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
+        }
       }
       else{
         console.log("NAO POSSO ACRESCENTAR")
