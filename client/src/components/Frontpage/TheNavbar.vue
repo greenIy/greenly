@@ -2,7 +2,7 @@
 <nav>
     <div class="navmenu d-flex justify-content-center pt-2 pb-2">
         <div class="align-self-center mt-2 mb-2">
-            <router-link to="/" class="navbar-brand">
+            <router-link to="/produtos" @click="reloadPage()" class="navbar-brand">
                 <img alt="Logo do greenly" src="../../assets/logo_dark.png">
             </router-link>
         </div>
@@ -28,7 +28,8 @@
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                        <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/dashboard" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Dashboard </a></router-link></li>
+                        <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
+                        <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
                         <hr class="dropdown-divider">
                         <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item ms-0" style="color: red !important"><font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />&nbsp; Terminar sessão</a></router-link></li>
                     </ul>
@@ -158,23 +159,18 @@
         
     <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
         <div class="pt-2">
-            <router-link to="/promocoes" class="mb-2 pr-2">
-                promoções <span class="ms-3"> | </span>            
-            </router-link>
-        </div>
-        <div class="pt-2">
             <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
                 produtos <span class="ms-3"> | </span> 
             </router-link>
         </div>
         <div class="pt-2">
-            <router-link to="/servicos" class="mb-2 ml-2">
-                serviços <span class="ms-3"> | </span> 
+            <router-link to="/fornecedores" class="mb-2">
+                fornecedores <span class="ms-3"> | </span> 
             </router-link>
         </div>
         <div class="pt-2">
-            <router-link to="/fornecedores" class="mb-2">
-                fornecedores
+            <router-link to="/estatisticas" class="mb-2 ml-2">
+                estatísticas 
             </router-link>
         </div>
     </div>
@@ -210,6 +206,9 @@ export default {
     methods: {
         submit(search) {
             this.$router.push({ path: '/produtos', query: { pesquisa: `${ search }` } });
+        },
+        reloadPage() {
+            window.location.assign("/produtos");
         },
         getUserInfo() {
             this.user = this.$store.getters.getUser
