@@ -79,7 +79,6 @@ export default {
     'receiveData'() {
       this.processData();
     },
-
   },
   methods: {
     async processData(){

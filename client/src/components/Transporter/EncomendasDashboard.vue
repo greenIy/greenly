@@ -13,7 +13,7 @@
               itemKey="item_id"
               :move="checkMove">
               <template #item="{ element }">
-                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element"></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element" @updateStatus="updateStatus"></order>
               </template>
             </Draggable>
           </div>
@@ -168,6 +168,9 @@ export default {
       for(let i = 0; i < 5; i++) {
         this.columns[i].orders = [];
       }
+    },
+    updateStatus(value){
+      this.$emit('updateStatus', value);
     },
   },
 };

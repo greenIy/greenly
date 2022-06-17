@@ -336,15 +336,6 @@ export default {
   outline: none;
 }
 
-.dropDownS option {
-  border: 0px !important;
-  padding: 0.475rem 0.75rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  color:#ffffff; 
-  outline: none;
-}
-
 .textAlign-right{
   text-align:right!important; 
 }

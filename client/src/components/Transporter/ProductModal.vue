@@ -266,7 +266,7 @@ export default {
   },
   methods:{
     closeModal(params){
-      this.$emit('sendModalT',params);
+      this.$emit('sendModalT', params);
     },
     activate:function(el){
       if(this.active_el != 1 ){
@@ -294,7 +294,7 @@ export default {
       http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
-            this.$router.push({ name: 'transportador' });
+            this.$emit('updateStatus', true);
           }
         );
     },
@@ -351,6 +351,7 @@ export default {
 .dropDownS{
   background-color:#E3C12B;
   padding: 0.375rem 0.75rem;
+  border: 0px;
   font-size: 1rem;
   border-radius: 0.25rem;
   color:#ffffff; 

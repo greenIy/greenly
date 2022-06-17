@@ -29,7 +29,7 @@
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
                       </div>
                     </div>
-                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData"/></div>
+                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
                     <div v-if="active_el==2 && this.$route.name == 'transportador'">Centros de distribuição INFO ... Por FAZER</div>
                     <div v-if="active_el==3 && this.$route.name == 'transportador'">Veículos INFO ... Por FAZER</div>
 
@@ -105,7 +105,10 @@ export default {
     },
     hideHistory(){
       this.$router.push({ name: 'transportador'});
-    }
+    },
+    updateStatus(value){
+      this.getData();
+    },
   },
 };
 </script>
