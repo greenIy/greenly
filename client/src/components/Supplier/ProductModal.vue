@@ -151,24 +151,7 @@ import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
 , faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCubes);
-library.add(faTruck);
-library.add(faXmark);
-library.add(faBox);
-library.add(faPlusMinus);
-library.add(faFilePen);
-library.add(faAt);
-library.add(faUser);
-library.add(faHouse);
-library.add(faIndustry);
-library.add(faCalendar);
-library.add(faMoneyBillWave);
-library.add(faWarehouse);
-library.add(faGasPump);
-library.add(faSun);
-library.add(faShoppingBag);
-
-
+library.add(faCubes, faTruck, faXmark, faBox, faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar, faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag);
 
 export default {
   name: "TransportadorModal",
