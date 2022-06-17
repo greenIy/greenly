@@ -2,7 +2,7 @@
 <nav>
     <div class=" navmenu d-flex justify-content-center pt-2 pb-2">
         <div class="align-self-center mt-2 mb-2">
-            <router-link to="/produtos" class="navbar-brand">
+            <router-link to="/produtos" @click="reloadPage()" class="navbar-brand">
                 <img alt="Logo do greenly" src="../../assets/logo_dark.png">
             </router-link>
         </div>
@@ -26,7 +26,6 @@
                     <li><router-link to="/profile" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" size=""/>&nbsp; Perfil</a></router-link></li>
                     <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
                     <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
-                    <li><router-link v-if="user.type === 'CONSUMER'" :to="{ name: 'consumidor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
                     <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" size=""/>&nbsp; Favoritos</a></router-link></li>
                     <li><router-link to="/" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'bell']" size=""/>&nbsp; Notificações</a></router-link></li>
                     <li><hr class="dropdown-divider"></li>
