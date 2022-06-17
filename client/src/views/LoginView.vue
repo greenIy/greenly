@@ -26,7 +26,8 @@
 </script>
 
 <style>
-
-
+  .content-wrap {
+    background-color: #EDEDED;
+  }
 </style>
 

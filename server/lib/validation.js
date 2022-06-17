@@ -1,13 +1,15 @@
+/*  Greenly Validation Library
+    Functions included pertain to data validation, filtering and type-safety.
+*/
+
 /* Parameter Validation Package */
 const { body, param, query, validationResult, matchedData } = require('express-validator');
 const { checkUserConflict, getUserByID, getAllCategories } = require('./persistence');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 /* User Validation Functions */
 
 function createUserValidator() {
-    // TODO: Don't forget to proof this (try/catch/detail exception) during database access
     return[
         body('first_name')
             .notEmpty()
@@ -188,7 +190,8 @@ function createAddressValidator() {
             .isString(),
         body('nif')
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -220,7 +223,8 @@ function updateAddressValidator() {
         body('nif')
             .optional()
             .isLength({min: 9, max:9})
-            .isInt(),
+            .isInt()
+            .toInt(),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -245,7 +249,8 @@ function getProductsValidator() {
             .toInt(),
         query("page")
             .optional()
-            .isInt({min:1}),
+            .isInt({min:1})
+            .toInt(),
         query("category")
             .optional()
             .isInt()
@@ -448,6 +453,245 @@ function addProductToWishlistValidator() {
     ]
 }
 
+function createOrderValidator() {
+    return [
+        body("shipping_address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("billing_address")
+            .notEmpty()
+            .isInt()
+            .toInt(),
+        body("observations")
+            .optional()
+            .isString().isLength({ max: 255 }),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function getSingleOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateOrderValidator() {
+    return [
+        param('orderId').isInt().toInt(),
+        param('itemId').isInt().toInt(),
+        body("status")
+            .notEmpty()
+            .isString()
+            .isIn(["CANCELED", "AWAITING_TRANSPORT", "TRANSPORT_IMMINENT",  "FAILURE", "IN_TRANSIT", "LAST_MILE", "COMPLETE"])
+            .withMessage("Invalid target status."),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+/* Warehouse Validators */
+
+function createWarehouseValidator() {
+    return [
+        body('address')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('renewable_resources')
+            .notEmpty().bail()
+            .isInt({min: 0}).bail()
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateWarehouseValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('renewable_resources')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 0}).bail()
+            .toInt(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+/* Distribution Center Validators */
+
+function createDistributionCenterValidator() {
+    return [
+        body('address')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateDistributionCenterValidator() {
+    return [
+        body('address')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createVehicleValidator() {
+    return [
+        body('distribution_center')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateVehicleValidator() {
+    return [
+        body('distribution_center')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .optional()
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -472,7 +716,23 @@ module.exports = {
     updateCartItemValidator,
 
     // Wishlist validators
-    addProductToWishlistValidator
+    addProductToWishlistValidator,
 
+    // Order validators
+    createOrderValidator,
+    getSingleOrderValidator,
+    updateOrderValidator,
+
+    // Warehouse validators
+    createWarehouseValidator,
+    updateWarehouseValidator,
+
+    // Distribution Center Validators
+    createDistributionCenterValidator,
+    updateDistributionCenterValidator,
+
+    // Vehicle Validators
+    createVehicleValidator,
+    updateVehicleValidator
 
 }

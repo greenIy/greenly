@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 //Não se pode apagar o HomeView para se manter os style do projeto
 import HomeView from '../views/HomeView.vue';
+import ProfileView from '../views/ProfileView.vue';
 import ProductsView from '../views/ProductsView.vue';
 import { createStore } from 'vuex';
 
@@ -55,18 +56,47 @@ const routes = [
     },
   },
   {
-    path: '/registar',
-    name: 'registar',
+    path: '/registo',
+    name: 'registo',
     component() {
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
   {
-    path: '/profile',
-    name: 'profile',
-    component() {
-      return import(/* webpackChunkName: "profile" */ '../views/ProfileView.vue');
-    },
+    path: '/perfil',
+    name: 'perfil',
+    redirect: '/perfil/detalhes',
+    component: ProfileView,
+    children: [
+      { path: 'detalhes',
+        name: 'personalInfo',
+        component: ProfileView,
+        },
+      { path: 'empresa',
+        name: 'companyInfo',
+        component: ProfileView,
+        },
+      { path: 'encomendas',
+        name: 'orders',
+        component: ProfileView,
+        },
+      { path: 'favoritos',
+        name: 'wishlist',
+        component: ProfileView,
+      },
+      { path: 'moradas',
+        name: 'addresses',
+        component: ProfileView,
+      },
+      { path: 'seguranca',
+        name: 'security',
+        component: ProfileView,
+      },
+      { path: 'estatisticas',
+        name: 'statistics',
+        component: ProfileView,
+      },
+    ]
   },
   {
     path: '/painel',
@@ -103,7 +133,13 @@ const routes = [
       return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
     },
   },
-
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+    },
+  }
 ];
 
 const router = createRouter({
