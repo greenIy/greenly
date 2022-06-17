@@ -3,8 +3,8 @@
     <div class="row g-0 overflow-horizontally">
     <div v-for="column in this.columns" :key="column.status" class="card d-inline-block col-lg-6 column-width me-4 rounded">
       <div class="card-header position-relative">
-        <h6 class="my-auto d-inline"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
-        <span class="position-absolute end-100 badge rounded-pill bg-secondary d-inline">{{ column.orders.length }} <span class="visually-hidden">unread messages</span></span>
+        <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small>
+        <span class="badge rounded-pill bg-secondary itens">{{ column.orders.length }} <span class="visually-hidden">numero de itens</span></span></h6>
       </div>
         <div role="button" class="card-body draggable-host my-2">
           <Draggable
@@ -207,5 +207,9 @@ export default {
 
 .AWAITING_TRANSPORT, .PROCESSING, .TRANSPORT_IMMINENT, .IN_TRANSIT, .LAST_MILE, .COMPLETE {
   min-height: 45vh
+}
+
+.itens{
+  float:right!important;
 }
 </style>
