@@ -31,12 +31,9 @@
 // @ is an alias to /src
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowRight} from '@fortawesome/free-solid-svg-icons';
-
 library.add(faArrowRight);
-
 export default {
   name: 'HomeView',
   components: {
@@ -61,7 +58,6 @@ export default {
     padding-bottom: 7.5rem;
   }
  
-
   /* Style the button and place it in the middle of the container/image */
   .hero-container .btn {
     position: absolute;

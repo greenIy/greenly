@@ -35,7 +35,12 @@ async function check(req, res, next) {
 
         /* Transporter Routes */
         "/transporter/:userId/centers":                 "ALL_DISTRIBUTION_CENTERS",
-        "/transporter/:userId/centers/:centerId":       "SINGLE_DISTRIBUTION_CENTER"
+        "/transporter/:userId/centers/:centerId":       "SINGLE_DISTRIBUTION_CENTER",
+
+        /* Vehicle Routes */
+        "/transporter/:userId/vehicles":                "ALL_VEHICLES",
+        "/transporter/:userId/vehicles/:vehicleId":     "SINGLE_VEHICLE",
+        
         
     }
 
@@ -240,7 +245,9 @@ async function check(req, res, next) {
         case "ALL_CART_ITEMS":
             // This is valid for: GET, POST, DELETE
             // Cart is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -249,7 +256,9 @@ async function check(req, res, next) {
         case "SINGLE_CART_ITEM":
             // This is valid for: PUT, DELETE
             // Cart is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -257,7 +266,9 @@ async function check(req, res, next) {
         case "ALL_WISHLIST_ITEMS":
             // This is valid for: GET, POST, DELETE
             // Wishlist is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -266,7 +277,9 @@ async function check(req, res, next) {
         case "SINGLE_WISHLIST_ITEM":
             // This is valid for: DELETE
             // Wishlist is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -296,7 +309,10 @@ async function check(req, res, next) {
             // This is valid for: GET
             // Only the transporter and administrators can check all user distribution centers
 
-            if (((req.params.userId == req.user.id) && isTransporter(req.user)) || (isAdministrator(req.user))) {
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
                 return next()
             }
 
@@ -306,7 +322,36 @@ async function check(req, res, next) {
             // This is valid for: GET, PUT, DELETE
             // Only the transporter and administrators can manipulate user distribution centers
 
-            if (((req.params.userId == req.user.id) && isTransporter(req.user)) || (isAdministrator(req.user))) {
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_VEHICLES":
+            // This is valid for: GET
+            // Only the transporter and administrators can check all user vehicles
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_VEHICLE":
+            // This is valid for: GET, PUT, DELETE
+            // Only the transporter and administrators can manipulate user vehicles
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
                 return next()
             }
 

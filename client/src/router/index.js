@@ -1,13 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router';
+//Não se pode apagar o HomeView para se manter os style do projeto
 import HomeView from '../views/HomeView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import ProductsView from '../views/ProductsView.vue';
+import { createStore } from 'vuex';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: ProductsView,
+    redirect: '/produtos'
   },
   {
     path: '/login',
@@ -64,7 +67,6 @@ const routes = [
     name: 'perfil',
     redirect: '/perfil/detalhes',
     component: ProfileView,
-
     children: [
       { path: 'detalhes',
         name: 'personalInfo',
@@ -95,14 +97,49 @@ const routes = [
         component: ProfileView,
       },
     ]
+  },
+  {
+    path: '/painel',
+    name: 'fornecedor',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
-    {
-      path: '/checkout',
-      name: 'checkout',
-      component() {
-        return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
-      },
-    }
+  },
+  {
+    path: '/painel/historico',
+    name: 'fornecedor_historico',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
+    path: '/painel',
+    name: 'transportador',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/historico',
+    name: 'transportador_historico',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/fornecedores',
+    name: 'suppliers',
+    component() {
+      return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
+    },
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+    },
+  }
 ];
 
 const router = createRouter({
@@ -110,6 +147,46 @@ const router = createRouter({
   routes,
 });
 
+// Criação da store VueX que irá albergar informação sobre o estado de autenticação e sobre o utilizador
+let store = createStore({
+  state: {
+      isLoggedIn: false,
+      user: {}
+  },
+  mutations: {
+      UPDATE_STATUS(state, payload) {
+          state.isLoggedIn = payload
+      },
+      SET_USER(state, payload) {
+          state.user = payload
+      }
+  },
+  actions: {
+      setState(context, payload) {
+          let isLoggedIn = context.state.isLoggedIn
+          isLoggedIn = payload
+          context.commit('UPDATE_STATUS', isLoggedIn)
+      },
+      setUser(context, payload) {
+          context.commit('SET_USER', payload)
+      }
+  },
+  getters: {
+      getState: function (state) {
+          return state.isLoggedIn
+      },
+      getUser: function (state) {
+          return state.user
+      }
+  }
+})
 
 
-export default router;
+
+// Exportação da store para que possa ser utilizada pelo serviço de autenticação
+
+export {
+  router,
+  store
+} 
+
