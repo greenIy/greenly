@@ -94,7 +94,7 @@
                         Digite o código acima para confirmar que pretende apagar a sua conta de forma definitiva
                         <div class="form-row justify-content-center mt-3">
                             <div class="input-group input-group-lg col-md-3 mx-auto w-50">
-                                <input v-on:click="removeIsInvalid" id="codeInput" type="text" class="form-control text-center" maxlength="4">
+                                <input v-on:click="removeIsInvalid" id="codeInput" type="text" class="form-control text-center" maxlength="4" placeholder="Código">
                                 <div class="invalid-feedback" id="invalidDeleteCode">O código está errado.</div>
                             </div>
                         </div>
