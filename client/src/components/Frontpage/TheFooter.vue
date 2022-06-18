@@ -1,74 +1,76 @@
 <template>
-<div class="d-flex">
-    <footer class="footer p-3 text-uppercase">
-        <div class="row footer">
-            <div class="col-4">
+    <footer class="text-center text-lg-start text-light px-3 text-uppercase position-absolute w-100">
+        <div class="row mt-3">
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-2">
                 <img class="pt-2 pb-2" alt="Logo do greenly" src="../../assets/logo_dark.png">
-                <p>
-                    Projeto Final da Licenciatura de Tecnologias de Informação.
-                </p>
-                <div class="align-self-stretch">
-                    <p>© 2022 Greenly <br> Todos os Direitos Reservados</p>
-                </div>
+
+                <p>Projeto Final da Licenciatura de Tecnologias de Informação.</p>
             </div>
-            <div class="col-2 mt-4">
-                <p>Sobre Greenly</p>
-                <router-link to="/equipa" class="mb-2 pr-2">
-                    Conheça a equipa
-                </router-link>
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-2">
+                <h6>Sobre Greenly</h6>
+
+                <ul class="list-unstyled mb-0">
+                    <li>
+                        <router-link to="/equipa" class="mb-2 pr-2">Conheça a equipa</router-link>
+                    </li>
+                </ul>
             </div>
-            <div class="col-2 mt-4">
-                <p>Contacto</p>
-                <a href="mailto:support@greenly.pt">support@greenly.pt</a>
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-2">
+                <h6>Contacto</h6>
+
+                <ul class="list-unstyled mb-0">
+                    <li><a href="mailto:support@greenly.pt">support@greenly.pt</a></li>
+                </ul>
             </div>
-            <div class="col-2 mt-4">
-                <p>Siga-nos</p>
-                <a :href="url_instagram" target=”_blank”>
-                   <span class="sr-only">Link para o Instagram</span>
-                    <font-awesome-icon :icon="['fab', 'instagram']" size="lg"/>
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-2">
+                <h6>Siga-nos</h6>
+
+                <a class="me-2" :href="url_instagram" target=”_blank”>
+                    <span class="sr-only">Link para o Instagram</span>
+                    <font-awesome-icon :icon="['fab', 'instagram']" size="lg" />
                 </a>
-                <a :href="url_twitter" class="m-3" target=”_blank”>
-                   <span class="sr-only">Link para o Twitter</span>
-                    <font-awesome-icon :icon="['fab', 'twitter']" size="lg"/>
+
+                <a class="me-2" :href="url_twitter" target=”_blank”>
+                    <span class="sr-only">Link para o Twitter</span>
+                    <font-awesome-icon :icon="['fab', 'twitter']" size="lg" />
                 </a>
+
                 <a :href="url_facebook" target=”_blank”>
-                   <span class="sr-only">Link para o Facebook</span>
-                    <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg"/>
+                    <span class="sr-only">Link para o Facebook</span>
+                    <font-awesome-icon :icon="['fab', 'facebook-square']" size="lg" />
                 </a>
             </div>
-            <div class="col-2 mt-4">
-                <p>Métodos de pagamento</p>
-                <!-- eslint-disable max-len -->
-                <div class="ms-auto icons-div">
-                    <font-awesome-icon :icon="['fab', 'cc-visa']" size="2xl"/>
-                    <font-awesome-icon :icon="['fab', 'cc-mastercard']" size="2xl" class="icon-space"/>
-                    <font-awesome-icon :icon="['fab', 'cc-amex']" size="2xl" class="icon-space"/>
-                    <br>
-                    <font-awesome-icon :icon="['fab', 'cc-paypal']" size="2xl"/>
-                    <font-awesome-icon :icon="['fab', 'cc-apple-pay']" size="2xl" class="icon-space"/>
-                    <font-awesome-icon :icon="['fab', 'google-pay']" size="2xl" class="icon-space"/>
-                </div>
-                <!-- eslint-enable max-len -->
+
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-2">
+                <h6>Métodos de pagamento</h6>
+
+
+                <font-awesome-icon :icon="['fab', 'cc-visa']" size="2xl" /><span class="me-2"></span>
+                <font-awesome-icon :icon="['fab', 'cc-mastercard']" size="2xl" class="icon-space" /><span class="me-2"></span>
+                <font-awesome-icon :icon="['fab', 'cc-amex']" size="2xl" class="icon-space" /><span class="me-2"></span>
+                <font-awesome-icon :icon="['fab', 'cc-paypal']" size="2xl" /><span class="me-2"></span>
+                <font-awesome-icon :icon="['fab', 'cc-apple-pay']" size="2xl" class="icon-space" /><span class="me-2"></span>
+                <font-awesome-icon :icon="['fab', 'google-pay']" size="2xl" class="icon-space" />
+
+            </div>
+        </div>
+
+        <div class="row my-3">
+            <div class="col-12 text-center">
+                © 2022 Greenly : Todos os Direitos Reservados
             </div>
         </div>
     </footer>
-</div>
 </template>
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-// eslint-disable-next-line
 import { faCcPaypal, faInstagram, faTwitter, faFacebookSquare, faCcVisa, faCcMastercard, faCcAmex, faCcApplePay, faGooglePay } from '@fortawesome/free-brands-svg-icons';
 
-library.add(faCcPaypal);
-library.add(faInstagram);
-library.add(faTwitter);
-library.add(faFacebookSquare);
-library.add(faCcVisa);
-library.add(faCcMastercard);
-library.add(faCcAmex);
-library.add(faCcApplePay);
-library.add(faGooglePay);
+library.add(faCcPaypal, faInstagram, faTwitter, faFacebookSquare, faCcVisa, faCcMastercard, faCcAmex, faCcApplePay, faGooglePay);
 
 export default {
   name: 'TheFooter',
@@ -83,19 +85,13 @@ export default {
 </script>
 
 <style scoped>
-    .footer {
+    footer {
         background-color: #5e9f88;
-        color: #fcfaf9;
-        font-size: 9px;
-        width: 99.88%;
-        position: absolute;
-        bottom: 0;
-        height: 7.5rem;
+        font-size: 12px;
     }
 
     img {
-        width: 65px;
-        height: 40px;
+        width: 75px;
     }
 
     a {
