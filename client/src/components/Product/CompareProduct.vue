@@ -4,7 +4,7 @@
     <div @click="close" class="me-3 close">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
     </div>
-    <div class="row mt-1">
+    <div class="row mt-4">
         <div class="col-2">
         </div>
         <div class="col-10">
@@ -22,7 +22,7 @@
                     <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small></div></div>
                 </div>
                 <div class="vl mb-4"></div>
-                <div class="d-flex bd-highlight mb-3 ms-5"  v-if="quantityP == 1">
+                <div class="d-flex bd-highlight mb-3 ms-5 text-muted"  v-if="quantityP == 1">
                     <p>Escolhe mais <b>1</b><br> para comparar </p>
                 </div>
                 <div v-if="productsToCompare.length == 2" class="d-flex bd-highlight mb-3 ms-4">
@@ -199,7 +199,7 @@ export default {
  background-color: white;
  z-index: 3;
  width:100%;
- height:19%;
+ height:17%;
 }
 .compare-modal{
  background-color: white;
@@ -215,7 +215,7 @@ span:hover {
     margin-right:1em!important;
 }
 img{
-    width:2.5em;
+    width:2.7em;
     height:auto;
 }
 .text{

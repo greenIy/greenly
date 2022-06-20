@@ -97,7 +97,6 @@ export default {
       }
     },
     '$route.query'() {
-      console.log(this.$route.query.compare1);
       this.getProductToCompare();
     },
   },
@@ -175,29 +174,25 @@ export default {
     },
     removeProductFromCompareList(value) {
       this.compare = [];
-      let query1 = this.$route.query;
-
+      let query = Object.assign({}, this.$route.query);
+      
       if (value == 0) {
         let compare2 = this.$route.query.compare2;
-        console.log("OIEEEE")
+      
         document.getElementById("input_" + this.$route.query.compare1).checked = false;
-        delete query1.compare1;
+        delete query.compare1;
+        this.$router.replace({ query });
 
         if (this.$route.query.compare2) {
-          delete query1.compare2;
-          this.$router.replace({ query1 });
+          delete query.compare2;
+          this.$router.replace({ query });
 
-          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare2 }` }) });
+          this.$router.push({ query: Object.assign({}, query, { compare1: `${ compare2 }` }) });
         }
       } else {
-        let query = Object.assign({}, this.$route.query);
         document.getElementById("input_" + this.$route.query.compare2).checked = false;
         delete query.compare2;
         this.$router.replace({ query });
-      }
-
-      if (this.quantityP == 0) {
-        window.location.assign("/produtos");
       }
     }
   },
