@@ -26,8 +26,8 @@
           </button>
           <form>
             <div class="form-group form-check">
-              <label class="form-check-label product" for="accept">
-                <input type="checkbox" v-model="user.accept" id="accept" @click="compare($event)" class="form-check-input checkbox"/>Comparar Produto</label>
+              <label class="form-check-label product" :for="`input_${product.id}`">
+                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/>Comparar Produto</label>
             </div>
           </form>
         </div>

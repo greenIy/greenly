@@ -178,6 +178,7 @@ export default {
     remove(value){
         this.quantity = this.quantityP;
         this.quantity--;
+
         this.$emit('updateQuantity', this.quantity);
         this.$emit('removeOneProduct', value);
     },

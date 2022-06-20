@@ -96,10 +96,8 @@ export default {
         this.getCategories();
       }
     },
-    '$route.query.compare1'() {
-      this.getProductToCompare();
-    },
-    '$route.query.compare2'() {
+    '$route.query'() {
+      console.log(this.$route.query.compare1);
       this.getProductToCompare();
     },
   },
@@ -157,36 +155,49 @@ export default {
     },
     updateQuantity(value){
       this.quantityP = value;
-      this.getProductToCompare();
     },
     async getProductToCompare() {
         let productID1 = this.$route.query.compare1;
+        //console.log("1:", productID1);
         let productID2 = this.$route.query.compare2;
+        //console.log("2:", productID2);
         let response;
-
-        if (productID1 && !this.compare.length) {
+        if (productID1 && !this.compare.length && this.quantityP != 0) {
           response = await http.get(`store/products/${productID1}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
           this.compareIsOn = true;
         }
 
-        if (productID2) {
+        if (productID2 && this.quantityP != 0) {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
     },
     removeProductFromCompareList(value) {
       this.compare = [];
+      let query1 = this.$route.query;
+
       if (value == 0) {
-        delete this.$route.query.compare1;
+        let compare2 = this.$route.query.compare2;
+        console.log("OIEEEE")
+        document.getElementById("input_" + this.$route.query.compare1).checked = false;
+        delete query1.compare1;
 
         if (this.$route.query.compare2) {
-          let compare1 = this.$route.query.compare2;
-          delete this.$route.query.compare2;
-          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare1}` }) });
+          delete query1.compare2;
+          this.$router.replace({ query1 });
+
+          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare2 }` }) });
         }
       } else {
-        delete this.$route.query.compare2;
+        let query = Object.assign({}, this.$route.query);
+        document.getElementById("input_" + this.$route.query.compare2).checked = false;
+        delete query.compare2;
+        this.$router.replace({ query });
+      }
+
+      if (this.quantityP == 0) {
+        window.location.assign("/produtos");
       }
     }
   },
