@@ -33,7 +33,8 @@
             </div>
         </div>
         <div class="col-3">
-            <button  @click="openModal" type="button" class="btn" style="background-color: #5e9f88;color:white">Comparar</button>
+            <button  v-if="productsToCompare.length == 2" @click="openModal" type="button" class="btn" style="background-color: #5e9f88;color:white">Comparar</button>
+            <button  v-else @click="openModal" type="button" class="btn" style="background-color: #5e9f88;color:white" disabled>Comparar</button>
         </div>
     </div>
    

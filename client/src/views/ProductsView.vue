@@ -30,7 +30,7 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-       <CompareProduct v-if="compareIsOn" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
+       <CompareProduct v-if="this.compare.length" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
     </div>
     <TheFooter />
   </div>
@@ -126,7 +126,6 @@ export default {
       }
 
       if (this.$route.query.pesquisa){
-        console.log("eu entro aqui");
         request = request +  "&keywords=" + this.$route.query.pesquisa;
       }
 
@@ -177,18 +176,17 @@ export default {
         }
     },
     removeProductFromCompareList(value) {
+      this.compare = [];
       if (value == 0) {
         delete this.$route.query.compare1;
-        delete this.compare[value];
 
         if (this.$route.query.compare2) {
           let compare1 = this.$route.query.compare2;
-          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare1}`  }) });
-          delete query.compare2;
+          delete this.$route.query.compare2;
+          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare1}` }) });
         }
       } else {
         delete this.$route.query.compare2;
-        delete this.compare[value];
       }
     }
   },
