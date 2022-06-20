@@ -30,7 +30,7 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-       <CompareProduct v-if="this.$route.query.compare1 || this.$route.query.compare2" :quantityP="quantityP" @updateQuantity="updateQuantity"/>
+       <CompareProduct v-if="compareIsOn" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
     </div>
     <TheFooter />
   </div>
@@ -75,6 +75,7 @@ export default {
       allSuppliers: [],
       rendered: false,
       quantityP:0,
+      compareIsOn: false,
       compare: [],
     };
   },
@@ -94,11 +95,16 @@ export default {
         this.getProducts();
         this.getCategories();
       }
-    }
+    },
+    '$route.query.compare1'() {
+      this.getProductToCompare();
+    },
+    '$route.query.compare2'() {
+      this.getProductToCompare();
+    },
   },
   methods: {
     async getProducts() {
-      console.log("COMPARAAAAA", this.compare);
       let response;
       let request;
       let sort;
@@ -129,7 +135,7 @@ export default {
       this.productAmount = response.data.total_products;
       this.productsInPage = this.products.length;
       this.rendered = true;
-      //console.log(response.data);
+
       window.scrollTo(0, 0);
     },
   
@@ -152,7 +158,39 @@ export default {
     },
     updateQuantity(value){
       this.quantityP = value;
+      this.getProductToCompare();
     },
+    async getProductToCompare() {
+        let productID1 = this.$route.query.compare1;
+        let productID2 = this.$route.query.compare2;
+        let response;
+
+        if (productID1 && !this.compare.length) {
+          response = await http.get(`store/products/${productID1}`);
+          this.compare.push(JSON.parse(JSON.stringify(response.data)));
+          this.compareIsOn = true;
+        }
+
+        if (productID2) {
+          response = await http.get(`store/products/${productID2}`);
+          this.compare.push(JSON.parse(JSON.stringify(response.data)));
+        }
+    },
+    removeProductFromCompareList(value) {
+      if (value == 0) {
+        delete this.$route.query.compare1;
+        delete this.compare[value];
+
+        if (this.$route.query.compare2) {
+          let compare1 = this.$route.query.compare2;
+          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ compare1}`  }) });
+          delete query.compare2;
+        }
+      } else {
+        delete this.$route.query.compare2;
+        delete this.compare[value];
+      }
+    }
   },
   computed: {
     getPageAmount: function () {

@@ -110,7 +110,6 @@ library.add(faAngleLeft);
         this.categorySelected = (this.categoryList.length) ? true : false;
         this.return = true;
         this.$router.push({ path: '/produtos' + this.getGoBackUrl(), query: { ...this.$route.query } });
-        console.log("eu entro aqui");
       },
       transformC() {
         this.countC++;
