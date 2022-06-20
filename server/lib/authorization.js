@@ -40,6 +40,12 @@ async function check(req, res, next) {
         /* Vehicle Routes */
         "/transporter/:userId/vehicles":                "ALL_VEHICLES",
         "/transporter/:userId/vehicles/:vehicleId":     "SINGLE_VEHICLE",
+
+        /* Supply Routes */
+        "/supplier/:userId/inventory":                                  "ALL_SUPPLIES",
+        "/supplier/:userId/inventory/:itemId":                          "SINGLE_SUPPLY",
+        "/supplier/:userId/inventory/:itemId/transports":               "ALL_SUPPLY_TRANSPORTS",
+        "/supplier/:userId/inventory/:itemId/transports/:transportId":  "SINGLE_SUPPLY_TRANSPORT" 
         
         
     }
@@ -52,7 +58,7 @@ async function check(req, res, next) {
 
     const intent = req.method
     const incomingRoute = req.baseUrl + req.route.path
-
+    
     // Interpreting resource from path
     switch (resourceIdentification[incomingRoute]) {
         case "ALL_USERS":
@@ -354,6 +360,33 @@ async function check(req, res, next) {
                 (isAdministrator(req.user))) {
                 return next()
             }
+
+            break;
+
+        case "ALL_SUPPLIES":
+            // This is valid for: GET, POST
+            // Only the supplier and administrator can manipulate a supplier's inventory
+
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
+
+            break;
+
+        case "SINGLE_SUPPLY":
+        case "ALL_SUPPLY_TRANSPORTS":
+        case "SINGLE_SUPPLY_TRANSPORT":
+
+            // This is valid for: GET, PUT, POST, DELETE
+            // Only the supplier and administrator can manipulate a specific supply and its transport conditions
+
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
 
             break;
 

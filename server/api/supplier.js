@@ -6,7 +6,8 @@ const router = express.Router();
 /* Greenly libraries */
 const { 
     createWarehouseValidator,
-    updateWarehouseValidator
+    updateWarehouseValidator,
+    createSupplyValidator
 } = require('../lib/validation.js');
 const authentication    = require("../lib/authentication")
 const authorization     = require("../lib/authorization")
@@ -116,6 +117,75 @@ router.delete('/:userId/warehouses/:warehouseId', authentication.check, authoriz
                 return res.status(200).send({message: "Successfully deleted warehouse."})
         }
     })
+})
+
+/* Supply Routes */
+
+// TODO: Make authorization and validation rules for each
+
+router.get('/:userId/inventory', authentication.check, authorization.check, (req, res) => {
+    
+    persistence.getInventory(
+        Number(req.params.userId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            default:
+                return res.status(200).json(result)
+        }
+    })
+})
+
+router.get('/:userId/inventory/:itemId', authentication.check, authorization.check, (req, res) => {
+    persistence.getSupply(
+        Number(req.params.userId),
+        Number(req.params.itemId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_SUPPLY":
+                return res.status(404).send({message: "Supply not found. Make sure to specify an item you're currently selling."})
+            default:
+                return res.status(200).json(result)
+        }
+    })
+})
+
+router.post('/:userId/inventory', authentication.check, authorization.check, createSupplyValidator(), (req, res) => {
+
+    persistence.createSupply(
+        Number(req.params.userId),
+        Number(req.body.product),
+        Number(req.body.warehouse),
+        Number(req.body.quantity),
+        Number(req.body.price),
+        req.body.production_date,
+        req.body.expiration_date,
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_PRODUCT":
+                return res.status(404).send({
+                    message: "Invalid product. Make sure to specify a product registed on the website."
+                })
+            case "INVALID_WAREHOUSE":
+                return res.status(404).send({
+                    message: "Invalid warehouse. Make sure to use a warehouse registered to your account."
+                })
+            case "SUPPLY_CONFLICT":
+                return res.status(409).send({
+                    message: "This product is already being sold from this warehouse. Update your pre-existing supply or select a new product/warehouse combination."
+                })
+            default:
+                return res.status(200).json({
+                    id: result
+                })
+            }
+    })
+
 })
 
 module.exports = router;

@@ -57,7 +57,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
 /* GET /store/product/{productId} */
 
 router.get('/products/:productId', (req, res) => {
-    /* This function may seem rather confusing. It's purpose is to not 
+    /* This function may seem rather confusing. Its purpose is to not 
        not only provide a decent REST API structure, but to obfuscate database structure, as it shouldn't be mirrored by the API */
     
     try {

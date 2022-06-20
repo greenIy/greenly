@@ -186,7 +186,7 @@ CREATE TABLE Supply (
     price           NUMERIC(10, 2) UNSIGNED NOT NULL,
     production_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
-
+    id              INT UNSIGNED NOT NULL, # This identifier is only used for supplier-indexing!
 
     PRIMARY KEY (product, supplier, warehouse), # Hypothetically, supplier could be removed from primary key. Makes searches easier.
 
