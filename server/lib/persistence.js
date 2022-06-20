@@ -4105,9 +4105,68 @@ async function createSupply(
             console.log(e)
             return null
         }
+}
 
+async function updateSupply (userID, supplyID, params) {
 
+    try {
+        
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        // Determining which fields to update
+
+        let updatedSupplyData = {}
+
+        let supplyKeyMap = [
+            "price",
+            "quantity",
+            "production_date",
+            "expiration_date"
+        ]
+
+        for (const [key, value] of Object.entries(params)) {
+            if (supplyKeyMap.includes(key)) {
+
+                // Correctly typecasting value
+                if (["production_date", "expiration_date"].includes(key)) {
+                    updatedSupplyData[key] = new Date(value)
+                } else {
+                    updatedSupplyData[key] = value
+                }
+
+            }
+        }
+
+        // Updating Supply
+
+        let updatedSupply = await prisma.supply.update({
+            where: {
+                product_supplier_warehouse: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse
+                },
+            },
+            data: updatedSupplyData
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
     }
+
+}
+
+
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -4191,6 +4250,7 @@ module.exports = {
     // Supply Functions
     getInventory,
     getSupply,
-    createSupply
+    createSupply,
+    updateSupply
 
 }

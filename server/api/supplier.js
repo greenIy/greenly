@@ -7,7 +7,8 @@ const router = express.Router();
 const { 
     createWarehouseValidator,
     updateWarehouseValidator,
-    createSupplyValidator
+    createSupplyValidator,
+    updateSupplyValidator
 } = require('../lib/validation.js');
 const authentication    = require("../lib/authentication")
 const authorization     = require("../lib/authorization")
@@ -154,7 +155,6 @@ router.get('/:userId/inventory/:itemId', authentication.check, authorization.che
 })
 
 router.post('/:userId/inventory', authentication.check, authorization.check, createSupplyValidator(), (req, res) => {
-
     persistence.createSupply(
         Number(req.params.userId),
         Number(req.body.product),
@@ -185,7 +185,24 @@ router.post('/:userId/inventory', authentication.check, authorization.check, cre
                 })
             }
     })
-
 })
+
+router.put('/:userId/inventory/:itemId', authentication.check, authorization.check, updateSupplyValidator(),  (req, res) => {
+    persistence.updateSupply(
+        Number(req.params.userId),
+        Number(req.params.itemId),
+        req.body
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_SUPPLY":
+                return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
+            default:
+                return res.status(201).json({message: "Successfully updated warehouse details."})
+        }
+    })
+
+}) 
 
 module.exports = router;
