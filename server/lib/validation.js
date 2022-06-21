@@ -691,6 +691,24 @@ function updateVehicleValidator() {
     ]
 }
 
+function getInventoryValidator() {
+    return [
+        query("sort")
+            .optional()
+            .isIn(["newest", "oldest", "price_asc", "price_desc"]),
+        query("warehouse")
+            .optional()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 function createSupplyValidator() {
     return [
         body('product')
@@ -866,6 +884,7 @@ module.exports = {
     updateVehicleValidator,
 
     // Inventory Validators
+    getInventoryValidator,
     createSupplyValidator,
     updateSupplyValidator,
     createSupplyTransportValidator,

@@ -10,7 +10,8 @@ const {
     createSupplyValidator,
     updateSupplyValidator,
     createSupplyTransportValidator,
-    updateSupplyTransportValidator
+    updateSupplyTransportValidator,
+    getInventoryValidator
 } = require('../lib/validation.js');
 const authentication    = require("../lib/authentication")
 const authorization     = require("../lib/authorization")
@@ -124,12 +125,17 @@ router.delete('/:userId/warehouses/:warehouseId', authentication.check, authoriz
 
 /* Supply Routes */
 
-// TODO: Make authorization and validation rules for each
-
-router.get('/:userId/inventory', authentication.check, authorization.check, (req, res) => {
+router.get(
+    '/:userId/inventory', 
+    authentication.check, 
+    authorization.check, 
+    getInventoryValidator(),
+    (req, res) => {
     
     persistence.getInventory(
-        Number(req.params.userId)
+        Number(req.params.userId),
+        Number(req.query.warehouse),
+        req.query.sort
     ).then((result) => {
         switch (result) {
             case null:

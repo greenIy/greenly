@@ -746,13 +746,8 @@ async function getAllProducts(limit = 50,
 
         // Special price sorting against Prisma limitations
         // A Zeval banger -> day 1238987 of wishing JS had list comprehension.
-        /* What follows is comparable to magic.
+        /*
            Please do not ever ask what this does or how it was created.
-           Ingredients include:
-           * Cocaine
-           * Adderall
-           * Alcohol
-           * Cocaine again
         */
 
         let sortedProductIDs;
@@ -3877,14 +3872,52 @@ async function deleteVehicle(userID, vehicleID) {
 
 /* Supply Functions */
 
-async function getInventory(userID) {
+async function getInventory(
+    userID,
+    warehouse,
+    sort) {
+
+    let sortingMethod = {}
+
+    let filters = {}
+
+    console.log(warehouse, sort)
 
     try {
-        
+
+        // Sorting
+
+        if (!sort) {
+            sort = "newest"
+        } 
+
+        switch (sort) {
+            case "newest":
+                sortingMethod.id = "desc"
+                break;
+            case "oldest":
+                sortingMethod.id = "asc"
+                break;
+            case "price_asc":
+                sortingMethod.price = "asc"
+                break;
+            case "price_desc":
+                sortingMethod.price = "desc"
+                break;
+        }
+
+        // Filtering
+
+        filters.supplier = userID
+
+        if (warehouse) {
+            filters.warehouse = warehouse
+        }
+
+        // Action
+
         let inventory = await prisma.supply.findMany({
-            where: {
-                supplier: userID
-            },
+            where: filters,
             select: {
                 id: true,
                 product: true,
@@ -3893,7 +3926,8 @@ async function getInventory(userID) {
                 price: true,
                 production_date: true,
                 expiration_date: true
-            }
+            },
+            orderBy: sortingMethod
         })
 
         // Gathering additional information
@@ -4131,15 +4165,18 @@ async function createSupply(
 
             // If everything checks out, create the supply
 
-            let supplyCount = await prisma.supply.count({
+            let latestSupply = await prisma.supply.findFirst({
                 where: {
                     supplier: userID
+                },
+                orderBy: {
+                    id: 'desc'
                 }
             })
 
             let newSupply = await prisma.supply.create({
                 data: {
-                    id: supplyCount + 1,
+                    id: latestSupply.id + 1,
                     product: productID,
                     warehouse: warehouseID,
                     supplier: userID,
