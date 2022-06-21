@@ -8,7 +8,9 @@ const {
     createWarehouseValidator,
     updateWarehouseValidator,
     createSupplyValidator,
-    updateSupplyValidator
+    updateSupplyValidator,
+    createSupplyTransportValidator,
+    updateSupplyTransportValidator
 } = require('../lib/validation.js');
 const authentication    = require("../lib/authentication")
 const authorization     = require("../lib/authorization")
@@ -221,5 +223,88 @@ router.delete('/:userId/inventory/:itemId', authentication.check, authorization.
         }
     })
 })
+
+/* Supply Transport Routes */
+
+router.post('/:userId/inventory/:itemId/transports', authentication.check, authorization.check, createSupplyTransportValidator(), (req, res) => {
+
+    persistence.createSupplyTransport(
+        Number(req.params.userId),
+        Number(req.params.itemId),
+        Number(req.body.transporter),
+        Number(req.body.price)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_SUPPLY":
+                return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
+            case "INVALID_TRANSPORTER":
+                return res.status(404).send({
+                    message: "Invalid transporter. Make sure to specify a user registered as a transporter on the platform."
+                })
+            case "TRANSPORT_CONFLICT":
+                return res.status(409).send({
+                    message: "This supply is already being shipped with this transporter. Update your pre-existing transportation option or select a new supply/transporter combination."
+                })
+            default:
+                return res.status(200).send({message: "Transport option succesfully added to supply."})
+            }
+    })
+
+})
+
+router.put(
+    '/:userId/inventory/:itemId/transports/:transporterId', 
+    authentication.check, 
+    authorization.check, 
+    updateSupplyTransportValidator(), 
+    (req, res) => {
+
+        persistence.updateSupplyTransport(
+            Number(req.params.userId),
+            Number(req.params.itemId),
+            Number(req.params.transporterId),
+            Number(req.body.price)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_SUPPLY":
+                    return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
+                case "INVALID_TRANSPORTER":
+                    return res.status(404).send({
+                        message: "Invalid transporter. Make sure to specify a transporter currently serving this supply."
+                    })
+                default:
+                    return res.status(200).send({message: "Transport option succesfully updated."})
+                }
+        })
+})
+
+router.delete(
+    '/:userId/inventory/:itemId/transports/:transporterId',
+    authentication.check, 
+    authorization.check,
+    (req, res) => {
+        persistence.deleteSupplyTransport(
+            Number(req.params.userId),
+            Number(req.params.itemId),
+            Number(req.params.transporterId)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_SUPPLY":
+                    return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
+                case "INVALID_TRANSPORTER":
+                    return res.status(404).send({
+                        message: "Invalid transporter. Make sure to specify a transporter currently serving this supply."
+                    })
+                default:
+                    return res.status(200).send({message: "Transport option succesfully deleted."})
+                }
+        })
+    })
 
 module.exports = router;

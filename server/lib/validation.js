@@ -785,6 +785,42 @@ function updateSupplyValidator() {
     ]
 }
 
+function createSupplyTransportValidator() {
+    return [
+        body('transporter')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateSupplyTransportValidator() {
+    return [
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 
 module.exports = {
     // User validators
@@ -831,6 +867,8 @@ module.exports = {
 
     // Inventory Validators
     createSupplyValidator,
-    updateSupplyValidator
+    updateSupplyValidator,
+    createSupplyTransportValidator,
+    updateSupplyTransportValidator
 
 }

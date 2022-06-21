@@ -45,7 +45,7 @@ async function check(req, res, next) {
         "/supplier/:userId/inventory":                                  "ALL_SUPPLIES",
         "/supplier/:userId/inventory/:itemId":                          "SINGLE_SUPPLY",
         "/supplier/:userId/inventory/:itemId/transports":               "ALL_SUPPLY_TRANSPORTS",
-        "/supplier/:userId/inventory/:itemId/transports/:transportId":  "SINGLE_SUPPLY_TRANSPORT" 
+        "/supplier/:userId/inventory/:itemId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT" 
         
         
     }
