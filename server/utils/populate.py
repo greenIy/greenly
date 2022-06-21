@@ -257,8 +257,6 @@ def genProductsSQL(amount, adminToken):
     additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
-
-
             randomSupplier = choice(possibleSuppliers)
             randomWarehouse = randint(1,3)
             while (i, randomSupplier, randomWarehouse) in suppliesRegistered:

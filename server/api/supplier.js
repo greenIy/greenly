@@ -203,6 +203,23 @@ router.put('/:userId/inventory/:itemId', authentication.check, authorization.che
         }
     })
 
-}) 
+})
+
+router.delete('/:userId/inventory/:itemId', authentication.check, authorization.check, (req, res) => {
+
+    persistence.deleteSupply(
+        Number(req.params.userId),
+        Number(req.params.itemId)
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_SUPPLY":
+                return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
+            default:
+                return res.status(200).send({message: "Successfully deleted supply."})
+        }
+    })
+})
 
 module.exports = router;

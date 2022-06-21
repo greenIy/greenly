@@ -4107,7 +4107,7 @@ async function createSupply(
         }
 }
 
-async function updateSupply (userID, supplyID, params) {
+async function updateSupply(userID, supplyID, params) {
 
     try {
         
@@ -4166,6 +4166,39 @@ async function updateSupply (userID, supplyID, params) {
 
 }
 
+async function deleteSupply(userID, supplyID) {
+
+    try {
+        
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        // Deleting Supply
+
+        let deletedSupply = await prisma.supply.delete({
+            where: {
+                product_supplier_warehouse: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse
+                }
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
 
 
 /* All functions to be made available to the rest of the project should be listed here */
@@ -4251,6 +4284,7 @@ module.exports = {
     getInventory,
     getSupply,
     createSupply,
-    updateSupply
+    updateSupply,
+    deleteSupply
 
 }
