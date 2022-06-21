@@ -146,10 +146,10 @@ router.get(
     })
 })
 
-router.get('/:userId/inventory/:itemId', authentication.check, authorization.check, (req, res) => {
+router.get('/:userId/inventory/:supplyId', authentication.check, authorization.check, (req, res) => {
     persistence.getSupply(
         Number(req.params.userId),
-        Number(req.params.itemId)
+        Number(req.params.supplyId)
     ).then((result) => {
         switch (result) {
             case null:
@@ -195,10 +195,10 @@ router.post('/:userId/inventory', authentication.check, authorization.check, cre
     })
 })
 
-router.put('/:userId/inventory/:itemId', authentication.check, authorization.check, updateSupplyValidator(),  (req, res) => {
+router.put('/:userId/inventory/:supplyId', authentication.check, authorization.check, updateSupplyValidator(),  (req, res) => {
     persistence.updateSupply(
         Number(req.params.userId),
-        Number(req.params.itemId),
+        Number(req.params.supplyId),
         req.body
     ).then((result) => {
         switch (result) {
@@ -207,17 +207,17 @@ router.put('/:userId/inventory/:itemId', authentication.check, authorization.che
             case "INVALID_SUPPLY":
                 return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
             default:
-                return res.status(201).json({message: "Successfully updated warehouse details."})
+                return res.status(201).json({message: "Successfully updated supply details."})
         }
     })
 
 })
 
-router.delete('/:userId/inventory/:itemId', authentication.check, authorization.check, (req, res) => {
+router.delete('/:userId/inventory/:supplyId', authentication.check, authorization.check, (req, res) => {
 
     persistence.deleteSupply(
         Number(req.params.userId),
-        Number(req.params.itemId)
+        Number(req.params.supplyId)
     ).then((result) => {
         switch (result) {
             case null:
@@ -232,11 +232,11 @@ router.delete('/:userId/inventory/:itemId', authentication.check, authorization.
 
 /* Supply Transport Routes */
 
-router.post('/:userId/inventory/:itemId/transports', authentication.check, authorization.check, createSupplyTransportValidator(), (req, res) => {
+router.post('/:userId/inventory/:supplyId/transports', authentication.check, authorization.check, createSupplyTransportValidator(), (req, res) => {
 
     persistence.createSupplyTransport(
         Number(req.params.userId),
-        Number(req.params.itemId),
+        Number(req.params.supplyId),
         Number(req.body.transporter),
         Number(req.body.price)
     ).then((result) => {
@@ -261,7 +261,7 @@ router.post('/:userId/inventory/:itemId/transports', authentication.check, autho
 })
 
 router.put(
-    '/:userId/inventory/:itemId/transports/:transporterId', 
+    '/:userId/inventory/:supplyId/transports/:transporterId', 
     authentication.check, 
     authorization.check, 
     updateSupplyTransportValidator(), 
@@ -269,7 +269,7 @@ router.put(
 
         persistence.updateSupplyTransport(
             Number(req.params.userId),
-            Number(req.params.itemId),
+            Number(req.params.supplyId),
             Number(req.params.transporterId),
             Number(req.body.price)
         ).then((result) => {
@@ -289,13 +289,13 @@ router.put(
 })
 
 router.delete(
-    '/:userId/inventory/:itemId/transports/:transporterId',
+    '/:userId/inventory/:supplyId/transports/:transporterId',
     authentication.check, 
     authorization.check,
     (req, res) => {
         persistence.deleteSupplyTransport(
             Number(req.params.userId),
-            Number(req.params.itemId),
+            Number(req.params.supplyId),
             Number(req.params.transporterId)
         ).then((result) => {
             switch (result) {

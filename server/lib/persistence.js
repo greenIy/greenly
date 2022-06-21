@@ -1165,7 +1165,7 @@ async function getAllTransporters() {
             delete(transporter.Company)
 
             // Obtaining current product count (not including more than one supply for the same product)
-            let productCount = await prisma.supply.groupBy({
+            let productCount = await prisma.supply_Transporter.groupBy({
                 by: ['product'],
                 where: {
                     transporter: transporter.id
@@ -1174,6 +1174,21 @@ async function getAllTransporters() {
 
             transporter.products_currently_transported = productCount.length
             
+            // Calculating transporter averages
+            let vehicle_averages = await prisma.vehicle.aggregate({
+                where: {
+                    transporter: transporter.id
+                },
+                _avg: {
+                    average_emissions: true,
+                    resource_usage: true
+                },
+            })
+
+            // Adding vehicle averages to payload
+            transporter.average_emissions = round(Number(vehicle_averages._avg.average_emissions), 2);
+            transporter.average_resource_usage = round(Number(vehicle_averages._avg.resource_usage), 2);
+
             return transporter
 
         }))
@@ -1183,6 +1198,7 @@ async function getAllTransporters() {
         // Obtaining amount of products currently available (i.e. supplies)
 
     } catch (e) {
+        console.log('e :>> ', e);
         return null;
     }
 }
@@ -3635,10 +3651,25 @@ async function getVehicles(userID) {
             return vehicle
         }))
 
-        return vehicles
+        // Calculating transporter averages
+        let vehicle_averages = await prisma.vehicle.aggregate({
+            where: {
+                transporter: userID
+            },
+            _avg: {
+                average_emissions: true,
+                resource_usage: true
+                },
+        })
+
+        return {
+            vehicles: vehicles,
+            average_fleet_emissions: Number(vehicle_averages._avg.average_emissions),
+            average_fleet_resource_usage: Number(vehicle_averages._avg.resource_usage)
+        }
+
 
     } catch (e) {
-        console.log('e :>> ', e);
         return null
     }
 
@@ -3963,7 +3994,16 @@ async function getInventory(
                 }, 
                 select: {
                     id: true,
-                    Address: true
+                    Address: {
+                        select: {
+                            street: true,
+                            city: true,
+                            country: true,
+                            postal_code: true,
+                            latitude: true,
+                            longitude: true
+                        }
+                    }
                 }
             })
 
@@ -4033,7 +4073,16 @@ async function getSupply(userID, supplyID) {
             }, 
             select: {
                 id: true,
-                Address: true
+                Address: {
+                    select: {
+                        street: true,
+                        city: true,
+                        country: true,
+                        postal_code: true,
+                        latitude: true,
+                        longitude: true
+                    }
+                }
             }
         })
     
