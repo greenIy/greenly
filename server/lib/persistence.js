@@ -1141,6 +1141,57 @@ async function getAllSuppliers() {
     }
 }
 
+/* Supplier Information Function */
+
+async function getAllTransporters() {
+    try {
+        let transporters = await prisma.user.findMany({
+            where: {
+                type: "TRANSPORTER"
+            }, select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                Company: true,
+                phone: true,
+                email: true
+            }
+        })
+
+        transporters = await Promise.all(transporters.map(async (transporter) => {
+
+            // Cleaning data
+            transporter.company = {
+                name: transporter.Company.name,
+                bio: transporter.Company.bio,
+                email: transporter.Company.email
+            }
+
+            delete(transporter.Company)
+
+            // Obtaining current product count (not including more than one supply for the same product)
+            let productCount = await prisma.supply.groupBy({
+                by: ['product'],
+                where: {
+                    transporter: transporter.id
+                },
+            })
+
+            transporter.products_currently_transported = productCount.length
+            
+            return transporter
+
+        }))
+
+        return transporters
+
+        // Obtaining amount of products currently available (i.e. supplies)
+
+    } catch (e) {
+        return null;
+    }
+}
+
 /* Cart Functions */
 
 async function getCart(userID) {
@@ -4401,6 +4452,9 @@ module.exports = {
 
     // Supplier Information Functions
     getAllSuppliers,
+
+    // Transporter Information Functions
+    getAllTransporters,
 
     // Cart Functions
     getCart,
