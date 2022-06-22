@@ -746,13 +746,8 @@ async function getAllProducts(limit = 50,
 
         // Special price sorting against Prisma limitations
         // A Zeval banger -> day 1238987 of wishing JS had list comprehension.
-        /* What follows is comparable to magic.
+        /*
            Please do not ever ask what this does or how it was created.
-           Ingredients include:
-           * Cocaine
-           * Adderall
-           * Alcohol
-           * Cocaine again
         */
 
         let sortedProductIDs;
@@ -1141,6 +1136,73 @@ async function getAllSuppliers() {
     }
 }
 
+/* Supplier Information Function */
+
+async function getAllTransporters() {
+    try {
+        let transporters = await prisma.user.findMany({
+            where: {
+                type: "TRANSPORTER"
+            }, select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                Company: true,
+                phone: true,
+                email: true
+            }
+        })
+
+        transporters = await Promise.all(transporters.map(async (transporter) => {
+
+            // Cleaning data
+            transporter.company = {
+                name: transporter.Company.name,
+                bio: transporter.Company.bio,
+                email: transporter.Company.email
+            }
+
+            delete(transporter.Company)
+
+            // Obtaining current product count (not including more than one supply for the same product)
+            let productCount = await prisma.supply_Transporter.groupBy({
+                by: ['product'],
+                where: {
+                    transporter: transporter.id
+                },
+            })
+
+            transporter.products_currently_transported = productCount.length
+            
+            // Calculating transporter averages
+            let vehicle_averages = await prisma.vehicle.aggregate({
+                where: {
+                    transporter: transporter.id
+                },
+                _avg: {
+                    average_emissions: true,
+                    resource_usage: true
+                },
+            })
+
+            // Adding vehicle averages to payload
+            transporter.average_emissions = round(Number(vehicle_averages._avg.average_emissions), 2);
+            transporter.average_resource_usage = round(Number(vehicle_averages._avg.resource_usage), 2);
+
+            return transporter
+
+        }))
+
+        return transporters
+
+        // Obtaining amount of products currently available (i.e. supplies)
+
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null;
+    }
+}
+
 /* Cart Functions */
 
 async function getCart(userID) {
@@ -1263,8 +1325,6 @@ async function getCart(userID) {
             item.average_supplier_resource_usage = Number(warehouse.resource_usage)
             item.supplier_renewable_resources = warehouse.renewable_resources
 
-            console.log('warehouse.resource_usage :>> ', item);
-
             // Additional product information
             // TODO: Eventually, also select the product's image here
             item.product = {
@@ -1280,8 +1340,6 @@ async function getCart(userID) {
             totalSupplierResourceUsage      += item.average_supplier_resource_usage
             totalTransporterResourceUsage   += item.average_transporter_resource_usage
             totalTransporterEmissions       += item.average_transporter_emissions
-
-            console.log('item.average_supplier_resource_usage :>> ', item.average_supplier_resource_usage);
 
             return item
         }))
@@ -3593,10 +3651,25 @@ async function getVehicles(userID) {
             return vehicle
         }))
 
-        return vehicles
+        // Calculating transporter averages
+        let vehicle_averages = await prisma.vehicle.aggregate({
+            where: {
+                transporter: userID
+            },
+            _avg: {
+                average_emissions: true,
+                resource_usage: true
+                },
+        })
+
+        return {
+            vehicles: vehicles,
+            average_fleet_emissions: Number(vehicle_averages._avg.average_emissions),
+            average_fleet_resource_usage: Number(vehicle_averages._avg.resource_usage)
+        }
+
 
     } catch (e) {
-        console.log('e :>> ', e);
         return null
     }
 
@@ -3712,8 +3785,6 @@ async function updateVehicle(userID, vehicleID, params) {
             }
         }
 
-        console.dir(updatedVehicleData);
-
         // If a new distribution center is selected, make sure it's valid
 
         if ("distribution_center" in updatedVehicleData) {
@@ -3742,8 +3813,6 @@ async function updateVehicle(userID, vehicleID, params) {
                     license_plate: updatedVehicleData["license_plate"]
                 }
             })
-
-            console.log('licensePlateInUse :>> ', licensePlateInUse);
     
             // If the license plate is in use (it's alright if its the current vehicle)
             if (licensePlateInUse && 
@@ -3832,8 +3901,612 @@ async function deleteVehicle(userID, vehicleID) {
 
 }
 
+/* Supply Functions */
+
+async function getInventory(
+    userID,
+    warehouse,
+    sort) {
+
+    let sortingMethod = {}
+
+    let filters = {}
+
+    console.log(warehouse, sort)
+
+    try {
+
+        // Sorting
+
+        if (!sort) {
+            sort = "newest"
+        } 
+
+        switch (sort) {
+            case "newest":
+                sortingMethod.id = "desc"
+                break;
+            case "oldest":
+                sortingMethod.id = "asc"
+                break;
+            case "price_asc":
+                sortingMethod.price = "asc"
+                break;
+            case "price_desc":
+                sortingMethod.price = "desc"
+                break;
+        }
+
+        // Filtering
+
+        filters.supplier = userID
+
+        if (warehouse) {
+            filters.warehouse = warehouse
+        }
+
+        // Action
+
+        let inventory = await prisma.supply.findMany({
+            where: filters,
+            select: {
+                id: true,
+                product: true,
+                warehouse: true,
+                quantity: true,
+                price: true,
+                production_date: true,
+                expiration_date: true
+            },
+            orderBy: sortingMethod
+        })
+
+        // Gathering additional information
+
+        inventory = await Promise.all(inventory.map(async (item) => {
+
+            item.product = await prisma.product.findUnique({
+                where: {
+                    id: item.product
+                }, select: {
+                    id: true,
+                    name: true,
+                    category: true
+                }
+            })
+
+            item.product.category = await prisma.category.findUnique({
+                where: {
+                    id: item.product.category
+                },
+                select: {
+                    id: true,
+                    name: true
+                }
+            })
+
+            item.warehouse = await prisma.warehouse.findUnique({
+                where: {
+                    id_supplier: {
+                        id: item.warehouse,
+                        supplier: userID
+                    }
+                }, 
+                select: {
+                    id: true,
+                    Address: {
+                        select: {
+                            street: true,
+                            city: true,
+                            country: true,
+                            postal_code: true,
+                            latitude: true,
+                            longitude: true
+                        }
+                    }
+                }
+            })
+
+            delete Object.assign(item.warehouse, {address: item.warehouse.Address}).Address;
+
+            return item
+        }))
+
+        return inventory
 
 
+    } catch (e) {
+        console.log(e);
+        return null
+    }
+
+}
+
+async function getSupply(userID, supplyID) {
+
+    try {
+        let item = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            },
+            select: {
+                product: true,
+                warehouse: true,
+                quantity: true,
+                price: true,
+                production_date: true,
+                expiration_date: true
+            }
+        })
+    
+        if (!item) {
+            return "INVALID_SUPPLY"
+        }
+    
+        item.product = await prisma.product.findUnique({
+            where: {
+                id: item.product
+            }, select: {
+                id: true,
+                name: true,
+                category: true
+            }
+        })
+    
+        item.product.category = await prisma.category.findUnique({
+            where: {
+                id: item.product.category
+            },
+            select: {
+                id: true,
+                name: true
+            }
+        })
+    
+        item.warehouse = await prisma.warehouse.findUnique({
+            where: {
+                id_supplier: {
+                    id: item.warehouse,
+                    supplier: userID
+                }
+            }, 
+            select: {
+                id: true,
+                Address: {
+                    select: {
+                        street: true,
+                        city: true,
+                        country: true,
+                        postal_code: true,
+                        latitude: true,
+                        longitude: true
+                    }
+                }
+            }
+        })
+    
+        delete Object.assign(item.warehouse, {address: item.warehouse.Address}).Address;
+    
+        item.transports = await prisma.supply_Transporter.findMany({
+            where: {
+                supplier: userID,
+                product: item.product.id,
+                warehouse: item.warehouse.id
+            },
+            select: {
+                transporter: true,
+                price: true
+            }
+        })
+    
+        item.transports = await Promise.all(
+            item.transports.map(
+                async (transport) => {
+    
+                    let transporterDetails = await prisma.user.findUnique({
+                        where: {
+                            id: transport.transporter
+                        },
+                        select: {
+                            id: true,
+                            Company: true
+                        }
+                    })
+    
+                    // Gather average emissions based on all transporter vehicles
+                    let vehicle_averages = await prisma.vehicle.aggregate({
+                        where: {
+                            transporter: transporterDetails.id
+                        },
+                        _avg: {
+                            average_emissions: true,
+                            resource_usage: true
+                        },
+                    })
+    
+                    transport.transporter = {
+                        id: transporterDetails.id,
+                        name: transporterDetails.Company ? transporterDetails.Company.name : `${transporterDetails.first_name} ${transporterDetails.last_name}`,
+                        average_emissions: vehicle_averages._avg.average_emissions,
+                        average_resource_usage: vehicle_averages._avg.resource_usage
+                    }
+    
+                    return transport
+    
+                }))
+    
+        item.history = await prisma.supply_History.findMany({
+            where: {
+                supplier: userID,
+                warehouse: item.warehouse.id,
+                product: item.product.id
+            },
+            select: {
+                moment: true,
+                quantity: true,
+                price: true
+            }
+        })
+    
+        return item
+    } catch (e) {
+        console.log('e :>> ', e);
+        return null
+    }
+}
+
+async function createSupply(
+    userID,
+    productID,
+    warehouseID,
+    quantity,
+    price,
+    production_date,
+    expiration_date) {
+
+
+        try {
+            
+            // Validating product
+
+            let product = await prisma.product.findUnique({
+                where: {
+                    id: productID
+                }
+            })
+
+            if (!product) {
+                return "INVALID_PRODUCT"
+            }
+
+            // Validating warehouse
+
+            let warehouse = await prisma.warehouse.findUnique({
+                where: {
+                    id_supplier: {
+                        supplier: userID,
+                        id: warehouseID
+                    }
+                }
+            })
+
+            if (!warehouse) {
+                return "INVALID_WAREHOUSE"
+            }
+
+            // Checking for duplicate supplies
+
+            let duplicateSupply = await prisma.supply.findUnique({
+                where: {
+                    product_supplier_warehouse: {
+                        product: productID,
+                        supplier: userID,
+                        warehouse: warehouseID
+                    }
+                }
+            })
+
+            if (duplicateSupply) {
+                return "SUPPLY_CONFLICT"
+            }
+
+
+            // If everything checks out, create the supply
+
+            let latestSupply = await prisma.supply.findFirst({
+                where: {
+                    supplier: userID
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            })
+
+            let newSupply = await prisma.supply.create({
+                data: {
+                    id: latestSupply.id + 1,
+                    product: productID,
+                    warehouse: warehouseID,
+                    supplier: userID,
+                    price: price,
+                    quantity: quantity,
+                    production_date: new Date(production_date),
+                    expiration_date: new Date(expiration_date)
+                }
+            })
+
+            return newSupply.id
+
+        } catch (e) {
+            console.log(e)
+            return null
+        }
+}
+
+async function updateSupply(userID, supplyID, params) {
+
+    try {
+        
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        // Determining which fields to update
+
+        let updatedSupplyData = {}
+
+        let supplyKeyMap = [
+            "price",
+            "quantity",
+            "production_date",
+            "expiration_date"
+        ]
+
+        for (const [key, value] of Object.entries(params)) {
+            if (supplyKeyMap.includes(key)) {
+
+                // Correctly typecasting value
+                if (["production_date", "expiration_date"].includes(key)) {
+                    updatedSupplyData[key] = new Date(value)
+                } else {
+                    updatedSupplyData[key] = value
+                }
+
+            }
+        }
+
+        // Updating Supply
+
+        let updatedSupply = await prisma.supply.update({
+            where: {
+                product_supplier_warehouse: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse
+                },
+            },
+            data: updatedSupplyData
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function deleteSupply(userID, supplyID) {
+
+    try {
+        
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        // Deleting Supply
+
+        let deletedSupply = await prisma.supply.delete({
+            where: {
+                product_supplier_warehouse: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse
+                }
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function createSupplyTransport(userID, supplyID, transporterID, price) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        let specifiedTransporter = await prisma.user.findFirst({
+            where: {
+                id: transporterID,
+                type: "TRANSPORTER"
+            }
+        })
+
+        if (!specifiedTransporter) {
+            return "INVALID_TRANSPORTER"
+        }
+
+        // Checking for conflit
+
+        let duplicateTransport = await prisma.supply_Transporter.findUnique({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse,
+                    transporter: transporterID
+                }
+            }
+        })
+
+        if (duplicateTransport) {
+            return "TRANSPORT_CONFLICT"
+        }
+
+        // If all went well, create a new transport
+
+        let newTransport = await prisma.supply_Transporter.create({
+            data: {
+                product: specifiedSupply.product,
+                supplier: userID,
+                warehouse: specifiedSupply.warehouse,
+                transporter: transporterID,
+                price: price
+            }
+        })
+        
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function updateSupplyTransport(userID, supplyID, transporterID, price) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        let specifiedTransport = await prisma.supply_Transporter.findUnique({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse,
+                    transporter: transporterID
+                }
+            }
+        })
+
+        if (!specifiedTransport) {
+            return "INVALID_TRANSPORTER"
+        }
+
+        // If everything checks out, update the price
+
+        let updatedSupplyTransport = await prisma.supply_Transporter.update({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse,
+                    transporter: transporterID
+                }
+            },
+            data: {
+                price: price
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
+
+async function deleteSupplyTransport(userID, supplyID, transporterID) {
+
+    try {
+        
+         // Proofing
+
+         let specifiedSupply = await prisma.supply.findFirst({
+            where: {
+                supplier: userID,
+                id: supplyID
+            }
+        })
+
+        if (!specifiedSupply) {
+            return "INVALID_SUPPLY"
+        }
+
+        let specifiedTransport = await prisma.supply_Transporter.findUnique({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse,
+                    transporter: transporterID
+                }
+            }
+        })
+
+        if (!specifiedTransport) {
+            return "INVALID_TRANSPORTER"
+        }
+
+        // If everything checks out, delete transport
+
+        let deletedTransport = await prisma.supply_Transporter.delete({
+            where: {
+                product_supplier_warehouse_transporter: {
+                    product: specifiedSupply.product,
+                    supplier: userID,
+                    warehouse: specifiedSupply.warehouse,
+                    transporter: transporterID
+                }
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+
+}
 
 
 /* All functions to be made available to the rest of the project should be listed here */
@@ -3865,6 +4538,9 @@ module.exports = {
 
     // Supplier Information Functions
     getAllSuppliers,
+
+    // Transporter Information Functions
+    getAllTransporters,
 
     // Cart Functions
     getCart,
@@ -3913,6 +4589,16 @@ module.exports = {
     getVehicles,
     createVehicle,
     updateVehicle,
-    deleteVehicle
+    deleteVehicle,
+
+    // Supply Functions
+    getInventory,
+    getSupply,
+    createSupply,
+    updateSupply,
+    deleteSupply,
+    createSupplyTransport,
+    updateSupplyTransport,
+    deleteSupplyTransport
 
 }

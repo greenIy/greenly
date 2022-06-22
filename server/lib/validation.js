@@ -691,6 +691,154 @@ function updateVehicleValidator() {
     ]
 }
 
+function getInventoryValidator() {
+    return [
+        query("sort")
+            .optional()
+            .isIn(["newest", "oldest", "price_asc", "price_desc"]),
+        query("warehouse")
+            .optional()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createSupplyValidator() {
+    return [
+        body('product')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('warehouse')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('quantity')
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('production_date')
+            .notEmpty().bail()
+            .isISO8601()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail(),
+        body('expiration_date')
+            .notEmpty().bail()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail()
+            .custom(value => {
+                
+                let providedDate = new Date(value)
+
+                if (isNaN(providedDate)) {
+                    return Promise.reject("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).")
+                }
+                
+                if (new Date() > providedDate) {
+                    return Promise.reject("Specified expiration dates should be in the future.")
+                }
+
+                return true
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateSupplyValidator() {
+    return [
+        body('quantity')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('price')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('production_date')
+            .optional()
+            .notEmpty().bail()
+            .isISO8601()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail(),
+        body('expiration_date')
+            .optional()
+            .notEmpty().bail()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail()
+            .custom(value => {
+                
+                let providedDate = new Date(value)
+
+                if (isNaN(providedDate)) {
+                    return Promise.reject("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).")
+                }
+                
+                if (new Date() > providedDate) {
+                    return Promise.reject("Specified expiration dates should be in the future.")
+                }
+
+                return true
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createSupplyTransportValidator() {
+    return [
+        body('transporter')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateSupplyTransportValidator() {
+    return [
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 
 module.exports = {
     // User validators
@@ -733,6 +881,13 @@ module.exports = {
 
     // Vehicle Validators
     createVehicleValidator,
-    updateVehicleValidator
+    updateVehicleValidator,
+
+    // Inventory Validators
+    getInventoryValidator,
+    createSupplyValidator,
+    updateSupplyValidator,
+    createSupplyTransportValidator,
+    updateSupplyTransportValidator
 
 }

@@ -257,8 +257,6 @@ def genProductsSQL(amount, adminToken):
     additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
-
-
             randomSupplier = choice(possibleSuppliers)
             randomWarehouse = randint(1,3)
             while (i, randomSupplier, randomWarehouse) in suppliesRegistered:
@@ -269,10 +267,12 @@ def genProductsSQL(amount, adminToken):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
+            supplyId = len([supply for supply in suppliesRegistered if supply[1] == randomSupplier])
+
             randomPrice = randint(1, 3000) + choice([0.99, 0.59, 0.49, 0.29, 0.19])
             randomQuantity = randint(1, 300)
 
-            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")
+            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date, id) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}', {supplyId});")
 
             # Keep price and quantity data to use for historical data
             additionalSupplyData[(i, randomSupplier, randomWarehouse)] = (randomQuantity, randomPrice)

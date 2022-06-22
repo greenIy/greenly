@@ -1412,8 +1412,6 @@ paths:
       summary: Obter informação sobre todos os fornecedores registados na plataforma.
       description: |-
         Permite obter informação básica sobre todos os fornecedores, bem como a quantidade de produtos que estes fornecem.
-
-        Operação limitada a utilizadores autenticados.
       operationId: getAllSuppliers
       responses:
         200:
@@ -1422,6 +1420,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReceivedSuppliers'
+  /store/transporters:
+    get:
+      tags:
+      - store
+      summary: Obter informação sobre todos os transportadores registados na plataforma.
+      description: |-
+        Permite obter informação básica sobre todos os transportadores, bem como a quantidade de produtos em que estes estão registados como opção de transporte.
+      operationId: getAllTransporters
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivedTransporters'
 
 
   ## ORDER ROUTES
@@ -1621,8 +1634,17 @@ paths:
             application/json:
               schema:
                 properties:
-                  items:
-                    $ref: '#/components/schemas/ReceivedVehicle'
+                  vehicles:
+                    items:
+                      $ref: '#/components/schemas/ReceivedVehicle'
+                  average_fleet_resource_usage:
+                    type: number
+                    format: float
+                    description: A média de utilização de recursos do transportador para o envio de um produto, em l/100km (litros de combustível aos 100km), por parte de toda a sua frota.
+                  average_fleet_resource_emissions:
+                    type: number
+                    format: float
+                    description: A média de emissões poluentes do transportador para o envio de um produto, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada), por parte de toda a sua frota.
         400:
           description: userId inválido
           content: {}
@@ -2154,9 +2176,8 @@ paths:
       tags:
       - supplier
       summary: Obter informação de inventário do fornecedor pelo respetivo userId
-      description: Devolve um array de objetos Item, contendo os respetivos items
-        a serem vendidos
-      operationId: getItems
+      description: Devolve um array de itens, representando os produtos atualmente em venda pelo fornecedor
+      operationId: getInventory
       parameters:
       - name: userId
         in: path
@@ -2165,27 +2186,18 @@ paths:
         required: true
         schema:
           type: integer
-      - name: productId
+      - name: warehouse
         in: query
-        description: Filtro de items a aplicar à pesquisa
+        description: Filtro de armazém que se deseja aplicar à pesquisa, deverá corresponder a um armazém registado na conta do utilizador.
         schema:
           type: string
-      - name: limit
-        in: query
-        description: Limite de items a devolver
-        schema:
-          type: integer
-      - name: page
-        in: query
-        description: Página de items a devolver
-        schema:
-          type: integer
-      - name: order
+      - name: sort
         in: query
         schema:
           type: string
           enum:
-          - name
+          - newest
+          - oldest
           - price_asc
           - price_desc
       responses:
@@ -2194,125 +2206,461 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-        400:
-          description: userId inválido
-          content: {}
+                properties:
+                  items:
+                    $ref: '#/components/schemas/SimplifiedReceivedSupply'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Utilizador não encontrado
           content: {}
+      security:
+        - bearerAuth: []
     post:
       tags:
       - supplier
       summary: Adicionar fornecimento de item
-      description: "Permite que o fornecedor venda um novo produto \n Apenas pode\
-        \ ser feito pelo fornecedor quando autenticado"
-      operationId: addItem
+      description: "Permite que o fornecedor venda um novo produto. Apenas pode ser feito pelo fornecedor quando autenticado"
+      operationId: createSupply
       parameters:
       - name: userId
         in: path
-        description: userId do fornecedor ao qual se vai adicionar a venda de um novo
-          produto
+        description: userId do fornecedor ao qual se vai adicionar um novo fornecimento
         required: true
         schema:
           type: integer
       requestBody:
-        description: "Cria um objeto Item \nO produto referido deverá estar previamente\
-          \ registado na lista de produtos vendidos na loja"
+        description: O produto referido deverá estar previamente registado na lista de produtos vendidos na loja, e o armazém especificado deverá estar registado na conta do fornecedor
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: '#/components/schemas/SentSupply'
         required: true
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: Dados inválidos
-          content: {}
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo fornecimento"
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
-      x-codegen-request-body-name: body
-  ## ITEM ROUTES
-  /supplier/{userId}/inventory/{itemId}:
-    put:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Armazém ou produto inválidos
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Invalid warehouse. Make sure to use a warehouse registered to your account."
+                    - "Invalid product. Make sure to specify a product registed on the website."
+        409:
+          description: Produto já presente no armazém especificado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This product is already being sold from this warehouse. Update your pre-existing supply or select a new product/warehouse combination."
+      security:
+        - bearerAuth: []
+  /supplier/{userId}/inventory/{supplyId}:
+    get:
       tags:
       - supplier
-      summary: Atualizar um item específico do inventário
-      description: "Permite alterar um item específico vendido pelo fornecedor \n\
-        Apenas pode ser feito pelo fornecedor userId quando autenticado"
-      operationId: updateItem
+      summary: Obter informação sobre um fornecimento específico
+      description: Devolve um objeto representante do fornecimento supplyId
+        e todos os seus detalhes
+      operationId: getSupplyById
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador que atualmente fornece o item \nDeve corresponder\
-          \ a um utilizador do tipo supplier"
+        description: "userId do fornecedor cuja informação se deseja saber. Deve corresponder a um utilizador do tipo supplier."
         required: true
         schema:
           type: integer
-      - name: itemId
+      - name: supplyId
         in: path
-        description: itemId do item a ser atualizado
+        description: "Identificador do fornecimento cuja informação se deseja obter. Deve corresponder a um fornecimento associado ao fornecedor userId."
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    $ref: '#/components/schemas/ExpandedReceivedSupply'
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Fornecimento não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Supply not found. Make sure to specify an item you're currently selling."
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+      - supplier
+      summary: Atualizar um fornecimento específico
+      description: "Permite alterar um item específico vendido pelo fornecedor. Apenas pode ser feito pelo fornecedor userId quando autenticado"
+      operationId: updateSupply
+      parameters:
+      - name: userId
+        in: path
+        description: "userId do utilizador que atualmente fornece o item. Deve corresponder a um utilizador do tipo supplier"
+        required: true
+        schema:
+          type: integer
+      - name: supplyId
+        in: path
+        description: supplyId do item a ser atualizado. Deve corresponder a um item atualmente vendido pelo fornecedor
         required: true
         schema:
           type: integer
       requestBody:
-        description: Atualiza o objeto Item
+        description: Atualiza o fornecimento. Apenas os campos que se deseja alterar deverão ser especificados
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: '#/components/schemas/SentSupplyUpdate'
         required: true
       responses:
-        204:
-          description: Item atualizado com sucesso
-          content: {}
-        400:
-          description: userId ou itemId inválidos
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully updated supply details."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou item não encontrados
-          content: {}
-      x-codegen-request-body-name: body
+          description: Fornecimento não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Supply not found. Make sure to specify an item currently registered to your account."
+      security:
+        - bearerAuth: []
     delete:
       tags:
       - supplier
       summary: Remover fornecimento de item
-      description: Apenas pode ser feito pelo fornecedor userId quando autenticado
-      operationId: deleteItem
+      description: "Apenas pode ser feito pelo fornecedor userId quando autenticado. Aviso: esta operação irá apagar todas as relações entre este fornecimento e os correspondentes transportadores."
+      operationId: deleteSupply
       parameters:
       - name: userId
         in: path
-        description: "userId do utilizador que atualmente fornece o item \nDeve corresponder\
-          \ a um utilizador do tipo supplier"
+        description: "userId do utilizador que atualmente fornece o item. Deve corresponder a um utilizador do tipo supplier"
         required: true
         schema:
           type: integer
-      - name: itemId
+      - name: supplyId
         in: path
-        description: "productId do produto a deixar de fornecer \nDeve corresponder\
-          \ a um produto atualmente fornecido pelo utilizador"
+        description: "Identificador do item a deixar de fornecer. Deve corresponder a um item atualmente fornecido pelo utilizador"
         required: true
         schema:
           type: integer
       responses:
-        204:
-          description: Produto removido com sucesso
-          content: {}
-        400:
-          description: userId ou productId inválidos
-          content: {}
+        200:
+          description: Fornecimento removido com sucesso
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Utilizador ou produto não encontrados
-          content: {}
+          description: Fornecimento não encontrado
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Supply not found. Make sure to specify an item currently registered to your account."
+      security:
+        - bearerAuth: []
+
+  /supplier/{userId}/inventory/{supplyId}/transports:
+    post:
+      tags:
+      - supplier
+      summary: Adicionar um transporte a um fornecimento
+      description: Permite registar um transportador como opção de transporte para o fornecimento em questão
+      operationId: createSupplyTransport
+      parameters:
+      - name: userId
+        in: path
+        description: "userId do utilizador que atualmente fornece o item. Deve corresponder a um utilizador do tipo supplier"
+        required: true
+        schema:
+          type: integer
+      - name: supplyId
+        in: path
+        description: "Identificador do item ao qual se irá adicionar uma opção de transporte. Deve corresponder a um item atualmente fornecido pelo utilizador"
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Cria uma nova opção de transporte. 
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SentSupplyTransport'
+        required: true
+      responses:
+        201:
+          description: Operação efetuada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                      - Transport option succesfully added to supply.
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Fornecimento ou transportador inválido
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Supply not found. Make sure to specify an item currently registered to your account."
+                    - "Invalid transporter. Make sure to specify a user registered as a transporter on the platform."
+        409:
+          description: Transportador já registado como opção para este fornecimento
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "This supply is already being shipped with this transporter. Update your pre-existing transportation option or select a new supply/transporter combination."
+      security:
+        - bearerAuth: []
+  /supplier/{userId}/inventory/{supplyId}/transports/{transporterId}:
+    put:
+      tags:
+      - supplier
+      summary: Alterar o custo uma opção de transporte de um fornecimento
+      description: Permite alterar a taxa de envio para a opção relativa ao transportador específicado
+      operationId: updateSupplyTransport
+      parameters:
+      - name: userId
+        in: path
+        description: "userId do utilizador que atualmente fornece o item. Deve corresponder a um utilizador do tipo supplier"
+        required: true
+        schema:
+          type: integer
+      - name: supplyId
+        in: path
+        description: "Identificador do item relativo à opção de transporte a alterar. Deve corresponder a um item atualmente fornecido pelo utilizador"
+        required: true
+        schema:
+          type: integer
+      - name: transporterId
+        in: path
+        description: "Identificador do transportador relativo à opção de transporte a alterar. Deve corresponder a um transportador atualmente registado como opção para o fornecimento em questão"
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Atualiza a opção de transporte.
+        content:
+          '*/*':
+            schema:
+              properties:
+                price:
+                  type: number
+                  format: float
+                  description: Nova taxa de envio para a opção de transporte especificada.
+        required: true
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Transport option succesfully updated."
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Fornecimento ou transportador inválido
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Supply not found. Make sure to specify an item currently registered to your account."
+                    - "Invalid transporter. Make sure to specify a transporter currently serving this supply."
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+      - supplier
+      summary: Remover um transportador como opção para um fornecimento
+      description: Permite remover o transportador específicado como opção de transporte para o fornecimento especificado
+      operationId: deleteSupplyTransport
+      parameters:
+      - name: userId
+        in: path
+        description: "userId do utilizador que atualmente fornece o item. Deve corresponder a um utilizador do tipo supplier"
+        required: true
+        schema:
+          type: integer
+      - name: supplyId
+        in: path
+        description: "Identificador do item ao qual se irá remover uma opção de transporte. Deve corresponder a um item atualmente fornecido pelo utilizador"
+        required: true
+        schema:
+          type: integer
+      - name: transporterId
+        in: path
+        description: "Identificador do transportador relativo à opção de transporte a remover. Deve corresponder a um transportador atualmente registado como opção para o fornecimento em questão"
+        required: true
+        schema:
+          type: integer
+      responses:
+          200:
+            description: Operação efetuada com sucesso
+            content:
+              application/json:
+                schema: 
+                  properties:
+                    message:
+                      type: string
+                      enum:
+                      - "Transport option succesfully deleted."
+          401:
+            description: "_Token_ inválido. Utilizador não autenticado"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/UnauthorizedAccessError'
+          403:
+            description: Utilizador não autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InsufficientPermissionsError'
+          404:
+            description: Fornecimento ou transportador inválido
+            content:
+              application/json:
+                schema:
+                  properties:
+                    message:
+                      type: string
+                      enum:
+                      - "Supply not found. Make sure to specify an item currently registered to your account."
+                      - "Invalid transporter. Make sure to specify a transporter currently serving this supply."
+      security:
+        - bearerAuth: []
+
   ## WAREHOUSES
   /supplier/{userId}/warehouses:
     get:
@@ -2427,7 +2775,6 @@ paths:
                     type: string
                     enum:
                     - "This address is already registered to another warehouse in your account."
-                    
       security:
         - bearerAuth: []
   /supplier/{userId}/warehouses/{warehouseId}:
@@ -2518,13 +2865,12 @@ paths:
           description: Operação efetuada com sucesso
           content:
             application/json:
-              schema:
+              schema: 
                 properties:
-                  items:
-                    $ref: '#/components/schemas/ExpandedReceivedWarehouse'
-        400:
-          description: userId inválido
-          content: {}
+                  message:
+                    type: string
+                    enum:
+                    - "Warehouse updated succcessfully"
         401:
           description: "_Token_ inválido. Utilizador não autenticado"
           content:
@@ -2617,7 +2963,6 @@ paths:
                     type: string
                     enum:
                     - "This warehouse cannot be deleted since there are supplies registered to it. Remove all supplies in this warehouse before attempting to delete it."
-        
       security:
         - bearerAuth: []
 
@@ -3115,11 +3460,7 @@ components:
         complement:
           type: string
           description: productId do produto que serve de complemento a este
-        items:
-          type: array
-          description: Items vendidos por fornecedores, relativos a este produto
-          items:
-            $ref: '#/components/schemas/Item'
+
       description: Objeto utilizado para enviar informação de criação de um novo produto
       xml:
         name: Product
@@ -3240,21 +3581,8 @@ components:
                 description: Informação histórica sobre a venda deste produto por
                   parte deste fornecedor
                 items:
-                  type: object
-                  properties:
-                    moment:
-                      type: string
-                      description: String representativo do momento a que esta informação
-                        histórica corresponde
-                    quantity:
-                      type: integer
-                      description: Quantidade deste produto em inventário por parte
-                        do fornecedor, no momento
-                    price:
-                      type: number
-                      description: Preço a que este fornecedor vendia o produto, no
-                        momento
-                      format: float
+                  $ref: '#/components/schemas/SupplyHistory'
+
       description: Objeto utilizado para devolver informação detalhada sobre um único
         produto
     Products:
@@ -3359,84 +3687,215 @@ components:
           type: integer
           description: A categoria-mãe da categoria em questão 
 
+    ## Supply Definitions
 
-    ## VEHICLE DEFINITIONS
-    Vehicle:
+    ExpandedReceivedSupply:
       type: object
       properties:
-        vehicleId:
-          type: string
-          description: Código identificador do veículo
-        centerId:
-          type: string
-          description: Código identificador da localização da base de veículos
-        resourceType:
-          type: string
-          description: Tipo de combustível do veículo
-        resourceUsage:
+        id:
           type: integer
-          description: Recursos utilizados, medidos em L/100km de combustível em caso
-            de veículos a combustão e kWh/100km em caso de veículos elétricos
-        averageEmissions:
-          type: integer
-          description: Média de emissões do veículo, medida em CO2 g/km/t
-      description: Objeto utilizado para devolver informação sobre um veículo
-      xml:
-        name: Vehicle
-    Item:
-      type: object
-      properties:
-        itemId:
-          type: string
-          description: Código identificador do item
-        productId:
-          type: string
-          description: Código identificador do produto
-        supplierId:
-          type: string
-          description: Código identificador do fornecedor
-        warehouseId:
-          type: string
-          description: Código identificador do armazém em que o item está
+          description: Código identificador do item (indexado por fornecedor)
+        product:
+          type: object
+          description: Informação sobre o produto
+          properties:
+            id:
+              type: integer
+              description: O código identificador do produto
+            name:
+              type: string
+              description: O nome do produto
+            category:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: O código identificador da categoria à qual o produto pertence
+                name:
+                  type: string
+                  description: O nome da categoria à qual o produto pertence
+        warehouse:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Código identificador do armazém em que o item está
+            address:
+              type: object    
+              description: Morada do armazém em questão
+              properties:
+                street:
+                  type: string
+                  description: Rua da morada
+                city:
+                  type: string
+                  description: Cidade da morada
+                country:
+                  type: string
+                  description: País da morada
+                postal_code:
+                  type: string
+                  description: Código postal da morada
+                latitude:
+                  type: number
+                  description: A latitude da morada especificada (precisão de 6 decimais)
+                longitude:
+                  type: number
+                  description: A longitude da morada especificada (precisão de 6 decimais)
         price:
           type: number
           description: Preço a que o item é vendido
-        warehouseStock:
+        quantity:
           type: integer
-          description: Quantidade do item em inventário no armazém warehouseId
-        productionDate:
+          description: Quantidade do item em inventário no armazém em questão
+        production_date:
           type: string
-          description: Data de produção do item
-        expirationDate:
+          description: Data de produção do item (formato ISO8601)
+        expiration_date:
           type: string
-          description: Data de validade do item
+          description: Data de validade do item (formato ISO8601)
         history:
           type: array
           description: Compilação de pontos históricos e respetivos detalhes do item
           items:
-            $ref: '#/components/schemas/ItemHistory'
-      description: Objeto utilizado para devolver informação sobre um item itemId
+            $ref: '#/components/schemas/SupplyHistory'
       xml:
-        name: Item
-    ItemHistory:
+        name: ExpandedReceivedSupply
+
+    SimplifiedReceivedSupply:
       type: object
       properties:
-        resourceUsage:
+        id:
           type: integer
-          description: Eletricidade utilizada para manter o item, medida em kWh/dia no ponto histórico
-        nonRenewableResources:
+          description: Código identificador do item (indexado por fornecedor)
+        product:
+          type: object
+          description: Informação sobre o produto
+          properties:
+            id:
+              type: integer
+              description: O código identificador do produto
+            name:
+              type: string
+              description: O nome do produto
+            category:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: O código identificador da categoria à qual o produto pertence
+                name:
+                  type: string
+                  description: O nome da categoria à qual o produto pertence
+        warehouse:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Código identificador do armazém em que o item está
+            address:
+              type: object    
+              description: Morada do armazém em questão
+              properties:
+                street:
+                  type: string
+                  description: Rua da morada
+                city:
+                  type: string
+                  description: Cidade da morada
+                country:
+                  type: string
+                  description: País da morada
+                postal_code:
+                  type: string
+                  description: Código postal da morada
+                latitude:
+                  type: number
+                  description: A latitude da morada especificada (precisão de 6 decimais)
+                longitude:
+                  type: number
+                  description: A longitude da morada especificada (precisão de 6 decimais)
+        price:
+          type: number
+          description: Preço a que o item é vendido
+        quantity:
           type: integer
-          description: Percentagem de eletricidade utilizada para manter o item oriunda
-            de recursos não-renováveis, no ponto histórico
+          description: Quantidade do item em inventário no armazém em questão
+        production_date:
+          type: string
+          description: Data de produção do item (formato ISO8601)
+        expiration_date:
+          type: string
+          description: Data de validade do item (formato ISO8601)
+      xml:
+        name: Item
+
+    SupplyHistory:
+      type: object
+      properties:
+        moment:
+          type: string
+          description: Data à qual o ponto histórico se refere (no formato ISO8601)
+        quantity:
+          type: integer
+          description: Quantidade do item em stock no ponto histórico
         price:
           type: number
           description: Preço no ponto histórico
-        date:
+      description: Objeto utilizado para devolver o histórico de um item
+
+    SentSupply:
+      type: object
+      properties:
+        product:
+          type: integer
+          description: Código identificador do produto em questão. Deverá corresponder a um produto atualmente registado na plataforma
+        warehouse:
+          type: integer
+          description: Código identificador do armazém onde o fornecimento se encontra. Deverá corresponder a um armazém atualmente registado na conta do fornecedor
+        quantity:
+          type: integer
+          description: Quantidade do produto em stock
+        price:
+          type: number
+          format: float
+          description: Preço a que se deseja vender o produto
+        production_date:
           type: string
-          description: Data à qual o ponto histórico se refere
-      description: Objeto utilizado para devolver o histórico de um item itemId
-      xml:
-        name: ItemHistory
+          description: Data de produção do produto
+        expiration_date:
+          type: string
+          description: Final da data de validade do produto
+
+    SentSupplyUpdate:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Quantidade do produto em stock
+        price:
+          type: number
+          format: float
+          description: Preço a que se deseja vender o produto
+        production_date:
+          type: string
+          description: Data de produção do produto
+        expiration_date:
+          type: string
+          description: Final da data de validade do produto
+
+    SentSupplyTransport:
+      type: object
+      properties:
+        transporter:
+          type: integer
+          description: Código identificador do transportador a adicionar como opção a este fornecimento (deverá corresponder a um transportador atualmente registado na plataforma)
+        price:
+          type: number
+          format: float
+          description: Taxa de transporte a cobrar para esta opção de transporte
+
+    ## Cart Definitions
 
     ReceivedCart:
       type: object
@@ -3592,6 +4051,51 @@ components:
           products_sold:
             type: integer
             description: A quantidade de produtos que são fornecidos pelo fornecedor em questão
+
+    ReceivedTransporters:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Código identificador do transportador
+          first_name:
+            type: string
+            description: Primeiro nome do utilizador da conta de transportador
+          last_name:
+            type: string
+            description: Último nome do utilizador da conta de transportador
+          phone: 
+            type: string
+            description: Número de telefone associado à conta de utilizador do transportador, i.e. número de telefone do representante
+          email:
+            type: string
+            description: Conta de e-mail associada à conta de utilizador do transportador, i.e. e-mail do representante
+          company:
+            type: object
+            description: Informação sobre a empresa do transportador
+            properties:
+              name:
+                type: string
+                description: Nome da empresa
+              bio:
+                type: string
+                description: Descrição da empresa
+              email:
+                type: string
+                description: E-mail de contacto da empresa
+          products_currently_transported:
+            type: integer
+            description: A quantidade de produtos em que o transportador está registado como opção de transporte
+          average_resource_usage:
+            type: number
+            format: float
+            description: A média de utilização de recursos do transportador para o envio de um produto, em l/100km (litros de combustível aos 100km)
+          average_resource_emissions:
+            type: number
+            format: float
+            description: A média de emissões poluentes do transportador para o envio de um produto, em CO2 g/km/t (gramas de CO2 por quilómetro por tonelada).
 
     # Warehouse Definitions
 
@@ -3908,7 +4412,7 @@ components:
           type: array
           description: Conjunto de veículos associados ao centro de distribuição
           items:
-            $ref: '#/components/schemas/Vehicle'
+            $ref: '#/components/schemas/ReceivedVehicle'
       description: Objeto utilizado para devolver informações sobre um centro de distribuição
       xml:
         name: DistributionCenter
@@ -4025,7 +4529,6 @@ components:
             - "DIESEL"
             - "ELECTRICITY"
 
-    ## TODO: Transform this into responses
     ## CONFIRMATIONS AND ERRORS
     UnauthorizedAccessError:
       type: object
