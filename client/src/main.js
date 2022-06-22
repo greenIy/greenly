@@ -16,12 +16,10 @@ import { router, store } from './router/index';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
-<<<<<<< HEAD
-=======
+
 //Draggable
 import VueDraggable from 'vuedraggable';
 
->>>>>>> development
 const myApp = createApp(App);
 const emitter = mitt();
 myApp.config.globalProperties.emitter = emitter;

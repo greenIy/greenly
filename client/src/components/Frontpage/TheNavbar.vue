@@ -2,11 +2,7 @@
 <nav>
     <div class="navmenu d-flex justify-content-center pt-2 pb-2">
         <div class="align-self-center mt-2 mb-2">
-<<<<<<< HEAD
-            <router-link to="/" class="navbar-brand">
-=======
             <router-link to="/produtos" @click="reloadPage()" class="navbar-brand">
->>>>>>> development
                 <img alt="Logo do greenly" src="../../assets/logo_dark.png">
             </router-link>
         </div>
@@ -28,20 +24,12 @@
                     <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                     </a>
-<<<<<<< HEAD
-                    <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuLink">
-                        <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
-                        <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
-                        <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                        <li v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"><router-link to="/dashboard" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'clipboard']" />&nbsp; Dashboard </a></router-link></li>
-=======
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
                         <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
                         <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
->>>>>>> development
                         <hr class="dropdown-divider">
                         <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item ms-0" style="color: red !important"><font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />&nbsp; Terminar sessão</a></router-link></li>
                     </ul>
@@ -57,11 +45,7 @@
                 <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <font-awesome-icon :icon="['fas', 'bell']" size="xl"/>
                 </a>
-<<<<<<< HEAD
                 <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
-=======
-                <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
->>>>>>> development
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><font-awesome-icon :icon="['fa', 'inbox']"/>&nbsp;Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
@@ -96,11 +80,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-center p-5">
                                             <h5 class="text-center">
-<<<<<<< HEAD
                                                 Não existem notificações novas.
-=======
-                                                Não existem novas notificações.
->>>>>>> development
                                             </h5>                                            
                                         </div>
                                     </span>
@@ -131,11 +111,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-between p-5">
                                             <h5 class="text-center">
-<<<<<<< HEAD
                                                 Não existem notificações arquivadas.
-=======
-                                                Não existem novas notificações.
->>>>>>> development
                                             </h5>                                            
                                         </div>
                                     </span>

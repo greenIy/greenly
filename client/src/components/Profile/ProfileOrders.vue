@@ -3,16 +3,14 @@
         
         <h4>Encomendas</h4>
         <hr>
-<<<<<<< HEAD
         <i>Todas as suas encomendas encontrar-se-ão nesta secção, ordenadas cronologicamente.<br>É possivel cancelar individualmente
-=======
-        <i>Todas as suas encomendas encontrar-se-ão nesta secção ordenadas cronologicamente.<br>É possivel cancelar individualmente
->>>>>>> development
         um item de qualquer encomenda caso este ainda não se encontre em trânsito <font-awesome-icon :icon="['fa', 'truck-fast']"/> .
         </i>
         <br>
         <br>
-        
+        <!-- Button trigger Download data (JSON) -->
+        <button type="button" class="btn btn-secondary btn-sm position-absolute top-0 end-0 mt-5 me-5" v-on:click="saveFile()"><font-awesome-icon :icon="['fa', 'download']" /> &nbsp;Descarregar dados (JSON)</button>
+
         <div v-if="this.ordersLength == 0" style="overflow-x: hidden;overflow-y: auto; height: 370px;">
             <div class="w-100 justify-content-center p-5 mt-5">
                 <p class="text-center">Parece que ainda não realizou nenhuma encomenda.<br>Do que está à espera? Explore o nosso catálogo.</p>
@@ -31,7 +29,7 @@
                                 <font-awesome-icon :icon="['fa', 'box']"/>&nbsp;Encomenda #{{ order.id }}
                             </div>
                             <div class="col">
-                                <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{`${new Date(order.date).getDate()}/${new Date(order.date).getMonth()+1}/${new Date(order.date).getFullYear()}`}}
+                                <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{`${String(new Date(order.date).getDate()).padStart(2, '0')}/${String(new Date(order.date).getMonth()+1).padStart(2, '0')}/${new Date(order.date).getFullYear()}`}}
                             </div>
                             <div v-if="calculateOrderProducts(index) == 1" class="col">
                                 <font-awesome-icon :icon="['fa', 'shopping-bag']"/>&nbsp; {{ this.calculateOrderProducts(index) }} x item
@@ -250,8 +248,8 @@
 import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
-library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark);
+import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload } from '@fortawesome/free-solid-svg-icons';
+library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload);
 
 import http from "../../../http-common"
 import { Loader } from "@googlemaps/js-api-loader"
@@ -437,6 +435,20 @@ export default({
                         console.log("Failure!")
                     })
             }
+        },
+        saveFile() {
+            let date = new Date()
+            const content = JSON.stringify(this.orders);
+            let a = document.createElement("a");
+            let file = new Blob([content], {type: "application/json"});
+            a.href = URL.createObjectURL(file);
+            a.download =    `GREENLY_ORDERS_` + 
+                            `${String(date.getDate()).padStart(2, '0')}-` + 
+                            `${String(date.getMonth() + 1).padStart(2, '0')}-` + 
+                            `${date.getFullYear()}_${date.getHours()}-` + 
+                            `${String(date.getMinutes()).padStart(2, '0')}-` + 
+                            `${date.getSeconds()}.json`;
+            a.click();
         }
     },
 });

@@ -319,6 +319,7 @@ export default({
 
                 const marker = new google.maps.Marker({
                         position: position,
+                        animation: google.maps.Animation.BOUNCE,
                         map: map,
                         label: {
                             text: " ",
@@ -468,7 +469,7 @@ export default({
                             this.selectedAddress.country = newCountry
                             this.selectedAddress.city = newCity
                             this.selectedAddress.street = newStreet
-                            this.selectedAddress.postalCode = newPostalCode
+                            this.selectedAddress.postal_code = newPostalCode
                             this.selectedAddress.nif = newNif
                             this.successfulEditAddress()
                             console.log("Success!")
