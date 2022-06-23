@@ -9,7 +9,10 @@ const {
     createCategoryValidator,              
     updateCategoryValidator,
     getSingleOrderValidator,
-    updateOrderValidator } = require('../lib/validation.js');
+    updateOrderValidator, 
+    createProductValidator,
+    updateProductValidator,
+    createProductAttributeValidator} = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
 const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
@@ -128,6 +131,136 @@ router.get('/products/:productId', (req, res) => {
         res.status(500).send(defaultErr());
     }
 })
+
+router.post('/products', authentication.check, authorization.check, createProductValidator(), (req, res) => {
+    
+    persistence.createProduct(
+        req.body.name,
+        req.body.description,
+        Number(req.body.category),
+        req.body.complement_name,
+        Number(req.body.complement_quantity),
+        req.body.attributes
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_CATEGORY":
+                return res.status(404).send({
+                    message: "Invalid category. Make sure to specify a category registered on the website."
+                })
+            default:
+                return res.status(201).json({
+                    id: result
+                })
+            }
+    })
+
+})
+
+router.put(
+    '/products/:productId', 
+    authentication.check, 
+    authorization.check, 
+    updateProductValidator(), 
+    (req, res) => {
+
+        persistence.updateProduct(
+            Number(req.params.productId),
+            req.body
+        ).then((result) => {
+
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_CATEGORY":
+                    return res.status(404).send({
+                        message: "Invalid category. Make sure to specify a category registered on the website."
+                    })
+                default:
+                    return res.status(200).json({message: "Successfully updated product details."})
+            }
+
+        })
+
+})
+
+router.delete(
+    '/products/:productId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+        persistence.deleteProduct(
+            Number(req.params.productId)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product, along with all corresponding supplies and transportation rules."})
+            }
+        })
+    }
+)
+
+/* Product Attribute Routes */
+
+router.post(
+    '/products/:productId/attributes', 
+    authentication.check, 
+    authorization.check, 
+    createProductAttributeValidator(), 
+    (req, res) => {
+    
+        persistence.createProductAttribute(
+            Number(req.params.productId),
+            req.body.title,
+            req.body.content
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                default:
+                    return res.status(201).json({
+                        id: result
+                    })
+                }
+        })
+
+})
+
+router.delete(
+    '/products/:productId/attributes/:attributeId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+
+        persistence.deleteProductAttribute(
+            Number(req.params.productId),
+            Number(req.params.attributeId)
+        ).then((result) => {
+
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_ATTRIBUTE":
+                    return res.status(404).send({message: "Product attribute not found. Make sure to specify an attribute related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product attribute."})
+            }
+        })
+    }
+)
+
+
 /* Category Routes */
 
 /* GET /store/categories */

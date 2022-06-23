@@ -22,10 +22,15 @@ async function check(req, res, next) {
         "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM",
 
         /* Store Routes */
-        "/store/products/:productId":                   "SINGLE_PRODUCT",
+        "/store/products":                                      "ALL_PRODUCTS",
+        "/store/products/:productId":                           "SINGLE_PRODUCT",
+        "/store/products/:productId/attributes":                "ALL_ATTRIBUTES",
+        "/store/products/:productId/attributes/:attributeId":   "SINGLE_ATTRIBUTE",
+
         "/store/orders":                                "ALL_ORDERS",
         "/store/orders/:orderId":                       "SINGLE_ORDER",
         "/store/orders/:orderId/:itemId":               "SINGLE_ORDER_ITEM",
+
         "/store/categories":                            "ALL_CATEGORIES",
         "/store/categories/:categoryId":                "SINGLE_CATEGORY",
 
@@ -287,6 +292,55 @@ async function check(req, res, next) {
                 req.params.userId == req.user.id) &&
                 (isConsumer(req.user))) {
                 return next()
+            }
+
+            break;
+
+        case "ALL_PRODUCTS":
+            // This is valid for: POST
+            // Only administrators can create new products
+
+            if (intent == "POST") {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+        
+        case "SINGLE_PRODUCT":
+            // This is valid for: PUT, DELETE
+            // Only administrators can update or delete products
+
+            if (["PUT", "DELETE"].includes(intent)) {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+        case "ALL_ATTRIBUTES":
+            // This is valid for: POST
+            // Only administrators can create new product attributes
+
+            if (intent == "POST") {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+
+        case "SINGLE_ATTRIBUTE":
+            // This is valid for: PUT, DELETE
+            // Only administrators can update or delete product attributes
+
+            if (["DELETE"].includes(intent)) {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
             }
 
             break;

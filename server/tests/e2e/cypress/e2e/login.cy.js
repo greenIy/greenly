@@ -2,7 +2,6 @@ describe('Login Test', () => {
   it('visits website', () => {
     cy.viewport(1920, 1080)
 
-
     // Visiting home-page
     cy.visit('/')
   })

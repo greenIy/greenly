@@ -132,16 +132,16 @@ model Order_Item {
 }
 
 model Product {
-  id                Int                @id @default(autoincrement()) @db.UnsignedInt
-  name              String             @db.VarChar(255)
-  description       String             @db.VarChar(1000)
-  category          Int?               @db.UnsignedInt
-  complement_name   String?            @db.VarChar(50)
-  complement_amount Decimal?           @db.Decimal(2, 0)
-  Category          Category?          @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
-  ProductAttribute  ProductAttribute[]
-  Supply            Supply[]
-  Wishlist          Wishlist[]
+  id                  Int                @id @default(autoincrement()) @db.UnsignedInt
+  name                String             @db.VarChar(255)
+  description         String             @db.VarChar(1000)
+  category            Int?               @db.UnsignedInt
+  complement_name     String?            @db.VarChar(50)
+  complement_quantity Decimal?           @db.Decimal(2, 0)
+  Category            Category?          @relation(fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Product_ibfk_1")
+  ProductAttribute    ProductAttribute[]
+  Supply              Supply[]
+  Wishlist            Wishlist[]
 
   @@index([category], map: "category")
   @@fulltext([name, description], map: "name")
@@ -152,7 +152,7 @@ model ProductAttribute {
   product Int     @db.UnsignedInt
   title   String  @db.VarChar(255)
   content String  @db.VarChar(500)
-  Product Product @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ProductAttribute_ibfk_1")
+  Product Product @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ProductAttribute_ibfk_1")
 
   @@id([id, product])
   @@index([product], map: "product")

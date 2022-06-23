@@ -839,6 +839,123 @@ function updateSupplyTransportValidator() {
     ]
 }
 
+function createProductValidator() {
+    return [
+        body('name')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 255}),
+        body('description')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max:1000}),
+        body('category')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('complement_name')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 50}),
+        body('complement_quantity')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('attributes')
+            .optional()
+            .isArray().withMessage("Attributes must be an array of attributes.")
+            .custom((attributes) => {
+
+                let isValid = true
+                
+                for (let i = 0; i < attributes.length && isValid; i++) {
+
+                    let attribute = attributes[i]
+
+                    isValid = 
+                        (attribute.hasOwnProperty("title") && attribute.hasOwnProperty("content")) &&
+
+                        (typeof attribute.title === 'string' && typeof attribute.content === 'string') &&
+
+                        (attribute.title.length <= 50 && attribute.content.length <= 255)
+                    
+                }
+
+                if (!isValid) {
+                    return Promise.reject("All attributes must contain a 'title' property under 50 characters and a 'content' property under 255 characters.")
+                }
+
+                return true
+            }),
+        
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateProductValidator() {
+    return [
+        body('name')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 255}),
+        body('description')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max:1000}),
+        body('category')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('complement_name')
+            .optional()
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 50}),
+        body('complement_quantity')
+            .optional()
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createProductAttributeValidator() {
+    return [
+            body('title')
+                .notEmpty().bail()
+                .isString().bail()
+                .isLength({max: 50}),
+            body('content')
+                .notEmpty().bail()
+                .isString().bail()
+                .isLength({max:255}),
+            (req, res, next) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty())
+                    return res.status(400).json({errors: errors.array()});
+                next();
+                },
+        ]
+}
 
 module.exports = {
     // User validators
@@ -854,6 +971,9 @@ module.exports = {
 
     // Product validators
     getProductsValidator,
+    createProductValidator,
+    updateProductValidator,
+    createProductAttributeValidator,
 
     // Category validators,
     createCategoryValidator,

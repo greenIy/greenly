@@ -35,6 +35,12 @@ prisma.$connect().catch((reason) => {
 
 /* Helper functions */
 
+// Reporting exceptions (only in development mode)
+
+function report(e) {
+    if (process.env.MODE == "development") console.log(e)
+}
+
 // Proper rounding function as oposed to JS Math
 function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
@@ -179,7 +185,7 @@ async function determineOptimalVehicle(transporter, destination) {
         return leastBusyVehicle.id
 
     } catch (e) {
-        console.log(e)
+        report(e)
         // If anything goes wrong, simply use the first vehicle
         return 1
     }
@@ -242,7 +248,7 @@ async function createUser(params) {
         return {id: newUser.id};
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -314,7 +320,7 @@ async function updateUser(id, params) {
         return updatedUser;
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 
@@ -359,7 +365,7 @@ async function deleteUser(id) {
         }
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 
@@ -422,7 +428,7 @@ async function getUserByID(id, withPassword=false) {
             }
         })
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -470,7 +476,7 @@ async function getUserByEmail(email, withPassword=false) {
             }
         })
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -545,7 +551,7 @@ async function createAddress(userID,
 
         return {id: newAddress.id}
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -619,7 +625,7 @@ async function updateAddress(userId, addressId, params) {
             lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
 
         } catch (e) {
-            console.log(e)
+            report(e)
         }
 
         updatedAddress = await prisma.address.update({
@@ -635,7 +641,7 @@ async function updateAddress(userId, addressId, params) {
 
         return updateAddress;
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -656,7 +662,7 @@ async function deleteAddress(id) {
 
     } catch (e) {
         // If it doesn't exist, prisma throws "RecordNotFound"
-        console.log(e)
+        report(e)
         return false
     }
 }
@@ -783,7 +789,7 @@ async function getAllProducts(limit = 50,
                     name: true,
                     description: true,
                     complement_name: true,
-                    complement_amount: true,
+                    complement_quantity: true,
                     Category: {
                         select: {
                             id: true,
@@ -812,7 +818,7 @@ async function getAllProducts(limit = 50,
                 name: true,
                 description: true,
                 complement_name: true,
-                complement_amount: true,
+                complement_quantity: true,
                 Category: {
                     select: {
                         id: true,
@@ -891,7 +897,7 @@ async function getProductByID(id){
                     }
                 } ,
                 complement_name: true,
-                complement_amount: true,
+                complement_quantity: true,
                 ProductAttribute: {
                     select: {
                         id: true,
@@ -988,7 +994,7 @@ async function getProductByID(id){
         return result;
 
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1016,7 +1022,7 @@ async function getAllCategories() {
         return categories
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1356,7 +1362,7 @@ async function getCart(userID) {
             total_transporter_emissions:        parseFloat(totalTransporterEmissions.toFixed(2))}
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1458,7 +1464,7 @@ async function addItemToCart(
         return "SUCCESSFULLY_ADDED"
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1473,7 +1479,7 @@ async function clearCart(userID) {
 
         return true;
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 }
@@ -1522,7 +1528,7 @@ async function updateCartItem(userID, index, quantity) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1565,7 +1571,7 @@ async function removeCartItem(userID, index) {
 
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1666,7 +1672,7 @@ async function clearWishlist(userID) {
         })
         return true;
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 }
@@ -1711,7 +1717,7 @@ async function removeProductFromWishlist(userID, productID) {
  * order-management features (i.e. all except consumers).
  * Consumers will only receive their orders.
  * Suppliers will only receive orders with OrderItems in which they're registered as supplier.
- * Transporters will only receive orders with OrderItems in which they're registed as transporter.
+ * Transporters will only receive orders with OrderItems in which they're registered as transporter.
  * Administrators will receive every order.
  * @param user - The user in question 
  */
@@ -1919,7 +1925,7 @@ async function removeProductFromWishlist(userID, productID) {
 
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -2020,7 +2026,7 @@ async function createOrder(userID, shippingAddressID, billingAddressID, observat
         return newOrder.id
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -2974,7 +2980,7 @@ async function getWarehouses(userID) {
         return warehouses
 
     } catch (e) {
-        console.log(e);
+        report(e);
         return null
     }
 }
@@ -3067,7 +3073,7 @@ async function getWarehouse(userID, warehouseID) {
         return warehouse
         
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -3912,8 +3918,6 @@ async function getInventory(
 
     let filters = {}
 
-    console.log(warehouse, sort)
-
     try {
 
         // Sorting
@@ -4016,7 +4020,7 @@ async function getInventory(
 
 
     } catch (e) {
-        console.log(e);
+        report(e);
         return null
     }
 
@@ -4223,9 +4227,11 @@ async function createSupply(
                 }
             })
 
+            let newSupplyID = latestSupply ? latestSupply.id + 1 : 1
+
             let newSupply = await prisma.supply.create({
                 data: {
-                    id: latestSupply.id + 1,
+                    id: newSupplyID,
                     product: productID,
                     warehouse: warehouseID,
                     supplier: userID,
@@ -4239,7 +4245,7 @@ async function createSupply(
             return newSupply.id
 
         } catch (e) {
-            console.log(e)
+            report(e)
             return null
         }
 }
@@ -4297,7 +4303,7 @@ async function updateSupply(userID, supplyID, params) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4331,7 +4337,7 @@ async function deleteSupply(userID, supplyID) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4395,7 +4401,7 @@ async function createSupplyTransport(userID, supplyID, transporterID, price) {
         })
         
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4450,7 +4456,7 @@ async function updateSupplyTransport(userID, supplyID, transporterID, price) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4502,12 +4508,288 @@ async function deleteSupplyTransport(userID, supplyID, transporterID) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
 }
 
+async function createProduct(
+    name,
+    description,
+    categoryID,
+    complementName,
+    complementAmount,
+    attributes
+) {
+
+
+    try {
+        
+        // Proofing
+
+        let specifiedCategory = await prisma.category.findUnique({
+            where: {
+                id: categoryID
+            }
+        })
+
+        if (!specifiedCategory) {
+            return "INVALID_CATEGORY"
+        }
+
+        // If the category checks out, create the product
+
+        let newProduct = await prisma.product.create({
+            data: {
+                name: name,
+                description: description,
+                category: categoryID,
+                // These are "logical nullish assignements": complement info. will be set as null if not provided
+                complement_name: complementName ??= null,
+                complement_quantity: complementAmount ??= null,
+            }
+        })
+
+        // Create the product attributes
+        
+        if (attributes.length > 0) {
+            await Promise.all(attributes.map(async (attribute, index) => {
+
+                await prisma.productAttribute.create({
+                    data: {
+                        id: index + 1,
+                        product: newProduct.id,
+                        title: attribute.title,
+                        content: attribute.content
+                    }
+                })
+
+            }))
+        }
+
+        return newProduct.id
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function updateProduct(productID, params) {
+
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Checking new category if specified
+
+        if (params.category) {
+            let specifiedCategory = await prisma.category.findUnique({
+                where: {
+                    id: params.category
+                }
+            }) 
+
+            if (!specifiedCategory) {
+                return "INVALID_CATEGORY"
+            }
+
+        }
+
+        // Determining attributes to update
+
+        let updatedProductData = {}
+
+        let productKeyMap = [
+            "name",
+            "description",
+            "category",
+            "complement_name",
+            "complement_quantity"
+        ]
+
+        for (const [key, value] of Object.entries(params)) {
+            if (productKeyMap.includes(key)) {
+                updatedProductData[key] = value
+            }
+        }
+
+        // Updating product
+
+        let updatedProduct = await prisma.product.update({
+            where: {
+                id: productID
+            },
+            data: updatedProductData
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function deleteProduct(productID) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Deleting product
+
+        let deletedProduct = await prisma.product.delete({
+            where: {
+                id: productID
+            }
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+/* Product attribute functions */
+
+async function createProductAttribute(
+    productID,
+    title,
+    content) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Creating a new attribute
+
+        let latestAttribute = await prisma.productAttribute.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let newAttributeID = latestAttribute ? latestAttribute.id + 1 : 1
+
+        let newAttribute = await prisma.productAttribute.create({
+            data: {
+                id: newAttributeID,
+                title: title,
+                content: content,
+                product: productID
+            }
+        })
+
+        return newAttribute.id
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function deleteProductAttribute(
+    productID,
+    attributeID
+) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedAttribute = await prisma.productAttribute.findUnique({
+            where: {
+                id_product: {
+                    id: attributeID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedAttribute) {
+            return "INVALID_ATTRIBUTE"
+        }
+
+        // If everything checks out, delete the specified attribute
+
+        let deletedAttribute = await prisma.productAttribute.delete({
+            where: {
+                id_product: {
+                    id: attributeID,
+                    product: productID
+                }
+            }
+        })
+
+        // Updating all affected indexes
+        await prisma.productAttribute.updateMany({
+            where: {
+                product: productID,
+                id: {
+                    gt: attributeID
+                }
+            },
+            data: {
+                id: {
+                    decrement: 1
+                }
+            }
+        })
+        
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -4529,6 +4811,11 @@ module.exports = {
     // Product Functions
     getAllProducts,
     getProductByID,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    createProductAttribute,
+    deleteProductAttribute,
 
     // Category Functions
     getAllCategories,
