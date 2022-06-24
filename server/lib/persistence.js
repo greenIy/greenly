@@ -6,6 +6,7 @@ const { PrismaClient, Prisma } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
+const { nanoid } = require('nanoid');
 
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
@@ -26,6 +27,16 @@ Prisma.Decimal.prototype.toJSON = function() {
 
 const maps = new Client();
 
+/* Initializing Google Storage Bucket */
+
+const {Storage} = require('@google-cloud/storage');
+
+const storage = new Storage({
+    keyFilename: ".google-key.json" //TODO: Remove this line in production
+});
+
+const bucket = storage.bucket("greenly.pt");
+
 /* Checking database availability */
 
 prisma.$connect().catch((reason) => {
@@ -34,6 +45,12 @@ prisma.$connect().catch((reason) => {
 })
 
 /* Helper functions */
+
+// Composing Cloud Storage Access
+
+function composeURL(identifier) {
+    return `https://storage.googleapis.com/${bucket.name}/${identifier}` 
+}
 
 // Reporting exceptions (only in development mode)
 
@@ -1204,7 +1221,7 @@ async function getAllTransporters() {
         // Obtaining amount of products currently available (i.e. supplies)
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null;
     }
 }
@@ -2909,7 +2926,7 @@ async function dismissNotification(userID, notificationID) {
     
         return true
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3133,7 +3150,7 @@ async function createWarehouse(userID, addressID, capacity, resourceUsage, renew
 
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 }
@@ -3521,7 +3538,7 @@ async function updateDistributionCenter(userID, centerID, params) {
         })
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3749,7 +3766,7 @@ async function createVehicle(
 
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3901,7 +3918,7 @@ async function deleteVehicle(userID, vehicleID) {
         })
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -4155,7 +4172,7 @@ async function getSupply(userID, supplyID) {
     
         return item
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 }
@@ -4658,6 +4675,17 @@ async function deleteProduct(productID) {
             return "INVALID_PRODUCT"
         }
 
+        // Also delete all images in bucket relative to this product
+
+        let productImages = await prisma.productImage.findMany({
+            where: {
+                product: productID
+            },
+            select: {
+                uri: true
+            }
+        })
+
         // Deleting product
 
         let deletedProduct = await prisma.product.delete({
@@ -4665,6 +4693,14 @@ async function deleteProduct(productID) {
                 id: productID
             }
         })
+
+        let deletedImages = Promise.all(
+            productImages.map(async (image) => {
+                await bucket.file(image.uri).delete({
+                    ignoreNotFound: true
+                });
+            })
+        )
 
     } catch (e) {
         report(e)
@@ -4791,6 +4827,303 @@ async function deleteProductAttribute(
 
 }
 
+async function addProductImages(productID, file) {
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let whitelist = [
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+        ]
+
+        if (!file) {
+            return "NO_FILE"
+        }
+
+        // Checking if files are valid
+
+        if (!whitelist.includes(file.mimetype)) {
+            return "INVALID_FILE"
+        }
+
+        // Create a new blob in the bucket and upload the file to Google Cloud Storage
+        
+        let hostedFileName = `${nanoid()}.${file.mimetype.replace("image/", "")}`
+
+        let blob = bucket.file(hostedFileName);
+        let blobStream = blob.createWriteStream();
+
+        let publicURL = await new Promise(function(resolve, reject) {
+
+            blobStream.on('error', reject);
+
+            blobStream.on('finish', () => {
+                // The public URL can be used to directly access the file via HTTP.
+                let publicURL = composeURL(blob.name)
+    
+                resolve(publicURL)
+            });
+
+            blobStream.end(file.buffer);
+
+        });
+
+        // Add the image to the collection of product images
+
+        let latestImage = await prisma.productImage.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let newImageID = latestImage ? latestImage.id + 1 : 1
+
+        let newImage = await prisma.productImage.create({
+            data: {
+                id: newImageID,
+                uri: hostedFileName,
+                product: productID
+            }
+        })
+
+        return {
+            id: newImage.id,
+            url: publicURL
+        }
+
+        
+    } catch (e) {
+        report(e)
+        return null
+    }
+}
+
+async function deleteProductImage(productID, imageID) {
+
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedImage = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedImage) {
+            return "INVALID_IMAGE"
+        }
+
+        // If everything checks out, delete the image
+        // First from the bucket
+
+        await bucket.file(specifiedImage.uri).delete({
+            ignoreNotFound: true
+        });
+
+        // Then from the database
+
+        let deletedImage = await prisma.productImage.delete({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        // And alter all affected indexes
+
+        await prisma.productImage.updateMany({
+            where: {
+                product: productID,
+                id: {
+                    gt: imageID
+                }
+            },
+            data: {
+                id: {
+                    decrement: 1
+                }
+            }
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+}
+
+async function updateProductImagePosition(
+    productID,
+    imageID,
+    newPosition
+) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedImage = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedImage) {
+            return "INVALID_IMAGE"
+        }
+
+        // Updating all greater indexes (including old index at newPosition)
+
+        let oldPosition = imageID
+
+        // Temporarily delete old position
+
+        let temp = await prisma.productImage.delete({
+            where: {
+                id_product: {
+                    id: oldPosition,
+                    product: productID
+                }    
+            }
+        })
+
+        // Going forward
+        if (newPosition > oldPosition) {
+            // Decrement all between newPosition and oldPosition
+            await prisma.productImage.updateMany({
+                where: {
+                    product: productID,
+                    AND: [
+                        {
+                            id: {
+                                lte: newPosition
+                            }
+                        },
+                        {
+                            id: {
+                                gt: oldPosition
+                            }
+                        }
+                    ]
+                },
+                data: {
+                    id: {
+                        decrement: 1
+                    }
+                }
+            })
+        } else if (oldPosition > newPosition) {
+            // Going backwards
+            // Increment all between newPosition and oldPosition
+
+            let imagesToUpdate = await prisma.productImage.findMany({
+                where: {
+                    product: productID,
+                    AND: [{
+                            id: {
+                                gte: newPosition
+                            }
+                        },
+                        {
+                            id: {
+                                lt: oldPosition
+                            }
+                        }
+                    ]
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            })
+
+            // Prisma's updateMany doesn't support reverse iteration, therefore -> 
+            await prisma.$transaction(
+                imagesToUpdate.map((image) => {
+                    return prisma.productImage.update({
+                        where: {
+                            id_product: {
+                                id: image.id,
+                                product: image.product
+                            }
+                        }, data: {
+                            id: image.id + 1
+                        }
+                    })
+                })
+            )
+                
+        }
+
+        // Placing 
+
+        // Determining if the index went overboard
+        let highestIndex = await prisma.productImage.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        await prisma.productImage.create({
+            data: {
+                id: newPosition > highestIndex.id ? highestIndex.id + 1 : newPosition,
+                product: temp.product,
+                uri: temp.uri
+            }
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -4816,6 +5149,9 @@ module.exports = {
     deleteProduct,
     createProductAttribute,
     deleteProductAttribute,
+    addProductImages,
+    deleteProductImage,
+    updateProductImagePosition,
 
     // Category Functions
     getAllCategories,

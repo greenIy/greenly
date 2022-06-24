@@ -2,6 +2,15 @@
 
 const express   = require('express');
 const router    = express.Router();
+const Multer    = require('multer');
+
+// Initializing Multer for receiving files (max 5MB)
+const multer = Multer({
+    storage: Multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+});
 
 /* Greenly libraries */
 const { 
@@ -12,7 +21,8 @@ const {
     updateOrderValidator, 
     createProductValidator,
     updateProductValidator,
-    createProductAttributeValidator} = require('../lib/validation.js');
+    createProductAttributeValidator,
+    updateProductImageValidator} = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
 const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
@@ -201,7 +211,7 @@ router.delete(
                 case "INVALID_PRODUCT":
                     return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
                 default:
-                    return res.status(200).send({message: "Successfully deleted product, along with all corresponding supplies and transportation rules."})
+                    return res.status(200).send({message: "Successfully deleted product, along with all corresponding images, supplies and transportation rules."})
             }
         })
     }
@@ -252,7 +262,7 @@ router.delete(
                 case "INVALID_PRODUCT":
                     return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
                 case "INVALID_ATTRIBUTE":
-                    return res.status(404).send({message: "Product attribute not found. Make sure to specify an attribute related to the specified product."})
+                    return res.status(404).send({message: "Attribute not found. Make sure to specify an attribute related to the specified product."})
                 default:
                     return res.status(200).send({message: "Successfully deleted product attribute."})
             }
@@ -260,6 +270,83 @@ router.delete(
     }
 )
 
+/* Product Image Routes */
+
+router.post(
+    '/products/:productId/images',
+    authentication.check,
+    authorization.check,
+    multer.single("upload"),
+    (req, res) => {
+
+        persistence.addProductImages(
+            Number(req.params.productId),
+            req.file
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "NO_FILE":
+                    return res.status(400).send({message: "No file has been uploaded. Make sure to upload a valid file."})
+                case "INVALID_FILE":
+                    return res.status(400).send({message: "Specified file is invalid. Make sure to provide a file under 5MB (supported filetypes: PNG, JPG and JPEG)."})
+                default:
+                    return res.status(201).json(result)
+                }
+        })
+
+    }
+)
+
+router.put(
+    '/products/:productId/images/:imageId',
+    authentication.check,
+    authorization.check,
+    updateProductImageValidator(),
+    (req, res) => {
+        persistence.updateProductImagePosition(
+            Number(req.params.productId),
+            Number(req.params.imageId),
+            Number(req.body.new_position)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_IMAGE":
+                    return res.status(404).send({message: "Image not found. Make sure to specify an image related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully altered product image position."})
+            }
+        })
+    }
+)
+
+router.delete(
+    '/products/:productId/images/:imageId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+        persistence.deleteProductImage(
+            Number(req.params.productId),
+            Number(req.params.imageId)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_IMAGE":
+                    return res.status(404).send({message: "Image not found. Make sure to specify an image related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product image."})
+            }
+        })
+    }
+)
 
 /* Category Routes */
 

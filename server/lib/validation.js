@@ -918,12 +918,10 @@ function updateProductValidator() {
             .toInt(),
         body('complement_name')
             .optional()
-            .optional()
             .notEmpty().bail()
             .isString().bail()
             .isLength({max: 50}),
         body('complement_quantity')
-            .optional()
             .optional()
             .notEmpty().bail()
             .isInt({min: 1}).bail()
@@ -957,6 +955,21 @@ function createProductAttributeValidator() {
         ]
 }
 
+function updateProductImageValidator() {
+    return [
+        body('new_position')
+            .notEmpty().bail()
+            .isInt({min: 1}).withMessage("Position must be a 1-based index.").bail()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
 module.exports = {
     // User validators
     createUserValidator,
@@ -974,6 +987,7 @@ module.exports = {
     createProductValidator,
     updateProductValidator,
     createProductAttributeValidator,
+    updateProductImageValidator,
 
     // Category validators,
     createCategoryValidator,

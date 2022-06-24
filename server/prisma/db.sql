@@ -51,6 +51,18 @@ CREATE TABLE ProductAttribute (
     PRIMARY KEY (id, product)
 );
 
+CREATE TABLE ProductImage (
+    id              INT UNSIGNED NOT NULL,
+    product         INT UNSIGNED NOT NULL,
+    uri             VARCHAR (1000) NOT NULL,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id)
+        ON DELETE CASCADE,
+
+    PRIMARY KEY (id, product)
+);
+
 # USER TABLES
 
 CREATE TABLE Company (
