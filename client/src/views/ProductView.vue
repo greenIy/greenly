@@ -504,7 +504,7 @@ export default {
   border-radius: 10px;
 }
 .btnS:hover {
-  background-color: #89a799;
+  background-color: #66b096;
 }
 .btnH {
   border: none;

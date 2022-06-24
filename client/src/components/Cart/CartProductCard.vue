@@ -26,7 +26,7 @@
                     </div>  
                     <div class="col-sm-2 justify-content-center">
                         <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'sun']" style="color: orange"/>  <span class="ms-2">{{ product.supplier_renewable_resources }}</span> %</h4>
-                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'industry']" style="color: grey"/>  <span class="ms-2">{{ product.average_supplier_resource_usage }}</span> kWh</h4>
+                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'warehouse']" style="color: grey"/>  <span class="ms-2">{{ product.average_supplier_resource_usage }}</span> kWh</h4>
                         <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/>  <span class="ms-2">{{ product.average_transporter_resource_usage }}</span> l/100Km</h4>
                         <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/>  <span class="ms-2">{{ product.average_transporter_emissions }}</span> CO2 g/Km/t</h4>
                         <!-- <p class="card-text  text-justify text-wrap fs-6">{{ product.description }}</p> -->

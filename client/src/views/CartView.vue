@@ -6,7 +6,7 @@
         <div class="container mt-3">
             <h2 class="page-title text-start align-middle mt-3" > Carrinho de compras</h2>
             <div class="text-start mb-2">    
-                <font-awesome-icon :icon="['fa', 'sun']" style="color: orange"/> Recursos renováveis fornecedor | <font-awesome-icon :icon="['fa', 'industry']" style="color: grey"/> Média recursos fornecedor | <font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/> Média recursos transportador | <font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/> Média emissões transportador
+                <font-awesome-icon :icon="['fa', 'sun']" style="color: orange"/> Recursos renováveis fornecedor | <font-awesome-icon :icon="['fa', 'warehouse']" style="color: grey"/> Média recursos fornecedor | <font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/> Média recursos transportador | <font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/> Média emissões transportador
             </div>
             <div>
                 <div v-if="!products.length" class="content d-flex w-100">
@@ -62,7 +62,9 @@
                         <div class="fw-bold fs-5">Total da encomenda: {{parseFloat(this.totalPrice).toFixed(2)}}€</div>
                         <div class="text-end align-self-end ">
                             <button type="button" @click="removeAllProducts($event)" class="btn btn-danger me-2 mb-5">Limpar carrinho <font-awesome-icon :icon="['fa', 'trash']" style="color: "/></button>
-                            <button type="button" @click="removeAllProducts($event)" class="btn btn-success ps-2 mb-5" style="background-color: #5E9F88"> Finalizar <font-awesome-icon :icon="['fa', 'check']"/></button>
+                            <router-link to="/checkout" class="mb-2 ml-2">
+                                <button type="button" @click="removeAllProducts($event)" class="btn btn-success ps-2 mb-5" style="background-color: #5E9F88" > Finalizar <font-awesome-icon :icon="['fa', 'check']"/></button>
+                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -81,9 +83,9 @@ import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 import CartProductCard from '@/components/Cart/CartProductCard.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheck, faGasPump, faIndustry, faSkullCrossbones, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faGasPump, faWarehouse, faSkullCrossbones, faSun } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faSun, faGasPump, faIndustry, faSkullCrossbones, faCheck);
+library.add(faSun, faGasPump, faWarehouse, faSkullCrossbones, faCheck);
 
 import http from "../../http-common";
 
