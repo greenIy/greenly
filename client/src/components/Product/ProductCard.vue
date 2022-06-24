@@ -68,11 +68,7 @@ export default {
       } 
     },
     compare(event){
-      if (this.quantityP < 2){
-        this.quantity = this.quantityP;
-        this.quantity++;
-        this.$emit('updateQuantity', this.quantity);
-
+      if (Object.keys(this.$route.query).length < 2){
         if (!this.$route.query.compare1) {
           this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {

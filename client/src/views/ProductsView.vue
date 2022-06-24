@@ -18,7 +18,7 @@
               <ProductCard
               v-for="p in products"
               :key="p.id"
-              :product="p" :quantityP="quantityP"  @updateQuantity="updateQuantity"
+              :product="p" 
               ></ProductCard>
             </div>
             <div v-else class="content d-flex w-100 ">
@@ -30,7 +30,9 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-      <CompareProduct v-if="this.$route.query.compare1 || this.$route.query.compare2" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
+      <div v-if="this.compare.length">
+        <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
+      </div>
     </div>
     <TheFooter />
   </div>
@@ -75,7 +77,6 @@ export default {
       allSuppliers: [],
       rendered: false,
       quantityP:0,
-      compareIsOn: false,
       compare: [],
     };
   },
@@ -85,6 +86,9 @@ export default {
   mounted() {
     this.getProducts();
     this.getCategories();
+    if (this.$route.query.compare1 || this.$route.query.compare2) {
+      this.getProductToCompare();
+    }
   },
   watch: {
     $route(to, from) {
@@ -152,21 +156,17 @@ export default {
         this.getProducts();
       }
     },
-    updateQuantity(value){
-      this.quantityP = value;
-    },
     async getProductToCompare() {
         let productID1 = this.$route.query.compare1;
         let productID2 = this.$route.query.compare2;
         let response;
 
-        if (productID1 && !this.compare.length && this.quantityP != 0) {
+        if (productID1) {
           response = await http.get(`store/products/${productID1}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
-          this.compareIsOn = true;
         }
 
-        if (productID2 && this.quantityP != 0) {
+        if (productID2) {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
@@ -188,9 +188,17 @@ export default {
 
           this.$router.push({ query: Object.assign({}, query, { compare1: `${ compare2 }` }) });
         }
-      } else {
+      } else if (value == 1){
         document.getElementById("input_" + this.$route.query.compare2).checked = false;
         delete query.compare2;
+        this.$router.replace({ query });
+      } else {
+        document.getElementById("input_" + this.$route.query.compare1).checked = false;
+        document.getElementById("input_" + this.$route.query.compare2).checked = false;
+
+        delete query.compare1;
+        delete query.compare2;
+
         this.$router.replace({ query });
       }
     }
