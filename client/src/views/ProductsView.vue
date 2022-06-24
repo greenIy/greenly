@@ -82,10 +82,9 @@ export default {
   },
   beforeMount() {
     this.getProducts();
+    this.getCategories();
   },
   mounted() {
-    this.getProducts();
-    this.getCategories();
     if (this.$route.query.compare1 || this.$route.query.compare2) {
       this.getProductToCompare();
     }
