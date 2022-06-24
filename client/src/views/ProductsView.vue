@@ -175,7 +175,7 @@ export default {
       this.compare = [];
       let query = Object.assign({}, this.$route.query);
       
-      if (value == 0) {
+      if (value == 0 || Object.keys(this.$route.query).length == 1) {
         let compare2 = this.$route.query.compare2;
       
         document.getElementById("input_" + this.$route.query.compare1).checked = false;
