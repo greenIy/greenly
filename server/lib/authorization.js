@@ -207,7 +207,7 @@ async function check(req, res, next) {
 
                 let isRelated = await persistence.checkUserOrderRelationship(req.user, req.params.orderId)
 
-                if (isRelated) {
+                if (isRelated || isAdministrator(req.user)) {
                     return next()
                 }
             }

@@ -83,6 +83,9 @@ router.get('/products/:productId', (req, res) => {
                 // Renaming ProductAttributes key
                 delete Object.assign(product, {["attributes"]: product["ProductAttribute"] })["ProductAttribute"];
 
+                // Renaming ProductImage key
+                delete Object.assign(product, {["images"]: product["ProductImage"] })["ProductImage"];
+
                 // Renaming Supply key (Prisma limitation)
                 delete Object.assign(product, {["supplies"]: product["Supply"] })["Supply"];
 

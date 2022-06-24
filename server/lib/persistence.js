@@ -872,12 +872,27 @@ async function getAllProducts(limit = 50,
     }
 
     // Calculating and defining lowest and highest prices for each product
-    products.forEach((product) => {
+    products = await Promise.all(products.map(async (product) => {
+
         if (product.Supply.length > 0) {
             product.lowest_price = parseFloat(calcLowestPrice(product.Supply).toFixed(2))
             product.highest_price = parseFloat(calcHighestPrice(product.Supply).toFixed(2))
         }
-    })
+
+        // Obtaining product thumbnail
+        let thumbnail = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: 1,
+                    product: product.id
+                }
+            }
+        })
+
+        product.thumbnail = thumbnail ? composeURL(thumbnail.uri) : "default"
+
+        return product
+    }))
 
     // Checking if price bounds have been set
     const minPrice = price_range.min || 0;
@@ -920,6 +935,12 @@ async function getProductByID(id){
                         id: true,
                         title: true,
                         content: true
+                    }
+                },
+                ProductImage: {
+                    select: {
+                        id: true,
+                        uri: true
                     }
                 },
                 Supply: {
@@ -1313,6 +1334,16 @@ async function getCart(userID) {
                 },
             })
 
+            // Obtaining product thumbnail
+            let thumbnail = await prisma.productImage.findUnique({
+                where: {
+                    id_product: {
+                        id: 1,
+                        product: product.id
+                    }
+                }
+            })
+
             // Calculating transporter averages
             let vehicle_averages = await prisma.vehicle.aggregate({
                 where: {
@@ -1349,10 +1380,10 @@ async function getCart(userID) {
             item.supplier_renewable_resources = warehouse.renewable_resources
 
             // Additional product information
-            // TODO: Eventually, also select the product's image here
             item.product = {
                 id: item.product,
-                name: product.name
+                name: product.name,
+                thumbnail: thumbnail ? composeURL(thumbnail.uri) : "default"
             }
 
             // Incrementing the total cart price
@@ -1611,7 +1642,7 @@ async function getWishlist(userID) {
         })
 
         // Gather additional data for each product
-        // TODO: Eventually add product photo here too
+
         wishlistItems = await Promise.all(wishlistItems.map(async (item) => {
             let correspondingProduct = await prisma.product.findUnique({
                 where: {
@@ -1626,10 +1657,21 @@ async function getWishlist(userID) {
 
             // Adding product information to wishlist item
 
+            // Obtaining product thumbnail
+            let thumbnail = await prisma.productImage.findUnique({
+                where: {
+                    id_product: {
+                        id: 1,
+                        product: item.product
+                    }
+                }
+            })
+
             item = {
                 id: item.product,
                 name: correspondingProduct.name,
                 description: correspondingProduct.description,
+                thumbnail: thumbnail ? composeURL(thumbnail.uri) : "default",
                 category: {
                     id: correspondingProduct.Category.id,
                     name: correspondingProduct.Category.name
@@ -1643,6 +1685,7 @@ async function getWishlist(userID) {
         return wishlistItems
 
     } catch (e) {
+        report(e)
         return null;
     }
 }
@@ -1826,6 +1869,9 @@ async function removeProductFromWishlist(userID, productID) {
 
             case "ADMINISTRATOR": {
                 orders = await prisma.order.findMany({
+                    include: {
+                        Order_Item: true
+                    },
                     orderBy: {
                         date: 'desc'
                     }
@@ -1901,6 +1947,18 @@ async function removeProductFromWishlist(userID, productID) {
                         name: true,
                     }
                 })
+
+                // Obtaining product thumbnail
+                let productThumbnail = await prisma.productImage.findUnique({
+                    where: {
+                        id_product: {
+                            id: 1,
+                            product: item.product.id
+                        }
+                    }
+                })
+
+                item.product.thumbnail = productThumbnail ? composeURL(productThumbnail.uri) : "default"
 
                 let supplier = await prisma.user.findUnique({
                     where: {
@@ -2145,11 +2203,18 @@ async function getFilteredOrderByID(user, orderID) {
             order = await prisma.order.findUnique({
                 where: {
                     id: orderID
-                }
+                },
+                include: {
+                    Order_Item: true
+                },
             })
 
             break;
         }
+    }
+
+    if (!order) {
+        return "NOT_FOUND"
     }
 
 
@@ -2216,6 +2281,18 @@ async function getFilteredOrderByID(user, orderID) {
                 name: true,
             }
         })
+
+        // Obtaining product thumbnail
+        let thumbnail = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: 1,
+                    product: product.id
+                }
+            }
+        })
+
+        product.thumbnail = thumbnail ? composeURL(thumbnail.uri) : "default"
 
         let supplier = await prisma.user.findUnique({
             where: {
