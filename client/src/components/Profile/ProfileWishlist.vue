@@ -3,7 +3,7 @@
         <div class="row d-flex justify-content-center align-self-center">
             <h4 class="col-md-6 align-self-center">Favoritos</h4>
             <div class="col-md-6 text-end align-self-end">
-                <button type="button" @click="removeAllProducts($event)" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: "/> Limpar favoritos</button>
+                <button v-if="this.wishlistLength > 0" type="button" @click="removeAllProducts($event)" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: "/> Limpar favoritos</button>
             </div>
         </div>
         <hr>
@@ -21,8 +21,11 @@
                             
                             </div>
                         
-                        <div v-else class="content d-flex w-100">
-                            <TheNoProduct></TheNoProduct>
+                        <div v-if="this.wishlistLength == 0" style="overflow-y: hidden; overflow-x: auto; height: 370px;" class="content d-flex w-100">
+                            <div class="w-100 justify-content-center p-5 mt-5">
+                                <p class="text-center">Parece que ainda não adicionou nenhum produto aos favoritos.<br>Do que está à espera? Explore o nosso catálogo.</p>
+                                <h6 class="text-center">Ir para <router-link class="greenly-link" to="/produtos">Produtos</router-link>!</h6>
+                            </div>
                         </div>
                         </div>
             <!-- <div v-if="products.length" class="text-center mt-3">
@@ -59,7 +62,8 @@ export default({
     },
     data() {
         return {
-            products: []
+            products: [],
+            wishlistLength: -1
         }
     },
     methods: {
@@ -70,6 +74,7 @@ export default({
                 http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
                     if (response.status == 200) {
                         this.products = response.data
+                        this.calculateWishlistLength()
                         return this.products
                     }
                 })
@@ -90,6 +95,11 @@ export default({
                 })
 
             }
+        },
+
+        calculateWishlistLength() {
+            this.wishlistLength = this.products.length;
+            console.log(this.wishlistLength)
         }
     },
 });

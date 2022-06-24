@@ -14,7 +14,7 @@
                 </div>                       
                 <div v-else class="row gx-2 justify-content-start">
                     <div class="">
-                        <div class="card p-3 container" style="height:40vh; " >
+                        <div class="card p-3 container" style="height:40vh;">
                             <div class="row me-1">
                                 <div class="col-2">
                                     Item   
@@ -39,7 +39,7 @@
                                 </div>
                                 
                             </div>
-                            <div class="container">
+                            <!-- <div class="container"> -->
                                 <div class="row" style="overflow-y:auto"> 
                                     <CartProductCard
                                         v-for="p in products"
@@ -48,18 +48,22 @@
                                         @getProducts="getProducts"
                                     ></CartProductCard>
                                 </div>
-                            </div>    
+                            <!-- </div>     -->
                         </div>
                     </div>
                 </div>
                 <div class=" ">
                     <div class="card p-3 my-1" >
                         <h2>Resumo:</h2>
-                        <div >Consumos renováveis dos fornecedores: {{this.totalSupplierRenewableResources}}%</div>
-                        <div >Consumos dos fornecedores: {{this.totalSupplierResourceUsage}} kWh</div>
-                        <div >Consumos dos transportadores: {{this.totalTransporterResourceUsage}} l/100Km</div>
-                        <div >Emissões dos transportadores: {{this.totalTransporterEmissions}} CO2 g/Km/t</div>
-                        <div class="fw-bold fs-5">Total da encomenda: {{parseFloat(this.totalPrice).toFixed(2)}}€</div>
+                        <br>
+                        <br>
+                        <div >Consumos renováveis dos fornecedores &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{this.totalSupplierRenewableResources}}%</div>
+                        <div >Consumos dos fornecedores &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{this.totalSupplierResourceUsage}} kWh</div>
+                        <div >Consumos dos transportadores &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{this.totalTransporterResourceUsage}} l/100Km</div>
+                        <div >Emissões dos transportadores &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{this.totalTransporterEmissions}} CO2 g/Km/t</div>
+                        <br>
+                        <br>
+                        <div class="fw-bold fs-5">Total da encomenda &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{parseFloat(this.totalPrice).toFixed(2)}}€</div>
                         <div class="text-end align-self-end ">
                             <button type="button" @click="removeAllProducts($event)" class="btn btn-danger me-2 mb-5">Limpar carrinho <font-awesome-icon :icon="['fa', 'trash']" style="color: "/></button>
                             <router-link to="/checkout" class="mb-2 ml-2">

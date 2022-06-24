@@ -1,5 +1,5 @@
 <template>
-    <div class="card product-card d-flex align-content-center justify-content-center" style="height:110px" >
+    <div class="card product-card d-flex align-content-center justify-content-center mt-1" style="height:110px" >
         <button class="btnH remove position-absolute end-0 ms-0 ps-0 pe-2 border-0 ">
             <font-awesome-icon @click="removed(product.index)" class="icons fa-cog " :icon="['fa', 'xmark']" />
         </button>
@@ -25,10 +25,10 @@
                         </h5> -->
                     </div>  
                     <div class="col-sm-2 justify-content-center">
-                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'sun']" style="color: orange"/>  <span class="ms-2">{{ product.supplier_renewable_resources }}</span> %</h4>
-                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'warehouse']" style="color: grey"/>  <span class="ms-2">{{ product.average_supplier_resource_usage }}</span> kWh</h4>
-                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/>  <span class="ms-2">{{ product.average_transporter_resource_usage }}</span> l/100Km</h4>
-                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/>  <span class="ms-2">{{ product.average_transporter_emissions }}</span> CO2 g/Km/t</h4>
+                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'sun']" style="color: orange"/>  <span class="ms-2">{{ product.supplier_renewable_resources.toFixed(2) }}</span> %</h4>
+                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'warehouse']" style="color: grey"/>  <span class="ms-2">{{ product.average_supplier_resource_usage.toFixed(2) }}</span> kWh</h4>
+                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/>  <span class="ms-2">{{ product.average_transporter_resource_usage.toFixed(2) }}</span> l/100Km</h4>
+                        <h4 class="card-title text-wrap"><font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/>  <span class="ms-2">{{ product.average_transporter_emissions.toFixed(2) }}</span> CO2 g/Km/t</h4>
                         <!-- <p class="card-text  text-justify text-wrap fs-6">{{ product.description }}</p> -->
                     </div>
                     <div class="col-sm-1">
