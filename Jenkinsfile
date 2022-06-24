@@ -1,14 +1,10 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:alpine'
-    }
-
-  }
+  agent none
   stages {
-    stage('Build') {
+    stage('Docker Build') {
+      agent any
       steps {
-        sh 'npm install'
+        sh 'docker build . -t greenly:latest'
       }
     }
 
