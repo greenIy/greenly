@@ -73,7 +73,7 @@ export default {
           this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {
           // it's only possible to compare products of same category
-          if (this.product.category.id == this.productsToCompare[0].category.id) {
+          if (this.product.category.id == this.productsToCompare[0].category.id && this.product.id != this.productsToCompare[0].id) {
             this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
           }
         }

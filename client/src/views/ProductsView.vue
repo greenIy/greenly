@@ -18,7 +18,7 @@
               <ProductCard
               v-for="p in products"
               :key="p.id"
-              :product="p" 
+              :product="p" :productsToCompare="compare"
               ></ProductCard>
             </div>
             <div v-else class="content d-flex w-100 ">
