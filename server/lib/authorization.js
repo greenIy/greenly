@@ -32,6 +32,21 @@ async function check(req, res, next) {
         /* Supplier Routes */
         "/supplier/:userId/warehouses":                 "ALL_WAREHOUSES",
         "/supplier/:userId/warehouses/:warehouseId":    "SINGLE_WAREHOUSE",
+
+        /* Transporter Routes */
+        "/transporter/:userId/centers":                 "ALL_DISTRIBUTION_CENTERS",
+        "/transporter/:userId/centers/:centerId":       "SINGLE_DISTRIBUTION_CENTER",
+
+        /* Vehicle Routes */
+        "/transporter/:userId/vehicles":                "ALL_VEHICLES",
+        "/transporter/:userId/vehicles/:vehicleId":     "SINGLE_VEHICLE",
+
+        /* Supply Routes */
+        "/supplier/:userId/inventory":                                  "ALL_SUPPLIES",
+        "/supplier/:userId/inventory/:itemId":                          "SINGLE_SUPPLY",
+        "/supplier/:userId/inventory/:itemId/transports":               "ALL_SUPPLY_TRANSPORTS",
+        "/supplier/:userId/inventory/:itemId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT" 
+        
         
     }
 
@@ -43,7 +58,7 @@ async function check(req, res, next) {
 
     const intent = req.method
     const incomingRoute = req.baseUrl + req.route.path
-
+    
     // Interpreting resource from path
     switch (resourceIdentification[incomingRoute]) {
         case "ALL_USERS":
@@ -236,7 +251,9 @@ async function check(req, res, next) {
         case "ALL_CART_ITEMS":
             // This is valid for: GET, POST, DELETE
             // Cart is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -245,7 +262,9 @@ async function check(req, res, next) {
         case "SINGLE_CART_ITEM":
             // This is valid for: PUT, DELETE
             // Cart is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -253,7 +272,9 @@ async function check(req, res, next) {
         case "ALL_WISHLIST_ITEMS":
             // This is valid for: GET, POST, DELETE
             // Wishlist is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -262,7 +283,9 @@ async function check(req, res, next) {
         case "SINGLE_WISHLIST_ITEM":
             // This is valid for: DELETE
             // Wishlist is only accessible to consumers
-            if ((req.params.userId == req.user.id) && (isConsumer(req.user))) {
+            if ((
+                req.params.userId == req.user.id) &&
+                (isConsumer(req.user))) {
                 return next()
             }
 
@@ -285,6 +308,85 @@ async function check(req, res, next) {
             if (((req.params.userId == req.user.id) && isSupplier(req.user)) || (isAdministrator(req.user))) {
                 return next()
             }
+
+            break;
+
+        case "ALL_DISTRIBUTION_CENTERS":
+            // This is valid for: GET
+            // Only the transporter and administrators can check all user distribution centers
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_DISTRIBUTION_CENTER":
+            // This is valid for: GET, PUT, DELETE
+            // Only the transporter and administrators can manipulate user distribution centers
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_VEHICLES":
+            // This is valid for: GET
+            // Only the transporter and administrators can check all user vehicles
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "SINGLE_VEHICLE":
+            // This is valid for: GET, PUT, DELETE
+            // Only the transporter and administrators can manipulate user vehicles
+
+            if (((
+                req.params.userId == req.user.id) &&
+                isTransporter(req.user)) ||
+                (isAdministrator(req.user))) {
+                return next()
+            }
+
+            break;
+
+        case "ALL_SUPPLIES":
+            // This is valid for: GET, POST
+            // Only the supplier and administrator can manipulate a supplier's inventory
+
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
+
+            break;
+
+        case "SINGLE_SUPPLY":
+        case "ALL_SUPPLY_TRANSPORTS":
+        case "SINGLE_SUPPLY_TRANSPORT":
+
+            // This is valid for: GET, PUT, POST, DELETE
+            // Only the supplier and administrator can manipulate a specific supply and its transport conditions
+
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
 
             break;
 

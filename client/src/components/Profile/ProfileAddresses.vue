@@ -19,7 +19,7 @@
         <br>
         <div style="overflow-y: auto; overflow-x: hidden; height: 300px">
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div v-for="address in this.user.addresses" :key="address.nif" class="card" style="width: 300px; margin-right: 30px; margin-left: 15px">
+                <div v-for="address in this.user.addresses" :key="address.nif" class="card" style="margin-right: 30px; margin-left: 15px">
                     <div class="card-body">
                             <address>
                                 <div class="position-absolute top-0 end-0 p-2 pe-3">
@@ -41,9 +41,11 @@
                                 <strong>NIF</strong><br>
                                 <a>{{ address.nif }}</a>
                                 <div class="position-absolute bottom-0 end-0 p-2 pe-3">
-                                    <a data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']"
+                                    <a id="viewMapButton" data-bs-toggle="modal" data-bs-target="#viewMapModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'map-location-dot']"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Ver no mapa"/></a>&nbsp;
+                                    <a id="editAddressButton" data-bs-toggle="modal" data-bs-target="#editAddressModal" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'pen']"
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Editar morada"/></a>&nbsp;
-                                    <a data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']"
+                                    <a id="removeAddressButton" data-bs-toggle="modal" data-bs-target="#removeAddress" v-on:click="selectAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa', 'trash-can']"
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Remover morada"/></a>
                                 </div>
                             </address>              
@@ -91,6 +93,21 @@
                         <button type="submit" class="btn btn-primary" id="newAddressButton"><font-awesome-icon :icon="['fa', 'plus']" /> &nbsp;Adicionar</button>
                     </div>
                 </form>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Modal View Map -->
+        <div class="modal fade" id="viewMapModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="viewMapLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewMapLabel">Mapa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div :id="'map' + this.selectedAddress.id" class="map"></div>
             </div>
             </div>
         </div>
@@ -159,6 +176,7 @@
         </div>
 
         <div class="toast-container position-absolute top-0 end-0 p-3">
+
             <!-- Toast New Address -->
             <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
@@ -228,6 +246,16 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
+
+            <!-- Toast Address Has Orders -->
+            <div class="toast align-items-center text-white bg-danger border-0" id="addressHasOrdersToast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <strong>Oops!</strong> A sua morada está associada a encomendas em progresso, logo não pode ser apagada.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -237,12 +265,13 @@
 import { Toast } from '../../main'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
-library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faHouseChimney, faMoneyCheckDollar, faTruck);
+import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faMapLocationDot, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
+library.add(faPlus, faXmark, faFloppyDisk,faTrashCan, faPen, faMapLocationDot, faHouseChimney, faMoneyCheckDollar, faTruck);
 
 import http from "../../../http-common"
 import AuthService from "../../router/auth"
 import countrySelect from '@/components/Profile/Country-select'
+import { Loader } from "@googlemaps/js-api-loader"
 
 
 export default({
@@ -255,7 +284,7 @@ export default({
     },
     data() {
         return {
-            user: [],
+            user: {},
             newAddressInfo: {
                 country: '',
                 city: '',
@@ -267,9 +296,41 @@ export default({
         }
     },
     methods: {
+        initMaps() {
+            const loader = new Loader({
+                apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
+                version: "weekly"
+            });
+
+            loader.load().then(() => {
+                let position = {lat: this.selectedAddress.latitude, lng: this.selectedAddress.longitude}
+                let map = new google.maps.Map(document.getElementById("map" + this.selectedAddress.id), {
+                center: position,
+                zoom: 15,
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false,
+                zoomControl: false,
+                disableDoubleClickZoom: true,
+                draggable: false,
+                disableDefaultUI: true,
+                clickableIcons: false,
+                })
+
+                const marker = new google.maps.Marker({
+                        position: position,
+                        map: map,
+                        label: {
+                            text: " ",
+                            color: "#FFF"
+                        }
+                    }
+                );
+            })
+        },
         getUserInfo() {
             this.user = this.$store.getters.getUser
-            return this.$store.getters.getUser
+            return this.user
         },
         addressesLength() {
             var user = this.getUserInfo()
@@ -278,6 +339,7 @@ export default({
         },
         selectAddress(address) {
             this.selectedAddress = address;
+            this.initMaps();
         },
         wrongCredentials(action, param) {
             if (action == "new" && param == "nif") {
@@ -340,6 +402,14 @@ export default({
             var successToast = document.getElementById("removeAddressToast");
             var successfulToast = new Toast(successToast, animation)
             successfulToast.show();
+        },
+        addressHasOrders() {
+            var closeEditModal = document.getElementById("closeRemoveModalButton");
+            closeEditModal.click()
+            var animation = {animation: true, delay: 5000};
+            var warnToast = document.getElementById("addressHasOrdersToast");
+            var warnfulToast = new Toast(warnToast, animation)
+            warnfulToast.show();
         },
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -471,7 +541,13 @@ export default({
                             this.successfulRemoveAddress()
                             console.log("Success!")
                         }
-                    }).catch(error => this.wrongCredentials(error.response.data)) 
+                    }).catch(error => {
+                        if (error.response.data.message == 'Address not found.') {
+                            this.addressHasOrders()
+                        } else {
+                            console.log(error.response)
+                        }
+                    }) 
             }
         },
         removeIsInvalid() {
@@ -484,6 +560,11 @@ export default({
 </script>
 
 <style scoped>
+    .map {
+        height: 500px;
+        width: 100%;
+        display: inline-block;
+    }
     .btn-primary{
         background-color: #5E9F88;
         border-color: white;
@@ -497,6 +578,15 @@ export default({
     #addressButtons:hover {
         opacity: 1.0;
         transform: scale(1.05)
+    }
+    #removeAddressButton:hover {
+        color: #D21D1D;
+    }
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .card:hover{
+        box-shadow: 1px 10px 12px #d9d9d9;
     }
     #newAddressToast, #editAddressToast,
     #setBillingAddressToast, #setShippingAddressToast,
@@ -518,5 +608,9 @@ export default({
         border: 5px solid transparent;
         background-clip: content-box;
         background-color: #5E9F88;
+    }
+    :focus {
+        outline: 0 !important;
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
     }
 </style>

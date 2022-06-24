@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary w-75 p-2" id="registerButton">Registar como Consumidor&nbsp;&nbsp;<font-awesome-icon :icon="['fa', 'leaf']" size="lg"/></button>
+                        <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%; margin-left: 17.5%;">Registar como Consumidor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
                     </div>
 
                     <div class="or-seperator"><i>ou</i></div>
@@ -266,7 +266,6 @@ export default {
         top: -11px;
         z-index: 1;
     }
-
     .greenly-link {
         color: #5e9f88;
     }

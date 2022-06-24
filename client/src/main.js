@@ -1,63 +1,32 @@
 // Bootstrap imports
 import { Toast } from 'bootstrap';
+import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
-import { createStore } from 'vuex';
 import GAuth from 'vue3-google-oauth2';
-
 
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router';
+import { router, store } from './router/index';
 
 // Axios imports
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
-const myApp = createApp(App);
+//Draggable
+import VueDraggable from 'vuedraggable';
 
+const myApp = createApp(App);
+const emitter = mitt();
+myApp.config.globalProperties.emitter = emitter;
 myApp.use(VueAxios, axios);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
-
-// Criação da store VueX que irá albergar informação sobre o estado de autenticação e sobre o utilizador
-let store = createStore({
-    state: {
-        isLoggedIn: false,
-        user: {}
-    },
-    mutations: {
-        UPDATE_STATUS(state, payload) {
-            state.isLoggedIn = payload
-        },
-        SET_USER(state, payload) {
-            state.user = payload
-        }
-    },
-    actions: {
-        setState(context, payload) {
-            let isLoggedIn = context.state.isLoggedIn
-            isLoggedIn = payload
-            context.commit('UPDATE_STATUS', isLoggedIn)
-        },
-        setUser(context, payload) {
-            context.commit('SET_USER', payload)
-        }
-    },
-    getters: {
-        getState: function (state) {
-            return state.isLoggedIn
-        },
-        getUser: function (state) {
-            return state.user
-        }
-    }
-})
 
 myApp.use(store)
 
@@ -65,6 +34,55 @@ myApp.use(store)
    verificar se o utilizador de facto pode visitar a página,
    tendo em conta o seu estado de autenticação. */
 router.beforeEach(AuthService.authenticate);
+
+/**
+ * Decidir para que página de painel levar o utilizador consoante o seu tipo
+ */
+
+router.beforeResolve((to, from, next) => {
+    let user = store.getters.getUser
+
+
+    let validFrom = from.name == undefined
+
+    if (to.path == "/painel" && validFrom) {
+        
+        let routeMap = {
+            "CONSUMER":"profile",
+            "SUPPLIER":"fornecedor",
+            "TRANSPORTER":"transportador",
+            "ADMINISTRATOR":"administrador"
+        }
+    
+        let isCorrectRoute = to.name == routeMap[user.type]
+
+        if (!isCorrectRoute) {
+            next({name: routeMap[user.type]})
+        } else {
+            next()
+        }
+
+    } else if (to.path == "/painel/historico" && validFrom) {
+        
+        let routeMap = {
+            "CONSUMER":"profile",
+            "SUPPLIER":"fornecedor_historico",
+            "TRANSPORTER":"transportador_historico",
+            "ADMINISTRATOR":"administrador"
+        }
+    
+        let isCorrectRoute = to.name == routeMap[user.type]
+
+        if (!isCorrectRoute) {
+            next({name: routeMap[user.type]})
+        } else {
+            next()
+        }
+
+    } else {
+        next()
+    } 
+})
 
 myApp.use(router).mount('#app');
 
@@ -80,6 +98,7 @@ const gauthOption = {
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
 
+myApp.use(VueDraggable);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
 export {store, Toast}

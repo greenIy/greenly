@@ -41,7 +41,7 @@
                        <div class="mt-4 mx-auto" id="btnF">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".forn-modal-lg" @click="showModalF()" :modalF="false">Escolher outro Fornecedor</button>
                       </div>
-                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF" @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers" :idSupplier="idSupplier" />
+                      <FornecedorModal  v-if="modalF !=false" @sendModalF="getModalF"  @saveF="closeModalF" @sendSupplierSelected="getSupplierSelected" :suppliers="suppliers" :idSupplier="idSupplier" />
                         </div>
                       <div class="col-6 d-flex flex-column mx-4" v-if="fornecedor != false" id="transportador">
                         <div class="d-flex flex-column flex-grow-1">
@@ -89,14 +89,13 @@
                 </ul>
               </div>
               <div class="mx-3 mt-3 " id="detalhe" v-if="active_el==1" style="text-items:left" >
-                <h6 class="my-3">Caterísticas</h6>
+                <h6 class="my-3">Caraterísticas</h6>
                 <table class="table table-striped table-responsive">
                   <tbody>
                     <tr v-for="a in attributes" :key="a.id">
                       <th scope="col">{{a.title}}</th>
                       <td scope="row">{{a.content}}</td>
                     </tr>
-               
                   </tbody>
                 </table>
               </div>
@@ -129,7 +128,7 @@
                           <div class="col-md-5"></div>
                       </div>
                     </div>
-                    <div class="d-inline-block p-0 col-md-5" style="text-align:end;">
+                    <div class="d-inline-block p-0 col-md-4" style="text-align:end;">
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
                     <div class="d-inline-block text-end col-md-2">

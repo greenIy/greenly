@@ -57,7 +57,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
 /* GET /store/product/{productId} */
 
 router.get('/products/:productId', (req, res) => {
-    /* This function may seem rather confusing. It's purpose is to not 
+    /* This function may seem rather confusing. Its purpose is to not 
        not only provide a decent REST API structure, but to obfuscate database structure, as it shouldn't be mirrored by the API */
     
     try {
@@ -201,6 +201,19 @@ router.get('/suppliers', (req, res) => {
     })
 })
 
+/* Transporter information route */
+// Any  user can inquire about transporters registered to the platform
+router.get('/transporters', (req, res) => {
+    persistence.getAllTransporters().then((result) => {
+        if (result) {
+            return res.status(200).json(result)
+        }
+        else {
+            res.status(500).send(defaultErr())
+        }
+    })
+})
+
 /* Payment routes */
 
 router.get('/payments/config', authentication.check, (req, res) => {
@@ -252,8 +265,6 @@ router.post('/payments/webhook', async (req, res) => {
 })
 
 /* Order Routes */
-
-// TODO: Build validation and authorization rules for each route, add middleware to routes here
 
 router.get('/orders', authentication.check, async (req, res) => {
     persistence.getOrdersByUser(req.user).then((result) => {
