@@ -30,7 +30,7 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-       <CompareProduct v-if="this.compare.length" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
+       <CompareProduct v-if="this.$route.query.compare1 || this.$route.query.compare2" :productsToCompare="compare" :quantityP="quantityP" @updateQuantity="updateQuantity" @removeOneProduct="removeProductFromCompareList"/>
     </div>
     <TheFooter />
   </div>
@@ -157,10 +157,9 @@ export default {
     },
     async getProductToCompare() {
         let productID1 = this.$route.query.compare1;
-        //console.log("1:", productID1);
         let productID2 = this.$route.query.compare2;
-        //console.log("2:", productID2);
         let response;
+        
         if (productID1 && !this.compare.length && this.quantityP != 0) {
           response = await http.get(`store/products/${productID1}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
