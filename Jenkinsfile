@@ -1,10 +1,23 @@
 pipeline {
   agent none
   stages {
-    stage('Docker Build') {
+    stage('Client Build') {
       agent any
       steps {
-        sh 'docker build . -t greenly:latest'
+        dir(path: 'client') {
+          sh 'docker build . -t greenly:latest'
+        }
+
+      }
+    }
+
+    stage('Server Build') {
+      steps {
+        dir(path: '../server') {
+          sh '''docker build . -t greenly-api
+'''
+        }
+
       }
     }
 
