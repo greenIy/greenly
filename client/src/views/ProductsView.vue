@@ -161,12 +161,12 @@ export default {
         let productID2 = this.$route.query.compare2;
         let response;
 
-        if (productID1) {
+        if (productID1 && !this.compare.length && Object.keys(this.$route.query).length) {
           response = await http.get(`store/products/${productID1}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
 
-        if (productID2) {
+        if (productID2 && Object.keys(this.$route.query).length) {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
@@ -198,7 +198,7 @@ export default {
 
         delete query.compare1;
         delete query.compare2;
-
+        
         this.$router.replace({ query });
       }
     }
