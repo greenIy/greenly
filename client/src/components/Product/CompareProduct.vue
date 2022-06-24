@@ -205,27 +205,33 @@ export default {
  width:100%;
  height:14%;
 }
+
 .compare-modal{
  background-color: white;
  z-index: 3;
  width:100%;
  height:78%;
 }
+
 span:hover {
   color: #5e9f88;
 }
+
 .close{
     float: right;
-    margin-right:1em!important;
+    margin-right: 1em !important;
 }
+
 img{
     width:3em;
     height:auto;
 }
+
 .text{
     margin-top:0;
     position: relative
 }
+
 .vl {
   border-left: 1px solid #dbdad7;
 }
