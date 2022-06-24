@@ -47,7 +47,7 @@ export default {
   name: "ProductCard",
   props: {
     product: Object,
-    quantityP:Number,
+    productsToCompare: Array,
   },
   data() {
     return {
@@ -72,7 +72,10 @@ export default {
         if (!this.$route.query.compare1) {
           this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {
-          this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
+          // it's only possible to compare products of same category
+          if (this.product.category.id == this.productsToCompare[0].category.id) {
+            this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
+          }
         }
       }
       else{

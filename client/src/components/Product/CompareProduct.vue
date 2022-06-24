@@ -219,7 +219,7 @@ span:hover {
     margin-right:1em!important;
 }
 img{
-    width:2.7em;
+    width:3em;
     height:auto;
 }
 .text{
