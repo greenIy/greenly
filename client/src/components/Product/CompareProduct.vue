@@ -5,7 +5,7 @@
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
     </div>
     <div class="container w-100">
-        <div class="d-flex mt-3 comp-header">
+        <div class="d-flex mt-2 comp-header">
             <p class="text">COMPARAR PRODUTOS </p>
         </div>
         <div class="d-flex comp-content">
@@ -13,7 +13,7 @@
                 <div class="d-inline-block">
                     <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
                 </div>
-                <div class="d-inline-block p-3">
+                <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
                     <span><small>{{ productsToCompare[0].name }}</small>
                     <div @click="remove(0)"  class="bd-highlight">
                         <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
@@ -22,14 +22,14 @@
                 </div>
             </div>
             <div class="vl mb-4"></div>
-            <div class="bd-highlight mb-3 ms-5 text-muted p-3"  v-if="productsToCompare.length == 1">
+            <div class="bd-highlight ms-5 text-muted pt-2 pb-2 pe-3 ps-3"  v-if="productsToCompare.length == 1">
                 <p>Escolhe mais <b>1</b><br> para comparar </p>
             </div>
             <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
                 <div class="d-inline-block">
                     <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
                 </div>
-                <div class="d-inline-block p-3">
+                <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
                     <span><small>{{ productsToCompare[1].name }}</small>
                     <div @click="remove(1)"  class="bd-highlight">
                         <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
@@ -37,7 +37,7 @@
                     </span>
                 </div>
             </div>
-            <div class="p-3" id="compare-btn">
+            <div class="pt-2 pb-2 pe-3 ps-4" id="compare-btn">
                 <button  v-if="Object.keys(this.$route.query).length == 2" @click="openModal" type="button" class="btn" style="background-color: #5e9f88;color:white">Comparar</button>
                 <button  v-else @click="openModal" type="button" class="btn" style="background-color: #5e9f88;color:white" disabled>Comparar</button>
             </div>
@@ -203,7 +203,7 @@ export default {
  background-color: white;
  z-index: 3;
  width:100%;
- height:19%;
+ height:14%;
 }
 .compare-modal{
  background-color: white;

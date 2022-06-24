@@ -30,11 +30,11 @@
          
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
-      <div v-if="this.compare.length">
-        <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
-      </div>
     </div>
     <TheFooter />
+  </div>
+  <div v-if="this.compare.length">
+    <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
   </div>
 </body>
 </template>
