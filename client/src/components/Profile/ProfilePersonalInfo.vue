@@ -86,7 +86,9 @@ import AuthService from "../../router/auth"
 export default({
     name: 'ProfilePersonalInfo',
     mounted() {
-        this.getUserInfo();
+        if(this.$route.name != 'admin') {
+            this.getUserInfo();
+        }
     },
     data() {
         return {

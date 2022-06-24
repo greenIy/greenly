@@ -20,6 +20,13 @@ const routes = [
     },
   },
   {
+    path: '/administracao',
+    name: 'admin',
+    component() {
+      return import('../views/AdminView.vue');
+    },
+  },
+  {
     path: '/produtos',
     name: 'produtos',
     // route level code-splitting
