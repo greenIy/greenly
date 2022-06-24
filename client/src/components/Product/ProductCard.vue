@@ -68,18 +68,25 @@ export default {
       } 
     },
     compare(event){
-      if (Object.keys(this.$route.query).length < 2){
+      let query = Object.assign({}, this.$route.query);
+
+      if(this.$route.query.compare1 == this.product.id) {
+        document.getElementById("input_" + this.product.id).checked = false;
+        this.$emit('removeOneProduct', 0);
+      } else if (this.$route.query.compare2 == this.product.id) {
+        document.getElementById("input_" + this.product.id).checked = false;
+        this.$emit('removeOneProduct', 1);
+      } else if (Object.keys(this.$route.query).length < 2){
         if (!this.$route.query.compare1) {
           this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {
           // it's only possible to compare products of same category
           if (this.product.category.id == this.productsToCompare[0].category.id && this.product.id != this.productsToCompare[0].id) {
             this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
+          } else {
+            document.getElementById("input_" + this.product.id).checked = false;
           }
         }
-      }
-      else{
-        console.log("NAO POSSO ACRESCENTAR")
       }
     },
   }
