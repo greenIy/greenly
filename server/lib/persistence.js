@@ -225,7 +225,6 @@ async function createUser(params) {
             }
         })
 
-
         let newCredentials = params.password ? await prisma.credentials.create({
             data: {
                 id: newUser.id,
@@ -914,7 +913,7 @@ async function getAllProducts(limit = 50,
 
 async function getProductByID(id){
     try {
-        let result =  product = await prisma.product.findUnique({
+        let result = await prisma.product.findUnique({
             where: {
                 id: id
             },
@@ -992,7 +991,17 @@ async function getProductByID(id){
                 },
         })
 
-        if (result) {
+        if (result) { 
+
+            // Composing URLs out of stored image URIs
+
+            result.ProductImage = result.ProductImage.map((image) => {
+                return {
+                    id: image.id,
+                    url: composeURL(image.uri)
+                }
+            })
+
             for (let i = 0; i < result.Supply.length; i++) {
                 // Gathering further warehouse info
                 let warehouse = await prisma.warehouse.findUnique({
