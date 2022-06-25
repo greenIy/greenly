@@ -169,7 +169,6 @@ export default {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
-        console.log(this.compare)
     },
     removeProductFromCompareList(value) {
       this.compare = [];
