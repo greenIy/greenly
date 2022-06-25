@@ -68,6 +68,7 @@ export default {
       } 
     },
     compare(event){
+      
       if(this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
         this.$emit('removeOneProduct', 0);
@@ -87,6 +88,23 @@ export default {
             
           }
         }
+      }
+      let compareMoreThan2 = Object.keys(this.$route.query).length == 1;
+      console.log(Object.keys(this.$route.query).length)
+      if(compareMoreThan2 ){
+        document.getElementsByClassName('checkbox').forEach(e => { 
+        if(e.checked == false){
+           e.disabled = true;
+           document.getElementsByClassName('product').style.color= "#EBEBE4;"
+        }
+        });
+      }
+      else{
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          e.disabled = false;
+          document.getElementsByClassName('product').style.color= "black;"
+        });
+        
       }
     },
   }

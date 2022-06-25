@@ -39,7 +39,7 @@
             <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
-                      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria.
+                      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria. Tente novamente!
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
@@ -217,6 +217,23 @@ export default {
         
         this.$router.replace({ query });
       }
+      let compareMoreThan2 = Object.keys(query).length == 2;
+      console.log(Object.keys(query).length)
+      if(compareMoreThan2 ){
+          document.getElementsByClassName('checkbox').forEach(e => { 
+          if(e.checked == false){
+              e.disabled = true;
+              document.getElementsByClassName('product').style.color= "#EBEBE4;"
+          }
+      });
+      }
+      else{
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          e.disabled = false;
+          document.getElementsByClassName('product').style.color= "black;"
+        });
+        
+      }
     },
     categoriesDiff(value){
       var animation = {animation: true, delay: 5000};
@@ -253,6 +270,10 @@ export default {
 }
 
 #successToast {
-        background-color: #E71919 !important;
-    }
+        background-color: #E3C12B !important;
+}
+
+.toast-container{
+  z-index:4;
+}
 </style>
