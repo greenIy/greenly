@@ -68,8 +68,6 @@ export default {
       } 
     },
     compare(event){
-      let query = Object.assign({}, this.$route.query);
-
       if(this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
         this.$emit('removeOneProduct', 0);
