@@ -83,6 +83,8 @@ export default {
             this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
           } else {
             document.getElementById("input_" + this.product.id).checked = false;
+            this.$emit('categoriesDiff', true);
+            
           }
         }
       }

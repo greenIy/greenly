@@ -18,7 +18,7 @@
               <ProductCard
               v-for="p in products"
               :key="p.id"
-              :product="p" :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"
+              :product="p" :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList" @categoriesDiff="categoriesDiff"
               ></ProductCard>
             </div>
             <div v-else class="content d-flex w-100 ">
@@ -36,6 +36,14 @@
   <div v-if="this.compare.length">
     <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
   </div>
+  <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
 </body>
 </template>
 
@@ -48,6 +56,7 @@ import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
 import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 import CompareProduct from "@/components/Product/CompareProduct.vue";
+import { Toast } from './../main'
 
 import http from "../../http-common";
 
@@ -200,6 +209,12 @@ export default {
         
         this.$router.replace({ query });
       }
+    },
+    categoriesDiff(value){
+      var animation = {animation: true, delay: 5000};
+      var successToast = document.getElementById("successToast");
+      var successfulToast = new Toast(successToast, animation)
+      successfulToast.show();
     }
   },
   computed: {
