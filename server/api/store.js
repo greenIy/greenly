@@ -7,10 +7,14 @@ const router    = express.Router();
 const { 
     getProductsValidator,
     createCategoryValidator,              
-    updateCategoryValidator } = require('../lib/validation.js');
+    updateCategoryValidator,
+    getSingleOrderValidator,
+    updateOrderValidator } = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
+const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
 const authorization     = require("../lib/authorization");
+const handler           = require("../lib/handler")
 const defaultErr        = require("../lib/error").defaultErr;
 
 /* Product Routes */
@@ -53,7 +57,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
 /* GET /store/product/{productId} */
 
 router.get('/products/:productId', (req, res) => {
-    /* This function may seem rather confusing. It's purpose is to not 
+    /* This function may seem rather confusing. Its purpose is to not 
        not only provide a decent REST API structure, but to obfuscate database structure, as it shouldn't be mirrored by the API */
     
     try {
@@ -175,7 +179,7 @@ router.put('/categories/:categoryId', authentication.check, authorization.check,
 router.delete('/categories/:categoryId', authentication.check, authorization.check, (req, res) => {
     persistence.deleteCategory(Number(req.params.categoryId)).then((success) => {
         if (success == 409) {
-            return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories"})
+            return res.status(409).send({message: "Category can't be deleted, includes products or sub-categories."})
         } else if (success) {
             return res.status(202).send({message: "Category deleted successfully."})
         } else {
@@ -185,8 +189,8 @@ router.delete('/categories/:categoryId', authentication.check, authorization.che
 });
 
 /* Supplier information route */
-// Any authenticated user can inquire about suppliers registered to the platform
-router.get('/suppliers', authentication.check, (req, res) => {
+// Any  user can inquire about suppliers registered to the platform
+router.get('/suppliers', (req, res) => {
     persistence.getAllSuppliers().then((result) => {
         if (result) {
             return res.status(200).json(result)
@@ -197,6 +201,132 @@ router.get('/suppliers', authentication.check, (req, res) => {
     })
 })
 
+/* Transporter information route */
+// Any  user can inquire about transporters registered to the platform
+router.get('/transporters', (req, res) => {
+    persistence.getAllTransporters().then((result) => {
+        if (result) {
+            return res.status(200).json(result)
+        }
+        else {
+            res.status(500).send(defaultErr())
+        }
+    })
+})
 
+/* Payment routes */
+
+router.get('/payments/config', authentication.check, (req, res) => {
+    // Serving publishable key
+    return res.status(200).json({
+        publishable_key: process.env.STRIPE_PUBLISHABLE_KEY
+    })
+})
+
+router.get('/payments/intent/:orderId', authentication.check, (req, res) => {
+    
+    payment.createPaymentIntent(Number(req.params.orderId))
+    .then((result) => {
+        
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_ORDER":
+                return res.status(400).send({message: "The specified order is invalid."})
+            case "INVALID_STATUS":
+                return res.status(400).send({message: "The specified order is not available to receive payments."})
+            default:
+                return res.status(200).send({intent: result})
+        }
+    })
+})
+
+router.post('/payments/webhook', async (req, res) => {
+
+    let event = req.body
+
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+
+            let user = await persistence.getUserByID(
+                Number(paymentIntent.metadata.user_id))
+
+            console.log(`💸 Received payment for ${paymentIntent.amount/100}€ from ${user.first_name} ${user.last_name}! (Order ID: ${paymentIntent.metadata.order_id})`);
+
+            await handler.postPaymentHandler(
+                Number(paymentIntent.metadata.order_id));
+
+            break;
+    }
+
+    return res.status(200).json({received: true})
+    
+})
+
+/* Order Routes */
+
+router.get('/orders', authentication.check, async (req, res) => {
+    persistence.getOrdersByUser(req.user).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            default:
+                return res.status(200).json(result)
+        }
+    })
+})
+
+router.get('/orders/:orderId', authentication.check, getSingleOrderValidator(), authorization.check, async (req, res) => {
+
+    persistence.getFilteredOrderByID(req.user, req.params.orderId).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "NOT_FOUND":
+                return res.status(404).send({message: "The specified order identifier is invalid."})
+            default:
+                return res.status(200).json(result)
+        }
+    })
+
+})
+
+router.put('/orders/:orderId/:itemId', authentication.check, updateOrderValidator(), authorization.check,  async (req, res) => {
+    persistence.updateOrderItem(
+        req.user, 
+        req.params.orderId, 
+        req.params.itemId,
+        req.body.status).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+
+            case "ITEM_NOT_FOUND":
+                return res.status(404).send({
+                    message: "The specified item identifier is invalid for the specified order."})
+
+            case "AWAITING_PAYMENT":
+                return res.status(400).send({
+                    message: "You can't change this item's status since this item has not yet been paid for."})
+
+            case "INSUFFICIENT_PERMISSIONS":
+                return res.status(400).send({
+                    message: "You don't have permission to change the item's status from its current status to the specified status."})
+
+            case "ITEM_CANCELED":
+                return res.status(400).send({
+                    message: "The status of this order item cannot be changed since it has already been canceled."})
+
+            case "REGRESSIVE_STATUS":
+                return res.status(400).send({
+                    message: "The specified order item is already passed the specified status. Please specifiy a status ahead of the current status."})
+            default:
+                return res.status(200).send({
+                    message: "Item succesfully updated."
+                })
+        }
+    })
+})
 
 module.exports = router;

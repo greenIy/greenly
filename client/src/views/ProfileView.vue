@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="content-wrap">
-      <the-navbar />
+      <the-navbar ref="navbar"/>
       <profile />
     </div>
     <the-footer />
@@ -25,7 +25,8 @@ export default {
 
 </script>
 
-
 <style scoped>
-
+  .content-wrap {
+    background-color: #EDEDED;
+  }
 </style>

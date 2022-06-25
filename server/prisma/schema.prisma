@@ -8,6 +8,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Address {
+  id                                    Int                   @id @default(autoincrement()) @db.UnsignedInt
+  street                                String                @db.VarChar(255)
+  country                               String                @db.VarChar(50)
+  city                                  String                @db.VarChar(50)
+  latitude                              Decimal               @db.Decimal(8, 6)
+  longitude                             Decimal               @db.Decimal(9, 6)
+  postal_code                           String                @db.VarChar(10)
+  nif                                   Int                   @db.UnsignedInt
+  is_shipping                           Boolean               @default(false)
+  is_billing                            Boolean               @default(false)
+  user                                  Int                   @db.UnsignedInt
+  User                                  User                  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Address_ibfk_1")
+  Distribution_Center                   Distribution_Center[]
+  Order_AddressToOrder_billing_address  Order[]               @relation("AddressToOrder_billing_address")
+  Order_AddressToOrder_shipping_address Order[]               @relation("AddressToOrder_shipping_address")
+  Warehouse                             Warehouse[]
+
+  @@index([user], map: "user")
+}
+
+model Cart {
+  consumer                    Int    @db.UnsignedInt
+  product                     Int    @db.UnsignedInt
+  supplier                    Int    @db.UnsignedInt
+  warehouse                   Int    @db.UnsignedInt
+  transporter                 Int    @db.UnsignedInt
+  index                       Int    @db.UnsignedInt
+  quantity                    Int    @db.UnsignedInt
+  User_Cart_consumerToUser    User   @relation("Cart_consumerToUser", fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Cart_ibfk_1")
+  Supply                      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_2")
+  User_Cart_transporterToUser User   @relation("Cart_transporterToUser", fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_3")
+
+  @@id([consumer, product, supplier, warehouse, transporter])
+  @@index([product, supplier, warehouse], map: "product")
+  @@index([transporter], map: "transporter")
+}
+
 model Category {
   id              Int        @id @default(autoincrement()) @db.UnsignedInt
   name            String     @db.VarChar(50)
@@ -17,6 +55,80 @@ model Category {
   Product         Product[]
 
   @@index([parent_category], map: "parent_category")
+}
+
+model Company {
+  id    Int     @id @default(autoincrement()) @db.UnsignedInt
+  name  String  @db.VarChar(50)
+  email String  @db.VarChar(255)
+  bio   String? @db.VarChar(255)
+  User  User[]
+}
+
+model Credentials {
+  id       Int    @id @db.UnsignedInt
+  provider String @db.VarChar(8)
+  value    String @db.VarChar(60)
+  User     User   @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Credentials_ibfk_1")
+}
+
+model Distribution_Center {
+  id          Int       @default(autoincrement()) @db.UnsignedInt
+  address     Int       @db.UnsignedInt
+  capacity    Decimal   @db.Decimal(10, 2)
+  transporter Int       @db.UnsignedInt
+  Address     Address   @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Distribution_Center_ibfk_1")
+  User        User      @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Distribution_Center_ibfk_2")
+  Vehicle     Vehicle[]
+
+  @@id([id, transporter])
+  @@index([address], map: "address")
+  @@index([transporter], map: "transporter")
+}
+
+model Order {
+  id                                      Int          @id @default(autoincrement()) @db.UnsignedInt
+  consumer                                Int          @db.UnsignedInt
+  date                                    DateTime     @db.DateTime(0)
+  observations                            String?      @db.VarChar(255)
+  shipping_address                        Int          @db.UnsignedInt
+  billing_address                         Int          @db.UnsignedInt
+  Address_AddressToOrder_billing_address  Address      @relation("AddressToOrder_billing_address", fields: [billing_address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_3")
+  User                                    User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
+  Address_AddressToOrder_shipping_address Address      @relation("AddressToOrder_shipping_address", fields: [shipping_address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_2")
+  Order_Item                              Order_Item[]
+
+  @@index([billing_address], map: "billing_address")
+  @@index([consumer], map: "consumer")
+  @@index([shipping_address], map: "shipping_address")
+}
+
+model Order_Item {
+  id                           Int               @db.UnsignedInt
+  status                       Order_Item_status
+  order                        Int               @db.UnsignedInt
+  supply_price                 Decimal           @db.Decimal(10, 2)
+  transport_price              Decimal           @db.Decimal(10, 2)
+  quantity                     Int               @db.UnsignedInt
+  arrival_date                 DateTime?         @db.DateTime(0)
+  supplier_resource_usage      Decimal           @db.Decimal(10, 2)
+  supplier_renewable_resources Decimal           @db.Decimal(10, 2)
+  transporter_resource_usage   Decimal           @db.Decimal(10, 2)
+  transporter_emissions        Decimal           @db.Decimal(10, 2)
+  product                      Int               @db.UnsignedInt
+  supplier                     Int               @db.UnsignedInt
+  warehouse                    Int               @db.UnsignedInt
+  transporter                  Int               @db.UnsignedInt
+  vehicle                      Int               @db.UnsignedInt
+  Order                        Order             @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
+  Supply                       Supply            @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
+  Vehicle                      Vehicle           @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
+  Notification                 Notification[]
+
+  @@id([id, order])
+  @@index([order], map: "order")
+  @@index([product, supplier, warehouse], map: "product")
+  @@index([transporter, vehicle], map: "transporter")
 }
 
 model Product {
@@ -35,33 +147,6 @@ model Product {
   @@fulltext([name, description], map: "name")
 }
 
-model Address {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  street              String                @db.VarChar(255)
-  country             String                @db.VarChar(50)
-  city                String                @db.VarChar(50)
-  latitude            Decimal               @db.Decimal(8, 6)
-  longitude           Decimal               @db.Decimal(9, 6)
-  postal_code         String                @db.VarChar(10)
-  nif                 Int                   @db.UnsignedInt
-  is_shipping         Boolean               @default(false)
-  is_billing          Boolean               @default(false)
-  user                Int                   @db.UnsignedInt
-  User                User                  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Address_ibfk_1")
-  Distribution_Center Distribution_Center[]
-  Warehouse           Warehouse[]
-
-  @@index([user], map: "user")
-}
-
-model Company {
-  id    Int     @id @default(autoincrement()) @db.UnsignedInt
-  name  String  @db.VarChar(50)
-  email String  @db.VarChar(255)
-  bio   String? @db.VarChar(255)
-  User  User[]
-}
-
 model ProductAttribute {
   id      Int     @default(autoincrement()) @db.UnsignedInt
   product Int     @db.UnsignedInt
@@ -73,50 +158,6 @@ model ProductAttribute {
   @@index([product], map: "product")
 }
 
-model Distribution_Center {
-  id          Int       @default(autoincrement()) @db.UnsignedInt
-  address     Int       @db.UnsignedInt
-  capacity    Int       @db.UnsignedInt
-  transporter Int       @db.UnsignedInt
-  Address     Address   @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Distribution_Center_ibfk_1")
-  User        User      @relation(fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Distribution_Center_ibfk_2")
-  Vehicle     Vehicle[]
-
-  @@id([id, transporter])
-  @@index([address], map: "address")
-  @@index([transporter], map: "transporter")
-}
-
-model Order {
-  id         Int          @id @default(autoincrement()) @db.UnsignedInt
-  consumer   Int          @db.UnsignedInt
-  date       DateTime     @db.Date
-  User       User         @relation(fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_ibfk_1")
-  Order_Item Order_Item[]
-
-  @@index([consumer], map: "consumer")
-}
-
-model Order_Item {
-  id          Int               @default(autoincrement()) @db.UnsignedInt
-  quantity    Int               @db.UnsignedInt
-  status      Order_Item_status
-  order       Int               @db.UnsignedInt
-  product     Int               @db.UnsignedInt
-  supplier    Int               @db.UnsignedInt
-  warehouse   Int               @db.UnsignedInt
-  transporter Int               @db.UnsignedInt
-  vehicle     Int               @db.UnsignedInt
-  Order       Order             @relation(fields: [order], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_1")
-  Supply      Supply            @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_2")
-  Vehicle     Vehicle           @relation(fields: [transporter, vehicle], references: [transporter, id], onDelete: NoAction, onUpdate: NoAction, map: "Order_Item_ibfk_3")
-
-  @@id([id, order])
-  @@index([order], map: "order")
-  @@index([product, supplier, warehouse], map: "product")
-  @@index([transporter, vehicle], map: "transporter")
-}
-
 model Supply {
   product            Int                  @db.UnsignedInt
   supplier           Int                  @db.UnsignedInt
@@ -125,6 +166,7 @@ model Supply {
   price              Decimal              @db.Decimal(10, 2)
   production_date    DateTime             @db.Date
   expiration_date    DateTime             @db.Date
+  id                 Int                  @db.UnsignedInt
   Product            Product              @relation(fields: [product], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_1")
   User               User                 @relation(fields: [supplier], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Supply_ibfk_2")
   Warehouse          Warehouse            @relation(fields: [warehouse], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Supply_ibfk_3")
@@ -164,33 +206,37 @@ model Supply_Transporter {
 }
 
 model User {
-  id                  Int                   @id @default(autoincrement()) @db.UnsignedInt
-  first_name          String                @db.VarChar(255)
-  last_name           String                @db.VarChar(255)
-  email               String                @unique(map: "email") @db.VarChar(255)
-  phone               String?               @db.VarChar(20)
-  company             Int?                  @db.UnsignedInt
-  Credentials         Credentials?
-  type                User_type
-  Company             Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
-  Address             Address[]
-  Distribution_Center Distribution_Center[]
-  Order               Order[]
-  Supply              Supply[]
-  Supply_Transporter  Supply_Transporter[]
-  Vehicle             Vehicle[]
-  Warehouse           Warehouse[]
+  id                          Int                   @id @default(autoincrement()) @db.UnsignedInt
+  first_name                  String                @db.VarChar(255)
+  last_name                   String                @db.VarChar(255)
+  email                       String                @unique(map: "email") @db.VarChar(255)
+  phone                       String?               @db.VarChar(20)
+  company                     Int?                  @db.UnsignedInt
+  type                        User_type
+  Company                     Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
+  Address                     Address[]
+  Cart_Cart_consumerToUser    Cart[]                @relation("Cart_consumerToUser")
+  Cart_Cart_transporterToUser Cart[]                @relation("Cart_transporterToUser")
+  Credentials                 Credentials?
+  Distribution_Center         Distribution_Center[]
+  Notification                Notification[]
+  Order                       Order[]
+  Supply                      Supply[]
+  Supply_Transporter          Supply_Transporter[]
+  Vehicle                     Vehicle[]
+  Warehouse                   Warehouse[]
+  Wishlist                    Wishlist[]
 
   @@index([company], map: "company")
 }
 
 model Vehicle {
   id                  Int                 @default(autoincrement()) @db.UnsignedInt
-  resource_usage      Int                 @db.UnsignedInt
   license_plate       String              @db.VarChar(6)
-  average_emissions   Int                 @db.UnsignedInt
   fuel_type           Vehicle_fuel_type
-  payload_capacity    Int                 @db.UnsignedInt
+  resource_usage      Decimal             @db.Decimal(10, 2)
+  average_emissions   Decimal             @db.Decimal(10, 2)
+  payload_capacity    Decimal             @db.Decimal(10, 2)
   transporter         Int                 @db.UnsignedInt
   distribution_center Int                 @db.UnsignedInt
   Distribution_Center Distribution_Center @relation(fields: [distribution_center], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicle_ibfk_2")
@@ -205,8 +251,8 @@ model Vehicle {
 model Warehouse {
   id                  Int      @default(autoincrement()) @db.UnsignedInt
   address             Int      @db.UnsignedInt
-  capacity            Int      @db.UnsignedInt
-  resource_usage      Int      @db.UnsignedInt
+  capacity            Decimal  @db.Decimal(10, 2)
+  resource_usage      Decimal  @db.Decimal(10, 2)
   supplier            Int      @db.UnsignedInt
   renewable_resources Int      @db.UnsignedInt
   Address             Address  @relation(fields: [address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Warehouse_ibfk_1")
@@ -216,23 +262,6 @@ model Warehouse {
   @@id([id, supplier])
   @@index([address], map: "address")
   @@index([supplier], map: "supplier")
-}
-
-model Cart {
-  consumer                    Int    @db.UnsignedInt
-  product                     Int    @db.UnsignedInt
-  supplier                    Int    @db.UnsignedInt
-  warehouse                   Int    @db.UnsignedInt
-  transporter                 Int    @db.UnsignedInt
-  index                       Int    @db.UnsignedInt
-  quantity                    Int    @db.UnsignedInt
-  User_Cart_consumerToUser    User   @relation("Cart_consumerToUser", fields: [consumer], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Cart_ibfk_1")
-  Supply                      Supply @relation(fields: [product, supplier, warehouse], references: [product, supplier, warehouse], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_2")
-  User_Cart_transporterToUser User   @relation("Cart_transporterToUser", fields: [transporter], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cart_ibfk_3")
-
-  @@id([consumer, product, supplier, warehouse, transporter])
-  @@index([product, supplier, warehouse], map: "product")
-  @@index([transporter], map: "transporter")
 }
 
 model Wishlist {
@@ -245,13 +274,35 @@ model Wishlist {
   @@index([product], map: "product")
 }
 
-model Credentials {
-  id       Int    @id @db.UnsignedInt
-  provider String @db.VarChar(8)
-  value    String @db.VarChar(60)
-  User     User   @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Credentials_ibfk_1")
- }
- 
+model Notification {
+  id         Int                @db.UnsignedInt
+  user       Int                @db.UnsignedInt
+  order      Int?               @db.UnsignedInt
+  order_item Int?               @db.UnsignedInt
+  title      String             @db.VarChar(255)
+  content    String             @db.VarChar(255)
+  dismissed  Boolean            @default(false)
+  timestamp  DateTime           @db.DateTime(0)
+  scope      Notification_scope
+  Order_Item Order_Item?        @relation(fields: [order, order_item], references: [order, id], onDelete: NoAction, onUpdate: NoAction, map: "Notification_ibfk_2")
+  User       User               @relation(fields: [user], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Notification_ibfk_1")
+
+  @@id([user, id])
+  @@index([order, order_item], map: "order")
+}
+
+enum Order_Item_status {
+  AWAITING_PAYMENT
+  PROCESSING
+  AWAITING_TRANSPORT
+  TRANSPORT_IMMINENT
+  IN_TRANSIT
+  LAST_MILE
+  COMPLETE
+  FAILURE
+  CANCELED
+}
+
 enum User_type {
   ADMINISTRATOR
   CONSUMER
@@ -259,18 +310,20 @@ enum User_type {
   TRANSPORTER
 }
 
-enum Order_Item_status {
-  AWAITING_PAYMENT
-  PROCESSING
-  AWAITING_TRANSPORT
-  IN_TRANSIT
-  COMPLETE
-  FAILURE
-  CANCELED
-}
-
 enum Vehicle_fuel_type {
   ELECTRICITY
   DIESEL
   PETROL
+}
+
+enum Notification_scope {
+  AWAITING_PAYMENT
+  PROCESSING
+  AWAITING_TRANSPORT
+  TRANSPORT_IMMINENT
+  IN_TRANSIT
+  LAST_MILE
+  COMPLETE
+  FAILURE
+  CANCELED
 }

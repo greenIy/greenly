@@ -2,8 +2,9 @@
   <div class="d-flex justify-content-start my-3 mx-5">
     <div class="row g-0 overflow-horizontally">
     <div v-for="column in this.columns" :key="column.status" class="card d-inline-block col-lg-6 column-width me-4 rounded">
-      <div class="card-header">
-        <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
+      <div class="card-header position-relative">
+        <h6 class="my-auto title"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small>
+        <span class="badge rounded-pill bg-secondary itens">{{ column.orders.length }} <span class="visually-hidden">numero de itens</span></span></h6>
       </div>
         <div role="button" class="card-body draggable-host my-2">
           <Draggable
@@ -13,7 +14,7 @@
               itemKey="item_id"
               :move="checkMove">
               <template #item="{ element }">
-                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element"></order>
+                  <order class="d-inline-block col-lg-6 w-100 my-2 cursor-move"  :element="element" @updateStatus="updateStatus"></order>
               </template>
             </Draggable>
           </div>
@@ -169,6 +170,9 @@ export default {
         this.columns[i].orders = [];
       }
     },
+    updateStatus(value){
+      this.$emit('updateStatus', value);
+    },
   },
 };
 </script>
@@ -203,5 +207,12 @@ export default {
 
 .AWAITING_TRANSPORT, .PROCESSING, .TRANSPORT_IMMINENT, .IN_TRANSIT, .LAST_MILE, .COMPLETE {
   min-height: 45vh
+}
+
+.itens{
+  float:right!important;
+}
+.title{
+  font-size:14px;
 }
 </style>

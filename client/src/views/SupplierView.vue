@@ -30,7 +30,7 @@
                       </div>
                     </div>
 
-                    <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData"/></div>
+                    <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
                     <div v-if="active_el==2 && this.$route.name == 'fornecedor'">Inventários INFO ... Por FAZER</div>
                     <div v-if="active_el==3 && this.$route.name == 'fornecedor'">Armazéns INFO ... Por FAZER</div>
 
@@ -85,7 +85,7 @@ export default {
       this.receiveData = JSON.parse(JSON.stringify(response.data));
     },
     activate:function(el){
-      this.active_el=el;
+      this.active_el = el;
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'fornecedor') {
@@ -103,8 +103,11 @@ export default {
     },
     hideHistory(){
       this.$router.push({ name: 'fornecedor'});
-    }
     },
+    updateStatus(value){
+      this.getData();
+    },
+  },
 };
 </script>
 

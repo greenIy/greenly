@@ -1,18 +1,20 @@
 # This script can be used to populate the database with dummy data
 
 # Imports
-from calendar import monthcalendar
 import datetime
 import math
 import string
-from pick import pick
 import requests
 import time
-import sys
 import os
-from faker import Faker
+import heapq
 import faker_commerce
-from random import randint, choice, randrange, sample
+import sys
+import json
+from calendar import monthcalendar
+from pick import pick
+from faker import Faker
+from random import randint, choice, randrange, sample, random
 from queue import Queue
 from threading import Thread
 from rich.table import Table
@@ -27,6 +29,8 @@ API_BASE_URL = "http://api.greenly.pt"
 API_PORT = 80
 USER_CREATION_ENDPOINT = "/user"
 LOGIN_ENDPOINT = "/auth/login"
+VERIFY_SSL = False
+
 q = Queue()
 table = Table(title="Added Users", show_lines=True)
 
@@ -58,6 +62,12 @@ def genDaySequence(monthsBack):
     delta = today - startDate
 
     return [startDate + relativedelta(days=n) for n in range(delta.days + 1)]
+
+def genAddresses(fileName, sampleSize):
+    with open(fileName) as fin:
+        sample = heapq.nlargest(sampleSize, fin, key=lambda L: random())
+        return [json.loads(item) for item in sample]
+
 
 class User:
     def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
@@ -91,6 +101,12 @@ class User:
 
 def genUsers(amount):
     fake = Faker("pt_PT")
+    try:
+        addresses = genAddresses("random_addresses.geojson", amount)
+    except:
+        print("Missing geodata file.")
+        sys.exit(1)
+    
     users = [User(fake.first_name(),
                  fake.last_name(),
                  fake.password(length=9),
@@ -98,10 +114,10 @@ def genUsers(amount):
                  fake.free_email(),
                  fake.phone_number(),
                  choice(["SUPPLIER", "TRANSPORTER", "CONSUMER"]),
-                 fake.street_address(),
-                 fake.city(),
-                 fake.postcode(),
-                 fake.country(),
+                 f'{addresses[i]["s"]} {addresses[i]["n"]}',
+                 addresses[i]["c"],
+                 addresses[i]["p"],
+                 "Portugal",
                  fake.company(),
                  fake.free_email(),
                  fake.catch_phrase()) for i in range(amount)]
@@ -134,14 +150,14 @@ def sendUser(user):
 
     
     try:
-        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload)
+        userResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}", json=userDataPayload, verify=VERIFY_SSL)
 
-        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload)
+        authResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{LOGIN_ENDPOINT}", json=authPayload, verify=VERIFY_SSL)
 
         authenticatedHeaders = {'Authorization': f'Bearer {authResponse.json()["token"]}'}
 
         # Address creation requires authentication
-        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders)
+        addressResponse = requests.post(f"{API_BASE_URL}:{API_PORT}{USER_CREATION_ENDPOINT}/{userResponse.json()['id']}/addresses", json=addressDataPayload, headers=authenticatedHeaders, verify=VERIFY_SSL)
     except ConnectionError:
         os.system('clear')
         print(f"{API_BASE_URL}:{API_PORT} didn't respond.")
@@ -157,7 +173,7 @@ def genProductsSQL(amount, adminToken):
     # Obtaining updated user information
     authenticatedHeaders = {'Authorization': f'Bearer {adminToken}'}
 
-    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders)
+    response = requests.get(f"{API_BASE_URL}:{API_PORT}/user", headers=authenticatedHeaders, verify=VERIFY_SSL)
 
     if response.status_code == 403:
         print("Invalid administrator token. Operation canceled.")
@@ -241,8 +257,6 @@ def genProductsSQL(amount, adminToken):
     additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
-
-
             randomSupplier = choice(possibleSuppliers)
             randomWarehouse = randint(1,3)
             while (i, randomSupplier, randomWarehouse) in suppliesRegistered:
@@ -253,10 +267,12 @@ def genProductsSQL(amount, adminToken):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
-            randomPrice = randint(1, 3000)
+            supplyId = len([supply for supply in suppliesRegistered if supply[1] == randomSupplier])
+
+            randomPrice = randint(1, 3000) + choice([0.99, 0.59, 0.49, 0.29, 0.19])
             randomQuantity = randint(1, 300)
 
-            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")
+            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date, id) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}', {supplyId});")
 
             # Keep price and quantity data to use for historical data
             additionalSupplyData[(i, randomSupplier, randomWarehouse)] = (randomQuantity, randomPrice)

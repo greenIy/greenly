@@ -1,5 +1,5 @@
 <template>
-<div class="modal transp-modal.lg" role="dialog" id="transpModal" tabindex="-1" aria-hidden="true">
+<div class="modal" role="dialog" tabindex="-1" aria-hidden="true">
    <div class="modal-dialog modal-lg modal-dialog-centered w-100">
     <div class=" d-flex modal-content">
       <div class="modal-header">
@@ -12,13 +12,13 @@
         <div class="align-items-center">
           <div class="d-flex justify-content-between"> 
              <h6 class="card-title text-muted">ITEM #{{element.item.id}}</h6>
-              <select v-if="complete != false" class="dropDownS disable-classe sucessOrder" id="selectState"  disabled>
+              <select v-if="complete != false" class="dropDownS disable-classe sucessOrder" id="selectState" disabled>
                 <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
               </select>
-              <select v-if="canceled != false" class="dropDownS disable-classe cancelOrder" id="selectState"  disabled>
+              <select v-if="canceled != false" class="dropDownS disable-classe cancelOrder" id="selectState" disabled>
                 <option :value="getCurrentStatus()[0]"  selected="selected">{{ getCurrentStatus()[1] }}</option>
               </select>
-              <select v-if="nextOrder != false" class="disable-classe" id="selectState" style="background-color:#6c757d;padding: 0.375rem 0.75rem;font-size: 1rem;border-radius: 0.25rem;color:#ffffff; outline: none;" disabled>
+              <select v-if="nextOrder != false" class="disable-classe" id="selectState" style="background-color:#CBCBCB;padding: 0.375rem 0.75rem;font-size: 1rem;border-radius: 0.25rem;color:#ffffff; outline: none; border: 0px;" disabled>
                 <option :value="getCurrentStatus()[0]"  selected="selected" >  {{ getCurrentStatus()[1] }}</option>
               </select>
               <select v-if="complete != true && canceled != true && nextOrder != true" class="dropDownS" id="selectState" v-on:change="changeStatus($event.target.value)">
@@ -28,7 +28,7 @@
             </div>
           </div>
         <div>
-          <ul class="nav nav-tabs mt-3">
+          <ul class="nav nav-tabs mt-4">
             <li class="nav-item ">
               <a class="nav-link greenly-color" id="prod" @click="activate(1)" :class="{ active : active_el == 1 }" >Produto</a>
             </li>
@@ -42,7 +42,7 @@
               <a class="nav-link greenly-color" @click="activate(4)" :class="{ active : active_el == 4 }">Transportador</a>
             </li>
           </ul>
-          <div class="mt-3" v-if="active_el==1" >
+          <div class="mt-4" v-if="active_el==1" >
             <table class="table table-striped table-responsive">
               <tbody>
                 <tr>
@@ -145,31 +145,12 @@
 </div>
 </template>
 <script>
-
 import { library } from "@fortawesome/fontawesome-svg-core";
 import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
-, faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag, faSkullCrossbones} from "@fortawesome/free-solid-svg-icons";
+, faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCubes);
-library.add(faTruck);
-library.add(faXmark);
-library.add(faBox);
-library.add(faPlusMinus);
-library.add(faFilePen);
-library.add(faAt);
-library.add(faUser);
-library.add(faHouse);
-library.add(faIndustry);
-library.add(faCalendar);
-library.add(faMoneyBillWave);
-library.add(faWarehouse);
-library.add(faGasPump);
-library.add(faSun);
-library.add(faShoppingBag);
-library.add(faSkullCrossbones);
-
-
+library.add(faCubes, faTruck, faXmark, faBox, faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar, faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag);
 
 export default {
   name: "TransportadorModal",
@@ -289,7 +270,7 @@ export default {
       http.put(`/store/orders/${ this.element.id }/${ this.element.item.id }`, 
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
-            this.$router.push({ name: 'fornecedor' });
+            this.$emit('updateStatus', true);
           }
         );
     },
@@ -347,7 +328,8 @@ export default {
 }
 .dropDownS{
   background-color:#E3C12B;
-  padding: 0.375rem 0.75rem;
+  border: 0px;
+  padding: 0.475rem 0.75rem;
   font-size: 1rem;
   border-radius: 0.25rem;
   color:#ffffff; 

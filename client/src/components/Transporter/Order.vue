@@ -9,7 +9,7 @@
     </div>
   </div>
   <div v-if="modalP != false">
-    <ProductModal :element="element" @sendModalT="closeModalT" />
+    <ProductModal :element="element" @sendModalT="closeModalT" @updateStatus="updateStatus"/>
   </div>
 </div>
 </template>
@@ -49,6 +49,9 @@ export default {
       if(value == "fecha"){
         this.modalP=false;
       }
+    },
+    updateStatus(value){
+      this.$emit('updateStatus', value);
     },
   },
 };

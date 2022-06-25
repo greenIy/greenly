@@ -3,7 +3,8 @@
     <div class="row g-0 overflow-horizontally">
     <div v-for="column in this.columns" :key="column.status" class="card d-inline-block col-lg-6 column-width me-4 rounded">
       <div class="card-header">
-        <h6 class="my-auto"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small></h6>
+       <h6 class="my-auto title"><font-awesome-icon class="fs-6 fa-fw mx-2 icon" :icon="['fas', column.logo]" /><small>{{column.title}}</small>
+        <span class="badge rounded-pill bg-secondary itens">{{ column.orders.length }} <span class="visually-hidden">numero de itens</span></span></h6>
       </div>
         <div role="button" class="card-body draggable-host">
           <Draggable
@@ -163,6 +164,14 @@ export default {
   overflow-x:auto;
   flex-wrap:nowrap;
   width: 105%;
+}
+
+.itens{
+  float:right!important;
+}
+
+.title{
+  font-size:14px;
 }
 </style>
 

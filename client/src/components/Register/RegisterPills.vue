@@ -4,7 +4,7 @@
         <!-- Pills navs -->
         <ul class="nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
             <li class="nav-item" @click="activeTab = 'consumidor'">
-                <a class="nav-link" :class="(activeTab === 'consumidor') ? 'nav-link-active' : ''" id="pills-consumidor-tab"><font-awesome-icon :icon="['fa', 'user']" size="xl"/><br> Consumidor </a>
+                <a class="nav-link" :class="(activeTab === 'consumidor') ? 'nav-link-active' : ''" id="pills-consumidor-tab"><font-awesome-icon :icon="['fa', 'user-tag']" size="xl"/><br> Consumidor </a>
             </li>
             <li class="nav-item" @click="activeTab = 'fornecedor'">
                 <a class="nav-link" :class="(activeTab === 'fornecedor') ? 'nav-link-active' : ''" id="pills-fornecedor-tab"><font-awesome-icon :icon="['fa', 'box-open']" size="xl"/><br> Fornecedor </a>
@@ -39,8 +39,8 @@ import RegisterTransportador from '@/components/Register/RegisterTransportador.v
 import RegisterFornecedor from '@/components/Register/RegisterFornecedor.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faTruckFast, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
-library.add(faUser, faTruckFast, faBoxOpen);
+import { faUserTag, faTruckFast, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
+library.add(faUserTag, faTruckFast, faBoxOpen);
 
 export default {
     name: 'RegisterPills',

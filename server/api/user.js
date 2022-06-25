@@ -15,7 +15,8 @@ const {
     updateAddressValidator,
     addToCartValidator, 
     updateCartItemValidator,
-    addProductToWishlistValidator
+    addProductToWishlistValidator,
+    createOrderValidator
 } = require('../lib/validation.js');
 
 
@@ -169,7 +170,9 @@ router.put('/:userId/addresses/:addressId', authentication.check, authorization.
 
 router.delete('/:userId/addresses/:addressId', authentication.check, authorization.check, (req, res) => {
     try {
-        persistence.deleteAddress(Number(req.params.addressId)).then((success) => {
+        persistence.deleteAddress(
+            Number(req.params.addressId)
+            ).then((success) => {
             if (success) {
                 res.status(202).send({message: "Address deleted successfully."})
             } else {
@@ -203,7 +206,7 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
         req.body.supplier, 
         req.body.warehouse, 
         req.body.transporter, 
-        req.body.quantity,
+        Number(req.body.quantity),
     ).then((result) => {        
         switch (result) {
             case null:
@@ -211,11 +214,10 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
             case "NO_STOCK":
                 return res.status(400).send({message: "Requested quantity is higher than available stock."})
             case "INVALID_COMBINATION":
-                return res.status(400).send({message: "Invalid combination of product, supplier and transport."})
-            case "ALREADY_PRESENT":
-                return res.status(409).send({message: "Specified item is already in cart."})
+                return res.status(400).send({message: "Invalid combination of product, supplier and transporter."})
             default:
-                return res.status(200).send({message: "Item successfully added to cart."})
+                return res.status(200).send({message: "Item successfully added to cart."
+            })
         }
     })
 
@@ -320,6 +322,108 @@ router.delete('/:userId/wishlist/:productId', authentication.check, authorizatio
                 return res.status(200).send({message: "Product successfully removed from wishlist."})
         }
     })
+})
+
+/* Order functions */
+router.post('/:userId/orders', authentication.check, authorization.check, createOrderValidator(), (req, res) => {
+    persistence.createOrder(
+        Number(req.params.userId),
+        Number(req.body.shipping_address),
+        Number(req.body.billing_address),
+        req.body.observations
+    )
+    .then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "EMPTY_CART":
+                return res.status(400).send({
+                    message: "Your cart is empty. You can add items to it by using the cart manipulation endpoints."
+                })
+            case "INVALID_SHIPPING_ADDRESS":
+                return res.status(400).send({
+                    message: "Invalid shipping destination. Make sure to use an address registered to your account."
+                })
+            case "INVALID_BILLING_ADDRESS":
+                return res.status(400).send({
+                    message: "Invalid billing address. Make sure to use an address registered to your account."
+                })
+            case "NO_STOCK":
+                return res.status(400).send({
+                    message: "Some items included in your cart are no longer available in the quantities you requested. Please double-check your cart."
+                })
+            default:
+                return res.status(200).send({message: "Order successfully created.", id: result})
+        }
+
+    })
+})
+
+router.get('/:userId/orders', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.getOrdersByUser(
+            req.user
+        ).then((result) => {
+            if (result == null) {
+                return res.status(500).send(defaultErr())
+            }
+
+            return res.status(200).json(result)
+        })   
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+/* Notification routes */
+router.get('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.getNotificationsByUser(
+            Number(req.params.userId)).then((result) => {
+            if (result == null) {
+                return res.status(500).send(defaultErr())
+            }
+
+            return res.status(200).json(result)
+        })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissAllNotifications(
+            Number(req.params.userId)).then((result) => {
+                if (result == null) {
+                    return res.status(500).send(defaultErr())
+                }
+                
+                return res.status(200).send({message: "Notifications successfully dismissed."})
+            })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
+})
+
+router.put('/:userId/notifications/:notificationId', authentication.check, authorization.check, (req, res) => {
+    try {
+        persistence.dismissNotification(
+            Number(req.params.userId),
+            Number(req.params.notificationId)).then((result) => {
+                switch (result) {
+                    case null:
+                        return res.status(500).send(defaultErr())
+                    case "NOT_FOUND":
+                        return res.status(404).send({message: "The notification identifier is invalid."})
+                    default:
+                        return res.status(200).send({message: "Notification successfully dismissed."})
+                }
+
+            })
+    } catch (e) {
+        return res.status(500).send(defaultErr())
+    }
 })
 
 module.exports = router;
