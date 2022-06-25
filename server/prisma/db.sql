@@ -30,7 +30,7 @@ CREATE TABLE Product (
     # instead of necessarily linking to an existing product (e.g. what if
     # required product is deleted?)
     complement_name     VARCHAR(50),
-    complement_amount   NUMERIC(2),
+    complement_quantity   NUMERIC(2),
 
     FOREIGN KEY (category)
          REFERENCES Category(id),
@@ -45,7 +45,20 @@ CREATE TABLE ProductAttribute (
     content         VARCHAR(500) NOT NULL,
 
     FOREIGN KEY (product)
-        REFERENCES Product(id),
+        REFERENCES Product(id)
+        ON DELETE CASCADE,
+
+    PRIMARY KEY (id, product)
+);
+
+CREATE TABLE ProductImage (
+    id              INT UNSIGNED NOT NULL,
+    product         INT UNSIGNED NOT NULL,
+    uri             VARCHAR (1000) NOT NULL,
+
+    FOREIGN KEY (product)
+        REFERENCES Product(id)
+        ON DELETE CASCADE,
 
     PRIMARY KEY (id, product)
 );

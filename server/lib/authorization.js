@@ -22,10 +22,18 @@ async function check(req, res, next) {
         "/user/:userId/wishlist/:productId":            "SINGLE_WISHLIST_ITEM",
 
         /* Store Routes */
-        "/store/products/:productId":                   "SINGLE_PRODUCT",
+        "/store/products":                                      "ALL_PRODUCTS",
+        "/store/products/:productId":                           "SINGLE_PRODUCT",
+        "/store/products/:productId/attributes":                "ALL_ATTRIBUTES",
+        "/store/products/:productId/attributes/:attributeId":   "SINGLE_ATTRIBUTE",
+        "/store/products/:productId/images":                    "ALL_IMAGES",
+        "/store/products/:productId/images/:imageId":           "SINGLE_IMAGE",
+
+
         "/store/orders":                                "ALL_ORDERS",
         "/store/orders/:orderId":                       "SINGLE_ORDER",
         "/store/orders/:orderId/:itemId":               "SINGLE_ORDER_ITEM",
+
         "/store/categories":                            "ALL_CATEGORIES",
         "/store/categories/:categoryId":                "SINGLE_CATEGORY",
 
@@ -199,7 +207,7 @@ async function check(req, res, next) {
 
                 let isRelated = await persistence.checkUserOrderRelationship(req.user, req.params.orderId)
 
-                if (isRelated) {
+                if (isRelated || isAdministrator(req.user)) {
                     return next()
                 }
             }
@@ -291,6 +299,79 @@ async function check(req, res, next) {
 
             break;
 
+        case "ALL_PRODUCTS":
+            // This is valid for: POST
+            // Only administrators can create new products
+
+            if (intent == "POST") {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+        
+        case "SINGLE_PRODUCT":
+            // This is valid for: PUT, DELETE
+            // Only administrators can update or delete products
+
+            if (["PUT", "DELETE"].includes(intent)) {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+        case "ALL_ATTRIBUTES":
+            // This is valid for: POST
+            // Only administrators can create new product attributes
+
+            if (intent == "POST") {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+
+        case "SINGLE_ATTRIBUTE":
+            // This is valid for: DELETE
+            // Only administrators can update or delete product attributes
+
+            if (["DELETE"].includes(intent)) {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+        case "ALL_IMAGES":
+            // This is valid for: POST
+            // Only administrators can create new product images
+
+            if (intent == "POST") {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+
+        case "SINGLE_IMAGE":
+            // This is valid for: PUT, DELETE
+            // Only administrators can update or delete product images
+
+            if (["PUT", "DELETE"].includes(intent)) {
+                if ((isAdministrator(req.user))) {
+                    return next();
+                }
+            }
+
+            break;
+        
         case "ALL_WAREHOUSES":
             // This is valid for: GET
             // Only the supplier and administrators can check all user warehouses

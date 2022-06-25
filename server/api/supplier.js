@@ -177,7 +177,7 @@ router.post('/:userId/inventory', authentication.check, authorization.check, cre
                 return res.status(500).send(defaultErr())
             case "INVALID_PRODUCT":
                 return res.status(404).send({
-                    message: "Invalid product. Make sure to specify a product registed on the website."
+                    message: "Invalid product. Make sure to specify a product registered on the website."
                 })
             case "INVALID_WAREHOUSE":
                 return res.status(404).send({
@@ -207,7 +207,7 @@ router.put('/:userId/inventory/:supplyId', authentication.check, authorization.c
             case "INVALID_SUPPLY":
                 return res.status(404).send({message: "Supply not found. Make sure to specify an item currently registered to your account."})
             default:
-                return res.status(201).json({message: "Successfully updated supply details."})
+                return res.status(200).json({message: "Successfully updated supply details."})
         }
     })
 

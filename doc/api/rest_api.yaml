@@ -1,19 +1,17 @@
 openapi: 3.0.1
 info:
   title: Greenly
-  description: "Versão preliminar do API REST Greenly. \n Saiba mais sobre o nosso\
-    \ serviço em https://greenly.pt\nVeja esta documentação de forma mais cómoda em\
-    \ https://bump.sh/doc/greenly"
+  description: "Versão preliminar do API REST Greenly. Saiba mais sobre o nosso serviço em https://greenly.pt. Veja esta documentação de forma mais cómoda em https://bump.sh/doc/greenly"
   termsOfService: http://greenly.pt/terms/
   contact:
     email: support@greenly.pt
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.5
+  version: 1.3.2
 servers:
-- url: https://greenly.pt/api
-- url: http://greenly.pt/api
+- url: https://api.greenly.pt
+- url: http://api.greenly.pt
 tags:
 - name: auth
   description: Operações de autenticação
@@ -1141,11 +1139,10 @@ paths:
       tags:
       - store
       summary: Criar produto
-      description: "Criar um novo produto, disponibilizando a sua comercialização\
-        \ por parte de fornecedores \nOperação limitada a administradores"
+      description: "Criar um novo produto, disponibilizando a sua comercialização a fornecedores. Operação limitada a administradores"
       operationId: createProduct
       requestBody:
-        description: Cria um objeto Product
+        description: Informação sobre o novo produto a criar
         content:
           application/json:
             schema:
@@ -1154,14 +1151,38 @@ paths:
       responses:
         201:
           description: Operação efetuada com sucesso
-          content: {}
-        400:
-          description: Dados inválidos
-          content: {}
-        409:
-          description: O produto já existe
-          content: {}
-      x-codegen-request-body-name: body
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo produto"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Categoria inválida
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Invalid category. Make sure to specify a category registered on the website."
+      security:
+        - bearerAuth: []
+
   /store/products/{productId}:
     get:
       tags:
@@ -1193,7 +1214,7 @@ paths:
       tags:
       - store
       summary: Atualizar produto
-      description: "Altera os detalhes de um produto \nOperação limitada a administradores"
+      description: "Altera os detalhes de um produto. Operação limitada a administradores"
       operationId: updateProduct
       parameters:
       - name: productId
@@ -1203,31 +1224,53 @@ paths:
         schema:
           type: integer
       requestBody:
-        description: Atualiza o objeto Product
+        description: Atualiza a informação do produto. Deverão apenas ser incluidos os atributos que se deseja alterar.
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/SentProduct'
+              $ref: '#/components/schemas/SentUpdatedProduct'
         required: true
       responses:
-        204:
-          description: Produto atualizado com sucesso
-          content: {}
-        400:
-          description: productId inválido
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully updated product details."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
-          description: Produto não encontrado
-          content: {}
-      x-codegen-request-body-name: body
+          description: Produto não encontrado ou categoria inválida
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+                    - Invalid category. Make sure to specify a category registered on the website.
+      security:
+        - bearerAuth: []
     delete:
       tags:
       - store
       summary: Apagar produto
-      description: "Remove um produto da loja \nOperação limitada a administradores"
+      description: "Remove um produto da loja. Operação limitada a administradores"
       operationId: deleteProduct
       parameters:
       - name: productId
@@ -1237,18 +1280,326 @@ paths:
         schema:
           type: integer
       responses:
-        204:
-          description: Produto removido com sucesso
-          content: {}
-        400:
-          description: productId inválido
-          content: {}
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully deleted product, along with all corresponding images, supplies and transportation rules."
         401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
           description: Utilizador não autorizado
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
         404:
           description: Produto não encontrado
-          content: {}
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+      security:
+        - bearerAuth: []
+  ## Attribute Routes
+  /store/products/{productId}/attributes:
+    post:
+      tags:
+      - store
+      summary: Adicionar um atributo a um produto
+      description: "Permite que o administrador adicione atributos a um produto. Apenas pode ser feito por administradores"
+      operationId: createProductAttribute
+      parameters:
+      - name: productId
+        in: path
+        description: productId do produto ao qual se deseja adicionar um atributo
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Informação a incluir no novo atributo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SentAttribute'
+        required: true
+      responses:
+        201:
+          description: Operação efetuada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo atributo (indexado por produto)"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Produto não encontrado
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+      security:
+        - bearerAuth: []
+
+  /store/products/{productId}/attributes/{attributeId}:
+    delete:
+      tags:
+      - store
+      summary: Remover um atributo de um produto
+      description: "Permite remover um atributo específico de um produto. Apenas pode ser feito por administradores."
+      operationId: deleteProductAttribute
+      parameters:
+      - name: productId
+        in: path
+        description: Identificador do produto ao qual se deseja remover um atributo
+        required: true
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        description: "Identificador do atributo que se deseja remover (conforme indexação por produto)"
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Atributo removido com sucesso
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Produto não encontrado ou atributo inválido
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - Product not found. Make sure to specify a product currently registered on the website.
+                    - Attribute not found. Make sure to specify an attribute related to the specified product.
+      security:
+        - bearerAuth: []
+  
+  ## Image Routes
+  /store/products/{productId}/images:
+    post:
+      tags:
+      - store
+      summary: Adicionar uma imagem a um produto
+      description: "Permite adicionar imagens a um produto. Apenas pode ser feito por administradores"
+      operationId: createProductImage
+      parameters:
+      - name: productId
+        in: path
+        description: productId do produto ao qual se deseja adicionar uma imagem
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Formato de envio Apenas são suportadas imagens nos formatos JPG, JPEG e PNG. Apenas são aceites imagens até 5MB.
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SentImage'
+        required: true
+      responses:
+        201:
+          description: Operação efetuada com sucesso
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  id:
+                    type: integer
+                    description: "Código identificador do novo atributo (indexado por produto)"
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        400:
+          description: Ficheiro inválido ou ausência de ficheiro
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Specified file is invalid. Make sure to provide a file under 5MB (supported filetypes: PNG, JPG and JPEG)."
+                    - No file has been uploaded. Make sure to upload a valid file.
+        404:
+          description: Produto não encontrado
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+      security:
+        - bearerAuth: []
+
+  /store/products/{productId}/images/{imageId}:
+    put:
+      tags:
+      - store
+      summary: Atualizar posição de uma imagem
+      description: "Altera a posição de uma imagem de um produto. Operação limitada a administradores"
+      operationId: updateProductImagePosition
+      parameters:
+      - name: productId
+        in: path
+        description: productId do produto cuja imagem se deseja atualizar
+        required: true
+        schema:
+          type: integer
+      - name: imageId
+        in: path
+        description: Identificador da imagem cuja posição se deseja alterar
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Atualiza a posição da imagem.
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SentImageUpdate'
+        required: true
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Successfully altered product image position."
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Produto ou imagem não encontrados
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+                    - Image not found. Make sure to specify an image related to the specified product.
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+      - store
+      summary: Remover uma imagem de um produto
+      description: "Permite remover uma imagem específica de um produto. Apenas pode ser feito por administradores."
+      operationId: deleteProductImage
+      parameters:
+      - name: productId
+        in: path
+        description: Identificador do produto ao qual se deseja remover uma imagem
+        required: true
+        schema:
+          type: integer
+      - name: imageId
+        in: path
+        description: Identificador da imagem que se deseja remover
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Imagem removida com sucesso (implica remoção da rede de distribução de conteúdo estático)
+        401:
+          description: "_Token_ inválido. Utilizador não autenticado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessError'
+        403:
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientPermissionsError'
+        404:
+          description: Produto ou imagem não encontrados
+          content: 
+            application/json:
+              schema: 
+                properties:
+                  message:
+                    type: string
+                    enum:
+                    - "Product not found. Make sure to specify a product currently registered on the website."
+                    - Image not found. Make sure to specify an image related to the specified product.
+      security:
+        - bearerAuth: []
+
+
   ## Category Routes
   /store/categories:
     get:
@@ -2278,7 +2629,7 @@ paths:
                     type: string
                     enum:
                     - "Invalid warehouse. Make sure to use a warehouse registered to your account."
-                    - "Invalid product. Make sure to specify a product registed on the website."
+                    - "Invalid product. Make sure to specify a product registered on the website."
         409:
           description: Produto já presente no armazém especificado
           content: 
@@ -3321,6 +3672,9 @@ components:
                   name:
                     type: string
                     description: Nome do produto em questão
+                  thumbnail:
+                    type: string
+                    description: URL de acesso à imagem principal do produto
               supplier:
                 type: object
                 description: Representa o fornecedor
@@ -3447,23 +3801,54 @@ components:
     SentProduct:
       type: object
       properties:
-        productId:
-          type: string
-          description: Código identificador do produto
         name:
           type: string
           description: Nome do produto
+        description:
+          type: string
+          description: Descrição do produto em questão
         category:
           type: integer
           description: A categoria em que o produto se insere
-
-        complement:
+        complement_name:
           type: string
-          description: productId do produto que serve de complemento a este
-
+          description: Nome do produto necessário para a utilização do produto em questão
+        complement_quantity:
+          type: integer
+          description: Quantidado do produto complementar necessária
+        attributes:
+          type: array
+          description: Atributos do produto em questão (poderão ser incluidos quantos atributos quanto necessário)
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                description: O título do atributo em questão
+              content:
+                type: string
+                description: O conteudo do atributo em questão
       description: Objeto utilizado para enviar informação de criação de um novo produto
-      xml:
-        name: Product
+
+    SentUpdatedProduct:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome do produto
+        description:
+          type: string
+          description: Descrição do produto em questão
+        category:
+          type: integer
+          description: A categoria em que o produto se insere
+        complement_name:
+          type: string
+          description: Nome do produto necessário para a utilização do produto em questão
+        complement_quantity:
+          type: integer
+          description: Quantidado do produto complementar necessária
+
     SingleProduct:
       type: object
       properties:
@@ -3480,7 +3865,7 @@ components:
           type: string
           description: O nome de um produto adicional que seja necessário para o uso
             deste produto (e.g. pilhas)
-        complement_amount:
+        complement_quantity:
           type: integer
           description: A quantidade do produto adicional requerido
         category:
@@ -3507,6 +3892,18 @@ components:
               content:
                 type: string
                 description: Conteúdo do atributo do produto
+        images:
+          type: array
+          description: Lista de imagens relativas ao produto
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Identificador da imagem
+              url:
+                type: string
+                description: URL de acesso à imagem em questão
         supplies:
           type: array
           description: Informação detalhada sobre o fornecimento de cada fornecedor
@@ -3610,7 +4007,7 @@ components:
                 type: string
                 description: O nome de um produto adicional que seja necessário para o
                   uso deste produto (e.g. pilhas)
-              complement_amount:
+              complement_quantity:
                 type: integer
                 description: A quantidade do produto adicional requerido
               category:
@@ -3629,8 +4026,10 @@ components:
                   os seus fornecedores
               highest_price:
                 type: integer
-                description: O preço mais alto a que o produto é vendido, de entre todos
-                  os seus fornecedores
+                description: O preço mais alto a que o produto é vendido, de entre todos os seus fornecedores
+              thumbnail:
+                type: string
+                description: URL de acesso à imagem principal do produto
     ReceivedWishlist:
       type: array
       items:
@@ -3645,6 +4044,9 @@ components:
           description:
             type: string
             description: Descrição do produto em questão
+          thumbnail:
+            type: string
+            description: URL de acesso à imagem principal do produto
           category:
             type: object
             description: A categoria do produto
@@ -3660,6 +4062,37 @@ components:
             format: float
             description: O preço mais baixo a que o produto é vendido
       description: Objeto utilizado para devolver informação sobre produtos na wishlist do utilizador
+
+    ## Attribute Definitions
+
+    SentAttribute:
+      type: object
+      properties:
+        title:
+          type: string
+          description: O título do novo atributo
+        content:
+          type: string
+          description: O conteúdo do novo atributo 
+
+    ## Image Definitions
+
+    SentImage:
+      type: object
+      properties:
+        upload:
+          type: string
+          format: binary
+          description: O campo onde incluir a imagem. Deverá utilizar estritamente o nome "upload".
+
+    SentImageUpdate:
+      type: object
+      properties:
+        new_position:
+          type: integer
+          description: A nova posição da imagem. Deverá ser um índice representativo da posição, começando em 1. Por exemplo, num cojunto de imagens entre 1 e 10, o pedido de nova posição 5 para a imagem 3 irá causar uma decrementação em todas as imagens entre ambas as posições.
+    
+
 
     ## CATEGORY DEFINITIONS
     SentCategory:
@@ -3686,6 +4119,9 @@ components:
         parent_category:
           type: integer
           description: A categoria-mãe da categoria em questão 
+        total_products:
+          type: integer
+          description: O número de produtos presentes na categoria em questão (incluindo produtos das sub-categorias)
 
     ## Supply Definitions
 
@@ -3919,6 +4355,9 @@ components:
                   name:
                     type: string
                     description: O nome do produto
+                  thumbnail:
+                    type: string
+                    description: URL de acesso à imagem principal do produto
               supplier:
                 type: object
                 description: Informação sobre o fornecedor
