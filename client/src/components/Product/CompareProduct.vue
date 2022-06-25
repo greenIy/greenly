@@ -203,7 +203,7 @@ export default {
  background-color: white;
  z-index: 3;
  width:100%;
- height:14%;
+ height:17%;
 }
 
 .compare-modal{
