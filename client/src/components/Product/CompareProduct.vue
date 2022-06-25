@@ -1,11 +1,11 @@
 <template>
 <div>
 <div class="compare-div position-fixed bottom-0 start-0 shadow">
-    <div @click="close" class="me-3 close mt-2">
+    <div @click="close" class="me-3 close">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
     </div>
     <div class="container w-100">
-        <div class="d-flex mt-2 comp-header">
+        <div class="d-flex comp-header">
             <p class="text">COMPARAR PRODUTOS </p>
         </div>
         <div class="d-flex comp-content">
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="vl mb-4"></div>
-            <div class="bd-highlight ms-5 text-muted pt-2 pb-2 pe-2 ps-3"  v-if="productsToCompare.length == 1">
+            <div class="bd-highlight ms-5 text-muted pt-2 pb-2 pe-2 ps-3" id="compare-modal" v-if="productsToCompare.length == 1">
                 <p>Escolhe mais <b>1</b><br> para comparar </p>
             </div>
             <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
@@ -51,6 +51,9 @@
 <div v-if="compareModal != false" class="compare-modal position-fixed bottom-0 start-0 shadow">
     <div @click="close" class="me-3 close">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
+    </div>
+     <div @click="back" class="ms-3 open">
+        <font-awesome-icon class="fa-cog" :icon="['fa', 'arrow-left']" />
     </div>
     <div class="row mt-3">
         <div class="col-2">
@@ -172,9 +175,9 @@
 <script>
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTrash, faClose, faSun, faIndustry, faMoneyBillWave, faSkullCrossbones, faGasPump } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faClose, faSun, faIndustry, faMoneyBillWave, faSkullCrossbones, faGasPump, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faTrash, faClose, faSun, faIndustry, faMoneyBillWave, faSkullCrossbones, faGasPump);
+library.add(faTrash, faClose, faSun, faIndustry, faMoneyBillWave, faSkullCrossbones, faGasPump, faArrowLeft );
 
 export default {
   name: "CompareProduct",
@@ -197,7 +200,11 @@ export default {
     },
     openModal() {
         this.compareModal = true;
-    }
+        document.getElementsByClassName("compare-modal")[0].style.display  = 'block';
+    },
+    back() {
+      document.getElementsByClassName("compare-modal")[0].style.display  = 'none';
+    },
   }
 };
 </script>
@@ -207,14 +214,14 @@ export default {
  background-color: white;
  z-index: 3;
  width:100%;
- height:17%;
+ height:18%;
 }
 
 .compare-modal{
  background-color: white;
  z-index: 3;
  width:100%;
- height:78%;
+ height:82%;
 }
 .prod-name {
     text-decoration: none;

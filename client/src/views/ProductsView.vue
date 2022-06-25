@@ -186,6 +186,7 @@ export default {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
+        mo
     },
     removeProductFromCompareList(value) {
       this.compare = [];
@@ -223,14 +224,12 @@ export default {
           document.getElementsByClassName('checkbox').forEach(e => { 
           if(e.checked == false){
               e.disabled = true;
-              document.getElementsByClassName('product').style.color= "#EBEBE4;"
           }
       });
       }
       else{
         document.getElementsByClassName('checkbox').forEach(e => { 
           e.disabled = false;
-          document.getElementsByClassName('product').style.color= "black;"
         });
         
       }
@@ -255,6 +254,7 @@ export default {
 .content {
   flex-wrap: wrap
 }
+
 .filtros{
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
