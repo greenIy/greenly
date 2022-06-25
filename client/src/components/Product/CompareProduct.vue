@@ -14,9 +14,11 @@
                     <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-2">
-                    <span><small>{{ productsToCompare[0].name }}</small>
+                    <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[0].id}`}">{{ productsToCompare[0].name }}</router-link></small>
                     <div @click="remove(0)"  class="bd-highlight">
-                        <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
+                        <button type="button" class="remove-btn">
+                            <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
+                        </button>
                     </div>
                     </span>
                 </div>
@@ -30,9 +32,11 @@
                     <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
-                    <span><small>{{ productsToCompare[1].name }}</small>
+                    <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[1].id}`}">{{ productsToCompare[1].name }}</router-link></small>
                     <div @click="remove(1)"  class="bd-highlight">
+                        <button type="button" class="remove-btn">
                         <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
+                        </button>
                     </div>
                     </span>
                 </div>
@@ -212,8 +216,12 @@ export default {
  width:100%;
  height:78%;
 }
+.prod-name {
+    text-decoration: none;
+    color: black;
+}
 
-span:hover {
+.prod-name:hover {
   color: #5e9f88;
 }
 
@@ -254,5 +262,14 @@ img{
 
 #compare-btn {
     margin-left: 30%;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+}
+
+.remove-btn:hover {
+    color:#4d4d4d;
 }
 </style>
