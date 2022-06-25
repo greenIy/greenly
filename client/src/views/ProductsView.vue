@@ -240,8 +240,6 @@ export default {
       var successToast = document.getElementById("successToast");
       var successfulToast = new Toast(successToast, animation)
       successfulToast.show();
-      console.log(successfulToast)
-
     }
   },
   computed: {
