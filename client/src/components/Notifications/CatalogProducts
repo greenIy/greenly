@@ -1,18 +1,22 @@
 <template>
-<div class="text-center">
-  <img src="../../assets/Curious-cuate.png" class="img-fluid">
-  <h3>Os produtos procurados não foram encontrados!</h3>
-  <h5>Podes sempre tentar novamente!</h5>
+ <!-- Não são da mesma categoria -->
+ <div class="toast align-items-center text-white bg-primary border-0" id="shippingAlreadySetToast" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+      <div class="toast-body">
+      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
 </div>
+
 </template>
 <script>
+import { Toast } from '../../main'
+
 export default {
   name: "CatalogProducts",
 }
 </script>
 <style scoped>
-  img {
-    width: 50%;
-    height: 90%;
-  }
+
 </style>
