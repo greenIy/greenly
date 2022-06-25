@@ -13,7 +13,7 @@
                 <div class="d-inline-block">
                     <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
                 </div>
-                <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
+                <div class="d-inline-block pt-2 pb-2 pe-3 ps-2">
                     <span><small>{{ productsToCompare[0].name }}</small>
                     <div @click="remove(0)"  class="bd-highlight">
                         <font-awesome-icon class="fa-cog" :icon="['fa', 'trash']" size="xs" /> <small>Remover</small>
@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="vl mb-4"></div>
-            <div class="bd-highlight ms-5 text-muted pt-2 pb-2 pe-3 ps-3"  v-if="productsToCompare.length == 1">
+            <div class="bd-highlight ms-5 text-muted pt-2 pb-2 pe-2 ps-3"  v-if="productsToCompare.length == 1">
                 <p>Escolhe mais <b>1</b><br> para comparar </p>
             </div>
             <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
