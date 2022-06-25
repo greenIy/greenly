@@ -86,7 +86,7 @@
         <div class="col-2">
         </div>
         <div class="col-7">
-            <p class="text-muted"><small>São apresentadas as informações do Fornecedor e do Transportador mais sustentáveis para comparação.</small></p>
+            <p class="text-muted"><small>São apresentadas as informações do fornecedor e do transportador mais sustentáveis para comparação.</small></p>
             <div class="d-flex justify-content-start">
                 <table class="table table-striped table-responsive">
                 <tbody>
