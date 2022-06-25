@@ -35,14 +35,16 @@
   <div v-if="this.compare.length">
     <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
   </div>
-  <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria.
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-  </div>
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
 </body>
 </template>
 
@@ -221,6 +223,8 @@ export default {
       var successToast = document.getElementById("successToast");
       var successfulToast = new Toast(successToast, animation)
       successfulToast.show();
+      console.log(successfulToast)
+
     }
   },
   computed: {
@@ -247,4 +251,8 @@ export default {
 .v-leave-active {
   transition: opacity 0.5s ease;
 }
+
+#successToast {
+        background-color: #E71919 !important;
+    }
 </style>
