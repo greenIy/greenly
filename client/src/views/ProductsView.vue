@@ -186,7 +186,6 @@ export default {
           response = await http.get(`store/products/${productID2}`);
           this.compare.push(JSON.parse(JSON.stringify(response.data)));
         }
-        mo
     },
     removeProductFromCompareList(value) {
       this.compare = [];
@@ -219,7 +218,6 @@ export default {
         this.$router.replace({ query });
       }
       let compareMoreThan2 = Object.keys(query).length == 2;
-      console.log(Object.keys(query).length)
       if(compareMoreThan2 ){
           document.getElementsByClassName('checkbox').forEach(e => { 
           if(e.checked == false){
