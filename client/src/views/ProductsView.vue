@@ -274,4 +274,8 @@ export default {
 .toast-container{
   z-index:4;
 }
+
+.content-wrap{
+    padding-bottom: 2rem !important;
+}
 </style>
