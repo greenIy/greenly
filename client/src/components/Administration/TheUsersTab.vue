@@ -1,116 +1,103 @@
 <template>
-<div class="container-fluid px-5 tab-pane fade" id="users-tab" role="tabpanel" aria-labelledby="users-pill">
-    <!--Modal-->
-    <div class="modal fade" id="user-details" aria-hidden="true" aria-labelledby="user-details" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="user-details"> Detalhes de {{ this.currentUser.first_name }} {{ this.currentUser.last_name }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            oi
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-success" data-bs-target="#user-details-2" data-bs-toggle="modal" data-bs-dismiss="modal">switch modal view</button>
-          </div>
-        </div>
+  <div class="container-fluid px-5 tab-pane fade" id="users-tab" role="tabpanel" aria-labelledby="users-pill">
+    <!--User info modals-->
+    <TheUserInfo :currentUser='this.currentUser' />
+
+    <!--Users overview card-->
+    <div class="row px-5">
+      <div class="col-xl-6 col-lg-6 col-md-12 col-12 mt-5">
+        <TheOverviewCard :title='this.title' :amount='this.amountUsers' :increment='this.increment' />
       </div>
     </div>
 
-    <div class="modal fade" id="user-details-2" aria-hidden="true" aria-labelledby="user-details-2" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="user-details-2">Modal 2TITULO TROCADO</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            oi 2
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-success" data-bs-target="#user-details" data-bs-toggle="modal" data-bs-dismiss="modal">volta ao primeiro</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--modals-->
+    <!--Users list-->
+    <div class="row px-5">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-12 mt-5">
+        <div class="card h-100 px-3">
+          <nav class="navbar py-4">
+            <div class="container-fluid px-1">
+              <!--Title-->
+              <h4>Utilizadores </h4>
 
-          <!--Tiny overview cards-->
-          <div class="row px-5">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-12 mt-5">
-              <TheOverviewCard :title='this.title' :amount='this.amountUsers' :increment='this.increment'/>
+              <!--Search bar-->
+              <div class="input-group w-25 rounded-3">
+                <input class="form-control bg-light border-success border-end-0 super-round" type="search"
+                  placeholder="Nome, tipo, distrito...">
+                <span class="input-group-text bg-light border-success border-start-0 super-round">
+                  <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l" /></span>
+              </div>
             </div>
-          </div>
+          </nav>
 
-        <!--Content list-->
-        <div class="row px-5">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-12 mt-5">
-                      <div class="card h-100 px-3">
-                        <nav class="navbar py-4">
-                          <div class="container-fluid px-1">
-                            <h4>Utilizadores </h4>
-
-                              
-                          <div class="input-group w-25 rounded-3">
-                            <input class="form-control bg-light border-success border-end-0 super-round" type="search" placeholder="Nome, tipo, distrito...">
-                            <span class="input-group-text bg-light border-success border-start-0 super-round"><font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l"/></span>
-                          </div>
-                              
-                          </div>
-                        </nav>
-
-                        <!-- table  -->
-                        <div class="table-responsive" style="max-height: 400px;">
-                          <table class="table text-nowrap px-3">
-                            <thead class="text-uppercase">
-                              <tr>
-                                <th>Nome</th>
-                                <th>Contacto</th>
-                                <th>Tipo</th>
-                                <th></th>
-                              </tr>
-                            </thead>
-                            <tbody class="border-top-0 overflow-auto">
-                              <tr v-for="user in this.users" :key="user">
-                                <td class="align-middle">
-                                  <div class="d-flex align-items-center ">
-                                    <div>
-                                    </div>
-                                    <div class="lh-1">
-                                      <h5 class=" mb-1"> {{ user.first_name }} {{ user.last_name }}</h5>
-                                      <p class="mb-0"> {{ user.email }}</p>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td v-if="user.type == 'CONSUMER'" class="align-middle"><span class="badge bg-309c76 text-uppercase">Consumidor</span></td>
-                                <td v-else-if="user.type == 'SUPPLIER'" class="align-middle"><span class="badge bg-226d53 text-uppercase">Fornecedor</span></td>
-                                <td v-else-if="user.type == 'TRANSPORTER'" class="align-middle"><span class="badge bg-dark text-uppercase">Transportador</span></td>
-                                <td v-else class="align-middle"><span class="badge bg-warning text-uppercase">Administrador</span></td>
-                                
-                                <td class="align-middle">
-                                  <div class="dropdown dropstart">
-                                    <a class="text-muted text-primary-hover" href="#" role="button" id="dropdownTeamOne" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical icon-xxs"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
-                                      <a @click="this.getCurrentUser(user.id)" class="dropdown-item"  data-bs-target="#user-details" data-bs-toggle="modal" data-bs-dismiss="modal">Ver detalhes</a>
-                                      <a class="dropdown-item text-danger" href="#">Remover</a>
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
+          <!--Users table-->
+          <div class="table-responsive">
+            <table class="table text-nowrap px-3">
+              <thead class="text-uppercase">
+                <tr>
+                  <th>Nome</th>
+                  <th>Contacto</th>
+                  <th>Tipo</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0 overflow-auto">
+                <tr v-for="user in this.users" :key="user">
+                  <td class="align-middle">
+                    <div class="d-flex align-items-center ">
+                      <div>
+                      </div>
+                      <div class="lh-1">
+                        <h5 class=" mb-1"> {{ user.first_name }} {{ user.last_name }}</h5>
+                        <p class="mb-0"> {{ user.email }}</p>
                       </div>
                     </div>
-                </div>
-              </div>
+                  </td>
+                  <td class="align-middle">{{ user.phone }}</td>
+                  <td v-if="user.type == 'CONSUMER'" class="align-middle"><span
+                      class="badge bg-309c76 text-uppercase">Consumidor</span></td>
+                  <td v-else-if="user.type == 'SUPPLIER'" class="align-middle"><span
+                      class="badge bg-226d53 text-uppercase">Fornecedor</span></td>
+                  <td v-else-if="user.type == 'TRANSPORTER'" class="align-middle"><span
+                      class="badge bg-dark text-uppercase">Transportador</span></td>
+                  <td v-else class="align-middle"><span class="badge bg-warning text-uppercase">Administrador</span>
+                  </td>
+
+                  <td class="align-middle">
+                    <div class="dropdown dropstart">
+                      <a class="text-muted text-primary-hover" href="#" role="button" id="dropdownTeamOne"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="feather feather-more-vertical icon-xxs">
+                          <circle cx="12" cy="12" r="1"></circle>
+                          <circle cx="12" cy="5" r="1"></circle>
+                          <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
+                        <a @click="this.getCurrentUser(user.id)" class="dropdown-item" data-bs-target="#user-details"
+                          data-bs-toggle="modal">Ver detalhes</a> <!--data-bs-dismiss="modal"-->
+                        <a class="dropdown-item text-danger" href="#">Remover</a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import TheOverviewCard from './TheOverviewCard.vue';
+import TheUserInfo from './TheUserInfo.vue';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+library.add(faMagnifyingGlass);
 
 import http from "../../../http-common";
 
@@ -118,7 +105,8 @@ export default {
   name: 'TheUsersTab',
   components: {
     TheOverviewCard,
-  },
+    TheUserInfo
+},
   data() {
     return {
       title: 'Utilizadores',

@@ -7,6 +7,9 @@
                 </div>
                 <div class="bg-e4e6c3 rounded-2 p-2">
                     <font-awesome-icon :icon="['fas', 'users']" size="xl" v-if=" title == 'Utilizadores'" />
+                    <font-awesome-icon :icon="['fas', 'barcode']" size="xl" v-else-if=" title == 'Categorias'" />
+                    <font-awesome-icon :icon="['fas', 'sitemap']" size="xl" v-else-if=" title == 'Produtos'" />
+                    <font-awesome-icon :icon="['fas', 'clipboard-list']" size="xl" v-else-if=" title == 'Pedidos'"/>
                 </div>
             </div>
             <div>
@@ -20,9 +23,9 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faBarcode, faSitemap, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faUsers);
+library.add(faUsers, faBarcode, faSitemap, faClipboardList);
 
 export default {
     name: 'TheOverviewCard',
@@ -39,7 +42,10 @@ export default {
     background-color: #e4e6c3;
 }
 
-.fa-users {
+.fa-users,
+.fa-barcode,
+.fa-sitemap,
+.fa-clipboard-list {
     color: #226d53;
 }
 </style>

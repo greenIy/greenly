@@ -95,7 +95,7 @@ export default {
     return {
       users: [],
       amountUsers: 0,
-      userIncrement: 99999,
+      userIncrement: 0,
       categories: [],
       amountCategories: 0,
       products: [],
@@ -135,39 +135,15 @@ export default {
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.orders = response.data;
       this.amountOrders = response.data.length;
-    },
-    /**
-     * 
-     * @param {int} categoryID - The ID of the category for which the path is to be found.
-     * @param {array} data - The data in [{"id":42, "name": "string", "parent_category": 42}] structure, straight as it comes from the API.
-     * @param {boolean} verbose - Specifies if the output should include category IDs or not.
-     * @returns A string representing the category path. e.g. "Eos > Reiciendis" (if not verbose) or "(4) Eos > (5) Reiciendis" if verbose.
-     */
-    buildPath: function(categoryID, verbose) {
-
-        let data = this.categories;
-        let pathNames = []
-
-        let findCategory = (ID) => {
-            return data.find((category) => category.id == ID)
-        }
-
-        let target = categoryID
-
-        while (target) {
-            let targetObject = findCategory(target)
-            pathNames.push(verbose ? `(${targetObject.id}) ${targetObject.name}` : targetObject.name)
-            target = targetObject.parent_category
-        }
-
-        return pathNames.reverse().join(" > ")
-
     }
   }
 };
 </script>
 
 <style scoped>
+.table-responsive {
+  max-height: 400px;
+}
   .bg-226d53 {
     background-color: #226d53;
   }
@@ -176,7 +152,6 @@ export default {
     background-color: #309c76;
   }
 
-  
   .text-309c76{
     color: #309c76;
   }

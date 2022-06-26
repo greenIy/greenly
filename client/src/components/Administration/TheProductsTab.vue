@@ -4,75 +4,15 @@
     <div class="row px-5">
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <!-- card -->
-        <div class="card ">
-          <!-- card body -->
-          <div class="card-body">
-            <!-- heading -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <h4 class="mb-0">Categorias</h4>
-              </div>
-              <div class="bg-e4e6c3 rounded-2 p-2">
-                <font-awesome-icon :icon="['fas', 'sitemap']" size="xl" />
-              </div>
-            </div>
-            <!-- project number -->
-            <div>
-              <h1 class="fw-bold"> {{ this.amountCategories }} </h1>
-              <p class="mb-0 text-secondary"><span class="badge bg-secondary text-uppercase">Hoje</span><span
-                  class="ms-2 text-success">+3</span> categorias</p>
-            </div>
-          </div>
-        </div>
+        <TheOverviewCard :title='this.categoriesTitle' :amount='this.amountCategories'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <!-- card -->
-        <div class="card ">
-          <!-- card body -->
-          <div class="card-body">
-            <!-- heading -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <h4 class="mb-0">Produtos</h4>
-              </div>
-              <div class="bg-e4e6c3 rounded-2 p-2">
-                <font-awesome-icon :icon="['fas', 'barcode']" size="xl" />
-              </div>
-            </div>
-            <!-- project number -->
-            <div>
-              <h1 class="fw-bold"> {{ this.amountProducts }} </h1>
-              <p class="mb-0 text-secondary"><span class="badge bg-secondary text-uppercase">Hoje</span><span
-                  class="ms-2 text-danger">-2</span> produtos</p>
-            </div>
-          </div>
-        </div>
+        <TheOverviewCard :title='this.productsTitle' :amount='this.amountProducts'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <!-- card -->
-        <div class="card ">
-          <!-- card body -->
-          <div class="card-body">
-            <!-- heading -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <h4 class="mb-0">Pedidos</h4>
-              </div>
-              <div class="bg-e4e6c3 rounded-2 p-2">
-                <font-awesome-icon :icon="['fas', 'clipboard-list']" size="xl" />
-              </div>
-            </div>
-            <!-- project number -->
-            <div>
-              <h1 class="fw-bold"> {{this.amountRequests}} </h1>
-              <p class="mb-0 text-secondary"><span class="badge bg-secondary text-uppercase">Hoje</span><span
-                  class="ms-2 text-success">+3</span> pedidos</p>
-            </div>
-          </div>
-        </div>
+        <TheOverviewCard :title='this.requestsTitle' :amount='this.amountRequests'/>
       </div>
     </div>
 
@@ -97,7 +37,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -115,7 +55,7 @@
                       </div>
                       <div class="lh-1">
                         <h5 class=" mb-1"> {{ category.name }}</h5>
-                        <p class="mb-0 text-secondary">Lorem ipsum</p>
+                        <p class="mb-0 text-secondary">#{{ category.id }}</p>
                       </div>
                     </div>
                   </td>
@@ -168,7 +108,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -218,7 +158,7 @@
       </div>
     </div>
 
-    <!--Category requests-->
+    <!--Requests-->
     <!--Content list-->
     <div class="row px-5">
       <div class="col-xl-12 col-lg-12 col-md-12 col-12 mt-5">
@@ -244,7 +184,6 @@
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
-                  <th>Número</th>
                   <th>Nome</th>
                   <th>Tipo</th>
                   <th>Fornecedor</th>
@@ -259,12 +198,11 @@
                       <div>
                       </div>
                       <div class="lh-1">
-                        <h5 class=" mb-1">#768</h5>
-                        <p class="mb-0 text-secondary">Lorem ipsum</p>
+                        <h5 class=" mb-1">Lâmpadas</h5>
+                        <p class="mb-0 text-secondary">#768</p>
                       </div>
                     </div>
                   </td>
-                  <td class="align-middle">Lâmpadas</td>
                   <td class="align-middle">Produto</td>
                   <td class="align-middle">Worten</td>
                   <td class="align-middle"><span class="badge bg-warning text-uppercase">Novo</span></td>
@@ -297,12 +235,11 @@
                       <div>
                       </div>
                       <div class="lh-1">
-                        <h5 class=" mb-1">#767</h5>
-                        <p class="mb-0 text-secondary">Lorem ipsum</p>
+                        <h5 class=" mb-1">Bonecada</h5>
+                        <p class="mb-0 text-secondary">#767</p>
                       </div>
                     </div>
                   </td>
-                  <td class="align-middle">Bonecada</td>
                   <td class="align-middle">Categoria</td>
                   <td class="align-middle">Toys 'R' Us</td>
                   <td class="align-middle"><span class="badge bg-danger text-uppercase">Rejeitado</span></td>
@@ -335,12 +272,11 @@
                       <div>
                       </div>
                       <div class="lh-1">
-                        <h5 class=" mb-1">#766</h5>
-                        <p class="mb-0 text-secondary">Lorem ipsum</p>
+                        <h5 class=" mb-1">Sapatos</h5>
+                        <p class="mb-0 text-secondary">#766</p>
                       </div>
                     </div>
                   </td>
-                  <td class="align-middle">Sapatos</td>
                   <td class="align-middle">Categoria</td>
                   <td class="align-middle">Gardenia</td>
                   <td class="align-middle"><span class="badge bg-success text-uppercase">Aceite</span></td>
@@ -376,12 +312,69 @@
 </template>
 
 <script>
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBarcode, faSitemap } from '@fortawesome/free-solid-svg-icons';
-library.add(faBarcode, faSitemap);
+import TheOverviewCard from './TheOverviewCard.vue';
 
 export default {
-  name: 'TheProductsTab'
+  name: 'TheProductsTab',
+  components: {
+    TheOverviewCard,
+  },
+  data() {
+    return {
+      categoriesTitle: 'Categorias',
+      productsTitle: 'Produtos',
+      requestsTitle: 'Pedidos',
+      currentCategory: {},
+      currentProduct: {},
+      currentRequest: {}
+    };
+  },
+  props: [
+    'categories',
+    'products',
+    'requests',
+    'amountCategories',
+    'amountProducts',
+    'amountRequests'
+    //'increment', //not sure if needed
+  ],
+  methods: {
+    getCurrentCategory: function (categoryId) {
+      let response = http.get(`/store/categories/${categoryId}`);
+      this.currentCategory = response.data;
+    },
+    getCurrentProduct: function (productId) {
+      let response = http.get(`/store/products/${productId}`);
+      this.currentCategory = response.data;
+    },
+    /**
+     * 
+     * @param {int} categoryID - The ID of the category for which the path is to be found.
+     * @param {array} data - The data in [{"id":42, "name": "string", "parent_category": 42}] structure, straight as it comes from the API.
+     * @param {boolean} verbose - Specifies if the output should include category IDs or not.
+     * @returns A string representing the category path. e.g. "Eos > Reiciendis" (if not verbose) or "(4) Eos > (5) Reiciendis" if verbose.
+     */
+    buildPath: function(categoryID, verbose) {
+
+        let data = this.categories;
+        let pathNames = []
+
+        let findCategory = (ID) => {
+            return data.find((category) => category.id == ID)
+        }
+
+        let target = categoryID
+
+        while (target) {
+            let targetObject = findCategory(target)
+            pathNames.push(verbose ? `(${targetObject.id}) ${targetObject.name}` : targetObject.name)
+            target = targetObject.parent_category
+        }
+
+        return pathNames.reverse().join(" > ")
+
+    }
+  }
 };
 </script>
 
