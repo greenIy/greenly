@@ -232,17 +232,16 @@ export default {
       }
       let compareMoreThan2 = Object.keys(query).length == 2;
       if(compareMoreThan2 ){
-          document.getElementsByClassName('checkbox').forEach(e => { 
-          if(e.checked == false){
-              e.disabled = true;
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          if(!e.checked){
+            e.disabled = true;
           }
-      });
+        });
       }
       else{
         document.getElementsByClassName('checkbox').forEach(e => { 
           e.disabled = false;
         });
-        
       }
     },
     categoriesDiff(value){

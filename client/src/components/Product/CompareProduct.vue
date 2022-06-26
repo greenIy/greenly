@@ -4,7 +4,7 @@
     <div @click="close" class="me-3 close">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
     </div>
-    <div class="container w-100">
+    <div class="container w-100 mt-2">
         <div class="d-flex comp-header">
             <p class="text">COMPARAR PRODUTOS </p>
         </div>
@@ -165,8 +165,14 @@ export default {
      compareModal: false,
     }
   },
-  created() {
-    console.log(this.productsToCompare[0]);
+  mounted() {
+    if (this.$route.query.compare1) {
+        document.getElementById("input_" + this.$route.query.compare1).checked = true;
+    }
+
+    if (this.$route.query.compare2) {
+        document.getElementById("input_" + this.$route.query.compare2).checked = true;
+    }
   },
   methods: {
     remove(value){

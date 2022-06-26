@@ -68,7 +68,8 @@ export default {
       } 
     },
     compare(event){
-      
+      let query = Object.assign({}, this.$route.query);
+
       if(this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
         this.$emit('removeOneProduct', 0);
@@ -77,31 +78,29 @@ export default {
         this.$emit('removeOneProduct', 1);
       } else if (Object.keys(this.$route.query).length < 2){
         if (!this.$route.query.compare1) {
-          this.$router.push({ query: Object.assign({}, this.$route.query, { compare1: `${ this.product.id }`  }) });
+          this.$router.push({ query: Object.assign({}, query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {
           // it's only possible to compare products of same category
           if (this.product.category.id == this.productsToCompare[0].category.id && this.product.id != this.productsToCompare[0].id) {
-            this.$router.push({ query: Object.assign({}, this.$route.query, { compare2: `${ this.product.id }`  }) });
+            this.$router.push({ query: Object.assign({}, query, { compare2: `${ this.product.id }`  }) });
           } else {
             document.getElementById("input_" + this.product.id).checked = false;
             this.$emit('categoriesDiff', true);
-            
           }
         }
       }
-      let compareMoreThan2 = Object.keys(this.$route.query).length == 1;
-      if(compareMoreThan2 ){
+
+      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      if(compareMoreThan2){
         document.getElementsByClassName('checkbox').forEach(e => { 
-        if(e.checked == false){
-           e.disabled = true;
-        }
+          if(!e.checked){
+            e.disabled = true;
+          }
         });
-      }
-      else{
+      } else {
         document.getElementsByClassName('checkbox').forEach(e => { 
           e.disabled = false;
         });
-        
       }
     },
   }
