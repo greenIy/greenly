@@ -132,7 +132,7 @@
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
                     <div class="d-inline-block text-end col-md-3">
-                      <button class="btnS p-2">
+                      <button class="btnS p-2" v-if="userIsLoggedIn && user.type == 'CONSUMER'">
                         <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" /> Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
@@ -148,6 +148,9 @@
       </div>
     </body>
     <TheFooter />
+    <div v-if="this.$route.query.compare1 || this.$route.query.compare2">
+      <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
+    </div>
   </div>
 </template>
 <script>
@@ -193,6 +196,7 @@ export default {
   },
   data() {
     return {
+      userIsLoggedIn: this.$store.getters.getState,
       user: {
         accept: false,
       },
@@ -228,9 +232,14 @@ export default {
   },
   created() {
     this.getInfo();
-    this.getSuppliers(); 
+    this.getSuppliers();
+    this.getUserInfo();
   }, 
   methods: {
+    getUserInfo() {
+      this.user = this.$store.getters.getUser
+      return this.user
+    },
     liked(event) {
       const svg = event.path[1];
       if (svg.classList.contains("red")) {
