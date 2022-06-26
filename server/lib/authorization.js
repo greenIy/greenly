@@ -28,6 +28,7 @@ async function check(req, res, next) {
         "/store/products/:productId/attributes/:attributeId":   "SINGLE_ATTRIBUTE",
         "/store/products/:productId/images":                    "ALL_IMAGES",
         "/store/products/:productId/images/:imageId":           "SINGLE_IMAGE",
+        "/store/statistics":                                    "STATISTICS",
 
 
         "/store/orders":                                "ALL_ORDERS",
@@ -53,7 +54,7 @@ async function check(req, res, next) {
         "/supplier/:userId/inventory":                                  "ALL_SUPPLIES",
         "/supplier/:userId/inventory/:itemId":                          "SINGLE_SUPPLY",
         "/supplier/:userId/inventory/:itemId/transports":               "ALL_SUPPLY_TRANSPORTS",
-        "/supplier/:userId/inventory/:itemId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT" 
+        "/supplier/:userId/inventory/:itemId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT"
         
         
     }
@@ -371,6 +372,10 @@ async function check(req, res, next) {
             }
 
             break;
+
+        case "STATISTICS":
+            // This is valid for: GET
+            // Only administrators can access store statistics
         
         case "ALL_WAREHOUSES":
             // This is valid for: GET

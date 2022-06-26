@@ -221,7 +221,8 @@ async function createUser(params) {
                 last_name: params.last_name ? params.last_name : '',
                 email: params.email,
                 phone: params.phone,
-                type: params.type
+                type: params.type,
+                registration_date: new Date()
             }
         })
 
@@ -1901,6 +1902,7 @@ async function removeProductFromWishlist(userID, productID) {
                 }, select: {
                     id: true,
                     first_name: true,
+                    last_name: true,
                     email: true,
                     phone: true
                 }
@@ -2236,6 +2238,7 @@ async function getFilteredOrderByID(user, orderID) {
         }, select: {
             id: true,
             first_name: true,
+            last_name: true,
             email: true,
             phone: true
         }
@@ -5210,6 +5213,117 @@ async function updateProductImagePosition(
 
 }
 
+async function getStoreStatistics() {
+
+    try {
+        
+        // Calculating total stats
+
+        const nullSafe = (number) => number ? round(number, 2) : 0
+
+        let payload = {}
+
+        let totalData = await prisma.order_Item.aggregate({
+            where: {
+                status: {
+                    notIn: ["AWAITING_PAYMENT", "CANCELED", "FAILURE"]
+                }
+            },
+            _sum: {
+                supply_price: true,
+                transport_price: true,
+                supplier_resource_usage: true,
+                transporter_resource_usage: true,
+                transporter_emissions: true
+            }
+        })
+
+        let currentDate = new Date();
+        let previousDate = new Date().setMonth(currentDate.getMonth() - 1)
+
+        // Obtaining data relative only to the previous month
+
+        let lastMonthData = await prisma.order_Item.aggregate({
+            where: {
+                status: {
+                    notIn: ["AWAITING_PAYMENT", "CANCELED", "FAILURE"]
+                },
+                Order: {
+                    date: {
+                        gte: new Date(previousDate)
+                    }
+                }
+            },
+            _sum: {
+                supply_price: true,
+                transport_price: true,
+                supplier_resource_usage: true,
+                transporter_resource_usage: true,
+                transporter_emissions: true
+            }
+        })
+        
+        // Calculating revenue data
+
+        payload.revenue = {
+            total:{
+                supply: nullSafe(totalData._sum.supply_price),
+                transport: nullSafe(totalData._sum.transport_price),
+                total: round(parseFloat(nullSafe(totalData._sum.supply_price) + nullSafe(totalData._sum.transport_price)), 2)
+            },
+            last_month:{
+                supply: nullSafe(lastMonthData._sum.supply_price),
+                transport: nullSafe(lastMonthData._sum.transport_price),
+                total: round(parseFloat(nullSafe(lastMonthData._sum.supply_price) + nullSafe(lastMonthData._sum.transport_price)), 2)
+            }
+        }
+
+
+        // // Calculating emissions data
+
+        payload.emissions = {
+            total: nullSafe(totalData._sum.transporter_emissions),
+            last_month: nullSafe(lastMonthData._sum.transporter_emissions)
+        }
+
+        // Calculating resource usage data
+
+        payload.resource_usage = {
+            total:{
+                supply: nullSafe(totalData._sum.supplier_resource_usage),
+                transport: nullSafe(totalData._sum.transporter_resource_usage),
+            },
+            last_month:{
+                supply: nullSafe(lastMonthData._sum.supplier_resource_usage),
+                transport: nullSafe(lastMonthData._sum.transporter_resource_usage),
+            }
+        }
+
+        // Obtaining user data
+
+        let totalUserData = await prisma.user.count()
+        let lastMonthUserData = await prisma.user.count({
+            where: {
+                registration_date: {
+                    gte: new Date(previousDate)
+                }
+            }
+        })
+
+        payload.users = {
+            total: totalUserData,
+            last_month: lastMonthUserData
+        }
+
+        return payload
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
 /* All functions to be made available to the rest of the project should be listed here */
 
 module.exports = {
@@ -5308,6 +5422,9 @@ module.exports = {
     deleteSupply,
     createSupplyTransport,
     updateSupplyTransport,
-    deleteSupplyTransport
+    deleteSupplyTransport,
+
+    // Statistic Functions
+    getStoreStatistics,
 
 }

@@ -552,4 +552,22 @@ router.put('/orders/:orderId/:itemId', authentication.check, updateOrderValidato
     })
 })
 
+
+/* Stat Routes */
+
+router.get(
+    '/statistics', 
+    authentication.check, 
+    authorization.check,
+    (req, res) => {
+        persistence.getStoreStatistics().then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                default:
+                    return res.status(200).json(result)
+            }
+        })
+    })
+
 module.exports = router;
