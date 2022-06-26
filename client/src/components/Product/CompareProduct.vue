@@ -91,48 +91,48 @@
                 <table class="table table-striped table-responsive">
                 <tbody>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" />Fornecedor</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'user']" />Fornecedor</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].supplier.name}}</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].supplier.name}}</small></span></td>
 
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" />Recursos Renováveis</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'sun']" />Recursos Renováveis</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].warehouse.renewable_resources}}%</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].warehouse.renewable_resources}}%</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'industry']" />Recursos de Armazenamento</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'industry']" />Recursos de Armazenamento</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].warehouse.resource_usage}} kWh/dia</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].warehouse.resource_usage}} kWh/dia</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" />Preço Fornecedor</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'money-bill-wave']" />Preço Fornecedor</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].price}}€</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].price}}€</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'user']" />Transportador</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'user']" />Transportador</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].transporter.name}}</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].transporter.name}}</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'skull-crossbones']" />Emissões Poluentes</small></span></th>
-                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].transporter.average_emissions}} CO₂ g/km/t</small></span></td>
-                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].transporter.average_emissions}} CO₂ g/km/t</small></span></td>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'skull-crossbones']" />Emissões Poluentes</small></span></th>
+                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].transporter.average_emissions.toFixed(1)}} CO₂ g/km/t</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].transporter.average_emissions.toFixed(1)}} CO₂ g/km/t</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'gas-pump']" />Recursos de Transporte</small></span></th>
-                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].transporter.average_resource_usage}} l/100km</small></span></td>
-                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].transporter.average_resource_usage}} l/100km</small></span></td>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'gas-pump']" />Recursos de Transporte</small></span></th>
+                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].transporter.average_resource_usage.toFixed(1)}} l/100km</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].transporter.average_resource_usage.toFixed(1)}} l/100km</small></span></td>
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" />Preço Transportador</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'money-bill-wave']" />Preço Transportador</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].price}}€</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].price}}€</small></span></td> 
                     </tr>
                     <tr class="font-compare">
-                    <th scope="col"><span class="d-flex align-items-center"><small><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'money-bill-wave']" />Preço Total</small></span></th>
+                    <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'money-bill-wave']" />Preço Total</small></span></th>
                     <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].transports[0].price +  productsToCompare[0].supplies[0].price}}€</small></span></td>
                     <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].transports[0].price +  productsToCompare[1].supplies[0].price}}€</small></span></td>
                     </tr>
