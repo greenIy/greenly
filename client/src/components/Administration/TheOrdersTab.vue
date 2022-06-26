@@ -231,7 +231,7 @@ export default {
   },
   props: [
     'orders',
-    'nbOrders'
+    'amountOrders'
   ],
   methods: {
     getCurrentOrder: function (targetOrderId) {

@@ -9,7 +9,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <ProfilePersonalInfo />
+            oi
           </div>
           <div class="modal-footer">
             <button class="btn btn-success" data-bs-target="#user-details-2" data-bs-toggle="modal" data-bs-dismiss="modal">switch modal view</button>
@@ -26,7 +26,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <Profile />
+            oi 2
           </div>
           <div class="modal-footer">
             <button class="btn btn-success" data-bs-target="#user-details" data-bs-toggle="modal" data-bs-dismiss="modal">volta ao primeiro</button>
@@ -39,22 +39,7 @@
           <!--Tiny overview cards-->
           <div class="row px-5">
             <div class="col-xl-6 col-lg-6 col-md-12 col-12 mt-5">
-              <div class="card">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <h4 class="mb-0">Utilizadores</h4>
-                    </div>
-                    <div class="bg-e4e6c3 rounded-2 p-2">
-                      <font-awesome-icon :icon="['fas', 'users']" size="xl"/>
-                    </div>
-                  </div>
-                  <div>
-                    <h1 class="fw-bold"> {{ this.nbUsers }}</h1>
-                    <p class="mb-0 text-secondary"><span class="badge bg-secondary text-uppercase">Hoje</span><span class="ms-2 text-success">+36</span> utilizadores</p>
-                  </div>
-                </div>
-              </div>
+              <TheOverviewCard :title='this.title' :amount='this.amountUsers' :increment='this.increment'/>
             </div>
           </div>
 
@@ -125,23 +110,25 @@
 </template>
 
 <script>
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import TheOverviewCard from './TheOverviewCard.vue';
 
-import http from "../../../http-common"
-
-library.add(faUsers);
+import http from "../../../http-common";
 
 export default {
   name: 'TheUsersTab',
+  components: {
+    TheOverviewCard,
+  },
   data() {
     return {
+      title: 'Utilizadores',
       currentUser: {}
     };
   },
   props: [
     'users',
-    'nbUsers'
+    'amountUsers',
+    'increment',
   ],
   methods: {
     getCurrentUser: function (targetUserId) {
