@@ -1,21 +1,25 @@
 <template>
+
+    <!-- success page -->
+
+
 <div class="page-container">
     <div class="content-wrap">
     <the-navbar/>
     <div class="container">
         <div class="row">
             <div class="col">
-                <div class="card d-flex align-items-center">
+                <div class="card ">
                     <div class="card-header">
                         <h4>Sucesso!</h4>
                     </div>
                     <div class="card-body">
                         <p>
-                            <strong>A sua encomenda foi confirmada com sucesso!</strong><br>
+                            <strong>A sua encomenda com o nº {{orderID}} foi confirmada com sucesso!</strong><br>
                             Obrigado por comprar connosco!
                         </p>
                         <p>
-                            <router-link to="'/perfil/encomendas'" class="btn btn-greenly">
+                            <router-link to="/perfil/encomendas" class="btn btn-greenly">
                                 <font-awesome-icon :icon="['fa', 'box-archive']" size="lg"/>&nbsp; Ver encomendas
                             </router-link>
                             ou
@@ -29,10 +33,10 @@
                 </div>
         </div>
         </div>
-    </div>
-    <the-footer/>
-        </div>
 </div>
+</div>
+</div>
+    <the-footer/>
 </template>
 
 <script>
@@ -91,5 +95,11 @@ export default {
     border-color: #5e9f88;
     color: #fff;
 }
+
+.card {
+    border: 1px solid #5e9f88;
+}
+
+
 
 </style>
