@@ -387,10 +387,12 @@ export default {
         background-clip: content-box;
         background-color: #5E9F88;
     }
+
     .router-link-active {
        text-decoration: underline!important;
-       color: #5e9f88!important;
+       color: #5e9f88 !important;
     }
+
     .black{
         color:black !important;
     }
