@@ -173,6 +173,19 @@ export default {
     if (this.$route.query.compare2) {
         document.getElementById("input_" + this.$route.query.compare2).checked = true;
     }
+
+    let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+    if(compareMoreThan2){
+      document.getElementsByClassName('checkbox').forEach(e => { 
+        if(!e.checked){
+          e.disabled = true;
+        }
+      });
+    } else {
+      document.getElementsByClassName('checkbox').forEach(e => { 
+        e.disabled = false;
+      });
+    }
   },
   methods: {
     remove(value){

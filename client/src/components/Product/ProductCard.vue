@@ -27,7 +27,7 @@
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" :for="`input_${product.id}`">
-                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/>Comparar Produto</label>
+                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
             </div>
           </form>
         </div>
@@ -177,5 +177,7 @@ h5 {
     background-color: #5e9f88!important;
     border-color: #5e9f88!important;
 }
-
+input[type="checkbox"]:disabled + span {
+   color: #969595 !important;
+}
 </style>
