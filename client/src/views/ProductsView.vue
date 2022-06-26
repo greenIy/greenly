@@ -113,7 +113,13 @@ export default {
       this.getProductToCompare();
     },
   },
+   created() {
+        this.changeTitle();
+    },
   methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Catálogo de Produtos";
+    },
     async getProducts() {
       let response;
       let request;

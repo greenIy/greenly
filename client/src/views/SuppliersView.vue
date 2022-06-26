@@ -20,8 +20,13 @@ export default {
     TheNavbar,
     TheFooter,
   },
-  methods:{
-   
+  created() {
+        this.changeTitle();
+    },
+    methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Fornecedores";
+    }
   }
 };
 </script>

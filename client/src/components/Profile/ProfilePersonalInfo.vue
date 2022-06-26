@@ -92,8 +92,14 @@ export default({
         return {
             user: {},
         }
+    }, 
+    created() {
+        this.changeTitle();
     },
     methods: {
+         changeTitle(){
+            window.document.title = "Greenly | Informações Pessoais";
+    },
         getUserInfo() {
             this.user = this.$store.getters.getUser
             return this.user

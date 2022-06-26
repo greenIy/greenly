@@ -160,12 +160,12 @@
     <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
         <div class="pt-2">
             <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
-                produtos<span class="ms-3 black"> | </span> 
+                produtos<span class="ms-3 black">| </span> 
             </router-link>
         </div>
         <div class="pt-2">
             <router-link to="/fornecedores black" class="mb-2">
-                fornecedores<span class="ms-3"> | </span> 
+                fornecedores<span class="ms-3">| </span> 
             </router-link>
         </div>
         <div class="pt-2">
