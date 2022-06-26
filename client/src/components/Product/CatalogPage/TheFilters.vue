@@ -58,9 +58,7 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import {faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import {faAngleLeft } from '@fortawesome/free-solid-svg-icons';
-import {faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import {faAngleUp, faAngleLeft, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faAngleUp);
 library.add(faAngleLeft);
@@ -90,17 +88,25 @@ library.add(faAngleDown);
         return: false,
       }
     },
+    updated() {
+      if (this.$route.params.categoria) {
+        this.updateCategoriesList();
+      }
+    },
     watch: {
       urls: function () {
         this.$forceUpdate();
       },
       currentCategories: function () {
+        this.updateCategoriesList();
+      },
+    },
+    methods: {
+      updateCategoriesList() {
         this.categoryList = this.currentCategories;
         this.currentCategory = (this.categoryList.length) ? this.categoryList[this.categoryList.length - 1] : {id: "", name: ""};
         this.categorySelected = (this.categoryList.length) ? true : false;
       },
-    },
-    methods: {
       showProducts(category) {
         this.categoryList.push(category);
         this.currentCategory = category;

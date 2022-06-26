@@ -87,16 +87,23 @@ export default {
       rendered: false,
       quantityP:0,
       compare: [],
+      categoryLoaded: false,
     };
   },
-  beforeMount() {
-    this.getProducts();
-    this.getCategories();
-    this.getSuppliers();
+  async beforeMount() {
+    await this.getProducts();
+    await this.getCategories();
+    await this.getSuppliers();
   },
-  mounted() {
+  async mounted() {
     if (this.$route.query.compare1 || this.$route.query.compare2) {
       this.getProductToCompare();
+    }
+    if (this.$route.params.categoria) {
+      await this.getCategories();
+      if (this.categoryLoaded) {
+        this.getCurrentCategory(this.$route.params);
+      }
     }
   },
   watch: {
@@ -113,9 +120,9 @@ export default {
       this.getProductToCompare();
     },
   },
-   created() {
-        this.changeTitle();
-    },
+  created() {
+    this.changeTitle();
+  },
   methods: {
     changeTitle(){
         window.document.title = "Greenly | Catálogo de Produtos";
@@ -130,15 +137,15 @@ export default {
       let maxPrice = this.$route.query.preco_max ? this.$route.query.preco_max : 50000000;
       let minPrice = this.$route.query.preco_min ? this.$route.query.preco_min : 0;
 
-      if(this.$route.query.ordenar_por) {
+      if (this.$route.query.ordenar_por) {
         sort = this.$route.query.ordenar_por;
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=" + sort;
       } else {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice;
       }
-  
-      if (this.currentCategories.length) {
-        request = request + "&category=" + this.currentCategories[this.currentCategories.length - 1].id;
+
+      if (this.$route.params.categoria) {
+        request = request + "&category=" + this.$route.params.categoria[Object.keys(this.$route.params.categoria).length - 1];
       }
 
       if (this.$route.query.pesquisa){
@@ -159,11 +166,11 @@ export default {
     async getSuppliers() {
       let response = await http.get("/store/suppliers");
       this.suppliers = JSON.parse(JSON.stringify(response.data));
-
     },
     async getCategories() {
-      var response = await http.get("/store/categories");
+      let response = await http.get("/store/categories");
       this.categories = response.data;
+      this.categoryLoaded = true;
     },
     getCurrentCategory: function(params) {
       if (this.currentCategories.length) {
