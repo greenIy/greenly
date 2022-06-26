@@ -11,7 +11,7 @@
         <div class="d-flex comp-content">
             <div v-if="productsToCompare.length > 0" class="comp-content-product">
                 <div class="d-inline-block">
-                    <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
+                    <img class="img-fluid product-img" :src="productsToCompare[0].images[0].url" alt="Fotografia da Daniela">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-2">
                     <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[0].id}`}">{{ productsToCompare[0].name }}</router-link></small>
@@ -29,7 +29,7 @@
             </div>
             <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
                 <div class="d-inline-block">
-                    <img class="img-fluid product-img" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela">
+                    <img class="img-fluid product-img" :src="productsToCompare[1].images[0].url" alt="Fotografia da Daniela">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
                     <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[1].id}`}">{{ productsToCompare[1].name }}</router-link></small>
@@ -48,11 +48,11 @@
         </div>
     </div>
 </div>
-<div v-if="compareModal != false" class="compare-modal position-fixed bottom-0 start-0 shadow">
-    <div @click="close" class="me-3 close">
+<div v-if="compareModal != false" class="compare-modal position-fixed bottom-0 start-0 shadow ">
+    <div @click="close" class="me-3 close mt-1">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
     </div>
-     <div @click="back" class="ms-3 open">
+     <div @click="back" class="ms-3 open mt-1">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'arrow-left']" />
     </div>
     <div class="row mt-3">
@@ -69,12 +69,12 @@
         <div class="col-7">
             <div class="d-flex justify-content-center">
                 <div class="d-flex bd-highlight mb-3 me-4">
-                    <div class="p-2 bd-highlight"><img class="img-fluid" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela"></div>
+                    <div class="p-2 bd-highlight"><img class="img-fluid" :src="productsToCompare[0].images[0].url" alt="Fotografia da Daniela"></div>
                     <div class="p-2 bd-highlight"><span class="text ms-2"><small>{{ productsToCompare[0].name }}</small></span></div>
                 </div>
                 <div class="vl mb-4"></div>
                 <div class="d-flex bd-highlight mb-3 ms-4">
-                    <div class="p-2 bd-highlight"><img class="img-fluid" src="../../assets/Team/daniela.jpg" alt="Fotografia da Daniela"></div>
+                    <div class="p-2 bd-highlight"><img class="img-fluid" :src="productsToCompare[1].images[0].url" alt="Fotografia da Daniela"></div>
                     <div class="p-2 bd-highlight"><span class="text ms-2"><small>{{ productsToCompare[1].name }}</small></span></div>
                 </div>
             </div>
@@ -165,6 +165,9 @@ export default {
      compareModal: false,
     }
   },
+  created() {
+    console.log(this.productsToCompare[0]);
+  },
   methods: {
     remove(value){
         this.$emit('removeOneProduct', value);
@@ -253,4 +256,6 @@ img{
 .remove-btn:hover {
     color:#4d4d4d;
 }
+
+
 </style>

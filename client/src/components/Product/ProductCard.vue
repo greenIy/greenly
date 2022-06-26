@@ -174,4 +174,9 @@ h5 {
   margin-right: 4px;
 } 
 
+.form-check-input:checked {
+    background-color: #5e9f88!important;
+    border-color: #5e9f88!important;
+}
+
 </style>

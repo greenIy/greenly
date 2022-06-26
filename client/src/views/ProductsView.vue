@@ -276,4 +276,9 @@ export default {
 .content-wrap{
     padding-bottom: 2rem !important;
 }
+
+.form-check-input:checked {
+    background-color: #5e9f88!important;
+    border-color: #5e9f88!important;
+}
 </style>
