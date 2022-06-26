@@ -80,6 +80,8 @@ CREATE TABLE User (
     phone       VARCHAR(20),
     company     INT UNSIGNED,
     type        ENUM('ADMINISTRATOR', 'CONSUMER', 'SUPPLIER', 'TRANSPORTER') NOT NULL,
+    registration_date   DATETIME NOT NULL,
+
 
     FOREIGN KEY (company)
         REFERENCES Company(id)
