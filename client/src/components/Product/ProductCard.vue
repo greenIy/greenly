@@ -4,7 +4,19 @@
       <div class="card h-100 hover-shadow d-flex">
         <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
         <div class="d-flex">
-        <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  />
+          
+          <img class="img-fluid crop" :class="{'img-fluid': true, crop: true, hidden: !this.imageLoaded}" :src="product.thumbnail" alt="Imagem do produto" @load="this.imageLoaded = true"/>
+
+          <content-loader
+            v-if="!this.imageLoaded"
+            viewBox="0 0 222 250"
+            :speed="1"
+            animate="true"
+            primaryColor="#f3f3f3"
+            secondaryColor="#b5b5b5">
+            <rect x="0" y="0" rx="0" ry="0" width="222" height="250" />
+          </content-loader>
+
         </div>
         <div class="card-body">
           <h5 class="card-title">{{ product.category.name }}</h5>
@@ -40,10 +52,12 @@
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { ContentLoader } from "vue-content-loader"
 
 library.add(faHeart);
 
 export default {
+  components: { ContentLoader },
   name: "ProductCard",
   props: {
     product: Object,
@@ -54,6 +68,7 @@ export default {
       user: {
         accept: false,
       },
+      imageLoaded: false
     };
   },
   methods: {
@@ -64,7 +79,7 @@ export default {
       } else {
         svg.classList.add("red");
       } 
-    },
+    }
   }
 };
 </script>
@@ -119,7 +134,6 @@ h5 {
   color: black;
 }
 .img-fluid {
-  max-width: 55%;
   height: auto;
   margin: auto;
 }
@@ -134,5 +148,14 @@ h5 {
   margin-left: 4px;
   margin-right: 4px;
 } 
+.crop {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    object-fit: cover;
+}
 
+.hidden {
+  display: none;
+}
 </style>

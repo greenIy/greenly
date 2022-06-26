@@ -42,7 +42,7 @@
       </li>
       <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="false">
-        <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Fornecedor
+        <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-down']" /> Fornecedor
         </div>   
         <div class="collapse" id="fornecedores-collapse">
           <div class="list-group list-group-flush overflow-auto filtro-fornecedor">
@@ -60,9 +60,11 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import {faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import {faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faAngleUp);
 library.add(faAngleLeft);
+library.add(faAngleDown);
 
   export default {
     name: "TheFilters",

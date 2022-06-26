@@ -2,6 +2,15 @@
 
 const express   = require('express');
 const router    = express.Router();
+const Multer    = require('multer');
+
+// Initializing Multer for receiving files (max 5MB)
+const multer = Multer({
+    storage: Multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+});
 
 /* Greenly libraries */
 const { 
@@ -9,7 +18,11 @@ const {
     createCategoryValidator,              
     updateCategoryValidator,
     getSingleOrderValidator,
-    updateOrderValidator } = require('../lib/validation.js');
+    updateOrderValidator, 
+    createProductValidator,
+    updateProductValidator,
+    createProductAttributeValidator,
+    updateProductImageValidator} = require('../lib/validation.js');
 const persistence       = require('../lib/persistence.js');
 const payment           = require("../lib/payment")
 const authentication    = require("../lib/authentication");
@@ -57,7 +70,7 @@ router.get('/products', getProductsValidator(), (req, res) => {
 /* GET /store/product/{productId} */
 
 router.get('/products/:productId', (req, res) => {
-    /* This function may seem rather confusing. It's purpose is to not 
+    /* This function may seem rather confusing. Its purpose is to not 
        not only provide a decent REST API structure, but to obfuscate database structure, as it shouldn't be mirrored by the API */
     
     try {
@@ -69,6 +82,9 @@ router.get('/products/:productId', (req, res) => {
 
                 // Renaming ProductAttributes key
                 delete Object.assign(product, {["attributes"]: product["ProductAttribute"] })["ProductAttribute"];
+
+                // Renaming ProductImage key
+                delete Object.assign(product, {["images"]: product["ProductImage"] })["ProductImage"];
 
                 // Renaming Supply key (Prisma limitation)
                 delete Object.assign(product, {["supplies"]: product["Supply"] })["Supply"];
@@ -128,6 +144,213 @@ router.get('/products/:productId', (req, res) => {
         res.status(500).send(defaultErr());
     }
 })
+
+router.post('/products', authentication.check, authorization.check, createProductValidator(), (req, res) => {
+    
+    persistence.createProduct(
+        req.body.name,
+        req.body.description,
+        Number(req.body.category),
+        req.body.complement_name,
+        Number(req.body.complement_quantity),
+        req.body.attributes
+    ).then((result) => {
+        switch (result) {
+            case null:
+                return res.status(500).send(defaultErr())
+            case "INVALID_CATEGORY":
+                return res.status(404).send({
+                    message: "Invalid category. Make sure to specify a category registered on the website."
+                })
+            default:
+                return res.status(201).json({
+                    id: result
+                })
+            }
+    })
+
+})
+
+router.put(
+    '/products/:productId', 
+    authentication.check, 
+    authorization.check, 
+    updateProductValidator(), 
+    (req, res) => {
+
+        persistence.updateProduct(
+            Number(req.params.productId),
+            req.body
+        ).then((result) => {
+
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_CATEGORY":
+                    return res.status(404).send({
+                        message: "Invalid category. Make sure to specify a category registered on the website."
+                    })
+                default:
+                    return res.status(200).json({message: "Successfully updated product details."})
+            }
+
+        })
+
+})
+
+router.delete(
+    '/products/:productId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+        persistence.deleteProduct(
+            Number(req.params.productId)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product, along with all corresponding images, supplies and transportation rules."})
+            }
+        })
+    }
+)
+
+/* Product Attribute Routes */
+
+router.post(
+    '/products/:productId/attributes', 
+    authentication.check, 
+    authorization.check, 
+    createProductAttributeValidator(), 
+    (req, res) => {
+    
+        persistence.createProductAttribute(
+            Number(req.params.productId),
+            req.body.title,
+            req.body.content
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                default:
+                    return res.status(201).json({
+                        id: result
+                    })
+                }
+        })
+
+})
+
+router.delete(
+    '/products/:productId/attributes/:attributeId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+
+        persistence.deleteProductAttribute(
+            Number(req.params.productId),
+            Number(req.params.attributeId)
+        ).then((result) => {
+
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_ATTRIBUTE":
+                    return res.status(404).send({message: "Attribute not found. Make sure to specify an attribute related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product attribute."})
+            }
+        })
+    }
+)
+
+/* Product Image Routes */
+
+router.post(
+    '/products/:productId/images',
+    authentication.check,
+    authorization.check,
+    multer.single("upload"),
+    (req, res) => {
+
+        persistence.addProductImages(
+            Number(req.params.productId),
+            req.file
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "NO_FILE":
+                    return res.status(400).send({message: "No file has been uploaded. Make sure to upload a valid file."})
+                case "INVALID_FILE":
+                    return res.status(400).send({message: "Specified file is invalid. Make sure to provide a file under 5MB (supported filetypes: PNG, JPG and JPEG)."})
+                default:
+                    return res.status(201).json(result)
+                }
+        })
+
+    }
+)
+
+router.put(
+    '/products/:productId/images/:imageId',
+    authentication.check,
+    authorization.check,
+    updateProductImageValidator(),
+    (req, res) => {
+        persistence.updateProductImagePosition(
+            Number(req.params.productId),
+            Number(req.params.imageId),
+            Number(req.body.new_position)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_IMAGE":
+                    return res.status(404).send({message: "Image not found. Make sure to specify an image related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully altered product image position."})
+            }
+        })
+    }
+)
+
+router.delete(
+    '/products/:productId/images/:imageId',
+    authentication.check,
+    authorization.check,
+    (req, res) => {
+        persistence.deleteProductImage(
+            Number(req.params.productId),
+            Number(req.params.imageId)
+        ).then((result) => {
+            switch (result) {
+                case null:
+                    return res.status(500).send(defaultErr())
+                case "INVALID_PRODUCT":
+                    return res.status(404).send({message: "Product not found. Make sure to specify a product currently registered on the website."})
+                case "INVALID_IMAGE":
+                    return res.status(404).send({message: "Image not found. Make sure to specify an image related to the specified product."})
+                default:
+                    return res.status(200).send({message: "Successfully deleted product image."})
+            }
+        })
+    }
+)
+
 /* Category Routes */
 
 /* GET /store/categories */
@@ -201,6 +424,19 @@ router.get('/suppliers', (req, res) => {
     })
 })
 
+/* Transporter information route */
+// Any  user can inquire about transporters registered to the platform
+router.get('/transporters', (req, res) => {
+    persistence.getAllTransporters().then((result) => {
+        if (result) {
+            return res.status(200).json(result)
+        }
+        else {
+            res.status(500).send(defaultErr())
+        }
+    })
+})
+
 /* Payment routes */
 
 router.get('/payments/config', authentication.check, (req, res) => {
@@ -252,8 +488,6 @@ router.post('/payments/webhook', async (req, res) => {
 })
 
 /* Order Routes */
-
-// TODO: Build validation and authorization rules for each route, add middleware to routes here
 
 router.get('/orders', authentication.check, async (req, res) => {
     persistence.getOrdersByUser(req.user).then((result) => {

@@ -611,6 +611,364 @@ function updateDistributionCenterValidator() {
     ]
 }
 
+function createVehicleValidator() {
+    return [
+        body('distribution_center')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateVehicleValidator() {
+    return [
+        body('distribution_center')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('license_plate')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({min: 6, max:6})
+            .toUpperCase(),
+        body('payload_capacity')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('resource_usage')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('average_emissions')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('fuel_type')
+            .optional()
+            .isIn(["PETROL", "DIESEL", "ELECTRICITY"])
+            .withMessage("Invalid fuel type. Values can be: PETROL, DIESEL; ELECTRICITY"),
+
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function getInventoryValidator() {
+    return [
+        query("sort")
+            .optional()
+            .isIn(["newest", "oldest", "price_asc", "price_desc"]),
+        query("warehouse")
+            .optional()
+            .isInt()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createSupplyValidator() {
+    return [
+        body('product')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('warehouse')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('quantity')
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('production_date')
+            .notEmpty().bail()
+            .isISO8601()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail(),
+        body('expiration_date')
+            .notEmpty().bail()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail()
+            .custom(value => {
+                
+                let providedDate = new Date(value)
+
+                if (isNaN(providedDate)) {
+                    return Promise.reject("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).")
+                }
+                
+                if (new Date() > providedDate) {
+                    return Promise.reject("Specified expiration dates should be in the future.")
+                }
+
+                return true
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateSupplyValidator() {
+    return [
+        body('quantity')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('price')
+            .optional()
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+        body('production_date')
+            .optional()
+            .notEmpty().bail()
+            .isISO8601()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail(),
+        body('expiration_date')
+            .optional()
+            .notEmpty().bail()
+            .withMessage("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).").bail()
+            .custom(value => {
+                
+                let providedDate = new Date(value)
+
+                if (isNaN(providedDate)) {
+                    return Promise.reject("Invalid datetime format. All date inputs should follow the ISO8601 format (YYYY-MM-DD).")
+                }
+                
+                if (new Date() > providedDate) {
+                    return Promise.reject("Specified expiration dates should be in the future.")
+                }
+
+                return true
+            }),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createSupplyTransportValidator() {
+    return [
+        body('transporter')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateSupplyTransportValidator() {
+    return [
+        body('price')
+            .notEmpty().bail()
+            .isFloat({min: 0}).bail()
+            .toFloat(),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createProductValidator() {
+    return [
+        body('name')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 255}),
+        body('description')
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max:1000}),
+        body('category')
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('complement_name')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 50}),
+        body('complement_quantity')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        body('attributes')
+            .optional()
+            .isArray().withMessage("Attributes must be an array of attributes.")
+            .custom((attributes) => {
+
+                let isValid = true
+                
+                for (let i = 0; i < attributes.length && isValid; i++) {
+
+                    let attribute = attributes[i]
+
+                    isValid = 
+                        (attribute.hasOwnProperty("title") && attribute.hasOwnProperty("content")) &&
+
+                        (typeof attribute.title === 'string' && typeof attribute.content === 'string') &&
+
+                        (attribute.title.length <= 50 && attribute.content.length <= 255)
+                    
+                }
+
+                if (!isValid) {
+                    return Promise.reject("All attributes must contain a 'title' property under 50 characters and a 'content' property under 255 characters.")
+                }
+
+                return true
+            }),
+        
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function updateProductValidator() {
+    return [
+        body('name')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 255}),
+        body('description')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max:1000}),
+        body('category')
+            .optional()
+            .notEmpty().bail()
+            .isInt().bail()
+            .toInt(),
+        body('complement_name')
+            .optional()
+            .notEmpty().bail()
+            .isString().bail()
+            .isLength({max: 50}),
+        body('complement_quantity')
+            .optional()
+            .notEmpty().bail()
+            .isInt({min: 1}).bail()
+            .toInt(),
+        
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
+
+function createProductAttributeValidator() {
+    return [
+            body('title')
+                .notEmpty().bail()
+                .isString().bail()
+                .isLength({max: 50}),
+            body('content')
+                .notEmpty().bail()
+                .isString().bail()
+                .isLength({max:255}),
+            (req, res, next) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty())
+                    return res.status(400).json({errors: errors.array()});
+                next();
+                },
+        ]
+}
+
+function updateProductImageValidator() {
+    return [
+        body('new_position')
+            .notEmpty().bail()
+            .isInt({min: 1}).withMessage("Position must be a 1-based index.").bail()
+            .toInt(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({errors: errors.array()});
+            next();
+            },
+    ]
+}
 
 module.exports = {
     // User validators
@@ -626,6 +984,10 @@ module.exports = {
 
     // Product validators
     getProductsValidator,
+    createProductValidator,
+    updateProductValidator,
+    createProductAttributeValidator,
+    updateProductImageValidator,
 
     // Category validators,
     createCategoryValidator,
@@ -649,6 +1011,17 @@ module.exports = {
 
     // Distribution Center Validators
     createDistributionCenterValidator,
-    updateDistributionCenterValidator
+    updateDistributionCenterValidator,
+
+    // Vehicle Validators
+    createVehicleValidator,
+    updateVehicleValidator,
+
+    // Inventory Validators
+    getInventoryValidator,
+    createSupplyValidator,
+    updateSupplyValidator,
+    createSupplyTransportValidator,
+    updateSupplyTransportValidator
 
 }

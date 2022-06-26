@@ -216,7 +216,8 @@ router.post('/:userId/cart', authentication.check, authorization.check, addToCar
             case "INVALID_COMBINATION":
                 return res.status(400).send({message: "Invalid combination of product, supplier and transporter."})
             default:
-                return res.status(200).send({message: "Item successfully added to cart."})
+                return res.status(200).send({message: "Item successfully added to cart."
+            })
         }
     })
 

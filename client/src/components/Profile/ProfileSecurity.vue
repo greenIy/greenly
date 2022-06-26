@@ -3,7 +3,7 @@
         <h4>Segurança</h4>
         <hr>
         <div style="overflow-y: auto; overflow-x: hidden; height: 440px;">
-            <div style="width: 95%">
+            <div style="width: 95%; margin-left: 5px; margin-bottom: 5px;">
                 <form @submit.prevent="changePassword">
                     <div class="row g-4">
                         <div class="col-md-6 mb-3">
@@ -76,7 +76,7 @@
                 <br>
 
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount" v-on:click="generateCode()"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
 
                 <!-- Modal -->
                 <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
@@ -89,12 +89,19 @@
                     <div class="modal-body" id="checkIcon" style="width: 15%; margin-left: 42.5%; display: none;">
                         <img src='../../assets/checkIconGreen.png'>
                     </div>
-                    <div class="modal-body" id="deleteMessage">
-                        Tem a certeza que deseja apagar a sua conta definitivamente?
+                    <div class="modal-body text-center p-4" id="deleteMessage">
+                        <h3 id="deleteAccountCode">{{ this.deleteCode }}</h3>
+                        Digite o código acima para confirmar que pretende apagar a sua conta de forma definitiva
+                        <div class="form-row justify-content-center mt-3">
+                            <div class="input-group input-group-lg col-md-3 mx-auto w-50">
+                                <input v-on:click="removeIsInvalid" id="codeInput" type="text" class="form-control text-center" maxlength="4">
+                                <div class="invalid-feedback" id="invalidDeleteCode">O código está errado.</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="deleteAccount">Apagar</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="confirmDeleteAccount">Apagar</button>
                     </div>
                     </div>
                 </div>
@@ -133,7 +140,7 @@ export default({
     },
     data() {
         return {
-            user: [],
+            user: {},
             accessToken: localStorage.getItem('accessToken'),
             showPassword1: false,
             showPassword2: false,
@@ -144,13 +151,14 @@ export default({
                 newPassword: '',
                 newPasswordConfirm: '',
             },
+            deleteCode: '',
             url_api: 'https://docs.greenly.pt/'
         }
     },
     methods: {
         getUserInfo() {
             this.user = this.$store.getters.getUser
-            return this.$store.getters.getUser
+            return this.user
         },
         logoutUser() {
             AuthService.logoutUser()
@@ -247,10 +255,23 @@ export default({
                         console.log("Failure!");
                     })
         },
+        generateCode() {
+            const code = Math.floor(1000 + Math.random() * 9000);
+            this.deleteCode = code;
+        },
+        confirmDeleteAccount() {
+            var codeInput = document.getElementById("codeInput")
+            if (this.deleteCode == codeInput.value) {
+                this.deleteAccount()
+            } else {
+                codeInput.classList.add("is-invalid")
+            }
+        },
         removeIsInvalid() {
             document.getElementById("oldPassword").classList.remove("is-invalid");
             document.getElementById("newPassword").classList.remove("is-invalid");
             document.getElementById("newPasswordConfirm").classList.remove("is-invalid");
+            document.getElementById("codeInput").classList.remove("is-invalid");
         }
     },
 });
@@ -273,5 +294,9 @@ export default({
         border: 5px solid transparent;
         background-clip: content-box;
         background-color: #5E9F88;
+    }
+    :focus {
+        outline: 0 !important;
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
     }
 </style>
