@@ -100,9 +100,17 @@ const routes = [
       path: '/checkout',
       name: 'checkout',
       component() {
-        return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
+        return import(/* webpackChunkName: "checkout" */ '../views/CheckoutView.vue');
       },
-    }
+    },
+    {
+      path: '/sucesso',
+      name: 'sucesso',
+      component() {
+        return import(/* webpackChunkName: "sucesso" */ '../views/SuccessView.vue');
+    },
+
+  }
 ];
 
 const router = createRouter({

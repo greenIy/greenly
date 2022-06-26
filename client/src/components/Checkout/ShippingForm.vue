@@ -89,12 +89,13 @@ export default {
     },
     emits: ["setShipping", "setBilling", "done"],
     mounted() {
-
+        console.log(this.selectedShippingAddress)
         this.getUserInfo();
     },
     data(props) {
         let selectedShippingAddress = props.shipping;
         let selectedBillingAddress = props.billing;
+        console.log(selectedShippingAddress);
         return {
             user: [],
             addresses: [],
@@ -103,16 +104,28 @@ export default {
         }
     },
     methods: {
-        getUserInfo() {
+        async getUserInfo() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             const self = this;
             if (accessToken) {
-                http.get(`/user/${userId}`, {headers: {"Authorization": `Bearer ${accessToken}`}})
+                await http.get(`/user/${userId}`, {headers: {"Authorization": `Bearer ${accessToken}`}})
                     .then(response => {
                         if (response.status == 200) {
                             self.user = response.data;
                             self.addresses = self.user.addresses;
+                            if (self.selectedShippingAddress == null || self.selectedBillingAddress == null) {
+                                for (let address of self.addresses) {
+                                    if (address.is_shipping == true) {
+                                        self.selectShippingAddress(address);
+                                    }
+                                    if (address.is_billing == true) {
+                                        self.selectBillingAddress(address);
+                                    }
+                                }
+                            }
+                            console.log(self.selectedBillingAddress);
+                            return self.user
                         }
                     })
             }
@@ -129,6 +142,13 @@ export default {
             this.$emit('setBilling', address);
         },
     },
+    activated() {
+        console.log("Shipping form activated")
+    },
+
+    deactivated() {
+        console.log("Shipping form deactivated")
+    }
 
 
 }

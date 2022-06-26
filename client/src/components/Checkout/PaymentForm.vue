@@ -158,6 +158,13 @@ export default defineComponent({
                 } else {
                     // The payment has been processed!
                     // The payment token can be used to create a charge or a customer
+                    // self.$emit("payment-success", result.paymentIntent.id);
+                    self.loading = false;
+                    self.$emit("payment-success");
+
+                    // Redirect to order confirmation page
+                    self.$router.push({name: 'sucesso'});
+
                 }
             });
 

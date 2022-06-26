@@ -15,13 +15,7 @@
                 <p class="cart-info__item-quantity">Quantidade: {{ item.quantity }}</p>
             </div>
 
-            <button class="cart-info__item-remove" @click="removeItem(item.index)">
-                <svg class="cart-info__item-remove-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    <path d="M0 0h24v24H0z" fill="none"/>
-                </svg>
-            </button>
-        </div>
+    </div>
     </div>
     <div class="cart-info__footer" v-if="cart.length > 0">
         <p class="cart-info__total">Total: € {{ total }}</p>
@@ -59,36 +53,21 @@ export default {
             this.total_items = 0;
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
+            if (accessToken) {
                 http.get(`/user/${userId}/cart`, {headers: {'Authorization': `Bearer ${accessToken}`}})
-                .then(response => {
-                    this.cart = response.data.items;
-                    this.total = response.data.total_price;
-                    for(let item of this.cart){
-                        this.total_items += item.quantity;
-                    }
-                })
+                    .then(response => {
+                        this.cart = response.data.items;
+                        this.total = response.data.total_price;
+                        for (let item of this.cart) {
+                            this.total_items += item.quantity;
+                        }
+                    })
                 return this.cart;
             }
         },
-        removeItem(index) {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken) {
-                http.delete(`/user/${userId}/cart/${index}`, {headers: {'Authorization': `Bearer ${accessToken}`}})
-                    .then(response => {
-                        if (response.status == 200) {
-                            this.getCart();
-                        } else {
-                            console.log(response);
-                        }
-                        return this.cart;
-                    })
-                }
-            },
-        }
-
     }
+}
+
 </script>
 
 <style scoped>

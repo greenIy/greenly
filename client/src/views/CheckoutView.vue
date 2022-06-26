@@ -7,10 +7,7 @@
                 <h2>Checkout</h2>
                 <div v-if="activeTab === 'shipping'" class="row"> <!-- Shipping tab -->
                     <div class="col-md-8">
-                        <KeepAlive>
                         <shipping-form :billing="billingAddress" :shipping="shippingAddress" @setBilling="setBillingAddress" @setShipping="setShippingAddress" @done="shippingCallback" />
-                    </KeepAlive>
-
                 </div>
                     <div class="col-md-4">
                         <cart-info/>
@@ -19,7 +16,7 @@
 
                 <div v-if="activeTab === 'payment'" class="row"> <!-- Payment tab -->
                     <div class="col-md-6">
-                        <payment-form v-if="activeTab === 'payment'" :client-secret="stripeInfo.clientSecret" :stripe-key="stripeInfo.stripeKey" @go-back="changeTab" @toast-fail="toastFail"/>
+                        <payment-form v-if="activeTab === 'payment'" :client-secret="stripeInfo.clientSecret" :stripe-key="stripeInfo.stripeKey" @go-back="changeTab" @toast-fail="toastFail" @payment-success="paymentCallback"/>
                     </div>
                     <div class="col-md-6">
                         <cart-info/>
@@ -68,23 +65,25 @@
             }
         },
         methods: {
-            getUserInfo() {
+            async getUserInfo() {
                 let accessToken = JSON.parse(localStorage.getItem('accessToken'));
                 let userId = JSON.parse(localStorage.getItem('userId'));
+                const self = this;
                 if (accessToken) {
-                    http.get(`/user/${userId}`, {headers: {"Authorization": `Bearer ${accessToken}`}})
+                    await http.get(`/user/${userId}`, {headers: {"Authorization": `Bearer ${accessToken}`}})
                         .then(response => {
                             if (response.status == 200) {
-                                this.user = response.data;
+                                self.user = response.data;
                                 for (let address of this.user.addresses) {
-                                    if (address.is_shipping === true) {
-                                        this.shippingAddress = address;
+                                    if (address.is_shipping == true) {
+                                        self.shippingAddress = address;
                                     }
-                                    if (address.is_billing === true) {
-                                        this.billingAddress = address;
+                                    if (address.is_billing == true) {
+                                        self.billingAddress = address;
                                     }
                                 }
-                                return this.user
+                                console.log(self.billingAddress);
+                                return self.user
                             }
                     })
                 }
@@ -153,12 +152,25 @@
                 }
             },
 
+            paymentCallback(){
+                let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+                let userId = JSON.parse(localStorage.getItem('userId'));
+
+                http.delete(`/user/${userId}/cart`, {headers: {"Authorization": `Bearer ${accessToken}`}})
+                    .then(response => {
+                        if (response.status == 200) {
+                            console.log("Cart deleted");
+                        }
+                    })
+            },
+
             toastFail(message){
                 this.toast.error(message, {
                     position: 'top-left',
                     duration: 10000
                 });
             },
+
 
             changeTab(tab) {
                 this.activeTab = tab;
@@ -173,6 +185,10 @@
                 this.billingAddress = address;
                 console.log("Billing address set to: ", this.billingAddress);
             }
+        },
+        mounted() {
+            this.getUserInfo();
+            console.log(this.shippingAddress);
         }
 
     }
@@ -184,5 +200,7 @@
     display: flex;
     align-items: stretch;
 }
+
+
 
 </style>
