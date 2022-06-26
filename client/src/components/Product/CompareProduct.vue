@@ -86,7 +86,7 @@
         <div class="col-2">
         </div>
         <div class="col-7">
-            <p class="text-muted"><small>São apresentadas as informações do fornecedor e do transportador mais sustentáveis para comparação.</small></p>
+            <p class="text-muted"><small>São apresentadas para comparação as informações do fornecedor e do transportador mais sustentáveis.</small></p>
             <div class="d-flex justify-content-start">
                 <table class="table table-striped table-responsive">
                 <tbody>
@@ -103,13 +103,13 @@
                     </tr>
                     <tr class="font-compare">
                     <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'industry']" />Recursos de Armazenamento</small></span></th>
-                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].warehouse.resource_usage}} kWh/dia</small></span></td>
-                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].warehouse.resource_usage}} kWh/dia</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].warehouse.resource_usage.toFixed(1)}} kWh/dia</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].warehouse.resource_usage.toFixed(1)}} kWh/dia</small></span></td>
                     </tr>
                     <tr class="font-compare">
                     <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'money-bill-wave']" />Preço Fornecedor</small></span></th>
-                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].price}}€</small></span></td>
-                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].price}}€</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[0].supplies[0].price.toFixed(1)}}€</small></span></td>
+                    <td scope="row"><span><small>{{ productsToCompare[1].supplies[0].price.toFixed(1)}}€</small></span></td>
                     </tr>
                     <tr class="font-compare">
                     <th scope="col"><span class="d-flex"><small class="align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted my-auto" :icon="['fas', 'user']" />Transportador</small></span></th>
