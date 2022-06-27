@@ -260,7 +260,7 @@ export default {
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
   border-radius: .25rem;
-  height: 946px;
+  height: 960px;
 }
 
 .v-enter-active,

@@ -6,6 +6,7 @@ const { PrismaClient, Prisma } = require('@prisma/client');
 const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
+const { nanoid } = require('nanoid');
 
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
@@ -26,6 +27,16 @@ Prisma.Decimal.prototype.toJSON = function() {
 
 const maps = new Client();
 
+/* Initializing Google Storage Bucket */
+
+const {Storage} = require('@google-cloud/storage');
+
+const storage = new Storage({
+    keyFilename: ".google-key.json" //TODO: Remove this line in production
+});
+
+const bucket = storage.bucket("greenly.pt");
+
 /* Checking database availability */
 
 prisma.$connect().catch((reason) => {
@@ -34,6 +45,18 @@ prisma.$connect().catch((reason) => {
 })
 
 /* Helper functions */
+
+// Composing Cloud Storage Access
+
+function composeURL(identifier) {
+    return `https://storage.googleapis.com/${bucket.name}/${identifier}` 
+}
+
+// Reporting exceptions (only in development mode)
+
+function report(e) {
+    if (process.env.MODE == "development") console.log(e)
+}
 
 // Proper rounding function as oposed to JS Math
 function round(value, decimals) {
@@ -179,7 +202,7 @@ async function determineOptimalVehicle(transporter, destination) {
         return leastBusyVehicle.id
 
     } catch (e) {
-        console.log(e)
+        report(e)
         // If anything goes wrong, simply use the first vehicle
         return 1
     }
@@ -198,10 +221,10 @@ async function createUser(params) {
                 last_name: params.last_name ? params.last_name : '',
                 email: params.email,
                 phone: params.phone,
-                type: params.type
+                type: params.type,
+                registration_date: new Date()
             }
         })
-
 
         let newCredentials = params.password ? await prisma.credentials.create({
             data: {
@@ -242,7 +265,7 @@ async function createUser(params) {
         return {id: newUser.id};
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -314,7 +337,7 @@ async function updateUser(id, params) {
         return updatedUser;
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 
@@ -359,7 +382,7 @@ async function deleteUser(id) {
         }
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 
@@ -422,7 +445,7 @@ async function getUserByID(id, withPassword=false) {
             }
         })
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -470,7 +493,7 @@ async function getUserByEmail(email, withPassword=false) {
             }
         })
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -545,7 +568,7 @@ async function createAddress(userID,
 
         return {id: newAddress.id}
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -619,7 +642,7 @@ async function updateAddress(userId, addressId, params) {
             lng = round(geocoded.data.results[0].geometry.location.lng, roundingPrecision);
 
         } catch (e) {
-            console.log(e)
+            report(e)
         }
 
         updatedAddress = await prisma.address.update({
@@ -635,7 +658,7 @@ async function updateAddress(userId, addressId, params) {
 
         return updateAddress;
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -656,7 +679,7 @@ async function deleteAddress(id) {
 
     } catch (e) {
         // If it doesn't exist, prisma throws "RecordNotFound"
-        console.log(e)
+        report(e)
         return false
     }
 }
@@ -783,7 +806,7 @@ async function getAllProducts(limit = 50,
                     name: true,
                     description: true,
                     complement_name: true,
-                    complement_amount: true,
+                    complement_quantity: true,
                     Category: {
                         select: {
                             id: true,
@@ -812,7 +835,7 @@ async function getAllProducts(limit = 50,
                 name: true,
                 description: true,
                 complement_name: true,
-                complement_amount: true,
+                complement_quantity: true,
                 Category: {
                     select: {
                         id: true,
@@ -849,12 +872,27 @@ async function getAllProducts(limit = 50,
     }
 
     // Calculating and defining lowest and highest prices for each product
-    products.forEach((product) => {
+    products = await Promise.all(products.map(async (product) => {
+
         if (product.Supply.length > 0) {
             product.lowest_price = parseFloat(calcLowestPrice(product.Supply).toFixed(2))
             product.highest_price = parseFloat(calcHighestPrice(product.Supply).toFixed(2))
         }
-    })
+
+        // Obtaining product thumbnail
+        let thumbnail = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: 1,
+                    product: product.id
+                }
+            }
+        })
+
+        product.thumbnail = thumbnail ? composeURL(thumbnail.uri) : "default"
+
+        return product
+    }))
 
     // Checking if price bounds have been set
     const minPrice = price_range.min || 0;
@@ -876,7 +914,7 @@ async function getAllProducts(limit = 50,
 
 async function getProductByID(id){
     try {
-        let result =  product = await prisma.product.findUnique({
+        let result = await prisma.product.findUnique({
             where: {
                 id: id
             },
@@ -891,12 +929,18 @@ async function getProductByID(id){
                     }
                 } ,
                 complement_name: true,
-                complement_amount: true,
+                complement_quantity: true,
                 ProductAttribute: {
                     select: {
                         id: true,
                         title: true,
                         content: true
+                    }
+                },
+                ProductImage: {
+                    select: {
+                        id: true,
+                        uri: true
                     }
                 },
                 Supply: {
@@ -948,7 +992,17 @@ async function getProductByID(id){
                 },
         })
 
-        if (result) {
+        if (result) { 
+
+            // Composing URLs out of stored image URIs
+
+            result.ProductImage = result.ProductImage.map((image) => {
+                return {
+                    id: image.id,
+                    url: composeURL(image.uri)
+                }
+            })
+
             for (let i = 0; i < result.Supply.length; i++) {
                 // Gathering further warehouse info
                 let warehouse = await prisma.warehouse.findUnique({
@@ -988,7 +1042,7 @@ async function getProductByID(id){
         return result;
 
     } catch (e){
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1016,7 +1070,7 @@ async function getAllCategories() {
         return categories
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1198,7 +1252,7 @@ async function getAllTransporters() {
         // Obtaining amount of products currently available (i.e. supplies)
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null;
     }
 }
@@ -1290,6 +1344,16 @@ async function getCart(userID) {
                 },
             })
 
+            // Obtaining product thumbnail
+            let thumbnail = await prisma.productImage.findUnique({
+                where: {
+                    id_product: {
+                        id: 1,
+                        product: product.id
+                    }
+                }
+            })
+
             // Calculating transporter averages
             let vehicle_averages = await prisma.vehicle.aggregate({
                 where: {
@@ -1326,10 +1390,10 @@ async function getCart(userID) {
             item.supplier_renewable_resources = warehouse.renewable_resources
 
             // Additional product information
-            // TODO: Eventually, also select the product's image here
             item.product = {
                 id: item.product,
-                name: product.name
+                name: product.name,
+                thumbnail: thumbnail ? composeURL(thumbnail.uri) : "default"
             }
 
             // Incrementing the total cart price
@@ -1356,7 +1420,7 @@ async function getCart(userID) {
             total_transporter_emissions:        parseFloat(totalTransporterEmissions.toFixed(2))}
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1458,7 +1522,7 @@ async function addItemToCart(
         return "SUCCESSFULLY_ADDED"
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1473,7 +1537,7 @@ async function clearCart(userID) {
 
         return true;
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 }
@@ -1522,7 +1586,7 @@ async function updateCartItem(userID, index, quantity) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1565,7 +1629,7 @@ async function removeCartItem(userID, index) {
 
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -1588,7 +1652,7 @@ async function getWishlist(userID) {
         })
 
         // Gather additional data for each product
-        // TODO: Eventually add product photo here too
+
         wishlistItems = await Promise.all(wishlistItems.map(async (item) => {
             let correspondingProduct = await prisma.product.findUnique({
                 where: {
@@ -1603,10 +1667,21 @@ async function getWishlist(userID) {
 
             // Adding product information to wishlist item
 
+            // Obtaining product thumbnail
+            let thumbnail = await prisma.productImage.findUnique({
+                where: {
+                    id_product: {
+                        id: 1,
+                        product: item.product
+                    }
+                }
+            })
+
             item = {
                 id: item.product,
                 name: correspondingProduct.name,
                 description: correspondingProduct.description,
+                thumbnail: thumbnail ? composeURL(thumbnail.uri) : "default",
                 category: {
                     id: correspondingProduct.Category.id,
                     name: correspondingProduct.Category.name
@@ -1620,6 +1695,7 @@ async function getWishlist(userID) {
         return wishlistItems
 
     } catch (e) {
+        report(e)
         return null;
     }
 }
@@ -1666,7 +1742,7 @@ async function clearWishlist(userID) {
         })
         return true;
     } catch (e) {
-        console.log(e)
+        report(e)
         return false;
     }
 }
@@ -1711,7 +1787,7 @@ async function removeProductFromWishlist(userID, productID) {
  * order-management features (i.e. all except consumers).
  * Consumers will only receive their orders.
  * Suppliers will only receive orders with OrderItems in which they're registered as supplier.
- * Transporters will only receive orders with OrderItems in which they're registed as transporter.
+ * Transporters will only receive orders with OrderItems in which they're registered as transporter.
  * Administrators will receive every order.
  * @param user - The user in question 
  */
@@ -1803,6 +1879,9 @@ async function removeProductFromWishlist(userID, productID) {
 
             case "ADMINISTRATOR": {
                 orders = await prisma.order.findMany({
+                    include: {
+                        Order_Item: true
+                    },
                     orderBy: {
                         date: 'desc'
                     }
@@ -1823,6 +1902,7 @@ async function removeProductFromWishlist(userID, productID) {
                 }, select: {
                     id: true,
                     first_name: true,
+                    last_name: true,
                     email: true,
                     phone: true
                 }
@@ -1879,6 +1959,18 @@ async function removeProductFromWishlist(userID, productID) {
                     }
                 })
 
+                // Obtaining product thumbnail
+                let productThumbnail = await prisma.productImage.findUnique({
+                    where: {
+                        id_product: {
+                            id: 1,
+                            product: item.product.id
+                        }
+                    }
+                })
+
+                item.product.thumbnail = productThumbnail ? composeURL(productThumbnail.uri) : "default"
+
                 let supplier = await prisma.user.findUnique({
                     where: {
                         id: item.supplier
@@ -1919,7 +2011,7 @@ async function removeProductFromWishlist(userID, productID) {
 
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -2020,7 +2112,7 @@ async function createOrder(userID, shippingAddressID, billingAddressID, observat
         return newOrder.id
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null;
     }
 }
@@ -2122,11 +2214,18 @@ async function getFilteredOrderByID(user, orderID) {
             order = await prisma.order.findUnique({
                 where: {
                     id: orderID
-                }
+                },
+                include: {
+                    Order_Item: true
+                },
             })
 
             break;
         }
+    }
+
+    if (!order) {
+        return "NOT_FOUND"
     }
 
 
@@ -2139,6 +2238,7 @@ async function getFilteredOrderByID(user, orderID) {
         }, select: {
             id: true,
             first_name: true,
+            last_name: true,
             email: true,
             phone: true
         }
@@ -2193,6 +2293,18 @@ async function getFilteredOrderByID(user, orderID) {
                 name: true,
             }
         })
+
+        // Obtaining product thumbnail
+        let thumbnail = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: 1,
+                    product: product.id
+                }
+            }
+        })
+
+        product.thumbnail = thumbnail ? composeURL(thumbnail.uri) : "default"
 
         let supplier = await prisma.user.findUnique({
             where: {
@@ -2903,7 +3015,7 @@ async function dismissNotification(userID, notificationID) {
     
         return true
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -2974,7 +3086,7 @@ async function getWarehouses(userID) {
         return warehouses
 
     } catch (e) {
-        console.log(e);
+        report(e);
         return null
     }
 }
@@ -3067,7 +3179,7 @@ async function getWarehouse(userID, warehouseID) {
         return warehouse
         
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -3127,7 +3239,7 @@ async function createWarehouse(userID, addressID, capacity, resourceUsage, renew
 
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 }
@@ -3515,7 +3627,7 @@ async function updateDistributionCenter(userID, centerID, params) {
         })
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3743,7 +3855,7 @@ async function createVehicle(
 
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3895,7 +4007,7 @@ async function deleteVehicle(userID, vehicleID) {
         })
 
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 
@@ -3911,8 +4023,6 @@ async function getInventory(
     let sortingMethod = {}
 
     let filters = {}
-
-    console.log(warehouse, sort)
 
     try {
 
@@ -4016,7 +4126,7 @@ async function getInventory(
 
 
     } catch (e) {
-        console.log(e);
+        report(e);
         return null
     }
 
@@ -4151,7 +4261,7 @@ async function getSupply(userID, supplyID) {
     
         return item
     } catch (e) {
-        console.log('e :>> ', e);
+        report(e);
         return null
     }
 }
@@ -4223,9 +4333,11 @@ async function createSupply(
                 }
             })
 
+            let newSupplyID = latestSupply ? latestSupply.id + 1 : 1
+
             let newSupply = await prisma.supply.create({
                 data: {
-                    id: latestSupply.id + 1,
+                    id: newSupplyID,
                     product: productID,
                     warehouse: warehouseID,
                     supplier: userID,
@@ -4239,7 +4351,7 @@ async function createSupply(
             return newSupply.id
 
         } catch (e) {
-            console.log(e)
+            report(e)
             return null
         }
 }
@@ -4297,7 +4409,7 @@ async function updateSupply(userID, supplyID, params) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4331,7 +4443,7 @@ async function deleteSupply(userID, supplyID) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4395,7 +4507,7 @@ async function createSupplyTransport(userID, supplyID, transporterID, price) {
         })
         
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4450,7 +4562,7 @@ async function updateSupplyTransport(userID, supplyID, transporterID, price) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
@@ -4502,12 +4614,715 @@ async function deleteSupplyTransport(userID, supplyID, transporterID) {
         })
 
     } catch (e) {
-        console.log(e)
+        report(e)
         return null
     }
 
 }
 
+async function createProduct(
+    name,
+    description,
+    categoryID,
+    complementName,
+    complementAmount,
+    attributes
+) {
+
+
+    try {
+        
+        // Proofing
+
+        let specifiedCategory = await prisma.category.findUnique({
+            where: {
+                id: categoryID
+            }
+        })
+
+        if (!specifiedCategory) {
+            return "INVALID_CATEGORY"
+        }
+
+        // If the category checks out, create the product
+
+        let newProduct = await prisma.product.create({
+            data: {
+                name: name,
+                description: description,
+                category: categoryID,
+                // These are "logical nullish assignements": complement info. will be set as null if not provided
+                complement_name: complementName ??= null,
+                complement_quantity: complementAmount ??= null,
+            }
+        })
+
+        // Create the product attributes
+        
+        if (attributes.length > 0) {
+            await Promise.all(attributes.map(async (attribute, index) => {
+
+                await prisma.productAttribute.create({
+                    data: {
+                        id: index + 1,
+                        product: newProduct.id,
+                        title: attribute.title,
+                        content: attribute.content
+                    }
+                })
+
+            }))
+        }
+
+        return newProduct.id
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function updateProduct(productID, params) {
+
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Checking new category if specified
+
+        if (params.category) {
+            let specifiedCategory = await prisma.category.findUnique({
+                where: {
+                    id: params.category
+                }
+            }) 
+
+            if (!specifiedCategory) {
+                return "INVALID_CATEGORY"
+            }
+
+        }
+
+        // Determining attributes to update
+
+        let updatedProductData = {}
+
+        let productKeyMap = [
+            "name",
+            "description",
+            "category",
+            "complement_name",
+            "complement_quantity"
+        ]
+
+        for (const [key, value] of Object.entries(params)) {
+            if (productKeyMap.includes(key)) {
+                updatedProductData[key] = value
+            }
+        }
+
+        // Updating product
+
+        let updatedProduct = await prisma.product.update({
+            where: {
+                id: productID
+            },
+            data: updatedProductData
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function deleteProduct(productID) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Also delete all images in bucket relative to this product
+
+        let productImages = await prisma.productImage.findMany({
+            where: {
+                product: productID
+            },
+            select: {
+                uri: true
+            }
+        })
+
+        // Deleting product
+
+        let deletedProduct = await prisma.product.delete({
+            where: {
+                id: productID
+            }
+        })
+
+        let deletedImages = Promise.all(
+            productImages.map(async (image) => {
+                await bucket.file(image.uri).delete({
+                    ignoreNotFound: true
+                });
+            })
+        )
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+/* Product attribute functions */
+
+async function createProductAttribute(
+    productID,
+    title,
+    content) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        // Creating a new attribute
+
+        let latestAttribute = await prisma.productAttribute.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let newAttributeID = latestAttribute ? latestAttribute.id + 1 : 1
+
+        let newAttribute = await prisma.productAttribute.create({
+            data: {
+                id: newAttributeID,
+                title: title,
+                content: content,
+                product: productID
+            }
+        })
+
+        return newAttribute.id
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function deleteProductAttribute(
+    productID,
+    attributeID
+) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedAttribute = await prisma.productAttribute.findUnique({
+            where: {
+                id_product: {
+                    id: attributeID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedAttribute) {
+            return "INVALID_ATTRIBUTE"
+        }
+
+        // If everything checks out, delete the specified attribute
+
+        let deletedAttribute = await prisma.productAttribute.delete({
+            where: {
+                id_product: {
+                    id: attributeID,
+                    product: productID
+                }
+            }
+        })
+
+        // Updating all affected indexes
+        await prisma.productAttribute.updateMany({
+            where: {
+                product: productID,
+                id: {
+                    gt: attributeID
+                }
+            },
+            data: {
+                id: {
+                    decrement: 1
+                }
+            }
+        })
+        
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function addProductImages(productID, file) {
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let whitelist = [
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+        ]
+
+        if (!file) {
+            return "NO_FILE"
+        }
+
+        // Checking if files are valid
+
+        if (!whitelist.includes(file.mimetype)) {
+            return "INVALID_FILE"
+        }
+
+        // Create a new blob in the bucket and upload the file to Google Cloud Storage
+        
+        let hostedFileName = `${nanoid()}.${file.mimetype.replace("image/", "")}`
+
+        let blob = bucket.file(hostedFileName);
+        let blobStream = blob.createWriteStream();
+
+        let publicURL = await new Promise(function(resolve, reject) {
+
+            blobStream.on('error', reject);
+
+            blobStream.on('finish', () => {
+                // The public URL can be used to directly access the file via HTTP.
+                let publicURL = composeURL(blob.name)
+    
+                resolve(publicURL)
+            });
+
+            blobStream.end(file.buffer);
+
+        });
+
+        // Add the image to the collection of product images
+
+        let latestImage = await prisma.productImage.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        let newImageID = latestImage ? latestImage.id + 1 : 1
+
+        let newImage = await prisma.productImage.create({
+            data: {
+                id: newImageID,
+                uri: hostedFileName,
+                product: productID
+            }
+        })
+
+        return {
+            id: newImage.id,
+            url: publicURL
+        }
+
+        
+    } catch (e) {
+        report(e)
+        return null
+    }
+}
+
+async function deleteProductImage(productID, imageID) {
+
+    try {
+
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedImage = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedImage) {
+            return "INVALID_IMAGE"
+        }
+
+        // If everything checks out, delete the image
+        // First from the bucket
+
+        await bucket.file(specifiedImage.uri).delete({
+            ignoreNotFound: true
+        });
+
+        // Then from the database
+
+        let deletedImage = await prisma.productImage.delete({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        // And alter all affected indexes
+
+        await prisma.productImage.updateMany({
+            where: {
+                product: productID,
+                id: {
+                    gt: imageID
+                }
+            },
+            data: {
+                id: {
+                    decrement: 1
+                }
+            }
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+}
+
+async function updateProductImagePosition(
+    productID,
+    imageID,
+    newPosition
+) {
+
+    try {
+        
+        // Proofing
+
+        let specifiedProduct = await prisma.product.findUnique({
+            where: {
+                id: productID
+            }
+        })
+
+        if (!specifiedProduct) {
+            return "INVALID_PRODUCT"
+        }
+
+        let specifiedImage = await prisma.productImage.findUnique({
+            where: {
+                id_product: {
+                    id: imageID,
+                    product: productID
+                }
+            }
+        })
+
+        if (!specifiedImage) {
+            return "INVALID_IMAGE"
+        }
+
+        // Updating all greater indexes (including old index at newPosition)
+
+        let oldPosition = imageID
+
+        // Temporarily delete old position
+
+        let temp = await prisma.productImage.delete({
+            where: {
+                id_product: {
+                    id: oldPosition,
+                    product: productID
+                }    
+            }
+        })
+
+        // Going forward
+        if (newPosition > oldPosition) {
+            // Decrement all between newPosition and oldPosition
+            await prisma.productImage.updateMany({
+                where: {
+                    product: productID,
+                    AND: [
+                        {
+                            id: {
+                                lte: newPosition
+                            }
+                        },
+                        {
+                            id: {
+                                gt: oldPosition
+                            }
+                        }
+                    ]
+                },
+                data: {
+                    id: {
+                        decrement: 1
+                    }
+                }
+            })
+        } else if (oldPosition > newPosition) {
+            // Going backwards
+            // Increment all between newPosition and oldPosition
+
+            let imagesToUpdate = await prisma.productImage.findMany({
+                where: {
+                    product: productID,
+                    AND: [{
+                            id: {
+                                gte: newPosition
+                            }
+                        },
+                        {
+                            id: {
+                                lt: oldPosition
+                            }
+                        }
+                    ]
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            })
+
+            // Prisma's updateMany doesn't support reverse iteration, therefore -> 
+            await prisma.$transaction(
+                imagesToUpdate.map((image) => {
+                    return prisma.productImage.update({
+                        where: {
+                            id_product: {
+                                id: image.id,
+                                product: image.product
+                            }
+                        }, data: {
+                            id: image.id + 1
+                        }
+                    })
+                })
+            )
+                
+        }
+
+        // Placing 
+
+        // Determining if the index went overboard
+        let highestIndex = await prisma.productImage.findFirst({
+            where: {
+                product: productID
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+
+        await prisma.productImage.create({
+            data: {
+                id: newPosition > highestIndex.id ? highestIndex.id + 1 : newPosition,
+                product: temp.product,
+                uri: temp.uri
+            }
+        })
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
+
+async function getStoreStatistics() {
+
+    try {
+        
+        // Calculating total stats
+
+        const nullSafe = (number) => number ? round(number, 2) : 0
+
+        let payload = {}
+
+        let totalData = await prisma.order_Item.aggregate({
+            where: {
+                status: {
+                    notIn: ["AWAITING_PAYMENT", "CANCELED", "FAILURE"]
+                }
+            },
+            _sum: {
+                supply_price: true,
+                transport_price: true,
+                supplier_resource_usage: true,
+                transporter_resource_usage: true,
+                transporter_emissions: true
+            }
+        })
+
+        let currentDate = new Date();
+        let previousDate = new Date().setMonth(currentDate.getMonth() - 1)
+
+        // Obtaining data relative only to the previous month
+
+        let lastMonthData = await prisma.order_Item.aggregate({
+            where: {
+                status: {
+                    notIn: ["AWAITING_PAYMENT", "CANCELED", "FAILURE"]
+                },
+                Order: {
+                    date: {
+                        gte: new Date(previousDate)
+                    }
+                }
+            },
+            _sum: {
+                supply_price: true,
+                transport_price: true,
+                supplier_resource_usage: true,
+                transporter_resource_usage: true,
+                transporter_emissions: true
+            }
+        })
+        
+        // Calculating revenue data
+
+        payload.revenue = {
+            total:{
+                supply: nullSafe(totalData._sum.supply_price),
+                transport: nullSafe(totalData._sum.transport_price),
+                total: round(parseFloat(nullSafe(totalData._sum.supply_price) + nullSafe(totalData._sum.transport_price)), 2)
+            },
+            last_month:{
+                supply: nullSafe(lastMonthData._sum.supply_price),
+                transport: nullSafe(lastMonthData._sum.transport_price),
+                total: round(parseFloat(nullSafe(lastMonthData._sum.supply_price) + nullSafe(lastMonthData._sum.transport_price)), 2)
+            }
+        }
+
+
+        // // Calculating emissions data
+
+        payload.emissions = {
+            total: nullSafe(totalData._sum.transporter_emissions),
+            last_month: nullSafe(lastMonthData._sum.transporter_emissions)
+        }
+
+        // Calculating resource usage data
+
+        payload.resource_usage = {
+            total:{
+                supply: nullSafe(totalData._sum.supplier_resource_usage),
+                transport: nullSafe(totalData._sum.transporter_resource_usage),
+            },
+            last_month:{
+                supply: nullSafe(lastMonthData._sum.supplier_resource_usage),
+                transport: nullSafe(lastMonthData._sum.transporter_resource_usage),
+            }
+        }
+
+        // Obtaining user data
+
+        let totalUserData = await prisma.user.count()
+        let lastMonthUserData = await prisma.user.count({
+            where: {
+                registration_date: {
+                    gte: new Date(previousDate)
+                }
+            }
+        })
+
+        payload.users = {
+            total: totalUserData,
+            last_month: lastMonthUserData
+        }
+
+        return payload
+
+    } catch (e) {
+        report(e)
+        return null
+    }
+
+}
 
 /* All functions to be made available to the rest of the project should be listed here */
 
@@ -4529,6 +5344,14 @@ module.exports = {
     // Product Functions
     getAllProducts,
     getProductByID,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    createProductAttribute,
+    deleteProductAttribute,
+    addProductImages,
+    deleteProductImage,
+    updateProductImagePosition,
 
     // Category Functions
     getAllCategories,
@@ -4599,6 +5422,9 @@ module.exports = {
     deleteSupply,
     createSupplyTransport,
     updateSupplyTransport,
-    deleteSupplyTransport
+    deleteSupplyTransport,
+
+    // Statistic Functions
+    getStoreStatistics,
 
 }

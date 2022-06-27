@@ -45,10 +45,15 @@
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-down']" /> Fornecedor
         </div>   
         <div class="collapse" id="fornecedores-collapse">
-          <div class="list-group list-group-flush overflow-auto filtro-fornecedor">
-            <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
-              &nbsp; {{ supplier.company.name }}
-            </router-link>
+          <div class="list-group list-group-flush filtro-fornecedor">
+            <div class="overflow-auto">
+              <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
+                &nbsp; {{ supplier.company.name }}
+              </router-link>
+            </div>
+            <button type="button" class="btn remove-btn mt-2" @click="removeSupplierFilter()">
+              Limpar filtro
+            </button>
           </div>
         </div>
       </li>
@@ -173,6 +178,11 @@ library.add(faAngleDown);
         this.return = false;
         return url;
       },
+      removeSupplierFilter() {
+        let query = Object.assign({}, this.$route.query);
+        delete query.fornecedor;
+        this.$router.replace({ query });
+      }
     },
     computed: {
       showCategories: function () {
@@ -235,4 +245,16 @@ library.add(faAngleDown);
 #fornecedores-collapse .filtro-fornecedor {
   height: 298px;
 }
+
+.remove-btn {
+  background-color: #5e9f88;
+  color: white;
+  font-size: 13px;
+  float: right;
+}
+
+.remove-btn:hover {
+  background-color: #73b898;
+}
+
 </style>

@@ -7,7 +7,36 @@
           <div class="card h-100 mt-4 mb-4">
             <div class="d-flex g-0 mx-3">
               <div class="col-md-3">
-                <img  src="../assets/Team/daniela.jpg" class="rounded mt-4 mb-4 ms-4" alt="Imagem do produto" style="width:90%" />
+                  <div class="mt-4 mb-4 ms-4 me-2">
+                    <carousel
+                    ref="imageCarousel" 
+                    :itemsToShow="1" 
+                    :snapAlign="start"
+                    :mouseDrag="false"
+                    :touchDrag="false"
+                    :wrapAround="true"
+                    :itemsToScroll="1">
+                      <slide 
+                      v-for="image in product.images" 
+                      :key="image.id">
+                        <img 
+                        :src="image.url" 
+                        class="rounded crop" 
+                        alt="Imagem do produto"
+                        @load="updateSlideWidth"/>
+                      </slide>
+
+                      <template #addons="{ slidesCount }">
+                        <Navigation v-if="slidesCount > 1" />
+                        <pagination />
+
+                      </template>
+
+                    </carousel>
+                  </div>
+
+
+
               </div>
               <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
@@ -153,6 +182,29 @@
     </div>
   </div>
 </template>
+
+<style>
+
+/* Estas definições têm que estar aqui antes da importação da stylesheet!!! */
+.carousel__prev, .carousel__next {
+    background-color: #4eb490!important;
+}
+
+.carousel__pagination-button {
+    background-color: #ace3d0;
+} 
+
+.carousel__pagination-button--active {
+    background-color: #27b482;
+}
+
+.carousel__prev--in-active,
+.carousel__next--in-active {
+  display: none;
+}
+
+</style>
+
 <script>
 import TheNavbar from "@/components/Frontpage/TheNavbar.vue";
 import TheFooter from "@/components/Frontpage/TheFooter.vue";
@@ -161,6 +213,9 @@ import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 import Chart from "@/components/Product/Chart.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus, faList, faClockRotateLeft} from "@fortawesome/free-solid-svg-icons";
+import 'vue3-carousel/dist/carousel.css';
+import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
+import { ref } from 'vue';
 
 library.add(faHeart);
 library.add(faCartPlus);
@@ -180,6 +235,10 @@ export default {
     FornecedorModal,
     TransportadorModal,
     Chart,
+    Carousel,
+    Slide,
+    Pagination,
+    Navigation,
   },
   props: {
     modalT:Boolean,
@@ -407,6 +466,9 @@ export default {
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
     },
+    updateSlideWidth() {
+      this.$refs.imageCarousel.restartCarousel()
+    }
   },
 };
 </script>
@@ -506,4 +568,19 @@ input[type='number']::-webkit-outer-spin-button {
     margin: 0;
 }
 
+.carousel__slide {
+  padding: 5px;
+  width: 400px;
+  scroll-snap-stop: always;
+}
+
+.carousel__item {
+  width: 400px;
+}
+
+.crop {
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+}
 </style>

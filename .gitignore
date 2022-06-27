@@ -94,3 +94,10 @@ typings/
 .vscode/
 .DS_Store
 *.code-workspace
+
+# Testing 
+
+server/tests/e2e/cypress/fixtures/
+server/tests/e2e/cypress/support/
+server/tests/e2e/cypress/videos/
+server/tests/e2e/cypress/screenshots/
