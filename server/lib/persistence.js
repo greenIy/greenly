@@ -2107,7 +2107,7 @@ async function createOrder(userID, shippingAddressID, billingAddressID, observat
         }))
 
         // Clearing the cart
-        await clearCart(userID)
+        // await clearCart(userID)
 
         return newOrder.id
 
@@ -2960,9 +2960,11 @@ async function createNotification(userID, title, content, scope, relatedOrderID,
         }
     }
 
-    await prisma.notification.create({
+    let newNotification = await prisma.notification.create({
         data: notificationData
     })
+
+    emailHandler(newNotification)
 }
 
 /* Notification functions */
@@ -5427,4 +5429,11 @@ module.exports = {
     // Statistic Functions
     getStoreStatistics,
 
+    // Utils
+    round,
+    report
+
 }
+
+// Avoiding circular dependency errors
+const { emailHandler } = require("./handler")

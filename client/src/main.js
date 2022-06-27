@@ -101,6 +101,8 @@ const gauthOption = {
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
 
+// Instanciação do componente Toast
+myApp.use(VueToast);
 myApp.use(VueDraggable);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
