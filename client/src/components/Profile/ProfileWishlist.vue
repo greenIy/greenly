@@ -1,9 +1,10 @@
 <template>
+
     <div class="p-4">
         <div class="row d-flex justify-content-center align-self-center">
             <h4 class="col-md-6 align-self-center">Favoritos</h4>
             <div class="col-md-6 text-end align-self-end">
-                <button v-if="this.wishlistLength > 0" type="button" @click="removeAllProducts($event)" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: "/> Limpar favoritos</button>
+                <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-if="this.wishlistLength > 0" type="button" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: "/> Limpar favoritos</button>
             </div>
         </div>
         <hr>
@@ -34,7 +35,24 @@
         <!-- <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/> -->
 
     </div>
-
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Limpar favoritos?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Têm a certeza que quer limpar todos os produtos dos favoritos?
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="closeRemoveAll" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger">Limpar favoritos</button>
+        </div>
+        </div>
+    </div>
+    </div>
     </div>
 </template>
 
@@ -50,6 +68,8 @@ library.add(faSun, faGasPump, faIndustry, faSkullCrossbones, faTrash);
 
 import http from "../../../http-common"
 
+import { useToast } from "vue-toastification";
+
 
 export default({
     name: 'ProfileWishlist',
@@ -60,8 +80,11 @@ export default({
     mounted() {
         this.getProducts();
     },
+    
     data() {
+        const toast = useToast()
         return {
+            toast,
             products: [],
             wishlistLength: -1
         }
@@ -90,6 +113,10 @@ export default({
                 http.delete(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
                     if (response.status == 200) {
                         this.products = response.data
+                        this.successRemoveAllItems()
+                        var closeModal = document.getElementById("closeRemoveAll");
+                        closeModal.click();
+                        this.getProducts();
                         return this.products
                     }
                 })
@@ -100,8 +127,26 @@ export default({
         calculateWishlistLength() {
             this.wishlistLength = this.products.length;
             console.log(this.wishlistLength)
+        },
+
+        successRemoveAllItems(){
+                this.toast.success('Todos os itens foram removidos dos favoritos!', {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
         }
     },
+
 });
 
 </script>

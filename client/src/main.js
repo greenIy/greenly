@@ -19,6 +19,10 @@ import VueAxios from 'vue-axios';
 //Draggable
 import VueDraggable from 'vuedraggable';
 
+
+import VueToast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
 const myApp = createApp(App);
 const emitter = mitt();
 myApp.config.globalProperties.emitter = emitter;
@@ -28,7 +32,8 @@ myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
-myApp.use(store)
+myApp.use(store);
+myApp.use(VueToast);
 
 /* Antes da validação de cada pedido de navegação,
    verificar se o utilizador de facto pode visitar a página,
@@ -101,4 +106,4 @@ myApp.use(GAuth, gauthOption);
 myApp.use(VueDraggable);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
-export {store, Toast}
+export {store, Toast, VueToast}

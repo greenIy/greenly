@@ -148,7 +148,7 @@
             </div>
         </div>
         <div class="align-self-center nav-links mt-2 mb-2">
-            <router-link to="/cart">
+            <router-link to="/carrinho">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
             </router-link>
         </div>
@@ -174,8 +174,6 @@
             </router-link>
         </div>
     </div>
-
-
 </nav>
 </template>
 

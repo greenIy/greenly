@@ -44,6 +44,8 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import http from "../../../http-common";
 library.add(faHeart);
 
+import { useToast } from "vue-toastification";
+
 export default {
   name: "ProductCard",
   props: {
@@ -53,7 +55,9 @@ export default {
     this.getWishlist()
   },
   data() {
+    const toast = useToast()
     return {
+      toast,
       isActive: false,
       user: {
         accept: false,
@@ -111,6 +115,7 @@ export default {
             http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
             .then((response) => {
                 if (response.status == 200) {
+                  this.successRemoveSingleItem()
                   this.getWishlist()
                 }
             }).catch((error) => {
@@ -120,6 +125,22 @@ export default {
 
         }
     },
+    successRemoveSingleItem(){
+        this.toast.success('O item foi removido com sucesso!', {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
+    }
   }
 };
 

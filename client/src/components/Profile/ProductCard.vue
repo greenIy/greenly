@@ -26,7 +26,9 @@
           <div class="row g-0 d-flex align-items-center align-self-center h-100 my-auto">
             <div class="col-md-3 position-relative align-items-center">
               <!-- <img class="w-100 rounded-start" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  /> -->
-              <div class="product-image"></div>
+              <div class="product-image">
+                <img class="crop rounded border" :src="product.thumbnail">
+              </div>
             </div>
             <div class="col-md-9 d-flex">
                 <div class="card-body">
@@ -78,13 +80,17 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 library.add(faHeart);
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import http from "../../../http-common";
+import { useToast } from "vue-toastification";
+
 
 library.add(faXmark);
 export default {
   name: "ProductCard",
   props: ["product"],
   data() {
+    const toast = useToast()
     return {
+      toast,
       isActive: false,
       user: {
         accept: false,
@@ -106,10 +112,28 @@ export default {
         let accessToken = JSON.parse(localStorage.getItem('accessToken'));
         http.delete(`/user/${userId}/wishlist/${productId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
             if (response.status == 200) {
-                this.updateProducts()
+              this.successRemoveSingleItem()
+              this.updateProducts()
             }
         })
     },
+
+    successRemoveSingleItem(){
+        this.toast.success('O item foi removido com sucesso!', {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
+    }
     
   }
 };
@@ -118,7 +142,6 @@ export default {
 .product-image{
   width:15em; 
   height:15em; 
-  background-color: grey;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -189,5 +212,11 @@ h5 {
 } 
 .text-justify{
   text-align: justify;
+}
+.crop {
+    height: 15em;
+    width: 100%;
+    overflow: hidden;
+    object-fit: cover;
 }
 </style>
