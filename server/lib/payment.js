@@ -22,7 +22,7 @@ async function createPaymentIntent(orderId) {
 
     // Calculating the total order price
 
-    totalPrice = order.items.reduce((accumulator, current) => accumulator + Number(current.supply_price)*Number(current.quantity) + Number(current.transport_price), 0);
+    totalPrice = persistence.round(order.items.reduce((accumulator, current) => accumulator + Number(current.supply_price)*Number(current.quantity) + Number(current.transport_price), 0), 2);
 
     // Creating payment intent (in the lowest denominator for EUR: cents)
 

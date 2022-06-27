@@ -1963,6 +1963,23 @@ paths:
                     - "The specified item identifier is invalid for the specified order."
       security:
         - bearerAuth: []
+
+  /store/statistics:
+    get:
+      tags:
+      - store
+      summary: Obter estatísticas sobre a plataforma
+      description: "Devolve informação sobre contagem de utilizadores, vendas, utilização de recursos e emissões poluentes totais e no último mês"
+      operationId: getStoreStats
+      responses:
+        200:
+          description: Operação efetuada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivedStats'
+
+
   ### TRANSPORTER ROUTES
   /transporter/{userId}/vehicles:
     get:
@@ -5039,6 +5056,102 @@ components:
           description: A palavra-passe do utilizador a autenticar
       description: Objeto utilizado para enviar as credenciais do utilizador a autenticar
   
+  ## Stat Schemes
+
+    ReceivedStats:
+      properties:
+        revenue:
+          type: object
+          description: "Informação sobre vendas e receita"
+          properties:
+            total:
+              type: object
+              description: "Informação pertinente a toda a vida da plataforma"
+              properties:
+                supply:
+                  type: number
+                  format: float
+                  description: "Informação relativa às vendas de fornecedores"
+                transport:
+                  type: number
+                  format: float
+                  description: "Informação relativa às vendas de transportadores"
+                total:
+                  type: number
+                  format: float
+                  description: Informação relativa às vendas totais
+            last_month:
+              type: object
+              description: "Informação pertinente a ao último mês na plataforma"
+              properties:
+                supply:
+                  type: number
+                  format: float
+                  description: "Informação relativa às vendas de fornecedores"
+                transport:
+                  type: number
+                  format: float
+                  description: "Informação relativa às vendas de transportadores"
+                total:
+                  type: number
+                  format: float
+                  description: Informação relativa às vendas totais
+        emissions:
+          type: object
+          description: "Informação sobre emissões poluentes"
+          properties:
+            total:
+              type: number
+              format: float
+              description: "Informação relativa emissões totais em toda a vida da plataforma"
+            last_month:
+              type: number
+              format: float
+              description: "Informação relativa às emissões totais no último mês na plataforma"
+        resource_usage:
+          type: object
+          description: "Informação sobre utilização de recursos"
+          properties:
+            total:
+              type: object
+              description: "Informação pertinente a toda a vida da plataforma"
+              properties:
+                supply:
+                  type: number
+                  format: float
+                  description: "Informação relativa à utilização de recursos de fornecedores (média de kWh/dia)"
+                transport:
+                  type: number
+                  format: float
+                  description: "Informação relativa à utilização de recursos de transportadores (média de L/100km)"
+            last_month:
+              type: object
+              description: "Informação pertinente a ao último mês na plataforma"
+              properties:
+                supply:
+                  type: number
+                  format: float
+                  description: "Informação relativa à utilização de recursos de fornecedores (média de kWh/dia)"
+                transport:
+                  type: number
+                  format: float
+                  description: "Informação relativa à utilização de recursos de transportadores (média de L/100km)"
+        users:
+          type: object
+          description: Informação sobre a quantidade total de utilizadores na plataforma
+          properties:
+            total:
+              type: integer
+              description: "Informação pertinente a toda a vida da plataforma"
+            last_month:
+              type: integer
+              description: "Informação pertinente ao último mês na plataforma"
+            
+
+
+        
+
+
   ## SECURITY SCHEMES
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
