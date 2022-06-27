@@ -70,7 +70,6 @@ export default {
     compare(event){
       let query = Object.assign({}, this.$route.query);
       let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length < 3;
-      console.log(compareMoreThan2);
 
       if(this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
