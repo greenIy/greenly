@@ -196,7 +196,7 @@ export default {
       this.compare = [];
       let query = Object.assign({}, this.$route.query);
       
-      if (value == 0 || Object.keys(this.$route.query).length == 1) {
+      if (value == 0 || document.querySelectorAll('input[type="checkbox"]:checked').length == 1) {
         let compare2 = this.$route.query.compare2;
       
         document.getElementById("input_" + this.$route.query.compare1).checked = false;
@@ -222,8 +222,9 @@ export default {
         
         this.$router.replace({ query });
       }
-      let compareMoreThan2 = Object.keys(query).length == 2;
-      if(compareMoreThan2 ){
+
+      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      if(compareMoreThan2){
         document.getElementsByClassName('checkbox').forEach(e => { 
           if(!e.checked){
             e.disabled = true;

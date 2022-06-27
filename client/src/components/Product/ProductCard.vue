@@ -69,6 +69,8 @@ export default {
     },
     compare(event){
       let query = Object.assign({}, this.$route.query);
+      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length < 3;
+      console.log(compareMoreThan2);
 
       if(this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
@@ -76,7 +78,7 @@ export default {
       } else if (this.$route.query.compare2 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
         this.$emit('removeOneProduct', 1);
-      } else if (Object.keys(this.$route.query).length < 2){
+      } else if (compareMoreThan2){
         if (!this.$route.query.compare1) {
           this.$router.push({ query: Object.assign({}, query, { compare1: `${ this.product.id }`  }) });
         } else if (!this.$route.query.compare2) {
@@ -90,7 +92,7 @@ export default {
         }
       }
 
-      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
       if(compareMoreThan2){
         document.getElementsByClassName('checkbox').forEach(e => { 
           if(!e.checked){

@@ -60,7 +60,6 @@
         </div>
         <div class="col-10">
             <p class="text"> COMPARAR PRODUTOS </p>
-         
         </div>
     </div>
      <div class="row mt-1">
