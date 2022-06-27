@@ -105,6 +105,20 @@ const routes = [
     component() {
       return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component() {
+        return import(/* webpackChunkName: "checkout" */ '../views/CheckoutView.vue');
+      },
+    },
+    {
+      path: '/sucesso',
+      name: 'sucesso',
+      component() {
+        return import(/* webpackChunkName: "sucesso" */ '../views/SuccessView.vue');
+    },
 
   },
   {
@@ -140,13 +154,6 @@ const routes = [
     name: 'suppliers',
     component() {
       return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
-    },
-  },
-  {
-    path: '/checkout',
-    name: 'checkout',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
     },
   }
 ];

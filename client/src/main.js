@@ -1,5 +1,7 @@
 // Bootstrap imports
+import  VueToast  from 'vue-toastification';
 import { Toast } from 'bootstrap';
+import 'vue-toastification/dist/index.css';
 import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
@@ -16,17 +18,15 @@ import { router, store } from './router/index';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
+
 //Draggable
 import VueDraggable from 'vuedraggable';
-
-
-import VueToast from "vue-toastification";
-import "vue-toastification/dist/index.css";
 
 const myApp = createApp(App);
 const emitter = mitt();
 myApp.config.globalProperties.emitter = emitter;
 myApp.use(VueAxios, axios);
+myApp.use(VueToast);
 
 myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
@@ -102,8 +102,8 @@ const gauthOption = {
 
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
-
+myApp.use(VueToast);
 myApp.use(VueDraggable);
 
 // Exportação da store para que possa ser utilizada pelo serviço de autenticação
-export {store, Toast, VueToast}
+export {store, Toast, VueToast, router }

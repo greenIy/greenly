@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex justify-content-center mt-5">
+<div class="d-flex justify-content-center mt-4">
   <nav aria-label="page navigation example" v-if="getPages != 0">
     <ul class="pagination">
       <li class="page-item disabled" id="previous">

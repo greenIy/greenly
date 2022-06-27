@@ -89,12 +89,19 @@ export default({
             wishlistLength: -1
         }
     },
+    created() {
+        this.changeTitle();
+    },
     methods: {
         getProducts() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+            if (accessToken) {
+                http.get(`/user/${userId}/wishlist`, {
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`
+                    }
+                }).then(response => {
                     if (response.status == 200) {
                         this.products = response.data
                         this.calculateWishlistLength()
@@ -104,7 +111,13 @@ export default({
 
             }
         },
-
+        changeTitle() {
+            window.document.title = "Greenly | Favoritos";
+        },
+        getUserInfo() {
+            this.user = this.$store.getters.getUser
+            return this.$store.getters.getUser
+        },
         removeAllProducts() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
