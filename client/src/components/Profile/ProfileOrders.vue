@@ -498,9 +498,6 @@ export default({
     .greenly-link {
         color: #5e9f88;
     }
-    #cancelProductToast {
-        background-color: #5E9F88 !important;
-    }
     ::-webkit-scrollbar {
         width: 17px;
     }

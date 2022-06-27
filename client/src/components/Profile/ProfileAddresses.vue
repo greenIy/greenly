@@ -270,7 +270,8 @@ export default({
             }
         },
         successfulToast(message) {
-            this.toast.success(message, {
+            this.toast(message, {
+                toastClassName: "my-custom-toast-class",
                 position: "top-right",
                 timeout: 5000,
                 closeOnClick: true,
@@ -532,14 +533,6 @@ export default({
     }
     .card:hover{
         box-shadow: 1px 10px 12px #d9d9d9;
-    }
-    #newAddressToast, #editAddressToast,
-    #setBillingAddressToast, #setShippingAddressToast,
-    #removeAddressToast {
-        background-color: #5E9F88 !important;
-    }
-    #billingAlreadySetToast, #shippingAlreadySetToast {
-        background-color: #E3C12B !important;
     }
     ::-webkit-scrollbar {
         width: 17px;

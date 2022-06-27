@@ -59,7 +59,7 @@
                 </div>
                 <div class="row mt-4">
                     <div class="d-flex align-items-center">
-                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Adicionar veículo</button>&nbsp;  &nbsp;  &nbsp;
+                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>&nbsp;  &nbsp;  &nbsp;
                         <span class="fs-5"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp;  recursos usados<br></span>&nbsp;  &nbsp;  &nbsp;
                         <span class="fs-5"><font-awesome-icon :icon="['fa', 'skull-crossbones']" />&nbsp;  média de emissões<br></span>&nbsp;  &nbsp;  &nbsp;
                         <span class="fs-5"><font-awesome-icon :icon="['fa', 'box']" />&nbsp;  total de encomendass<br></span>
@@ -87,7 +87,7 @@
                             </div>
                             <hr>
                             <div class="text-center mt-1">
-                                <button type="button" class="btn btn-secondary btn-sm me-3" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
+                                <button type="button" class="btn btn-secondary btn-sm me-3" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle" v-on:click="selectVehicle(vehicle)"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
                                 <button type="button" class="btn btn-danger btn-sm" v-on:click=""><font-awesome-icon :icon="['fa', 'trash']" />&nbsp; Remover</button>
                             </div>
                         </div>
@@ -100,28 +100,46 @@
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalNewVehicleLabel">Adicionar veículo</h5>
+                    <h5 class="modal-title" id="modalNewVehicleLabel">Novo veículo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form @submit.prevent="newVehicle">
-                    <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL">
-                        <label class="form-check-label" for="inlineRadio1">Gasolina</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypeDiesel" value="DIESEL">
-                        <label class="form-check-label" for="inlineRadio2">Gasóleo</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypeElectricity" value="ELECTRICITY">
-                        <label class="form-check-label" for="inlineRadio3">Eletricidade</label>
+                    <div class="mb-3">
+                        <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL">
+                            <label class="form-check-label" for="inlineRadio1">Gasolina</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypeDiesel" value="DIESEL">
+                            <label class="form-check-label" for="inlineRadio2">Gasóleo</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypeElectricity" value="ELECTRICITY">
+                            <label class="form-check-label" for="inlineRadio3">Eletricidade</label>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
                             <label for="newVehicleCenter" class="form-label">Centro de distribuição <span style='color: #FF0000;'>*</span></label><br>
-                            <button type="button" class="btn btn-secondary me-3" data-bs-toggle="modal" data-bs-target="#detailsVehicleModal" id="newVehicleCenter" v-on:click=""><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Escolher</button>
+                            <div v-if="!this.selectedCenterNew.capacity" class="mb-3 ms-3">
+									<small>Ainda não selecionou nenhuma morada.</small><br>
+									<small>Por favor selecione uma morada a partir do conjunto de moradas associadas ao seu perfil.</small>
+								</div>
+								<div v-else>
+									<div class="card mb-3 ms-2" style="width: 260px !important; height: 135px !important ;cursor: pointer;">
+										<div class="card-body">
+											<address>
+												<strong><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centro #{{ this.selectedCenterNew.id  }}</strong><br>
+                                                {{ this.selectedCenterNew.address.street }} <br>
+												{{ this.selectedCenterNew.address.city  }}, {{ this.selectedCenterNew.address.country  }}<br>
+												<p class="mt-2">Veículos: {{ this.selectedCenterNew.total_vehicles }}/{{ Math.floor(this.selectedCenterNew.capacity/36) }}<br></p>
+											</address>
+										</div>
+									</div>  
+								</div>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#newVehicleCenter" id="newCenterAddress" v-on:click=""><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centros de distribuição disponíveis</button>
                         </div>
                         <div class="col mb-3">
                             <label for="newVehicleLicense" class="form-label">Matrícula <span style='color: #FF0000;'>*</span></label>
@@ -129,7 +147,7 @@
                             <div class="invalid-feedback" id="invalidFeedbackNewNIF">Esta matrícula já se encontra atribuída.</div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                         <div class="col mb-3">
                             <label for="newVehicleCapacity" class="form-label">Capacidade de carga <span style='color: #FF0000;'>*</span></label>
                             <input type="text" class="form-control" id="newVehicleCapacity" v-model="newVehicleInfo.payload_capacity" placeholder="Capacidade de carga" required>
@@ -145,9 +163,45 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="closeNewVehicleModal" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Adicionar</button>
+                        <button type="submit" class="btn btn-primary">Criar veículo</button>
                     </div>
                 </form>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Modal New Vehicle Center -->
+            <div class="modal fade" id="newVehicleCenter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newVehicleCenterLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newVehicleCenterLabel">Selecione o centre de distribuição</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center" style="max-height: 500px; overflow-y: auto;">
+                        <div v-if="calculateDistributionCentersLength() > 0" v-for="center in this.distributionCenters" :key="center.id" class="card mt-3 mb-3" style="width: 300px !important; cursor: pointer;">
+                            <div class="card-body" v-on:click="this.selectedCenterNew = center" data-bs-toggle="modal" data-bs-target="#modalNewVehicle">
+                                <div>
+                                    <h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centro #{{ center.id }}</h5><br>
+                                    <h6><font-awesome-icon :icon="['fa', 'location-dot']" />&nbsp; Morada</h6>
+                                    <address>
+                                        {{ center.address.street }}<br>
+                                        {{ center.address.city }}, {{ center.address.country }}<br>
+                                        <abbr title="CP">Código Postal:</abbr> {{ center.address.postal_code }}
+								    </address>
+                                    <p class="mt-2">Capacidade: {{ center.capacity }}m²</p>
+                                </div>           
+                            </div>
+                        </div>
+                        <div v-else class="text-center mt-3 mb-3">
+                            <p>Parece que não tem centros de distribuição associados à sua conta. Adicione um!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalNewVehicle">Voltar</button>
                 </div>
                 </div>
             </div>
@@ -158,14 +212,84 @@
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalDetailsVehicleLabel">Adicionar veículo</h5>
+                    <h5 class="modal-title" id="modalDetailsVehicleLabel">Veículo #{{ this.selectedVehicle.id }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    
+                    <div class="container">
+							<div class="row align-items-start">
+								<div class="col-8">
+									<h5><font-awesome-icon :icon="['fa', 'truck']" size="sm"/>&nbsp; Detalhes veículo</h5>
+                                    <table class="table mt-3 ms-2">
+                                        <tbody>
+                                            <tr>
+                                                <td>Tipo de combustível</td>
+                                                <td v-if=" this.selectedVehicle.fuel_type === 'PETROL'" class="text-end">Gasolina</td>
+                                                <td v-if=" this.selectedVehicle.fuel_type === 'DIESEL'" class="text-end">Gasóleo</td>
+                                                <td v-if=" this.selectedVehicle.fuel_type === 'ELECTRICITY'" class="text-end">Eletricidade</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Capacidade de carga</td>
+                                                <td class="text-end">{{ this.selectedVehicle.payload_capacity }}kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Recursos usados</td>
+                                                <td class="text-end">{{ this.selectedVehicle.resource_usage }} litros/100Km</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Média de emissões</td>
+                                                <td class="text-end">{{ this.selectedVehicle.average_emissions }}CO₂ g/km/t</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>   
+                                </div>     
+                                <div class="col mt-5 ms-5 me-2">
+                                    <img id="vehicleTruckInfo" src="../../assets/centerTruck.png">
+                                    <br>
+                                    <p class="licensePlateInfo">{{ this.selectedVehicle.license_plate }}</p>
+								</div>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#chooseAddressModal"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button>
+                                </div>
+                                <div class="row d-flex mt-3">
+                                    <div class="col text-center">
+                                        <span class="fs-4">{{ this.selectedVehicle.orders_in_transit }}</span><br>
+                                        <span>encomendas em progresso</span>
+                                    </div>
+                                    <div class="col text-center">
+                                        <span class="fs-4">{{ this.selectedVehicle.orders_completed }}</span><br>
+                                        <span>encomendas entregues</span>
+                                    </div>
+                                    <div class="col text-center">
+                                        <span class="fs-4">{{ this.selectedVehicle.orders_failed }}</span><br>
+                                        <span>encomendas falhadas</span>
+                                    </div>
+                                </div>								
+							</div>
+						</div>
+						<hr>
+						<div class="container">
+							<h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" size="sm"/>&nbsp; Centro de distribuição #{{ this.selectedVehicle.distribution_center.id }}</h5>
+                            <div class="row d-flex mt-3 ms-5">
+                                <div class="col mt-2">
+                                    Pais: {{ this.selectedVehicle.distribution_center.address.country }}<br>
+                                    Cidade: {{ this.selectedVehicle.distribution_center.address.city }}<br>
+                                    Rua: {{ this.selectedVehicle.distribution_center.address.street }}<br>
+                                    Código Postal: {{ this.selectedVehicle.distribution_center.address.postal_code }}<br>
+                                    Dimensão: {{ Math.ceil(this.selectedVehicle.distribution_center.total_vehicles*36) }}m²/{{ this.selectedVehicle.distribution_center.capacity }}m²<br>
+                                    Veículos: {{ this.selectedVehicle.distribution_center.total_vehicles }}/{{ Math.floor(this.selectedVehicle.distribution_center.capacity/36) }}
+                                </div>
+                                <div class="col">
+                                    <div id="vehicleMap"></div>
+                                </div>
+                            </div>
+						</div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#changeCapacityModal"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Alterar centro de distribuição</button>
+                        </div>	
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Concluído</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Voltar</button>
                 </div>
                 </div>
             </div>
@@ -189,13 +313,14 @@ export default {
 	mounted() {
         this.getUserInfo()
 		this.getUserVehicles();
+        this.getUserDistributionCenters()
 	},
 	data() {
 		return {
 			user: {},
 			vehicles: [],
 			vehiclesLength: 1,
-			selectedVehicle: {},
+			selectedVehicle: {distribution_center:{address:{}}, total_vehicles:'', capacity:''},
             averageFleetResources: 0,
             averageFleetEmissions: 0,
 			map: {},
@@ -207,19 +332,21 @@ export default {
                 average_emissions: '',
                 fuel_type: '',
             },
+            distributionCenters: [],
+            selectedCenterNew: {capacity:'', address:{}},
 		};
 	},
 	methods: {
-		initCenterMap() {
+		initVehicleMap() {
             const loader = new Loader({
                 apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
                 version: "weekly"
             });
             loader.load().then(() => {
-                let position = {lat: this.selectedVehicle.address.latitude, lng: this.selectedVehicle.address.longitude}
+                let position = {lat: this.selectedVehicle.distribution_center.address.latitude, lng: this.selectedVehicle.distribution_center.address.longitude}
                 let vehicleMap = new google.maps.Map(document.getElementById("vehicleMap"), {
                 center: position,
-                zoom: 12,
+                zoom: 13,
                 streetViewControl: false,
                 mapTypeControl: false,
                 fullscreenControl: false,
@@ -292,6 +419,33 @@ export default {
             }
             return totalOrders;
         },
+        getUserDistributionCenters() {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId){
+                http.get(`/transporter/${userId}/centers`, headers)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.distributionCenters = response.data;
+                    }
+                    }).catch((error) => {
+                        console.log(error);
+                        console.log("Failure!")
+                    })
+            }
+        },
+        calculateDistributionCentersLength() {
+			return Object.keys(this.distributionCenters).length;
+		},
+        selectVehicle(vehicle) {
+            this.selectedVehicle = vehicle;
+            this.initVehicleMap()
+        },
         conflitSolver(message) {
             if (message == "Request failed with status code 409")
                 document.getElementById("newVehicleLicense").classList.add("is-invalid");
@@ -313,7 +467,7 @@ export default {
             else if(document.getElementById("fuelTypeDiesel").checked) { this.newVehicleInfo.fuel_type = "DIESEL" }
             else if(document.getElementById("fuelTypeElectricity").checked) { this.newVehicleInfo.fuel_type = "ELECTRICITY" }
             http.post(`/transporter/${userId}/vehicles`, JSON.stringify({
-                distribution_center: 1,
+                distribution_center: this.selectedCenterNew.id,
                 license_plate: this.newVehicleInfo.license_plate,
                 payload_capacity: Number(this.newVehicleInfo.payload_capacity),
                 resource_usage: Number(this.newVehicleInfo.resource_usage),
@@ -367,9 +521,8 @@ export default {
 
 <style scoped>
     #vehicleMap {
-        height: 250px;
+        height: 165px;
         width: 100%;
-        display: inline-block;
 		border-radius: 5px;
     }
 	.card {
@@ -385,12 +538,26 @@ export default {
 	#vehicleTruck {
 		width: 100px;
 	}
+    #vehicleTruckInfo {
+        width: 150px;
+    }
 	.licensePlate {
         width: 100px !important;
 		background-color: white;
 		text-align: center;
 		font-weight: bold;
 		font-size: 19px;
+		border-radius: 5px;
+		border: 1px solid #000;
+		box-shadow: 1px 1px 1px #ddd;
+		font-family: helvetica, ariel, sans-serif;
+	}
+    .licensePlateInfo {
+        width: 150px !important;
+		background-color: white;
+		text-align: center;
+		font-weight: bold;
+		font-size: 25px;
 		border-radius: 5px;
 		border: 1px solid #000;
 		box-shadow: 1px 1px 1px #ddd;

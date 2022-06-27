@@ -16,7 +16,7 @@
 					<div class="card me-4" style="width: 100%; cursor:pointer" data-bs-toggle="modal" data-bs-target="#newCenterModal">
 						<div class="card-body addCenterButton align-items-center justify-content-center">
 							<h1><font-awesome-icon :icon="['fa', 'plus']" size="2xl" style="color: grey" /></h1>
-							<span>adicionar centro<br>de distribuição</span>
+							<span>criar centro<br>de distribuição</span>
 						</div>
 					</div>
 					<div class="card me-4" style="width: 100%;">
@@ -42,7 +42,7 @@
 							<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; #{{ center.id }}</h5>
 							<hr>
 							<div style="height: 40%;">
-								<h6><font-awesome-icon :icon="['fa', 'location-dot']" />&nbsp; Morada</h6>
+								<h6></h6>
 								<address>
 									{{ center.address.street }}<br>
 									{{ center.address.city }}, {{ center.address.country }}<br>
@@ -53,7 +53,7 @@
 							<span >Dimensão: {{ Math.ceil(center.total_vehicles*36) }}m²/{{ center.capacity }}m²</span><br>
 							<span >Veículos: {{ center.total_vehicles }}/{{ Math.floor(center.capacity/36) }}</span>
 							<div class="progress mt-2">
-								<div v-if="getDistributionsCenterCapacity(index) <= 100 " :id="'capacityBar' + center.id" class="progress-bar bg-success" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
+								<div v-if="getDistributionsCenterCapacity(index) < 100 " :id="'capacityBar' + center.id" class="progress-bar bg-success" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
 								<div v-else :id="'capacityBar' + center.id" class="progress-bar bg-danger" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>
 							<div class="text-center mt-4">
@@ -69,7 +69,7 @@
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="newCenterModalLabel">Adicionar centro de distribuição</h5>
+						<h5 class="modal-title" id="newCenterModalLabel">Criar centro de distribuição</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<form @submit.prevent="newDistributionCenter()">
@@ -102,8 +102,8 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" id="closeNewCenterModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-						<button v-if="!this.newCenterInfo.address.street" type="submit" class="btn btn-primary" disabled>Adicionar</button>
-						<button v-else type="submit" class="btn btn-primary">Adicionar</button>
+						<button v-if="!this.newCenterInfo.address.street" type="submit" class="btn btn-primary" disabled>Criar</button>
+						<button v-else type="submit" class="btn btn-primary">Criar</button>
 					</div>
 					</form>
 					</div>
@@ -173,8 +173,9 @@
 						<hr>
 						<div class="container">
 							<h5><font-awesome-icon :icon="['fa', 'truck']" size="sm"/>&nbsp; Capacidade</h5>
+							<p class="mt-3 ms-2 fs-5">Dimensão: {{ Math.ceil(this.selectedCenter.total_vehicles*36) }}m²/{{ this.selectedCenter.capacity }}m²</p><br>
 							<div class="row align-items-start" style="max-height: 210px; min-height: 185px; overflow-y: auto;">	
-								<div v-if="getCenterTotalVehicles(this.selectedCenter) > 0" v-for="(vehicle, index) in this.selectedCenter.vehicles" :key="vehicle.id" class="card mt-3 ms-2 me-4" style="width: 20.5%; height: 150px !important;">
+								<div v-if="getCenterTotalVehicles(this.selectedCenter) > 0" v-for="(vehicle, index) in this.selectedCenter.vehicles" :key="vehicle.id" class="card ms-2 me-4" style="width: 20.5%; height: 150px !important;">
 									<div class="card-body">
 										<img id="centerTruck" src="../../assets/centerTruck.png">
 										<br>
@@ -187,8 +188,7 @@
 							</div>
 							<div class="text-left mt-4">
 								<div class="progress me-3" style="height: 28px;">
-									<div v-if="this.selectedCenter.total_vehicles <= Math.floor(this.selectedCenter.capacity/36)" id="selectedCapacityBar" class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100">{{ this.selectedCenter.total_vehicles }} / {{ Math.floor(this.selectedCenter.capacity/36) }}</div>
-									<div v-else id="selectedCapacityBar" class="progress-bar bg-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100">{{ this.selectedCenter.total_vehicles }} / {{ Math.floor(this.selectedCenter.capacity/36) }}</div>
+									<div id="selectedCapacityBar" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">{{ this.selectedCenter.total_vehicles }} / {{ Math.floor(this.selectedCenter.capacity/36) }}</div>
 								</div>
 							</div>
 							<div class="text-center">
@@ -213,7 +213,7 @@
 					</div>
 					<div class="modal-body">
 						<div class="row justify-content-center" style="max-height: 500px; overflow-y: auto;">
-							<div v-if="getUnusedAddressesSize() > 0" v-for="address in getUnusedAddresses()" :key="address.nif" class="card mt-3 mb-3" style="width: 300px !important; cursor: pointer;" >
+							<div v-if="getUnusedAddressesSize() > 0" v-for="address in getUnusedAddresses()" :key="address.nif" class="card mt-3 mb-3" style="width: 300px !important; cursor: pointer;">
 								<div class="card-body" v-on:click="editCenterAddress(this.selectedCenter, address)" data-bs-toggle="modal" data-bs-target="#detailsCenterModal">
 									<address>
 										<strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
@@ -230,7 +230,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsCenterModal">Voltar</button>
+						<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsCenterModal">Cancelar</button>
 					</div>
 					</div>
 				</div>
@@ -409,7 +409,7 @@ export default {
                     if (response.status == 200) {
                         this.selectedCenter = response.data;
 						this.initCenterMap()
-						this.getCenterCapacity(center);
+						this.getCenterCapacity(this.selectedCenter);
                     }
                     }).catch((error) => {
                         console.log(error.response.data);
@@ -432,11 +432,24 @@ export default {
 			return center.total_vehicles;
 		},
 		getCenterCapacity(center) {
-			document.getElementById('selectedCapacityBar').style.width = `${(center.total_vehicles / Math.floor(center.capacity/36) * 100)}%`;
+			let vehicleEstimate = Math.floor(center.capacity/36) > 0 ? Math.floor(center.capacity/36) : 1
+			let percentage = (center.total_vehicles / vehicleEstimate) * 100
+			if (percentage < 100) {
+				document.getElementById('selectedCapacityBar').style.width = `${percentage}%`;
+				document.getElementById('selectedCapacityBar').classList.remove("bg-danger")
+				document.getElementById('selectedCapacityBar').classList.add("bg-success")
+			} else {
+				console.log(percentage)
+				document.getElementById('selectedCapacityBar').style.width = `${percentage}%`;
+				document.getElementById('selectedCapacityBar').classList.remove("bg-success")
+				document.getElementById('selectedCapacityBar').classList.add("bg-danger")
+			}
+			
 		},
 		getDistributionsCenterCapacity(index) {
 			let distributionCenter = this.distributionCenters[index]
-			return distributionCenter.total_vehicles / Math.ceil(distributionCenter.capacity/36) * 100
+			let vehicleEstimate = Math.floor(distributionCenter.capacity/36) > 0 ? Math.floor(distributionCenter.capacity/36) : 1
+			return (distributionCenter.total_vehicles / vehicleEstimate) * 100
 		},
 		getUnusedAddresses() {
 			return this.user.addresses.filter((address) => {
@@ -474,7 +487,7 @@ export default {
             closeEditModal.click();
 			this.getUserDistributionCenters();
 			this.getDistributionCenterInfo(this.selectedCenter);
-			this.successfulToast("Alterada! Capacidade máxima do centro alterada com sucesso")
+			this.successfulToast("Alterada! A capacidade máxima do centro foi alterada com sucesso")
 		},
 		newDistributionCenter() {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -511,7 +524,7 @@ export default {
                 .then((response) => {
                     if (response.status == 201) {
 						this.selectedCenter.address = address;
-                        this.successfulToast("Alterada! Morada do centro alterada com sucesso")
+                        this.successfulToast("Alterada! A morada do centro foi alterada com sucesso")
                     }
                     }).catch((error) => {
                         console.log(error.response.data);
