@@ -22,7 +22,18 @@
       TheFooter,
       LoginForm,
     },
-  };
+     data() {
+
+     },
+     created() {
+        this.changeTitle();
+    },
+    methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Início de Sessão";
+    }
+  }
+}
 </script>
 
 <style>

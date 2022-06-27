@@ -7,7 +7,7 @@
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
               :product="products"/>
         <div class="row content justify-content-center" v-if="rendered">
-          <div class="col-sm-2 col-md-2 pb-4 filtros">
+          <div class="col-sm-2 col-md-2 filtros">
             <div class="content d-flex">
               <TheFilters :categories="categories" :currentCategories="currentCategories" :suppliers="suppliers"/>
             </div>
@@ -18,7 +18,7 @@
               <ProductCard
               v-for="p in products"
               :key="p.id"
-              :product="p"
+              :product="p" :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList" @categoriesDiff="categoriesDiff"
               ></ProductCard>
             </div>
             <div v-else class="content d-flex w-100">
@@ -30,6 +30,9 @@
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
     </div>
+  </div>
+  <div v-if="this.compare.length">
+    <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
   </div>
   <TheFooter />
 </body>
@@ -43,6 +46,8 @@ import TheFooter from "@/components/Frontpage/TheFooter.vue";
 import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
 import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
+import CompareProduct from "@/components/Product/CompareProduct.vue";
+import {useToast} from 'vue-toastification';
 
 import http from "../../http-common";
 
@@ -55,12 +60,14 @@ export default {
     TheFooter,
     TheFilters,
     TheUtilityBar,
-    TheNoProduct
+    TheNoProduct,
+    CompareProduct,
   },
   props: {
     product: Object,
   },
   data() {
+    const toast = useToast();
     return {
       products: [],
       categories: [],
@@ -69,15 +76,27 @@ export default {
       productsInPage: 0,
       suppliers: [],
       rendered: false,
+      quantityP:0,
+      compare: [],
+      categoryLoaded: false,
+      toast,
     };
   },
-  beforeMount() {
-    this.getProducts();
+  async beforeMount() {
+    await this.getProducts();
+    await this.getCategories();
+    await this.getSuppliers();
   },
-  mounted() {
-    this.getProducts();
-    this.getCategories();
-    this.getSuppliers();
+  async mounted() {
+    if (this.$route.query.compare1 || this.$route.query.compare2) {
+      this.getProductToCompare();
+    }
+    if (this.$route.params.categoria) {
+      await this.getCategories();
+      if (this.categoryLoaded) {
+        this.getCurrentCategory(this.$route.params);
+      }
+    }
   },
   watch: {
     $route(to, from) {
@@ -88,9 +107,18 @@ export default {
         this.getProducts();
         this.getCategories();
       }
-    }
+    },
+    '$route.query'() {
+      this.getProductToCompare();
+    },
+  },
+  created() {
+    this.changeTitle();
   },
   methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Catálogo de Produtos";
+    },
     async getProducts() {
       let response;
       let request;
@@ -101,15 +129,15 @@ export default {
       let maxPrice = this.$route.query.preco_max ? this.$route.query.preco_max : 50000000;
       let minPrice = this.$route.query.preco_min ? this.$route.query.preco_min : 0;
 
-      if(this.$route.query.ordenar_por) {
+      if (this.$route.query.ordenar_por) {
         sort = this.$route.query.ordenar_por;
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice + "&sort=" + sort;
       } else {
         request = "/store/products?page=" + page + "&limit=" + limit + "&min_price=" + minPrice + "&max_price=" + maxPrice;
       }
-  
-      if (this.currentCategories.length) {
-        request = request + "&category=" + this.currentCategories[this.currentCategories.length - 1].id;
+
+      if (this.$route.params.categoria) {
+        request = request + "&category=" + this.$route.params.categoria[Object.keys(this.$route.params.categoria).length - 1];
       }
 
       if (this.$route.query.pesquisa){
@@ -130,11 +158,11 @@ export default {
     async getSuppliers() {
       let response = await http.get("/store/suppliers");
       this.suppliers = JSON.parse(JSON.stringify(response.data));
-
     },
     async getCategories() {
-      var response = await http.get("/store/categories");
+      let response = await http.get("/store/categories");
       this.categories = response.data;
+      this.categoryLoaded = true;
     },
     getCurrentCategory: function(params) {
       if (this.currentCategories.length) {
@@ -149,6 +177,70 @@ export default {
         this.getProducts();
       }
     },
+    async getProductToCompare() {
+        let productID1 = this.$route.query.compare1;
+        let productID2 = this.$route.query.compare2;
+        let response;
+
+        if (productID1 && !this.compare.length && Object.keys(this.$route.query).length) {
+          response = await http.get(`store/products/${productID1}`);
+          this.compare.push(JSON.parse(JSON.stringify(response.data)));
+        }
+
+        if (productID2 && Object.keys(this.$route.query).length) {
+          response = await http.get(`store/products/${productID2}`);
+          this.compare.push(JSON.parse(JSON.stringify(response.data)));
+        }
+    },
+    removeProductFromCompareList(value) {
+      this.compare = [];
+      let query = Object.assign({}, this.$route.query);
+      
+      if (value == 0 || document.querySelectorAll('input[type="checkbox"]:checked').length == 1) {
+        let compare2 = this.$route.query.compare2;
+      
+        document.getElementById("input_" + this.$route.query.compare1).checked = false;
+        delete query.compare1;
+        this.$router.replace({ query });
+
+        if (this.$route.query.compare2) {
+          delete query.compare2;
+          this.$router.replace({ query });
+
+          this.$router.push({ query: Object.assign({}, query, { compare1: `${ compare2 }` }) });
+        }
+      } else if (value == 1){
+        document.getElementById("input_" + this.$route.query.compare2).checked = false;
+        delete query.compare2;
+        this.$router.replace({ query });
+      } else {
+        document.getElementById("input_" + this.$route.query.compare1).checked = false;
+        document.getElementById("input_" + this.$route.query.compare2).checked = false;
+
+        delete query.compare1;
+        delete query.compare2;
+        
+        this.$router.replace({ query });
+      }
+
+      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      if(compareMoreThan2){
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          if(!e.checked){
+            e.disabled = true;
+          }
+        });
+      }
+      else{
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          e.disabled = false;
+        });
+      }
+    },
+    categoriesDiff(value){
+      this.toast.warning("Oops! Os produtos selecionados não são da mesma categoria. Tente novamente!", {
+        position:"top-right", duration:10000})
+    }
   },
   computed: {
     getPageAmount: function () {
@@ -163,6 +255,7 @@ export default {
 .content {
   flex-wrap: wrap
 }
+
 .filtros{
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
@@ -173,5 +266,22 @@ export default {
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
+}
+
+#successToast {
+        background-color: #E3C12B !important;
+}
+
+.toast-container{
+  z-index:4;
+}
+
+.content-wrap{
+    padding-bottom: 2rem !important;
+}
+
+.form-check-input:checked {
+    background-color: #5e9f88!important;
+    border-color: #5e9f88!important;
 }
 </style>

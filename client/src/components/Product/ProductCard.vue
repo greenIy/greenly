@@ -33,13 +33,13 @@
         </div>
         <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
           <button class="btnH fav">
-            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
+            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" />
             Favoritos
           </button>
           <form>
             <div class="form-group form-check">
-              <label class="form-check-label product" for="accept">
-                <input type="checkbox" v-model="user.accept" id="accept" class="form-check-input checkbox" />Comparar Produto</label>
+              <label class="form-check-label product" :for="`input_${product.id}`">
+                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
             </div>
           </form>
         </div>
@@ -61,10 +61,12 @@ export default {
   name: "ProductCard",
   props: {
     product: Object,
+    productsToCompare: Array,
   },
   data() {
     return {
       isActive: false,
+      quantity:0,
       user: {
         accept: false,
       },
@@ -79,7 +81,44 @@ export default {
       } else {
         svg.classList.add("red");
       } 
-    }
+    },
+    compare(event){
+      let query = Object.assign({}, this.$route.query);
+      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length < 3;
+
+      if(this.$route.query.compare1 == this.product.id) {
+        document.getElementById("input_" + this.product.id).checked = false;
+        this.$emit('removeOneProduct', 0);
+      } else if (this.$route.query.compare2 == this.product.id) {
+        document.getElementById("input_" + this.product.id).checked = false;
+        this.$emit('removeOneProduct', 1);
+      } else if (compareMoreThan2){
+        if (!this.$route.query.compare1) {
+          this.$router.push({ query: Object.assign({}, query, { compare1: `${ this.product.id }`  }) });
+        } else if (!this.$route.query.compare2) {
+          // it's only possible to compare products of same category
+          if (this.product.category.id == this.productsToCompare[0].category.id && this.product.id != this.productsToCompare[0].id) {
+            this.$router.push({ query: Object.assign({}, query, { compare2: `${ this.product.id }`  }) });
+          } else {
+            document.getElementById("input_" + this.product.id).checked = false;
+            this.$emit('categoriesDiff', true);
+          }
+        }
+      }
+
+      compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      if(compareMoreThan2){
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          if(!e.checked){
+            e.disabled = true;
+          }
+        });
+      } else {
+        document.getElementsByClassName('checkbox').forEach(e => { 
+          e.disabled = false;
+        });
+      }
+    },
   }
 };
 </script>
@@ -153,6 +192,15 @@ h5 {
     height: 250px;
     overflow: hidden;
     object-fit: cover;
+}
+
+.form-check-input:checked {
+    background-color: #5e9f88!important;
+    border-color: #5e9f88!important;
+}
+
+input[type="checkbox"]:disabled + span {
+   color: #969595 !important;
 }
 
 .hidden {

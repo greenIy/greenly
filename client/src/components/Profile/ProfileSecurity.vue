@@ -155,7 +155,14 @@ export default({
             url_api: 'https://docs.greenly.pt/'
         }
     },
+    created() {
+        this.changeTitle();
+    },
+   
     methods: {
+         changeTitle(){
+            window.document.title = "Greenly | Segurança";
+    },
         getUserInfo() {
             this.user = this.$store.getters.getUser
             return this.user

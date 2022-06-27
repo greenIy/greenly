@@ -127,7 +127,7 @@
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_resource_usage}} l/100km</small></span></td>
                     </tr>
                     <tr>
-                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'sun']" /><small>Emissões Poluentes</small> </span></th>
+                      <th scope="col"><span class="d-flex align-items-center"><font-awesome-icon class="fs-6 fa-fw me-1 text-muted" :icon="['fas', 'skull-crossbones']" /><small>Emissões Poluentes</small> </span></th>
                       <td scope="row" class="textAlign-right"><span><small>{{element.item.transporter_emissions}} CO₂ g/km/t</small></span></td>
                     </tr>
                     <tr>
@@ -148,9 +148,9 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
-, faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
+, faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCubes, faTruck, faXmark, faBox, faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar, faMoneyBillWave, faWarehouse, faGasPump, faSun, faShoppingBag);
+library.add(faCubes, faTruck, faXmark, faBox, faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar, faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag);
 
 export default {
   name: "TransportadorModal",
@@ -335,7 +335,6 @@ export default {
   color:#ffffff; 
   outline: none;
 }
-
 .textAlign-right{
   text-align:right!important; 
 }
