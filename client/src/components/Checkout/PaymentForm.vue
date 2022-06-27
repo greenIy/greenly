@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <div class="container-footer">
+        <div class="container-footer d-flex flex-row justify-content-between mt-5">
 
             <!-- button to go back -->
             <button

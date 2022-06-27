@@ -7,7 +7,7 @@
     <div class="cart-info__body" v-if="cart.length > 0">
         <div class="cart-info__item" v-for="item in cart">
             <div class="cart-info__item-image">
-<!--                <img :src="item.image" alt="">-->
+                <img class="img-fluid crop" :class="{'img-fluid': true, crop: true, hidden: !this.imageLoaded}" :src="item.product.thumbnail" alt="Imagem do produto" @load="this.imageLoaded = true"/>
             </div>
             <div class="cart-info__item-info">
                 <h3 class="cart-info__item-title">{{ item.product.name }}</h3>
@@ -33,15 +33,18 @@
 
 <script>
 import http from "../../../http-common";
+import { ContentLoader } from "vue-content-loader"
 
 
 export default {
     name: "CartInfo",
+    components: { ContentLoader },
     data() {
         return {
            cart: [],
            total: 0,
-           total_items: 0
+           total_items: 0,
+           imageLoaded: false
         }
     },
     mounted(){
