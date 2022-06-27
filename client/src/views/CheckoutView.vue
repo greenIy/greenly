@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-        <the-footer/>
+        <the-footer class="bottom-0"/>
     </div>
 </template>
 
