@@ -1,11 +1,9 @@
 <template>
 
     <!-- success page -->
-
-
-    <the-navbar/>
     <div class="page-container">
-        <div class="container d-flex flex-column mt-5 align-items-center justify-content-center">
+    <the-navbar/>
+        <div class="success-container d-flex flex-column align-items-center justify-content-center my-5">
             <div class="success-checkmark">
                 <div class="check-icon">
                     <span class="icon-line line-tip"></span>
@@ -33,8 +31,8 @@
                 </router-link>
             </p>
         </div>
+        <the-footer class="bottom-0"/>
     </div>
-    <the-footer/>
 </template>
 
 <script>
@@ -88,15 +86,17 @@ export default {
 
 <style scoped>
 
+.page-container {
+    width: 100%;
+    height: 100%;
+}
+
 .btn-greenly {
     background-color: #5e9f88;
     border-color: #5e9f88;
     color: #fff;
 }
 
-.card {
-    border: 1px solid #5e9f88;
-}
 
 .success-checkmark {
     width: 80px;
