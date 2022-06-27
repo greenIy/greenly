@@ -12,7 +12,11 @@ const requiredEnvironmentVariables = [
     "FACEBOOK_APP_SECRET",
     "STRIPE_PUBLISHABLE_KEY",
     "STRIPE_CLIENT_SECRET",
-    "STRIPE_WEBHOOK_SECRET"
+    "STRIPE_WEBHOOK_SECRET",
+    "EMAIL_ADDRESS",
+    "EMAIL_PASSWORD",
+    "EMAIL_HOST",
+    "EMAIL_PORT"
 ]
 
 if (requiredEnvironmentVariables.some((value) => !(value in process.env))) {
