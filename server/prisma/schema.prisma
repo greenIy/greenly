@@ -214,6 +214,7 @@ model User {
   phone                       String?               @db.VarChar(20)
   company                     Int?                  @db.UnsignedInt
   type                        User_type
+  registration_date           DateTime              @db.DateTime(0)
   Company                     Company?              @relation(fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "User_ibfk_1")
   Address                     Address[]
   Cart_Cart_consumerToUser    Cart[]                @relation("Cart_consumerToUser")
