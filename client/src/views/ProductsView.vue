@@ -35,16 +35,6 @@
   <div v-if="this.compare.length">
     <CompareProduct :productsToCompare="compare" @removeOneProduct="removeProductFromCompareList"/>
   </div>
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                      <strong>Oops!</strong> Os produtos selecionados não são da mesma categoria. Tente novamente!
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
 </body>
 </template>
 
@@ -57,7 +47,7 @@ import TheFilters from "@/components/Product/CatalogPage/TheFilters.vue";
 import TheUtilityBar from "@/components/Product/CatalogPage/TheUtilityBar.vue";
 import TheNoProduct from "@/components/StandardMessages/TheNoProduct.vue";
 import CompareProduct from "@/components/Product/CompareProduct.vue";
-import { Toast } from './../main'
+import {useToast} from 'vue-toastification';
 
 import http from "../../http-common";
 
@@ -77,6 +67,7 @@ export default {
     product: Object,
   },
   data() {
+    const toast = useToast();
     return {
       products: [],
       categories: [],
@@ -88,6 +79,7 @@ export default {
       quantityP:0,
       compare: [],
       categoryLoaded: false,
+      toast,
     };
   },
   async beforeMount() {
@@ -245,10 +237,8 @@ export default {
       }
     },
     categoriesDiff(value){
-      var animation = {animation: true, delay: 5000};
-      var successToast = document.getElementById("successToast");
-      var successfulToast = new Toast(successToast, animation)
-      successfulToast.show();
+      this.toast.warning("Oops! Os produtos selecionados não são da mesma categoria. Tente novamente!", {
+        position:"top-right", duration:10000})
     }
   },
   computed: {

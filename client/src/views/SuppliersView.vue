@@ -13,19 +13,18 @@
                   <div class="col-lg-6">
                       <h1 class="mt-3">Fornecedores</h1>
                       <p class="lead text-secondary my-5">
-                        Quer saber mais sobre os nossos parceiros? Aqui estão todos os que ajudam
-                        o nosso mundo a ser mais verde.
-                      </p>
+                        Queres saber mais sobre os nossos parceiros? <br> 
+                        Aqui estão todos os que ajudam o nosso mundo a ser mais verde. </p>
                   </div>
               </div>
           </div>
       </section>
-      <div class="slider">
+      <div class="slider mb-3">
         <div class="slide-track">
-          <div class="slide"
+          <div class="slide d-flex align-items-center mx-auto"
             v-for="s in suppliers"
             :key="s.id">
-            <p>{{ s.company.name }}</p>
+            <p class="my-auto">{{ s.company.name }}</p>
           </div>
         </div>
       </div>
@@ -37,6 +36,8 @@
 <script>
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
+
+
 
 import http from "../../http-common";
 
@@ -62,7 +63,6 @@ export default {
     async getSuppliers() {
       let response = await http.get("/store/suppliers");
       this.suppliers = JSON.parse(JSON.stringify(response.data));
-      console.log(this.suppliers)
     },
   }
 };
@@ -126,16 +126,17 @@ body {
 .slider::before {
   left: 0;
   top: 0;
+  
 }
 .slider .slide-track {
   -webkit-animation: scroll 40s linear infinite;
   animation: scroll 40s linear infinite;
   display: flex;
-  width: calc(950px * 14);
+  width: calc(1000px * 14);
+  font-size:1rem;
 }
 
 .slider .slide {
   height: 100px;
-  width: 250px;
 }
 </style>
