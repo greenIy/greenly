@@ -57,7 +57,7 @@
         <div class="tab-content" id="pills-tab-content">
           <TheAdminRegistration />
           <TheGeneralTab />
-          <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.userIncrement'/>
+          <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.statistics.users.last_month'/>
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
           <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :statistics='this.statistics' />
@@ -99,7 +99,6 @@ export default {
     return {
       users: [],
       amountUsers: 0,
-      userIncrement: 0,
       categories: [],
       amountCategories: 0,
       products: [],
@@ -148,6 +147,7 @@ export default {
 
       let response = await http.get("/store/statistics", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.statistics = response.data;
+
     },
   }
 };
