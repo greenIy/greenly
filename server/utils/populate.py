@@ -30,6 +30,7 @@ API_PORT = 80
 USER_CREATION_ENDPOINT = "/user"
 LOGIN_ENDPOINT = "/auth/login"
 VERIFY_SSL = False
+UPLOADED_FILES = ['Fq54FqucgCE.jpg', '6VeIwIf3c_g.jpg', 'AHegElpiVj4.jpg', 'ZEmeh9U9rjA.jpg', 'eIzzzwtkBjU.jpg', 'dWKqZcPLc8Y.jpg', 'PPizseKigaw.jpg', '2pBpO-zsXMw.jpg', 'DZ1PZftv1Os.jpg', 'PFzy4N0_R3M.jpg', 'z0guTIr_kts.jpg', 'tcgMBsW4zlU.jpg', 'iepNMi_GrdY.jpg', 'kP0pjdyYNyU.jpg', 'cU7wLFRyWWw.jpg', 'hepBEQDdQpw.jpg', 'KvoMDHvCttg.jpg', 'vtVyDvxgR1M.jpg', '3_cyj5YkhTs.jpg', 'Rz5o0osnN6Q.jpg', '0v_1TPz1uXw.jpg', 'bGeupv246bM.jpg', 'vdaJJbls3xE.jpg', 'nOeVi8DsN8U.jpg', '8nebi46-k_M.jpg', 'PWxsExxrf5g.jpg', 'nptLmg6jqDo.jpg', 'xYAjmOe_Spk.jpg', 'fZ2DnCBiLE8.jpg', 'iQC6u4ejuGE.jpg', 'FXvSc_DtgFk.jpg', 'yz4VF6x0W3M.jpg', 'qJlys8DRWo4.jpg', '1Pgq9ZpIatI.jpg', '4kTbAMRAHtQ.jpg', 'QmAgHhQVWAw.jpg', 'ghw6SP8p4gk.jpg', 'lCmFhOQ4PzI.jpg', '-837JygbCJo.jpg', 'vbAEHCrvXZ0.jpg', '_EiuAQtkyKo.jpg', 'flRm0z3MEoA.jpg']
 
 q = Queue()
 table = Table(title="Added Users", show_lines=True)
@@ -41,7 +42,7 @@ def worker():
         user = q.get()
         result = sendUser(user)
         q.task_done()
-        table.add_row(f"{user.firstName} {user.lastName}", user.email, user.phone, "✅" if result else "❌")
+        table.add_row(str(user.index + 1), f"{user.firstName} {user.lastName}", user.email, user.phone, "✅" if result else "❌")
 
 def genRandomDate():
     start_date = datetime.date(2018, 12, 12)
@@ -70,7 +71,8 @@ def genAddresses(fileName, sampleSize):
 
 
 class User:
-    def __init__(self, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
+    def __init__(self, index, firstName, lastName, password, nif, email, phone, type, street, city, postalCode, country, companyName, companyEmail, companyBio):
+        self.index          = index
         self.firstName      = firstName
         self.lastName       = lastName
         self.password       = password
@@ -107,7 +109,9 @@ def genUsers(amount):
         print("Missing geodata file.")
         sys.exit(1)
     
-    users = [User(fake.first_name(),
+    users = [User(
+                 i,
+                 fake.first_name(),
                  fake.last_name(),
                  fake.password(length=9),
                  randint(333333333, 999999999),
@@ -251,14 +255,26 @@ def genProductsSQL(amount, adminToken):
                 f"INSERT INTO ProductAttribute(id, product, title, content) VALUES ({j}, {i}, '{fake.words(nb=2)[0].capitalize()}', '{fake.text(max_nb_chars=220)}');"
             )
 
+    for i in range(1, amount+1):
+        usedPhotos = set()
+        for j in range(1, randint(3, 10)):
+            randomPhoto = choice(UPLOADED_FILES)
+
+            # Avoiding repeated photos per product
+            while randomPhoto in usedPhotos:
+                randomPhoto = choice(UPLOADED_FILES)
+            
+            usedPhotos.add(randomPhoto)
+
+            lineBuffer.append(f"INSERT INTO ProductImage (id, product, uri) VALUES ({j}, {i}, '{randomPhoto}');")
+
+
     # Generate supplies
     lineBuffer.append("#Supplies")
     suppliesRegistered = set()
     additionalSupplyData = {}
     for i in range(1, amount+1):
         for j in range(randint(1, 3)):
-
-
             randomSupplier = choice(possibleSuppliers)
             randomWarehouse = randint(1,3)
             while (i, randomSupplier, randomWarehouse) in suppliesRegistered:
@@ -269,10 +285,12 @@ def genProductsSQL(amount, adminToken):
             # Avoiding duplicate supply sales
             suppliesRegistered.add((i, randomSupplier, randomWarehouse))
 
+            supplyId = len([supply for supply in suppliesRegistered if supply[1] == randomSupplier])
+
             randomPrice = randint(1, 3000) + choice([0.99, 0.59, 0.49, 0.29, 0.19])
             randomQuantity = randint(1, 300)
 
-            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}');")
+            lineBuffer.append(f"INSERT INTO Supply (product, supplier, warehouse, quantity, price, production_date, expiration_date, id) VALUES ({i}, {randomSupplier}, {randomWarehouse}, {randomQuantity}, {randomPrice}, '{genRandomDate()}', '{genRandomDate()}', {supplyId});")
 
             # Keep price and quantity data to use for historical data
             additionalSupplyData[(i, randomSupplier, randomWarehouse)] = (randomQuantity, randomPrice)
@@ -328,14 +346,14 @@ def main():
     global API_PORT
 
     generationOptions = ["Users", "Products"]
-    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:8080)", "Development (dev.greenly.pt)"]
+    APIOptions = ["Remote (api.greenly.pt)", "Local (localhost:4000)", "Development (dev.greenly.pt)"]
 
     generationOption, index = pick(generationOptions, 'Choose what to generate: ', indicator='->', default_index=0)
     APIOption, APIIndex = pick(APIOptions, 'Choose which API to use: ', indicator='->', default_index=0)
 
     if (APIIndex == 1):
         API_BASE_URL = "http://localhost"
-        API_PORT = 8080
+        API_PORT = 4000
 
     if (APIIndex == 2):
         API_BASE_URL = "http://dev.greenly.pt"
@@ -353,10 +371,10 @@ def main():
             t.daemon = True
             t.start()
 
-        table.add_column("User Name", style="blue")
-        table.add_column("E-mail", style="blue")
-        table.add_column("Phone", style="blue")
-        # table.add_column("NIF", style="blue")
+        table.add_column("#", style="white")
+        table.add_column("User Name", style="white")
+        table.add_column("E-mail", style="white")
+        table.add_column("Phone", style="white")
         table.add_column("Status", justify="right", style="green")
 
         with Live(table, refresh_per_second=10, vertical_overflow="visible") as live:  # update 4 times a second to feel fluid

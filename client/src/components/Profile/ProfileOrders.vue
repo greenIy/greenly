@@ -262,7 +262,13 @@ export default({
             selectedProduct: '',
         }
     },
+    created() {
+        this.changeTitle();
+    },
     methods: {
+        changeTitle(){
+        window.document.title = "Greenly | Encomendas";
+    },
         initMaps() {
             const loader = new Loader({
                 apiKey: process.env.VUE_APP_GOOGLE_API_KEY,

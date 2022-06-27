@@ -76,7 +76,13 @@ export default {
   beforeMount(){
     this.getData();
   },
+  created() {
+    this.changeTitle();
+  },
   methods: {
+    changeTitle(){
+      window.document.title = "Greenly | Painel";
+    },
     async getData(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 

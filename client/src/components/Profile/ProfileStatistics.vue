@@ -30,7 +30,13 @@ export default({
             user: [],
         }
     },
+    created() {
+        this.changeTitle();
+    },
     methods: {
+        changeTitle(){
+            window.document.title = "Greenly | Estatísticas";
+    },
         getUserInfo() {
             this.user = this.$store.getters.getUser
             return this.$store.getters.getUser

@@ -75,7 +75,13 @@ export default {
       this.processData();
     }
   },
+  created() {
+    this.changeTitle();
+  },
   methods: {
+    changeTitle(){
+      window.document.title = "Greenly | Arquivo";
+    },
     async processData(){
       let processedData = this.parseOrders(this.receiveData);
 

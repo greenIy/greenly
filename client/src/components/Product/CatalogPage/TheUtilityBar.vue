@@ -102,6 +102,7 @@ library.add(faCaretDown);
 .size{
     width:85%;
 }
+
 .btn{
   border: none;
   color: white;
@@ -109,7 +110,12 @@ library.add(faCaretDown);
   border-radius: 10px;
   box-shadow: none;
 }
+
 .drop{
     min-width: 62%!important
+}
+
+.btn:hover {
+    background-color: #73b898;
 }
 </style>

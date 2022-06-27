@@ -13,15 +13,6 @@
             <router-link to="/produtos" tag="button" class="btn">Explore os nossos produtos <span  id="arrow-icon"><font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" /></span></router-link>
         </div>
     </div>
-      <!-- <div class="img-container">
-        <div class="img-title">
-          <h2>Nós</h2>
-          <h2>construímos um</h2>
-          <h2>mundo melhor</h2>
-        </div>
-          <img alt="Logo do greenly" src="../assets/poster.png" class="img-fluid">
-          <router-link to="/produtos" tag="button" class="btn">Explore os nossos produtos <span  id="arrow-icon"><font-awesome-icon :icon="['fas', 'arrow-right']" size="sm" /></span></router-link>
-      </div> -->
     </div>
     <TheFooter />
   </div>
