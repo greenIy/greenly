@@ -11,7 +11,7 @@
         <div class="d-flex comp-content">
             <div v-if="productsToCompare.length > 0" class="comp-content-product">
                 <div class="d-inline-block">
-                    <img class="img-fluid product-img" :src="productsToCompare[0].images[0].url" alt="Fotografia da Daniela">
+                    <img class="img-fluid product-img" :src="productsToCompare[0].images[0].url" alt="Fotografia do produto">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-2">
                     <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[0].id}`}">{{ productsToCompare[0].name }}</router-link></small>
@@ -29,7 +29,7 @@
             </div>
             <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
                 <div class="d-inline-block">
-                    <img class="img-fluid product-img" :src="productsToCompare[1].images[0].url" alt="Fotografia da Daniela">
+                    <img class="img-fluid product-img" :src="productsToCompare[1].images[0].url" alt="Fotografia do produto">
                 </div>
                 <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
                     <span><small><router-link  class="prod-name" :to="{path: `/produto/${productsToCompare[1].id}`}">{{ productsToCompare[1].name }}</router-link></small>
@@ -218,6 +218,7 @@ export default {
  width:100%;
  height:82%;
 }
+
 .prod-name {
     text-decoration: none;
     color: black;
@@ -245,9 +246,11 @@ img{
 .vl {
   border-left: 1px solid #dbdad7;
 }
+
 .font-compare{
     font-size:15px;
 }
+
 .product-img {
     padding-bottom: 30px !important;
 }
@@ -274,6 +277,5 @@ img{
 .remove-btn:hover {
     color:#4d4d4d;
 }
-
 
 </style>
