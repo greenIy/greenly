@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex-shrink-0 pt-3 pl-3 mr-0"> 
+  <div class="d-flex-shrink-0 pt-3 pl-3 mr-0">
     <p class=" align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">
       Filtros
     </p>
@@ -7,13 +7,13 @@
       <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformC()" data-bs-toggle="collapse" data-bs-target="#categories-collapse" aria-expanded="true">
         <font-awesome-icon id="iconC" class="fs-6 fa-fw" :icon="['fas', 'angle-up']" /> Categoria
-        </div>   
+        </div>
         <div class="collapse show" id="categories-collapse">
-          <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush overflow-auto">
             <router-link v-if="categorySelected" :to="{ path: '/produtos' + urls, query: { ...$route.query } }" @click='goBack()' class="list-group-item list-group-item-action border-0" style="color:#5e9f88;">
               <font-awesome-icon id="iconC" class="fs-7 fa-fw" :icon="['fas', 'angle-left']" /> {{ currentCategory.name }}
             </router-link>
-            
+
             <router-link v-for="category in showCategories" :key="category" :to="{ path: $route.path + '/' + category.id, query: { ...$route.query } }" @click='showProducts(category)' class="list-group-item list-group-item-action border-0">
               &nbsp; {{ category.name }}
             </router-link>
@@ -29,8 +29,8 @@
           <div class="list-group list-group-flush pb-3">
             <span class="list-group-item border-0">
               <label for="price-min">Mínimo: &nbsp;</label>
-                <input v-model="priceMin" min="0" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)" 
-               onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57">
+                <input v-model="priceMin" min="0" class="form-control w-50 d-inline" id="min-price" type="number" @keyup.enter="updateProductsByMinPrice(this.priceMin)"
+               onkeypress="return (event.charCode == 8 A|| event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57">
             </span>
             <span class="list-group-item border-0">
               <label for="price-max">Máximo: &nbsp;</label>
@@ -43,7 +43,7 @@
       <li>
         <div class="btn btn-toggle align-items-center rounded fs-6 fw-bold" @click="transformF()" data-bs-toggle="collapse" data-bs-target="#fornecedores-collapse" aria-expanded="false">
         <font-awesome-icon id="iconF" class="fs-6 fa-fw" :icon="['fas', 'angle-down']" /> Fornecedor
-        </div>   
+        </div>
         <div class="collapse" id="fornecedores-collapse">
           <div class="list-group list-group-flush overflow-auto filtro-fornecedor">
             <router-link v-for="supplier in this.suppliers" :key="supplier" append :to="{ query: { ...$route.query, fornecedor: `${supplier.id}` } }" class="list-group-item list-group-item-action border-0">
@@ -79,7 +79,7 @@ library.add(faAngleDown);
         type: String
       },
     },
-    data () { 
+    data () {
       return {
         categoryList: [],
         categorySelected: false,
@@ -202,6 +202,11 @@ library.add(faAngleDown);
 </script>
 
 <style scoped>
+
+.list-group {
+    max-height: 300px;
+}
+
 .list-group-item {
   font-size: 12px;
 }
@@ -229,4 +234,19 @@ library.add(faAngleDown);
 #fornecedores-collapse .filtro-fornecedor {
   height: 298px;
 }
+
+::-webkit-scrollbar {
+    width: 17px;
+}
+::-webkit-scrollbar-track {
+    background-color: #E4E4E4;
+    border-radius: 100px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 100px;
+    border: 5px solid transparent;
+    background-clip: content-box;
+    background-color: #5E9F88;
+}
+
 </style>

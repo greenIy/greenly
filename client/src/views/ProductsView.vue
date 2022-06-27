@@ -7,7 +7,7 @@
         <TheUtilityBar :productAmount="productAmount" :productsInPage="productsInPage"
               :product="products"/>
         <div class="row content justify-content-center" v-if="rendered">
-          <div class="col-sm-2 col-md-2 mb-2 filtros">
+          <div class="col-sm-2 col-md-2 pb-4 filtros">
             <div class="content d-flex">
               <TheFilters :categories="categories" :currentCategories="currentCategories" :suppliers="suppliers"/>
             </div>
@@ -30,8 +30,8 @@
       </div>
       <TheNextPage v-if="products.length" :pageAmount="getPageAmount"/>
     </div>
-    <TheFooter />
   </div>
+  <TheFooter />
 </body>
 </template>
 
@@ -167,7 +167,7 @@ export default {
   background-color: white;
   border: 1px solid rgba(0,0,0,.125);
   border-radius: .25rem;
-  height: 946px;
+  height: fit-content;
 }
 
 .v-enter-active,

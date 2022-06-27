@@ -1,5 +1,5 @@
 <template>
-    <footer class="text-center text-lg-start text-light px-3 text-uppercase position-absolute w-100">
+    <footer class="text-center text-lg-start text-light px-3 text-uppercase position-absolute w-100 ">
         <div class="row mt-3">
             <div class="col-lg-4 col-md-6 mb-4 mb-md-2">
                 <img class="pt-2 pb-2" alt="Logo do greenly" src="../../assets/logo_dark.png">
