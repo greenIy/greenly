@@ -164,12 +164,12 @@
             </router-link>
         </div>
         <div class="pt-2">
-            <router-link to="/fornecedores black" class="mb-2">
+            <router-link to="/fornecedores" class="mb-2">
                 fornecedores<span class="ms-3">| </span> 
             </router-link>
         </div>
         <div class="pt-2">
-            <router-link to="/estatisticas black" class="mb-2 ml-2">
+            <router-link to="/estatisticas" class="mb-2 ml-2">
                 estatísticas 
             </router-link>
         </div>
