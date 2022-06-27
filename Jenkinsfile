@@ -1,5 +1,10 @@
 pipeline {
-  agent none
+  agent {
+    node {
+      label 'ubuntu-2004'
+    }
+
+  }
   stages {
     stage('Client Build') {
       agent any
