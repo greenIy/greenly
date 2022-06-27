@@ -37,7 +37,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive">
+          <div class="table-responsive" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -108,7 +108,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive">
+          <div class="table-responsive" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>

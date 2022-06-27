@@ -1,7 +1,10 @@
 <template>
   <div class="container-fluid px-5 tab-pane fade" id="users-tab" role="tabpanel" aria-labelledby="users-pill">
     <!--User info modals-->
-    <TheUserInfo :currentUser='this.currentUser' />
+    <ThePersonalInfoModal :currentUser='this.currentUser' />
+    <TheOrdersModal :currentUser='this.currentUser' />
+    <TheCompanyModal :currentUser='this.currentUser' />
+    <TheAddressesModal :currentUser='this.currentUser' />
 
     <!--Users overview card-->
     <div class="row px-5">
@@ -30,7 +33,7 @@
           </nav>
 
           <!--Users table-->
-          <div class="table-responsive">
+          <div class="table-responsive" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -76,7 +79,7 @@
                       </a>
                       <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
                         <a @click="this.getCurrentUser(user.id)" class="dropdown-item" data-bs-target="#user-details"
-                          data-bs-toggle="modal">Ver detalhes</a> <!--data-bs-dismiss="modal"-->
+                          data-bs-toggle="modal">Ver detalhes</a>
                         <a class="dropdown-item text-danger" href="#">Remover</a>
                       </div>
                     </div>
@@ -92,20 +95,26 @@
 </template>
 
 <script>
-import TheOverviewCard from './TheOverviewCard.vue';
-import TheUserInfo from './TheUserInfo.vue';
+import TheOverviewCard from '../TheOverviewCard.vue';
+import ThePersonalInfoModal from './ThePersonalInfoModal.vue';
+import TheOrdersModal from './TheOrdersModal.vue';
+import TheCompanyModal from './TheCompanyModal.vue';
+import TheAddressesModal from './TheAddressesModal.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 library.add(faMagnifyingGlass);
 
-import http from "../../../http-common";
+import http from "../../../../http-common";
 
 export default {
   name: 'TheUsersTab',
   components: {
     TheOverviewCard,
-    TheUserInfo
+    ThePersonalInfoModal,
+    TheOrdersModal,
+    TheCompanyModal,
+    TheAddressesModal
 },
   data() {
     return {

@@ -40,7 +40,7 @@
 
                   <!--Tab creation buttons-->
                   <div class="mb-2 mb-lg-0">
-                    <button class="btn btn-success btn-lg bg-309c76 me-2 my-0">Criar administrador</button>
+                    <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#admin-registration" data-bs-toggle="modal">Criar administrador</button>
                   </div>
 
                   <!--div class="mb-2 mb-lg-0">
@@ -55,11 +55,12 @@
 
         <!--Admin tab content-->
         <div class="tab-content" id="pills-tab-content">
+          <TheAdminRegistration />
           <TheGeneralTab />
           <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.userIncrement'/>
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
-          <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders'/>
+          <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :statistics='this.statistics' />
         </div>
 
       </div>
@@ -73,12 +74,14 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import TheDashboardPills from '@/components/Administration/TheDashboardPills.vue';
+import TheAdminRegistration from '@/components/Administration/TheAdminRegistration.vue';
 import TheGeneralTab from '@/components/Administration/TheGeneralTab.vue';
-import TheUsersTab from '@/components/Administration/TheUsersTab.vue';
+import TheUsersTab from '@/components/Administration/Users/TheUsersTab.vue';
 import TheProductsTab from '@/components/Administration/TheProductsTab.vue';
-import TheOrdersTab from '@/components/Administration/TheOrdersTab.vue';
+import TheOrdersTab from '@/components/Administration/Orders/TheOrdersTab.vue';
 
 import http from "../../http-common"
+
 
 export default {
   name: 'AdminView',
@@ -89,8 +92,9 @@ export default {
     TheGeneralTab,
     TheUsersTab,
     TheProductsTab,
-    TheOrdersTab
-  },
+    TheOrdersTab,
+    TheAdminRegistration
+},
   data() {
     return {
       users: [],
@@ -103,13 +107,16 @@ export default {
       requests: [],
       amountRequests: 0,
       orders: [],
-      amountOrders: 0
+      amountOrders: 0,
+      statistics: {}
     };
   },
   mounted() {
     this.getUsers();
     this.getCategories();
     this.getProducts();
+    this.getOrders();
+    this.getStatistics();
   },
   methods: {
     async getUsers() {
@@ -135,7 +142,13 @@ export default {
       let response = await http.get("/store/orders", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
       this.orders = response.data;
       this.amountOrders = response.data.length;
-    }
+    },
+    async getStatistics() {
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+
+      let response = await http.get("/store/statistics", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
+      this.statistics = response.data;
+    },
   }
 };
 </script>
