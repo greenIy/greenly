@@ -182,4 +182,5 @@ h5 {
 input[type="checkbox"]:disabled + span {
    color: #969595 !important;
 }
+
 </style>
