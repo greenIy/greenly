@@ -62,6 +62,7 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
+  
   {
     path: '/perfil',
     name: 'perfil',
@@ -126,6 +127,13 @@ const routes = [
     component() {
       return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
+  },
+  {
+    path: '/carrinho',
+    name: 'cart',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
+    }
   },
   {
     path: '/painel',

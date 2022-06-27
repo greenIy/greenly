@@ -160,13 +160,14 @@
                     <div class="d-inline-block p-0 col-md-4" style="text-align:end;">
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
-                    <div class="d-inline-block text-end col-md-3">
-                      <button class="btnS p-2" v-if="userIsLoggedIn && user.type == 'CONSUMER'">
-                        <font-awesome-icon class="icons"  :icon="['fa', 'cart-plus']" size="lg" /> Adicionar ao Carrinho {{modal}}
+                    <div class="d-inline-block text-end col-md-2">
+                      <button v-on:click="this.addProductToCart" class="btnS p-2">
+                        <font-awesome-icon  class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
                     <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="d-inline-block text-start col-md-1 btnH p-8 fav">
-                      <font-awesome-icon @click="liked($event)" class="icons fa-cog"  :icon="['fa', 'heart']"  size="lg" />
+                      <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="lg"/>
+                      <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                     </button>
                   </div>
                 </div>
@@ -216,6 +217,8 @@ import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus, faList, 
 import 'vue3-carousel/dist/carousel.css';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import { ref } from 'vue';
+import { useToast } from "vue-toastification";
+
 
 library.add(faHeart);
 library.add(faCartPlus);
@@ -252,8 +255,14 @@ export default {
     transporters: Array,
     totalPrice:Number,
     attributes:Array,
+    product: Object,
+    idWarehouse: Number
+  },
+  mounted() {
+    this.getWishlist()
   },
   data() {
+    const toast = useToast()
     return {
       userIsLoggedIn: this.$store.getters.getState,
       user: {
@@ -274,6 +283,7 @@ export default {
       idTransporter: 0,
       totalPrice:0,
       attributes:[],
+      idWarehouse: 0,
       currentSupplier: {
         name: "",
         resource_usage: 0,
@@ -286,26 +296,100 @@ export default {
         average_resource_usage: 0,
         average_emissions: 0,
         price: "",
-      }
+      },
+      wishlist: {},
+      toast
     };
   },
   created() {
     this.getInfo();
     this.getSuppliers();
-    this.getUserInfo();
   }, 
   methods: {
-    getUserInfo() {
-      this.user = this.$store.getters.getUser
-      return this.user
-    },
-    liked(event) {
-      const svg = event.path[1];
-      if (svg.classList.contains("red")) {
-        svg.classList.remove("red");
-      } else {
-        svg.classList.add("red");
+    addProductToCart(){
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+      let userId = JSON.parse(localStorage.getItem('userId'));
+
+      if (accessToken){
+          http.post(`/user/${userId}/cart`, JSON.stringify(
+            {
+              product: this.product.id,
+              supplier: this.suppliers[this.idSupplier].supplier.id,
+              transporter: this.currentSupplier.transporters[this.idTransporter].transporter.id,
+              warehouse: this.suppliers[this.idSupplier].warehouse.id,
+              quantity: this.quantity
+            }
+          ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+          .then((response) => {
+              console.log(response.data)
+              if (response.status == 200) {
+                console.log("Success")
+                this.showSuccessfulCart()
+              }
+
+          }).catch((error) => {
+              console.log(error);
+              console.log("Failure!");
+          })
       }
+    },
+    getWishlist() {
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            if (accessToken){
+                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                    if (response.status == 200) {
+                        this.wishlist = response.data
+                    }
+                })
+
+            }
+    },
+    isProductInWishlist(product) {
+      var isProductIn = false
+      for (let produto = 0; produto < Object.keys(this.wishlist).length; produto++) {
+        if (this.wishlist[produto].id == product.id) {
+          isProductIn = true
+        }
+      }
+      return isProductIn
+    },
+    addToWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+        if (accessToken){
+            http.post(`/user/${userId}/wishlist`, JSON.stringify(
+              {
+                product: this.product.id
+              }
+            ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 201) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
+    removeFromWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+
+        if (accessToken){
+            http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 200) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
     },
     async getInfo() {
       this.loading = true;
@@ -364,7 +448,7 @@ export default {
             document.getElementById("decrement").style.color="#ededed";
           }
           if (this.quantity < this.suppliers[this.idSupplier].quantity ){
-            document.getElementById("increment").style.color="#7c9d8e";
+            document.getElementById("increment").style.color="#5E9F88";
           }
         }
       }
@@ -372,7 +456,7 @@ export default {
         if(this.quantity < this.suppliers[this.idSupplier].quantity){
           this.quantity++;
           if(this.quantity==2){
-            document.getElementById("decrement").style.color="#7c9d8e";
+            document.getElementById("decrement").style.color="#5E9F88";
           }
           if (this.quantity== this.suppliers[this.idSupplier].quantity){
             document.getElementById("increment").style.color="#ededed";
@@ -468,6 +552,22 @@ export default {
     },
     updateSlideWidth() {
       this.$refs.imageCarousel.restartCarousel()
+    },
+    showSuccessfulCart() {
+      this.toast.success('O item foi adicionado ao carrinho com sucesso!', {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
     }
   },
 };
@@ -480,11 +580,11 @@ export default {
 .btnS {
   border: none;
   color: white;
-  background-color: #7c9d8e;
+  background-color: #5E9F88;
   border-radius: 10px;
 }
 .btnS:hover {
-  background-color: #89a799;
+  background-color: #66b096;
 }
 .btnH {
   border: none;
@@ -557,7 +657,7 @@ label {
   margin-bottom: 5px;
 }
 #increment{
-  color:#7c9d8e;
+  color:#5E9F88;
 }
 #decrement{
   color:#ededed;

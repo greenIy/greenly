@@ -32,7 +32,8 @@ myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
-myApp.use(store)
+myApp.use(store);
+myApp.use(VueToast);
 
 /* Antes da validação de cada pedido de navegação,
    verificar se o utilizador de facto pode visitar a página,
