@@ -56,24 +56,12 @@
             </div>
         </div>        
         </div>
-        
-        <!-- Toast Edit User Info -->
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <div class="toast align-items-center text-white bg-primary border-0" id="successToast" role="alert" aria-live="polite" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Atualizado!</strong> O seu perfil foi atualizado com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
 
     </div>
 </template>
 
 <script>
-import { Toast } from '../../main'
+import { useToast } from "vue-toastification";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -89,7 +77,9 @@ export default({
         this.getUserInfo();
     },
     data() {
+        const toast = useToast()
         return {
+            toast,
             user: {},
         }
     },
@@ -134,10 +124,20 @@ export default({
         },
         saveUserInfo() {
             this.cancelUserInfo()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("successToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.toast.success("Atualizado! O seu perfil foi atualizado com sucesso.", {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
 
         },
         editProfile() {

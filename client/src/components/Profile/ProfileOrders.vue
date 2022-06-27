@@ -71,7 +71,11 @@
                                 <div v-for="item in order.items" :key="item.id">
                                     <div class="row">
                                         <div class="col">
-                                            <h5>{{ item.product.name }}</h5>
+                                            <h5>{{ item.product.name }}&nbsp;
+                                                <router-link class="greenly-link" :to="{path: '/produto/' + item.product.id}">
+                                                    <font-awesome-icon :icon="['fa', 'arrow-up-right-from-square']" style="cursor: pointer;"/>
+                                                </router-link>
+                                            </h5>
                                         </div>
                                         <div class="col">
                                             <div class="d-grid gap-2 d-md-flex justify-content-md-end me-3">
@@ -229,27 +233,15 @@
         </div>
         </div>
 
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <!-- Toast Cancel Address -->
-                <div class="toast align-items-center text-white bg-primary border-0" id="cancelProductToast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                        <strong>Cancelada!</strong> A entrega do item foi cancelada com sucesso.
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-        </div>
-
     </div>
 </template>
 
 <script>
-import { Toast } from '../../main'
+import { useToast } from "vue-toastification";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload } from '@fortawesome/free-solid-svg-icons';
-library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload);
+import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload, faArrowUpRightFromSquare);
 
 import http from "../../../http-common"
 import { Loader } from "@googlemaps/js-api-loader"
@@ -261,6 +253,7 @@ export default({
         this.getUserOrders();
     },
     data() {
+        const toast = useToast()
         return {
             user: {},
             orders: [],
@@ -406,10 +399,20 @@ export default({
         successfulCancelProduct() {
             var closeCancelProductModal = document.getElementById("closeCancelProductModal");
             closeCancelProductModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("cancelProductToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.toast.success("Cancelada! A entrega do item foi cancelada com sucesso.", {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
         },
         cancelProduct(order_id, product_id) {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));

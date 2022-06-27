@@ -31,7 +31,7 @@
                     </div>
                     <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
                     <div v-if="active_el==2 && this.$route.name == 'transportador'"><DistributionCenters :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==3 && this.$route.name == 'transportador'">Veículos INFO ... Por FAZER</div>
+                    <div v-if="active_el==3 && this.$route.name == 'transportador'"><Vehicles :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
@@ -46,16 +46,13 @@ import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import EncomendasDashboard from "@/components/Transporter/EncomendasDashboard.vue";
 import History from "@/components/Transporter/History.vue";
 import DistributionCenters from "@/components/Transporter/DistributionCenters.vue"
+import Vehicles from "@/components/Transporter/Vehicles.vue"
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass, faBoxOpen, faXmark} from "@fortawesome/free-solid-svg-icons";
+library.add(faClockRotateLeft, faMagnifyingGlass, faBoxOpen, faXmark);
 
 import http from "../../http-common";
-
-library.add(faClockRotateLeft);
-library.add(faMagnifyingGlass);
-library.add(faBoxOpen);
-library.add(faXmark);
 
 export default {
   name: 'equipa',
@@ -65,6 +62,7 @@ export default {
     EncomendasDashboard,
     History,
     DistributionCenters,
+    Vehicles,
   },
   data() {
     return {
