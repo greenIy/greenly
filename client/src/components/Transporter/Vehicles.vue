@@ -62,10 +62,13 @@
                         <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>&nbsp;  &nbsp;  &nbsp;
                         <span class="fs-5"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp;  recursos usados<br></span>&nbsp;  &nbsp;  &nbsp;
                         <span class="fs-5"><font-awesome-icon :icon="['fa', 'skull-crossbones']" />&nbsp;  média de emissões<br></span>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'box']" />&nbsp;  total de encomendass<br></span>
+                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'box']" />&nbsp;  total de encomendas<br></span>
                     </div>
                 </div>
-                <div class="row mt-4">
+                <div v-if="calculateVehiclesLength() <= 0" class="text-center">
+                    <p class="mt-5 fs-3">Parece que ainda não tem veículos.</p>
+                </div>
+                <div v-else class="row mt-4">
                     <div v-for="(vehicle, index) in this.vehicles" :key="vehicle.id" class="card mb-3 ms-4 me-3" style="max-width: 30%; height: 270px !important;">
                         <div class="row g-0">
                             <div class="col-md-4 mt-5 ms-4 me-2">

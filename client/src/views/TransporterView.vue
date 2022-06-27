@@ -35,7 +35,7 @@
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
-            <TheFooter />
+            <!-- <TheFooter /> -->
         </body>
 </div>
 </template>

@@ -32,7 +32,7 @@
          <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
         </div>
         <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
-          <button class="btnH fav">
+          <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="btnH fav">
             <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" />
             Favoritos
           </button>
