@@ -44,4 +44,3 @@
 
 <br><br>
 <small>Greenly Team 🌿 2022</small>
-<small>su was here >:3c !</small>
