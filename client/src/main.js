@@ -6,8 +6,6 @@ import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
 import GAuth from 'vue3-google-oauth2';
-import VueToast from "vue-toastification";
-import "vue-toastification/dist/index.css";
 
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
@@ -34,7 +32,8 @@ myApp.component('font-awesome-icon', FontAwesomeIcon);
 myApp.component('font-awesome-layers', FontAwesomeLayers);
 myApp.component('font-awesome-layers-text', FontAwesomeLayersText);
 
-myApp.use(store)
+myApp.use(store);
+myApp.use(VueToast);
 
 /* Antes da validação de cada pedido de navegação,
    verificar se o utilizador de facto pode visitar a página,

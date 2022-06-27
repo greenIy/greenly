@@ -33,7 +33,8 @@
         </div>
         <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
           <button class="btnH fav">
-            <font-awesome-icon @click="liked($event)" class="icons fa-cog" :icon="['fa', 'heart']" />
+            <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="xs"/>
+            <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
             Favoritos
           </button>
           <form>
@@ -53,8 +54,12 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { ContentLoader } from "vue-content-loader"
+import http from "../../../http-common"
+
 
 library.add(faHeart);
+
+import { useToast } from "vue-toastification";
 
 export default {
   components: { ContentLoader },
@@ -63,24 +68,97 @@ export default {
     product: Object,
     productsToCompare: Array,
   },
+  mounted() {
+    this.getWishlist()
+  },
   data() {
+    const toast = useToast()
     return {
+      toast,
       isActive: false,
       quantity:0,
       user: {
         accept: false,
       },
+      wishlist: {},
       imageLoaded: false
     };
   },
   methods: {
-    liked(event){
-      const svg = event.path[1]
-      if (svg.classList.contains('red')) {
-        svg.classList.remove("red");
-      } else {
-        svg.classList.add("red");
-      } 
+    getWishlist() {
+      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            if (accessToken){
+                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+                    if (response.status == 200) {
+                        this.wishlist = response.data
+                    }
+                })
+
+            }
+    },
+    isProductInWishlist(product) {
+      var isProductIn = false
+      for (let produto = 0; produto < Object.keys(this.wishlist).length; produto++) {
+        if (this.wishlist[produto].id == product.id) {
+          isProductIn = true
+        }
+      }
+      return isProductIn
+    },
+    addToWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+        if (accessToken){
+            http.post(`/user/${userId}/wishlist`, JSON.stringify(
+              {
+                product: this.product.id
+              }
+            ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 201) {
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
+    removeFromWishlist() {
+        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+        let userId = JSON.parse(localStorage.getItem('userId'));
+
+        if (accessToken){
+            http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
+            .then((response) => {
+                if (response.status == 200) {
+                  this.successRemoveSingleItem()
+                  this.getWishlist()
+                }
+            }).catch((error) => {
+                console.log(error);
+                console.log("Failure!");
+            })
+
+        }
+    },
+    successRemoveSingleItem(){
+        this.toast.success('O item foi removido com sucesso!', {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
     },
     compare(event){
       let query = Object.assign({}, this.$route.query);
@@ -121,6 +199,7 @@ export default {
     },
   }
 };
+
 </script>
 <style scoped>
 h4 {
