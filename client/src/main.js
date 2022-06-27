@@ -6,6 +6,8 @@ import mitt from 'mitt';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthService from './router/auth';
 import GAuth from 'vue3-google-oauth2';
+import VueToast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 // Fontawesome imports
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
@@ -17,6 +19,7 @@ import { router, store } from './router/index';
 // Axios imports
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+
 
 //Draggable
 import VueDraggable from 'vuedraggable';
@@ -100,8 +103,6 @@ const gauthOption = {
 
 // Instanciação do componente GAuth
 myApp.use(GAuth, gauthOption);
-
-// Instanciação do componente Toast
 myApp.use(VueToast);
 myApp.use(VueDraggable);
 

@@ -3,12 +3,14 @@
         
         <h4>Encomendas</h4>
         <hr>
-        <i>Todas as suas encomendas encontrar-se-ão nesta secção ordenadas cronologicamente.<br>É possivel cancelar individualmente
+        <i>Todas as suas encomendas encontrar-se-ão nesta secção, ordenadas cronologicamente.<br>É possivel cancelar individualmente
         um item de qualquer encomenda caso este ainda não se encontre em trânsito <font-awesome-icon :icon="['fa', 'truck-fast']"/> .
         </i>
         <br>
         <br>
-        
+        <!-- Button trigger Download data (JSON) -->
+        <button type="button" class="btn btn-secondary btn-sm position-absolute top-0 end-0 mt-5 me-5" v-on:click="saveFile()"><font-awesome-icon :icon="['fa', 'download']" /> &nbsp;Descarregar dados (JSON)</button>
+
         <div v-if="this.ordersLength == 0" style="overflow-x: hidden;overflow-y: auto; height: 370px;">
             <div class="w-100 justify-content-center p-5 mt-5">
                 <p class="text-center">Parece que ainda não realizou nenhuma encomenda.<br>Do que está à espera? Explore o nosso catálogo.</p>
@@ -27,7 +29,7 @@
                                 <font-awesome-icon :icon="['fa', 'box']"/>&nbsp;Encomenda #{{ order.id }}
                             </div>
                             <div class="col">
-                                <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{`${new Date(order.date).getDate()}/${new Date(order.date).getMonth()+1}/${new Date(order.date).getFullYear()}`}}
+                                <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{`${String(new Date(order.date).getDate()).padStart(2, '0')}/${String(new Date(order.date).getMonth()+1).padStart(2, '0')}/${new Date(order.date).getFullYear()}`}}
                             </div>
                             <div v-if="calculateOrderProducts(index) == 1" class="col">
                                 <font-awesome-icon :icon="['fa', 'shopping-bag']"/>&nbsp; {{ this.calculateOrderProducts(index) }} x item
@@ -69,7 +71,11 @@
                                 <div v-for="item in order.items" :key="item.id">
                                     <div class="row">
                                         <div class="col">
-                                            <h5>{{ item.product.name }}</h5>
+                                            <h5>{{ item.product.name }}&nbsp;
+                                                <router-link class="greenly-link" :to="{path: '/produto/' + item.product.id}">
+                                                    <font-awesome-icon :icon="['fa', 'arrow-up-right-from-square']" style="cursor: pointer;"/>
+                                                </router-link>
+                                            </h5>
                                         </div>
                                         <div class="col">
                                             <div class="d-grid gap-2 d-md-flex justify-content-md-end me-3">
@@ -227,27 +233,15 @@
         </div>
         </div>
 
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-            <!-- Toast Cancel Address -->
-                <div class="toast align-items-center text-white bg-primary border-0" id="cancelProductToast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                        <strong>Cancelada!</strong> A entrega do item foi cancelada com sucesso.
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-        </div>
-
     </div>
 </template>
 
 <script>
-import { Toast } from '../../main'
+import { useToast } from "vue-toastification";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
-import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
-library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark);
+import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark, faDownload, faArrowUpRightFromSquare);
 
 import http from "../../../http-common"
 import { Loader } from "@googlemaps/js-api-loader"
@@ -259,6 +253,7 @@ export default({
         this.getUserOrders();
     },
     data() {
+        const toast = useToast()
         return {
             user: {},
             orders: [],
@@ -410,10 +405,20 @@ export default({
         successfulCancelProduct() {
             var closeCancelProductModal = document.getElementById("closeCancelProductModal");
             closeCancelProductModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("cancelProductToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.toast.success("Cancelada! A entrega do item foi cancelada com sucesso.", {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
         },
         cancelProduct(order_id, product_id) {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -439,6 +444,20 @@ export default({
                         console.log("Failure!")
                     })
             }
+        },
+        saveFile() {
+            let date = new Date()
+            const content = JSON.stringify(this.orders);
+            let a = document.createElement("a");
+            let file = new Blob([content], {type: "application/json"});
+            a.href = URL.createObjectURL(file);
+            a.download =    `GREENLY_ORDERS_` + 
+                            `${String(date.getDate()).padStart(2, '0')}-` + 
+                            `${String(date.getMonth() + 1).padStart(2, '0')}-` + 
+                            `${date.getFullYear()}_${date.getHours()}-` + 
+                            `${String(date.getMinutes()).padStart(2, '0')}-` + 
+                            `${date.getSeconds()}.json`;
+            a.click();
         }
     },
 });
@@ -484,9 +503,6 @@ export default({
     }
     .greenly-link {
         color: #5e9f88;
-    }
-    #cancelProductToast {
-        background-color: #5E9F88 !important;
     }
     ::-webkit-scrollbar {
         width: 17px;
