@@ -114,14 +114,11 @@ export default {
     },
     emits: ["setShipping", "setBilling", "done"],
     mounted() {
-        console.log(this.selectedShippingAddress)
         this.getUserInfo();
     },
     data(props) {
         let selectedBillingAddress = props.billing;
         let selectedShippingAddress = props.shipping;
-        console.log(props.billing);
-        console.log(selectedBillingAddress);
         return {
             user: [],
             addresses: [],
@@ -142,6 +139,8 @@ export default {
                             self.user = response.data;
                             self.addresses = self.user.addresses;
                             if (self.selectedShippingAddress == null || self.selectedBillingAddress == null) {
+                                self.selectShippingAddress(self.addresses[0]);
+                                self.selectBillingAddress(self.addresses[0]);
                                 for (let address of self.addresses) {
                                     if (address.is_shipping == true) {
                                         self.selectShippingAddress(address);
@@ -158,13 +157,11 @@ export default {
         },
         selectShippingAddress(address) {
             this.selectedShippingAddress = address;
-            console.log("setting shipping to: ", address);
             this.$emit('setShipping', address);
         },
 
         selectBillingAddress(address) {
             this.selectedBillingAddress = address;
-            console.log("setting billing to: ", address);
             this.$emit('setBilling', address);
         },
 
@@ -172,18 +169,6 @@ export default {
             this.activeTab = tab;
         }
     },
-    activated() {
-        console.log("Shipping form activated")
-    },
-
-    deactivated() {
-        console.log("Shipping form deactivated")
-    },
-
-    updated(){
-
-        console.log("Shipping form updated")
-    }
 
 
 }
@@ -200,7 +185,6 @@ export default {
 .bg-selected {
     /*faded outline*/
     box-shadow: 0 2px 17px 5px rgba(94,159,136,1);
-
 
 }
 
