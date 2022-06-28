@@ -41,14 +41,10 @@
 <script>
 import { useToast } from "vue-toastification";
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
-library.add(faEye, faEyeSlash, faLeaf);
-
 import http from "../../../../http-common";
 
 export default {
-    name: 'TheAdminRegistration',
+    name: 'TheCategoryCreation',
     data(){
         const toast = useToast();
 

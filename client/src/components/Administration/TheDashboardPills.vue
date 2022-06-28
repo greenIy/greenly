@@ -27,11 +27,17 @@ export default {
 <style scoped>
   .nav-link{
     color: #309c76;
+    margin-top: 10px;
   }
-
-  .nav-link:hover{
+.nav-link:hover{
     color: #5abd9a!important;
   }
+  .active{
+    font-size:25px;
+    margin-top: 0px;
+  }
+
+  
 
   .active:hover{
     color: #a4f3d7!important;

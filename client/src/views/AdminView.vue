@@ -41,10 +41,7 @@
                   <!--Tab creation buttons-->
                   <div class="mb-2 mb-lg-0">
                     <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#admin-registration" data-bs-toggle="modal">Criar administrador</button>
-                  </div>
-
-                  <div class="mb-2 mb-lg-0">
-                    <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#category-creation" data-bs-toggle="modal">Criar categoria</button>
+                    <button class="btn btn-success btn-lg bg-309c76 mx-2 my-0" data-bs-target="#category-creation" data-bs-toggle="modal">Criar categoria</button>
                     <button class="btn btn-success btn-lg bg-309c76 ms-2 my-0" data-bs-target="#product-creation" data-bs-toggle="modal">Criar produto</button>
                   </div>
                 </div>
@@ -57,7 +54,7 @@
         <div class="tab-content" id="pills-tab-content">
           <TheAdminRegistration />
           <TheCategoryCreation :categories='this.categories'/>
-          <TheProductCreation />
+          <TheProductCreation :categories='this.categories'/>
 
 
           <TheGeneralTab :amountUsers='this.amountUsers' :increment='this.usersIncrement' :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions'/>
