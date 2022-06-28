@@ -115,7 +115,7 @@
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="chooseAddressNewCenterLabel">Morada centro de distribuição</h5>
+						<h5 class="modal-title" id="chooseAddressNewCenterLabel">Selecione a morada do centro de distribuição</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
@@ -208,7 +208,7 @@
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="chooseAddressModalLabel">Centro de distribuição #{{ this.selectedCenter.id }}</h5>
+						<h5 class="modal-title" id="chooseAddressModalLabel">Selecione morada do centro #{{ this.selectedCenter.id }}</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
@@ -487,7 +487,7 @@ export default {
             closeEditModal.click();
 			this.getUserDistributionCenters();
 			this.getDistributionCenterInfo(this.selectedCenter);
-			this.successfulToast("Alterada! A capacidade máxima do centro foi alterada com sucesso")
+			this.successfulToast("Alterada! A capacidade máxima do centro foi alterada com sucesso.")
 		},
 		newDistributionCenter() {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -524,7 +524,7 @@ export default {
                 .then((response) => {
                     if (response.status == 201) {
 						this.selectedCenter.address = address;
-                        this.successfulToast("Alterada! A morada do centro foi alterada com sucesso")
+                        this.successfulToast("Alterada! A morada do centro foi alterada com sucesso.")
                     }
                     }).catch((error) => {
                         console.log(error.response.data);

@@ -86,7 +86,7 @@
                             <hr>
                             <div class="text-center mt-1">
                                 <button type="button" class="btn btn-secondary btn-sm me-3" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle" v-on:click="selectVehicle(vehicle)"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
-                                <button type="button" class="btn btn-danger btn-sm" v-on:click=""><font-awesome-icon :icon="['fa', 'trash']" />&nbsp; Remover</button>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#removeVehicle" v-on:click="this.selectedVehicle = vehicle"><font-awesome-icon :icon="['fa', 'trash']" />&nbsp; Remover</button>
                             </div>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                     <div class="mb-3">
                         <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL" required>
                             <label class="form-check-label" for="inlineRadio1">Gasolina</label>
                         </div>
                         <div class="form-check form-check-inline">
@@ -148,20 +148,21 @@
                     <div class="row mb-2">
                         <div class="col mb-3">
                             <label for="newVehicleCapacity" class="form-label">Capacidade de carga <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleCapacity" v-model="newVehicleInfo.payload_capacity" placeholder="Capacidade de carga" required>
+                            <input type="number" class="form-control" id="newVehicleCapacity" v-model="newVehicleInfo.payload_capacity" placeholder="Capacidade de carga" required>
                         </div>
                         <div class="col mb-3">
                             <label for="newVehicleResources" class="form-label">Recursos necessários <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleResources" v-model="newVehicleInfo.resource_usage" placeholder="Recursos necessários" required>
+                            <input type="number" class="form-control" id="newVehicleResources" v-model="newVehicleInfo.resource_usage" placeholder="Recursos necessários" required>
                         </div>
                         <div class="col mb-3">
                             <label for="newVehicleEmissions" class="form-label">Emissões médias <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleEmissions" v-model="newVehicleInfo.average_emissions" placeholder="Emissões médias" required>
+                            <input type="number" class="form-control" id="newVehicleEmissions" v-model="newVehicleInfo.average_emissions" placeholder="Emissões médias" required>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="closeNewVehicleModal" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Criar veículo</button>
+                        <button v-if="this.selectedCenterNew.address.street" type="submit" class="btn btn-primary">Criar veículo</button>
+                        <button v-else type="submit" class="btn btn-primary" disabled>Criar veículo</button>
                     </div>
                 </form>
                 </div>
@@ -174,7 +175,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newVehicleCenterLabel">Selecione o centre de distribuição</h5>
+                    <h5 class="modal-title" id="newVehicleCenterLabel">Selecione o centro de distribuição</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -283,7 +284,7 @@
                             </div>
 						</div>
                         <div class="text-center">
-                            <button type="button" class="btn btn-secondary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#changeCapacityModal"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Alterar centro de distribuição</button>
+                            <button type="button" class="btn btn-secondary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#changeVehicleCenter"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Alterar centro de distribuição</button>
                         </div>	
                 </div>
                 <div class="modal-footer">
@@ -292,13 +293,67 @@
                 </div>
             </div>
             </div>
+
+            <!-- Modal Change Center -->
+            <div class="modal fade" id="changeVehicleCenter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeVehicleCenterLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeVehicleCenterLabel">Selecione morada do centro #{{ this.selectedVehicle.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center" style="max-height: 500px; overflow-y: auto;">
+                        <div v-if="calculateDistributionCentersLength() > 0" v-for="center in this.distributionCenters" :key="center.id" class="card mt-3 mb-3" style="width: 300px !important; cursor: pointer;">
+                            <div class="card-body" v-on:click="editVehicleCenter(this.selectedVehicle, center)" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle">
+                                <h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centro #{{ center.id }}</h5><br>
+                                <h6><font-awesome-icon :icon="['fa', 'location-dot']" />&nbsp; Morada</h6>
+                                <address>
+                                    {{ center.address.street }}<br>
+                                    {{ center.address.city }}, {{ center.address.country }}<br>
+                                    <abbr title="CP">Código Postal:</abbr> {{ center.address.postal_code }}
+                                </address>
+                                <p class="mt-2">Capacidade: {{ center.capacity }}m²</p>          
+                            </div>           
+                        </div>
+                        <div v-else class="text-center mt-3 mb-3">
+                            <p>Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu perfil.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsCenterModal">Cancelar</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Modal Remove Vehicle -->
+            <div class="modal fade" id="removeVehicle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeVehicleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeVehicleLabel">Remover veículo #{{ this.selectedVehicle.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza que pretende remover este veículo?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeRemoveVehicle" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" v-on:click="removeVehicle(this.selectedVehicle.id)">Remover</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
 		</div>
 	</div>
 		
 </template>
 
 <script>
-
+import { useToast } from "vue-toastification";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTruck, faGasPump, faOilCan, faChargingStation, faBolt, faSkullCrossbones, faBox, faPlus, faUpRightAndDownLeftFromCenter, faTrash, faBuildingCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
 library.add(faTruck, faGasPump, faOilCan, faChargingStation, faBolt, faSkullCrossbones, faBox, faPlus, faUpRightAndDownLeftFromCenter, faTrash, faBuildingCircleArrowRight);
@@ -314,7 +369,9 @@ export default {
         this.getUserDistributionCenters()
 	},
 	data() {
-		return {
+		const toast = useToast()
+        return {
+            toast,
 			user: {},
 			vehicles: [],
 			vehiclesLength: 1,
@@ -445,13 +502,36 @@ export default {
             this.initVehicleMap()
         },
         conflitSolver(message) {
-            if (message == "Request failed with status code 409")
+            if (message == "There is already a vehicle registered with this license plate.")
                 document.getElementById("newVehicleLicense").classList.add("is-invalid");
-        },  
+        },
+        successfulToast(message) {
+            this.toast.success(message, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
+        }, 
         successfulNewVehicle() {
             this.getUserVehicles();
             var closeEditModal = document.getElementById("closeNewVehicleModal");
             closeEditModal.click();
+            this.successfulToast("Criado! O veículo foi criado com sucesso.")
+        },
+        successfulRemoveVehicle() {
+            this.getUserVehicles();
+            var closeEditModal = document.getElementById("closeRemoveVehicle");
+            closeEditModal.click();
+            this.successfulToast("Removido! O veículo foi removido com sucesso.")
         },
 		newVehicle() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -473,16 +553,37 @@ export default {
                 fuel_type: this.newVehicleInfo.fuel_type,
             }), headers)
             .then((response) => {
-                console.log(response)
                 if (response.status == 201) {
                     this.successfulNewVehicle()
-                    console.log(response)
                 }
                 }).catch((error) => {
                     this.conflitSolver(error.message);
                 })
 		},
-		removeVehicle() {
+        editVehicleCenter(vehicle, center) {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId){
+                http.put(`/transporter/${userId}/vehicles/${vehicle.id}`, JSON.stringify({
+					distribution_center: center.id,
+				}), headers)
+                .then((response) => {
+                    if (response.status == 201) {
+						this.selectedVehicle.distribution_center = center;
+                        this.successfulToast("Alterado! O centro de distribuição do veículo foi alterado com sucesso.");
+                    }
+                    }).catch((error) => {
+                        console.log(error);
+                        console.log("Failure!")
+                    })
+            }
+        },
+		removeVehicle(vehicle) {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             const headers = {
@@ -491,20 +592,14 @@ export default {
                 }
             }
             if (accessToken && userId) {
-                http.delete(`/transporter/${userId}/vehicles/${2}`, headers)
+                http.delete(`/transporter/${userId}/vehicles/${vehicle}`, headers)
                     .then((response) => {
-                        if (response.status == 202) {
-                            /* AuthService.getUser().then((result) => {
-                                this.user.addresses = result.addresses;
-                            });
-                            this.successfulRemoveAddress()*/
-                            console.log("Success!") 
+                        console.log(response)
+                        if (response.status == 200) {
+                            this.successfulRemoveVehicle();
                         }
                     }).catch(error => {
-                        /* if (error.response.data.message == 'Address not found.') {
-                            this.addressHasOrders()
-                        } else { */
-                            console.log(error.response)
+                            console.log(error)
                         //} 
                     }) 
             }
