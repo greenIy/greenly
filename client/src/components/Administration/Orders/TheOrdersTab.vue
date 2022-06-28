@@ -52,7 +52,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive" id="orders-table" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -152,20 +152,27 @@ export default {
     ],
     methods: {
       filterOrders: function () {
-        let i, value;
+        let i, value1, value2, td1, td2;
         let filter = document.getElementById("orders-input").value.toUpperCase();
-        let orders = document.getElementsByClassName("order");
+        let table = document.getElementById("orders-table");
+        let tr = table.getElementsByTagName("tr");
 
         console.log(filter);
-        console.log(orders);
+        console.log(tr);
 
-        for (i = 0; i < orders.length; i++) {
-            value = orders[i].textContent || orders[i].innerText;
-            if (value.toUpperCase().indexOf(filter) > -1) {
-              orders[i].style.display = "";
+        for (i = 0; i < tr.length; i++) {
+          td1 = tr[i].getElementsByTagName("td")[0]; //collumns u search for
+          td2 = tr[i].getElementsByTagName("td")[1];
+          if (td1 || td2) {
+            value1 = td1.textContent || td1.innerText;
+            value2 = td2.textContent || td2.innerText;
+            if (value1.toUpperCase().indexOf(filter) > -1 || 
+                value2.toUpperCase().indexOf(filter) > -1 ) {
+              tr[i].style.display = "";
             } else {
-              orders[i].style.display = "none";
-            }       
+              tr[i].style.display = "none";
+            } 
+          }      
         }
       },
         getCurrentOrder: function (orderId) {
