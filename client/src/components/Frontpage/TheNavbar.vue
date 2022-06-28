@@ -45,7 +45,7 @@
                 <a class="" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <font-awesome-icon :icon="['fas', 'bell']" size="xl"/>
                 </a>
-                <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
+                <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuLink" style="width: 400px;">
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><font-awesome-icon :icon="['fa', 'inbox']"/>&nbsp;Novas&nbsp;<span v-if="activeNotificationsLength() > 0" class="badge bg-custom">{{ this.activeNotificationsLength() }}</span></button>
@@ -80,7 +80,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-center p-5">
                                             <h5 class="text-center">
-                                                Não existem novas notificações.
+                                                Não existem notificações novas.
                                             </h5>                                            
                                         </div>
                                     </span>
@@ -111,7 +111,7 @@
                                     <span class="list-group-item list-group-item-action">
                                         <div class="w-100 justify-content-between p-5">
                                             <h5 class="text-center">
-                                                Não existem novas notificações.
+                                                Não existem notificações arquivadas.
                                             </h5>                                            
                                         </div>
                                     </span>
@@ -148,7 +148,7 @@
             </div>
         </div>
         <div class="align-self-center nav-links mt-2 mb-2">
-            <router-link to="/cart">
+            <router-link to="/carrinho">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
             </router-link>
         </div>
@@ -160,12 +160,12 @@
     <div class=" navmenu2 d-flex justify-content-center pb-3 text-uppercase nav-links pt-2">
         <div class="pt-2">
             <router-link to="/produtos" :key="$route.fullPath" @click="reloadPage()" class="mb-2 mr-2">
-                produtos <span class="ms-3"> | </span> 
+                produtos<span class="ms-3 black">| </span> 
             </router-link>
         </div>
         <div class="pt-2">
             <router-link to="/fornecedores" class="mb-2">
-                fornecedores <span class="ms-3"> | </span> 
+                fornecedores<span class="ms-3">| </span> 
             </router-link>
         </div>
         <div class="pt-2">
@@ -174,8 +174,6 @@
             </router-link>
         </div>
     </div>
-
-
 </nav>
 </template>
 
@@ -386,5 +384,14 @@ export default {
         border: 5px solid transparent;
         background-clip: content-box;
         background-color: #5E9F88;
+    }
+
+    .router-link-active {
+       text-decoration: underline!important;
+       color: #5e9f88 !important;
+    }
+
+    .black{
+        color:black !important;
     }
 </style>

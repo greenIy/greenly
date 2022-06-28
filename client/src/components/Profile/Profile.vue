@@ -135,7 +135,13 @@ export default {
             user: this.$store.getters.getUser,
         }
     },
+    created() {
+        this.changeTitle();
+    },
     methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Perfil";
+    }
            
     },
 };

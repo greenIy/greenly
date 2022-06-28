@@ -21,7 +21,15 @@ export default {
     TheFooter,
     RegisterPills,
   },
-};
+    created() {
+        this.changeTitle();
+    },
+    methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Registo";
+    }
+  }
+}
 
 </script>
 

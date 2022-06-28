@@ -175,94 +175,11 @@
         </div>
         </div>
 
-        <div class="toast-container position-absolute top-0 end-0 p-3">
-
-            <!-- Toast New Address -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="newAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Adicionada!</strong> A sua morada foi adicionada com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        
-            <!-- Toast Edit Address -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="editAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Atualizada!</strong> A sua morada foi atualizada com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Set Shipping Address -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="setShippingAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Definida!</strong> A sua morada de entrega foi definida com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Set Billing Address -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="setBillingAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Definida!</strong> A sua morada de faturação foi definida com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Shipping Already Set -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="shippingAlreadySetToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de entrega.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Billing Already Set -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="billingAlreadySetToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Oops!</strong> Esta morada já se encontra definida como a sua morada de faturação.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Remove Address -->
-            <div class="toast align-items-center text-white bg-primary border-0" id="removeAddressToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Removida!</strong> A sua morada foi removida com sucesso.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <!-- Toast Address Has Orders -->
-            <div class="toast align-items-center text-white bg-danger border-0" id="addressHasOrdersToast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    <strong>Oops!</strong> A sua morada está associada a encomendas em progresso, logo não pode ser apagada.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
-
     </div>
 </template>
 
 <script>
-import { Toast } from '../../main'
+import { useToast } from "vue-toastification";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { } from '@fortawesome/free-brands-svg-icons';
 import { faPlus, faXmark, faFloppyDisk, faTrashCan, faPen, faMapLocationDot, faHouseChimney, faMoneyCheckDollar, faTruck } from '@fortawesome/free-solid-svg-icons';
@@ -283,7 +200,9 @@ export default({
         this.getUserInfo();
     },
     data() {
+        const toast = useToast()
         return {
+            toast,
             user: {},
             newAddressInfo: {
                 country: '',
@@ -295,7 +214,13 @@ export default({
             selectedAddress: '',
         }
     },
+    created() {
+        this.changeTitle();
+    },
     methods: {
+         changeTitle(){
+            window.document.title = "Greenly | Moradas";
+    },
         initMaps() {
             const loader = new Loader({
                 apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
@@ -319,6 +244,7 @@ export default({
 
                 const marker = new google.maps.Marker({
                         position: position,
+                        animation: google.maps.Animation.BOUNCE,
                         map: map,
                         label: {
                             text: " ",
@@ -349,6 +275,55 @@ export default({
                 document.getElementById("editAddressNIF").classList.add("is-invalid");          
             }
         },
+        successfulToast(message) {
+            this.toast(message, {
+                toastClassName: "my-custom-toast-class",
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
+        },
+        warningToast(message) {
+            this.toast.warning(message, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
+        },
+        errorToast(message) {
+            this.toast.error(message, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
+        },
         successfulNewAddress() {
             this.newAddressInfo.street = "";
             this.newAddressInfo.city = "";
@@ -358,58 +333,35 @@ export default({
             this.newAddressInfo.nif = "";
             var closeEditModal = document.getElementById("closeNewModalButton");
             closeEditModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("newAddressToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.successfulToast("Adicionada! A sua morada foi adicionada com sucesso.");           
         },
         successfulEditAddress() {
             var closeEditModal = document.getElementById("closeEditModalButton");
             closeEditModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("editAddressToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.successfulToast("Atualizada! A sua morada foi atualizada com sucesso.");
         },
         successfulSetShippingAddress() {
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("setShippingAddressToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.successfulToast("Definida! A sua morada de entrega foi definida com sucesso.");
         },
         successfulSetBillingAddress() {
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("setBillingAddressToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.successfulToast("Definida! A sua morada de faturação foi definida com sucesso.");
         },
         addressAlreadySet(addressType) {
-            var animation = {animation: true, delay: 5000};
             if(addressType == "shipping") {
-                var warnToast = document.getElementById("shippingAlreadySetToast");
-                var warningToast = new Toast(warnToast, animation)
-                warningToast.show();
+                this.warningToast("Oops! Esta morada já se encontra definida como a sua morada de entrega.");
             } else if (addressType == "billing") {
-                var warnToast = document.getElementById("billingAlreadySetToast");
-                var warningToast = new Toast(warnToast, animation)
-                warningToast.show();
+                this.warningToast("Oops! Esta morada já se encontra definida como a sua morada de faturação.");
             }
         },
         successfulRemoveAddress() {
             var closeEditModal = document.getElementById("closeRemoveModalButton");
             closeEditModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("removeAddressToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            this.successfulToast("Removida! A sua morada foi removida com sucesso.")
         },
         addressHasOrders() {
             var closeEditModal = document.getElementById("closeRemoveModalButton");
             closeEditModal.click()
-            var animation = {animation: true, delay: 5000};
-            var warnToast = document.getElementById("addressHasOrdersToast");
-            var warnfulToast = new Toast(warnToast, animation)
-            warnfulToast.show();
+            this.errorToast("Oops! A sua morada está associada a encomendas em progresso, logo não pode ser apagada.")
         },
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -422,22 +374,22 @@ export default({
             if (accessToken && userId) {
                 this.newAddressInfo.country = document.getElementById("newAddressCountry").value;
                 http.post(`/user/${userId}/addresses`,
-                        JSON.stringify({
-                            street: this.newAddressInfo.street,
-                            city: this.newAddressInfo.city,
-                            postal_code: this.newAddressInfo.postalCode,
-                            country: this.newAddressInfo.country,
-                            nif: Number(this.newAddressInfo.nif),
-                        }), headers)
-                    .then((response) => {
-                        if (response.status == 201) {                          
-                            AuthService.getUser().then((result) => {
-                                this.user.addresses = result.addresses;
-                            })
-                            this.successfulNewAddress()
-                            console.log("Success!")
-                        }
-                    }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param))
+                    JSON.stringify({
+                        street: this.newAddressInfo.street,
+                        city: this.newAddressInfo.city,
+                        postal_code: this.newAddressInfo.postalCode,
+                        country: this.newAddressInfo.country,
+                        nif: Number(this.newAddressInfo.nif),
+                    }), headers)
+                .then((response) => {
+                    if (response.status == 201) {                          
+                        AuthService.getUser().then((result) => {
+                            this.user.addresses = result.addresses;
+                        })
+                        this.successfulNewAddress()
+                        console.log("Success!")
+                    }
+                }).catch(error => this.wrongCredentials("new", error.response.data.errors[0].param))
             }
         },
         editAddress() {
@@ -468,7 +420,7 @@ export default({
                             this.selectedAddress.country = newCountry
                             this.selectedAddress.city = newCity
                             this.selectedAddress.street = newStreet
-                            this.selectedAddress.postalCode = newPostalCode
+                            this.selectedAddress.postal_code = newPostalCode
                             this.selectedAddress.nif = newNif
                             this.successfulEditAddress()
                             console.log("Success!")
@@ -587,14 +539,6 @@ export default({
     }
     .card:hover{
         box-shadow: 1px 10px 12px #d9d9d9;
-    }
-    #newAddressToast, #editAddressToast,
-    #setBillingAddressToast, #setShippingAddressToast,
-    #removeAddressToast {
-        background-color: #5E9F88 !important;
-    }
-    #billingAlreadySetToast, #shippingAlreadySetToast {
-        background-color: #E3C12B !important;
     }
     ::-webkit-scrollbar {
         width: 17px;

@@ -69,6 +69,7 @@ const routes = [
       return import(/* webpackChunkName: "register" */ '../views/RegisterView.vue');
     },
   },
+  
   {
     path: '/perfil',
     name: 'perfil',
@@ -111,6 +112,21 @@ const routes = [
     component() {
       return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component() {
+        return import(/* webpackChunkName: "checkout" */ '../views/CheckoutView.vue');
+      },
+    },
+    {
+      path: '/sucesso',
+      name: 'sucesso',
+      component() {
+        return import(/* webpackChunkName: "sucesso" */ '../views/SuccessView.vue');
+    },
+
   },
   {
     path: '/painel/historico',
@@ -118,6 +134,13 @@ const routes = [
     component() {
       return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
     },
+  },
+  {
+    path: '/carrinho',
+    name: 'cart',
+    component() {
+      return import(/* webpackChunkName: "register" */ '../views/CartView.vue');
+    }
   },
   {
     path: '/painel',
@@ -138,13 +161,6 @@ const routes = [
     name: 'suppliers',
     component() {
       return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
-    },
-  },
-  {
-    path: '/checkout',
-    name: 'checkout',
-    component() {
-      return import(/* webpackChunkName: "register" */ '../views/CheckoutView.vue');
     },
   }
 ];

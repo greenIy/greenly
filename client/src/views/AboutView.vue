@@ -90,6 +90,14 @@ export default {
     TheNavbar,
     TheFooter,
   },
+  created() {
+        this.changeTitle();
+    },
+    methods: {
+    changeTitle(){
+        window.document.title = "Greenly | Equipa";
+    }
+  }
 };
 </script>
 
