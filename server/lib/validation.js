@@ -288,7 +288,10 @@ function getProductsValidator() {
             .notEmpty()
             .isInt({min: 1})
             .toInt(),
-
+        query("include_unbuyable")
+            .optional()
+            .notEmpty()
+            .isBoolean(),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
