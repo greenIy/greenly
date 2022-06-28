@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma db pull
+RUN npx prisma db pull --force
 
 RUN npx prisma generate
 
