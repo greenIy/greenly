@@ -43,10 +43,10 @@
                     <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#admin-registration" data-bs-toggle="modal">Criar administrador</button>
                   </div>
 
-                  <!--div class="mb-2 mb-lg-0">
-                    <button class="btn btn-success btn-lg bg-309c76 me-2 my-0">Criar categoria</button>
-                    <button class="btn btn-success btn-lg bg-309c76 ms-2 my-0">Criar produto</button>
-                  </div-->
+                  <div class="mb-2 mb-lg-0">
+                    <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#category-creation" data-bs-toggle="modal">Criar categoria</button>
+                    <button class="btn btn-success btn-lg bg-309c76 ms-2 my-0" data-bs-target="#product-creation" data-bs-toggle="modal">Criar produto</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -56,6 +56,10 @@
         <!--Admin tab content-->
         <div class="tab-content" id="pills-tab-content">
           <TheAdminRegistration />
+          <TheCategoryCreation :categories='this.categories'/>
+          <TheProductCreation />
+
+
           <TheGeneralTab :amountUsers='this.amountUsers' :increment='this.usersIncrement' :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions'/>
           <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.usersIncrement'/>
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
@@ -74,11 +78,13 @@
 import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import TheDashboardPills from '@/components/Administration/TheDashboardPills.vue';
-import TheAdminRegistration from '@/components/Administration/TheAdminRegistration.vue';
-import TheGeneralTab from '@/components/Administration/TheGeneralTab.vue';
+import TheAdminRegistration from '@/components/Administration/Users/TheAdminRegistration.vue';
+import TheGeneralTab from '@/components/Administration/General/TheGeneralTab.vue';
 import TheUsersTab from '@/components/Administration/Users/TheUsersTab.vue';
-import TheProductsTab from '@/components/Administration/TheProductsTab.vue';
+import TheProductsTab from '@/components/Administration/Products/TheProductsTab.vue';
 import TheOrdersTab from '@/components/Administration/Orders/TheOrdersTab.vue';
+import TheCategoryCreation from '../components/Administration/Products/TheCategoryCreation.vue';
+import TheProductCreation from '../components/Administration/Products/TheProductCreation.vue';
 
 import http from "../../http-common";
 
@@ -92,7 +98,9 @@ export default {
     TheUsersTab,
     TheProductsTab,
     TheOrdersTab,
-    TheAdminRegistration
+    TheAdminRegistration,
+    TheCategoryCreation,
+    TheProductCreation
 },
   data() {
     return {
@@ -167,10 +175,6 @@ export default {
       this.incrementTransporterResources = response.data.resource_usage.last_month.transport.toFixed(2);
       this.amountEmissions = response.data.emissions.total.toFixed(2);
       this.incrementEmissions = response.data.emissions.last_month.toFixed(2);
-
-      console.log("stats:");
-      console.log(response.data);
-
     },
   }
 };

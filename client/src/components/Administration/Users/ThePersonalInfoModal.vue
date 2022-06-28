@@ -1,89 +1,116 @@
 <template>
-        <!--Personal info-->
-        <div class="modal fade" id="user-details" aria-hidden="true" aria-labelledby="user-details" tabindex="-1"
-            data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="user-details"> Informação pessoal de
-                            {{ this.currentUser.first_name }} {{ this.currentUser.last_name }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form @submit.prevent="editProfile">
-                            <div class="row g-4">
-                                <div class="col-md-6 w-50">
-                                    <label for="inputFirstName" class="form-label">Nome <span
-                                            style='color: #FF0000;'>*</span></label>
-                                    <input type="name" class="form-control" id="firstName"
-                                        v-bind:value="currentUser.first_name" placeholder="Nome" readonly required>
-                                </div>
-                                <div class="col-md-6 mb-3 w-50">
-                                    <label for="inputLastName" class="form-label">Apelido <span
-                                            style='color: #FF0000;'>*</span></label>
-                                    <input type="name" class="form-control" id="lastName"
-                                        v-bind:value="currentUser.last_name" placeholder="Apelido" readonly required>
-                                </div>
+<div>
+    <!--Personal info-->
+    <div class="modal fade" id="user-details" aria-hidden="true" aria-labelledby="user-details" tabindex="-1"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="user-details"> Informação pessoal de
+                        {{ this.currentUser.first_name }} {{ this.currentUser.last_name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form @submit.prevent="editProfile">
+                        <div class="row g-4">
+                            <div class="col-md-6 w-50">
+                                <label for="inputFirstName" class="form-label">Nome <span
+                                        style='color: #FF0000;'>*</span></label>
+                                <input type="name" class="form-control" id="firstName"
+                                    v-bind:value="currentUser.first_name" placeholder="Nome" readonly required>
                             </div>
-                            <div class="row g-4">
-                                <div class="col-md-12 mb-3 w-50">
-                                    <label for="inputEmail" class="form-label">E-mail <span
-                                            style='color: #FF0000;'>*</span></label>
-                                    <input type="email" class="form-control" id="email" v-bind:value="currentUser.email"
-                                        placeholder="E-mail" readonly v-on:click="removeIsInvalid" required>
-                                    <div class="invalid-feedback" id="invalidEmail">Email já em uso.</div>
-                                </div>
-                                <div class="col-md-6 mb-3 w-50">
-                                    <label for="inputPhoneNumber" class="form-label">Telemóvel <span
-                                            style='color: #FF0000;'>*</span></label>
-                                    <input type="number" class="form-control" id="phoneNumber"
-                                        v-bind:value="currentUser.phone" placeholder="Telemóvel" readonly required>
-                                </div>
+                            <div class="col-md-6 mb-3 w-50">
+                                <label for="inputLastName" class="form-label">Apelido <span
+                                        style='color: #FF0000;'>*</span></label>
+                                <input type="name" class="form-control" id="lastName"
+                                    v-bind:value="currentUser.last_name" placeholder="Apelido" readonly required>
                             </div>
-
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                                <button type="button" class="btn bg-5e9f88 text-light" id="editInfoButton"
-                                    v-on:click="editUserInfo">
-                                    <font-awesome-icon :icon="['fa', 'pen']" /> &nbsp;Editar</button>
-
-                                <button v-on:click="cancelUserInfo" type="button" class="btn btn-danger" style="display: none"
-                                    id="cancelInfoButton" data-bs-toggle="tooltip" data-bs-placement="top" title="ATENÇÃO: Todas as alterações serão perdidas.">
-                                    <font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
-
-                                <button type="submit" class="btn bg-5e9f88 text-light" style="display: none" id="saveInfoButton">
-                                    <font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar
-                                    alterações</button>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-md-12 mb-3 w-50">
+                                <label for="inputEmail" class="form-label">E-mail <span
+                                        style='color: #FF0000;'>*</span></label>
+                                <input type="email" class="form-control" id="email" v-bind:value="currentUser.email"
+                                    placeholder="E-mail" readonly v-on:click="removeIsInvalid" required>
+                                <div class="invalid-feedback" id="invalidEmail">Email já em uso.</div>
                             </div>
-                        </form>
+                            <div class="col-md-6 mb-3 w-50">
+                                <label for="inputPhoneNumber" class="form-label">Telemóvel <span
+                                        style='color: #FF0000;'>*</span></label>
+                                <input type="number" class="form-control" id="phoneNumber"
+                                    v-bind:value="currentUser.phone" placeholder="Telemóvel" readonly required>
+                            </div>
+                        </div>
 
-                        <!-- Toast Edit User Info -->
-                        <div class="toast-container position-absolute top-0 end-0 p-3">
-                            <div class="toast align-items-center text-white bg-primary border-0" id="successToast"
-                                role="alert" aria-live="polite" aria-atomic="true">
-                                <div class="d-flex">
-                                    <div class="toast-body">
-                                        <strong>Atualizado!</strong> O perfil de {{ this.currentUser.first_name }} foi atualizado com sucesso.
-                                    </div>
-                                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                                        data-bs-dismiss="toast" aria-label="Close"></button>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                            <button type="button" class="btn bg-5e9f88 text-light" id="editInfoButton"
+                                v-on:click="editUserInfo">
+                                <font-awesome-icon :icon="['fa', 'pen']" /> &nbsp;Editar</button>
+
+                            <button type="button" class="btn btn-danger"
+                                style="display: none" id="cancelInfoButton" data-bs-target="#cancelUserInfo" data-bs-toggle="modal"
+                                data-bs-dismiss="modal">
+                                <font-awesome-icon :icon="['fa', 'xmark']" /> &nbsp;Cancelar</button>
+                        
+
+                            <button type="submit" class="btn bg-5e9f88 text-light" style="display: none"
+                                id="saveInfoButton">
+                                <font-awesome-icon :icon="['fa', 'floppy-disk']" /> &nbsp;Guardar
+                                alterações</button>
+                        </div>
+                    </form>
+
+                    <!-- Toast Edit User Info -->
+                    <div class="toast-container position-absolute top-0 end-0 p-3">
+                        <div class="toast align-items-center text-white bg-primary border-0" id="successToast"
+                            role="alert" aria-live="polite" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <strong>Atualizado!</strong> O perfil de {{ this.currentUser.first_name }} foi
+                                    atualizado com sucesso.
                                 </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="modal-footer">
-                        <button v-if="this.currentUser.type == 'CONSUMER'" class="btn bg-226d53 text-light btn-sm"
-                            data-bs-target="#user-orders" data-bs-toggle="modal"
-                            data-bs-dismiss="modal">Encomendas</button>
-                        <button v-if="this.currentUser.type == 'SUPPLIER' || this.currentUser.type == 'TRANSPORTER'"
-                            class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-company" data-bs-toggle="modal"
-                            data-bs-dismiss="modal">Empresa</button>
-                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-addresses" data-bs-toggle="modal"
-                            data-bs-dismiss="modal">Moradas</button>
-                    </div>
+                <div class="modal-footer">
+                    <button v-if="this.currentUser.type == 'CONSUMER'" class="btn bg-226d53 text-light btn-sm"
+                        data-bs-target="#user-orders" data-bs-toggle="modal" data-bs-dismiss="modal">Encomendas</button>
+                    <button v-if="this.currentUser.type == 'SUPPLIER' || this.currentUser.type == 'TRANSPORTER'"
+                        class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-company" data-bs-toggle="modal"
+                        data-bs-dismiss="modal">Empresa</button>
+                    <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-addresses"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Moradas</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Cancel edit modal -->
+    <div class="modal fade" id="cancelUserInfo" aria-hidden="true" aria-labelledby="cancelUserInfo" tabindex="-1"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelUserInfo">Atenção!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                     Tem a certeza que deseja cancelar? Todas as alterações serão perdidas.
+                </div>
+                <div class="modal-footer">
+                    <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-details"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Não</button>
+                    <button v-on:click="cancelUserInfo" class="btn bg-danger text-light btn-sm" data-bs-target="#user-details"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Sim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </template>
 
 <script>

@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import TheOverviewCard from './TheOverviewCard.vue';
+import TheOverviewCard from '../TheOverviewCard.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUsers, faBoxesStacked, faBarcode, faSitemap, faCoins, faClipboardList } from '@fortawesome/free-solid-svg-icons';

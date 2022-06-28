@@ -2,7 +2,7 @@
   <div class="container-fluid px-5 tab-pane fade" id="users-tab" role="tabpanel" aria-labelledby="users-pill">
     <!--User info modals-->
     <ThePersonalInfoModal :currentUser='this.currentUser' />
-    <TheOrdersModal :currentUser='this.currentUser' />
+    <TheOrders :currentUser='this.currentUser' />
     <TheCompanyModal :currentUser='this.currentUser' />
     <TheAddressesModal :currentUser='this.currentUser' />
 
@@ -97,7 +97,7 @@
 <script>
 import TheOverviewCard from '../TheOverviewCard.vue';
 import ThePersonalInfoModal from './ThePersonalInfoModal.vue';
-import TheOrdersModal from './TheOrdersModal.vue';
+import TheOrders from './TheOrders.vue';
 import TheCompanyModal from './TheCompanyModal.vue';
 import TheAddressesModal from './TheAddressesModal.vue';
 
@@ -112,7 +112,7 @@ export default {
   components: {
     TheOverviewCard,
     ThePersonalInfoModal,
-    TheOrdersModal,
+    TheOrders,
     TheCompanyModal,
     TheAddressesModal
 },
@@ -143,6 +143,10 @@ export default {
             .then((response) => {
               if (response.status == 200) {
                 this.currentUser = response.data;
+
+                console.log("current user passado ao modal:");
+                        console.log(this.currentUser.id);
+                        console.log(this.currentUser.first_name);
               }
             }).catch((error) => {
               console.log(error.response.data);

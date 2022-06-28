@@ -312,7 +312,7 @@
 </template>
 
 <script>
-import TheOverviewCard from './TheOverviewCard.vue';
+import TheOverviewCard from '../TheOverviewCard.vue';
 
 export default {
   name: 'TheProductsTab',

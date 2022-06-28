@@ -1,7 +1,7 @@
 <template>
     <div class="modal fade" id="admin-registration" aria-hidden="true" aria-labelledby="admin-registration"
         tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="admin-registration">Registo de novo administador</h5>
@@ -66,20 +66,29 @@
                                 </div>
                             </div>
                         </div>
-                        <!--div class="mt-3 mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="termsConditons" required>
-                            <label class="form-check-label" style="cursor: pointer; font-size: 80%">Aceito os <u
-                                    class="greenly-link" data-bs-toggle="modal"
-                                    data-bs-target="#termsAndConditions">termos e condições de uso.</u></label>
-                            <br>
-                        </div-->
 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="registerButton" data-bs-dismiss="modal"
-                                style="width: 65%; margin-left: 17.5%;">Registar&nbsp;&nbsp;<img
-                                    src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                            <button type="submit" class="btn bg-5e9f88 text-light" id="registerButton">Registar</button>
                         </div>
                     </form>
+
+                    <!-- Toast Edit User Info -->
+                    <div class="toast-container position-absolute top-0 end-0 p-3">
+                        <div class="toast align-items-center text-white bg-primary border-0" id="successToast"
+                            role="alert" aria-live="polite" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <strong>Registado!</strong> O novo administrador foi
+                                    criado com sucesso.
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
                 </div>
             </div>
         </div>
@@ -87,11 +96,13 @@
 </template>
 
 <script>
+import { Toast } from '../../../main';
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
 library.add(faEye, faEyeSlash, faLeaf);
 
-import http from "../../../http-common";
+import http from "../../../../http-common";
 
 export default {
     name: 'TheAdminRegistration',
@@ -109,11 +120,6 @@ export default {
         }
     },
     methods: {
-        /*acceptTermsAndConditions() {
-            document.getElementById("termsConditons").checked = true;
-            var closeTermsAndConditionsModal = document.getElementById("closeTermsAndConditionsButton");
-            closeTermsAndConditionsModal.click()
-        },*/
         checkPasswords() {
             if(document.getElementById("password").value == document.getElementById("passwordConfirm").value) {
                 return true
@@ -147,10 +153,22 @@ export default {
                     last_name: this.registerInfo.lastName,
                     email: this.registerInfo.email,
                     password: this.registerInfo.password.toString(),
-                    type: "ADMINISTRATOR",
-                }, { headers: {"Authorization" : `Bearer ${accessToken}`}})).then((response) => {
+                    type: "ADMINISTRATOR"}), 
+                    { headers: {"Authorization" : `Bearer ${accessToken}`}}).then((response) => {
                     if (response.status == 201) {
-                        this.$router.push({path: '/login'});
+                        let animation = {
+                            animation: true,
+                            delay: 5000
+                        };
+                        let successToast = document.getElementById("successToast");
+                        let successfulToast = new Toast(successToast, animation)
+                        successfulToast.show();
+
+                        this.registerInfo.firstName = '';
+                        this.registerInfo.lastName = '';
+                        this.registerInfo.email = '';
+                        this.registerInfo.password = '';
+                        this.registerInfo.passwordConfirm = '';
                     }
                 })
                 .catch(error => this.wrongRegister(error.response.data.errors[0]));
@@ -171,5 +189,13 @@ export default {
 </script>
 
 <style scoped>
+form {
+    padding: 4.8em;
+}
+
+#successToast,
+.bg-5e9f88{
+        background-color: #5E9F88!important;
+    }
 
 </style>

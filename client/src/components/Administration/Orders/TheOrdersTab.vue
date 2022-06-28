@@ -7,27 +7,27 @@
     <div class="row px-5">
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.ordersTitle' :amount='this.amountOrders' />
+        <TheOverviewCard :title='"Encomendas"' :amount='this.amountOrders' />
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5"> 
-        <TheOverviewCard :title='this.revenueTitle' :amount='this.amountRevenue' :increment='this.incrementRevenue'/>
+        <TheOverviewCard :title='"Vendas"' :amount='this.amountRevenue' :increment='this.incrementRevenue'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.profitsTitle' :amount='this.amountProfit' :increment='this.incrementProfit'/>
+        <TheOverviewCard :title='"Lucros"' :amount='this.amountProfit' :increment='this.incrementProfit'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.supplierResourcesTitle' :amount='this.amountSupplierResources' :increment='this.incrementSupplierResources' />
+        <TheOverviewCard :title='"Gastos de armazenamento"' :amount='this.amountSupplierResources' :increment='this.incrementSupplierResources' />
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.transporterResourcesTitle' :amount='this.amountTransporterResources' :increment='this.incrementTransporterResources'/>
+        <TheOverviewCard :title='"Gastos de transporte"' :amount='this.amountTransporterResources' :increment='this.incrementTransporterResources'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.emissionsTitle' :amount='this.amountEmissions' :increment='this.incrementEmissions'/>
+        <TheOverviewCard :title='"Emissões"' :amount='this.amountEmissions' :increment='this.incrementEmissions'/>
       </div>
     </div>
 
@@ -83,10 +83,13 @@
                   <td class="order align-middle"> {{ this.getOrderDetails(order.items, 'transporter_emissions') }}
                     CO<sub>2</sub> g/km/t</td>
                   <td class="order align-middle"> {{ this.formatDate(order.date) }} </td>
-                  <!--td class="align-middle"><span class="badge bg-dark text-uppercase">Enviada</span></td>
-                                <td class="align-middle"><span class="badge bg-danger text-uppercase">Cancelada</span></td>
-                                <td class="align-middle"><span class="badge bg-success text-uppercase">Entregue</span></td-->
-                  <td class="align-middle"><span class="order badge bg-secondary text-uppercase">Sei la</span></td>
+
+                  <td v-if="this.getOrderStatus(order) == 'Aguardando pagamento'" class="align-middle"><span class="badge bg-secondary text-uppercase">Aguardando pagamento</span></td>
+                  <td v-else-if="this.getOrderStatus(order) == 'Em processamento'" class="align-middle"><span class="badge bg-warning text-uppercase">Em processamento</span></td>
+                  <td v-else-if="this.getOrderStatus(order) == 'Completa'" class="align-middle"><span class="badge bg-226d53 text-uppercase">Completa</span></td>
+                  <td v-else-if="this.getOrderStatus(order) == 'Cancelada'" class="align-middle"><span class="badge bg-danger text-uppercase">Cancelada</span></td>
+                  <td v-else class="align-middle"><span class="order badge bg-dark text-uppercase"> Em transporte</span></td>
+                  
                   <td class="align-middle">
                     <div class="dropdown dropstart">
                       <a class="text-muted text-primary-hover" href="#" role="button" id="dropdownTeamOne"
@@ -117,22 +120,18 @@
 
 <script>
 import TheOverviewCard from '../TheOverviewCard.vue';
+import TheOrderModal from './TheOrderModal.vue';
 
 import http from "../../../../http-common";
 
 export default {
     name: "TheOrdersTab",
     components: {
-      TheOverviewCard 
+      TheOverviewCard,
+      TheOrderModal
     },
     data() {
         return {
-            ordersTitle: 'Encomendas',
-            revenueTitle: 'Vendas',
-            profitsTitle: 'Lucros',
-            supplierResourcesTitle: 'Gastos de armazenamento',
-            transporterResourcesTitle: 'Gastos de transporte',
-            emissionsTitle: 'Emissões',
             currentOrder: []
         };
     },
@@ -218,6 +217,27 @@ export default {
                 case "transporter_emissions":
                     return items.reduce((accumulator, item) => accumulator + item.transporter_emissions, 0).toFixed(2);
             }
+        },
+        getOrderStatus: function (order) {
+            let stateMap = {
+                "AWAITING_PAYMENT": "Aguardando pagamento",
+                "PROCESSING": "Em processamento",
+                "COMPLETED": "Completa",
+                "CANCELED": "Cancelada",
+                "IN_TRANSIT": "Em transporte"
+            };
+
+            for (let state in stateMap) {
+                if (order.items.every((item) => item.status == state)) {
+                    return stateMap[state];
+                }
+            }
+
+            if (order.items.every((item) => ["IN_TRANSIT", "LAST_MILE"].includes(item.status))) {
+                return stateMap["IN_TRANSIT"];
+            }
+
+            return stateMap["PROCESSING"];
         }
     }
 };
