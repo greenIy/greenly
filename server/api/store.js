@@ -43,8 +43,9 @@ router.get('/products', getProductsValidator(), (req, res) => {
             req.query.keywords,
             req.query.sort,
             {min: req.query.min_price, max: req.query.max_price},
-            req.query.supplier).
-        then((productData) => {
+            req.query.supplier,
+            req.query.include_unbuyable)
+        .then((productData) => {
 
             if (productData) {
 
