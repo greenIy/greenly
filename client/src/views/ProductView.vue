@@ -8,35 +8,14 @@
             <div class="d-flex g-0 mx-3">
               <div class="col-md-3">
                   <div class="mt-4 mb-4 ms-4 me-2">
-                    <carousel
-                    ref="imageCarousel" 
-                    :itemsToShow="1" 
-                    :snapAlign="start"
-                    :mouseDrag="false"
-                    :touchDrag="false"
-                    :wrapAround="true"
-                    :itemsToScroll="1">
-                      <slide 
-                      v-for="image in product.images" 
-                      :key="image.id">
-                        <img 
-                        :src="image.url" 
-                        class="rounded crop" 
-                        alt="Imagem do produto"
-                        @load="updateSlideWidth"/>
-                      </slide>
+                    
+                  <flickity v-if="!this.loading" ref="flickity" :options="this.flickityOptions">
+                    <div v-for="image in product.images" :key="image.id" class="carousel-cell">
+                      <img :src="image.url" class="crop rounded"/>
+                    </div>
+                  </flickity>
 
-                      <template #addons="{ slidesCount }">
-                        <Navigation v-if="slidesCount > 1" />
-                        <pagination />
-
-                      </template>
-
-                    </carousel>
                   </div>
-
-
-
               </div>
               <div class="col-md-9 px-1">
                 <div class="card-body mt-2">
@@ -214,10 +193,10 @@ import TransportadorModal from "@/components/Product/TransportadorModal.vue";
 import Chart from "@/components/Product/Chart.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart, faCartPlus, faAngleDown, faCirclePlus, faCircleMinus, faList, faClockRotateLeft} from "@fortawesome/free-solid-svg-icons";
-import 'vue3-carousel/dist/carousel.css';
-import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import { ref } from 'vue';
 import { useToast } from "vue-toastification";
+import Flickity from 'vue-flickity';
+
 
 
 library.add(faHeart);
@@ -238,10 +217,7 @@ export default {
     FornecedorModal,
     TransportadorModal,
     Chart,
-    Carousel,
-    Slide,
-    Pagination,
-    Navigation,
+    Flickity
   },
   props: {
     modalT:Boolean,
@@ -264,11 +240,25 @@ export default {
   data() {
     const toast = useToast()
     return {
+       flickityOptions: {
+        draggable: false,
+        initialIndex: 0,
+        prevNextButtons: true,
+        pageDots: true,
+        wrapAround: true,
+        contain: true,
+        imagesLoaded: true,
+        autoPlay: 3000,
+        pauseAutoPlayOnHover: true
+
+      },
       userIsLoggedIn: this.$store.getters.getState,
       user: {
         accept: false,
       },
-      product: {},
+      product: {
+        images: {}
+      },
       isActiveT: false,
       isActiveF: false,
       modalF: false,
@@ -298,7 +288,8 @@ export default {
         price: "",
       },
       wishlist: {},
-      toast
+      toast,
+      loadImages: false
     };
   },
   created() {
@@ -306,6 +297,13 @@ export default {
     this.getSuppliers();
   }, 
   methods: {
+    next() {
+      this.$refs.flickity.next();
+    },
+    
+    previous() {
+      this.$refs.flickity.previous();
+    },
     addProductToCart(){
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       let userId = JSON.parse(localStorage.getItem('userId'));
@@ -550,9 +548,6 @@ export default {
     getTotalPrice(){
       this.totalPrice = parseInt(this.currentSupplier.price) + parseInt(this.currentTransporter.price);
     },
-    updateSlideWidth() {
-      this.$refs.imageCarousel.restartCarousel()
-    },
     showSuccessfulCart() {
       this.toast.success('O item foi adicionado ao carrinho com sucesso!', {
         position: "top-right",
@@ -679,8 +674,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .crop {
-    width: 100%;
-    height: 420px;
+    width: 320px;
+    height: 400px;
     overflow: hidden;
+    object-fit: cover;
 }
 </style>
