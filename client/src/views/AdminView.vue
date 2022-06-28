@@ -56,11 +56,11 @@
         <!--Admin tab content-->
         <div class="tab-content" id="pills-tab-content">
           <TheAdminRegistration />
-          <TheGeneralTab />
-          <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.statistics.users.last_month'/>
+          <TheGeneralTab :amountUsers='this.amountUsers' :increment='this.usersIncrement' :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions'/>
+          <TheUsersTab :users='this.users' :amountUsers='this.amountUsers' :increment='this.usersIncrement'/>
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
-          <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :statistics='this.statistics' />
+          <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions' />
         </div>
 
       </div>
@@ -80,8 +80,7 @@ import TheUsersTab from '@/components/Administration/Users/TheUsersTab.vue';
 import TheProductsTab from '@/components/Administration/TheProductsTab.vue';
 import TheOrdersTab from '@/components/Administration/Orders/TheOrdersTab.vue';
 
-import http from "../../http-common"
-
+import http from "../../http-common";
 
 export default {
   name: 'AdminView',
@@ -99,6 +98,7 @@ export default {
     return {
       users: [],
       amountUsers: 0,
+      usersIncrement: 0,
       categories: [],
       amountCategories: 0,
       products: [],
@@ -107,7 +107,16 @@ export default {
       amountRequests: 0,
       orders: [],
       amountOrders: 0,
-      statistics: {}
+      amountRevenue: 0,
+      incrementRevenue: 0,
+      amountProfit: 0,
+      incrementProfit: 0,
+      amountSupplierResources: 0,
+      incrementSupplierResources: 0,
+      amountTransporterResources: 0,
+      incrementTransporterResources: 0,
+      amountEmissions: 0,
+      incrementEmissions: 0
     };
   },
   mounted() {
@@ -146,7 +155,21 @@ export default {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
 
       let response = await http.get("/store/statistics", { headers: {"Authorization" : `Bearer ${accessToken}`}} );
-      this.statistics = response.data;
+
+      this.usersIncrement = response.data.users.last_month;
+      this.amountRevenue = response.data.revenue.total.total.toFixed(2);
+      this.incrementRevenue = response.data.revenue.last_month.total.toFixed(2);
+      this.amountProfit = (response.data.revenue.total.total * 0.05).toFixed(2);
+      this.incrementProfit = (response.data.revenue.last_month.total * 0.05).toFixed(2);
+      this.amountSupplierResources = response.data.resource_usage.total.supply.toFixed(2);
+      this.incrementSupplierResources = response.data.resource_usage.last_month.supply.toFixed(2);
+      this.amountTransporterResources = response.data.resource_usage.total.transport.toFixed(2);
+      this.incrementTransporterResources = response.data.resource_usage.last_month.transport.toFixed(2);
+      this.amountEmissions = response.data.emissions.total.toFixed(2);
+      this.incrementEmissions = response.data.emissions.last_month.toFixed(2);
+
+      console.log("stats:");
+      console.log(response.data);
 
     },
   }

@@ -11,23 +11,23 @@
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5"> 
-        <TheOverviewCard :title='this.revenueTitle' :amount='this.statistics.revenue.total.total' :increment='this.statistics.revenue.last_month.total'/>
+        <TheOverviewCard :title='this.revenueTitle' :amount='this.amountRevenue' :increment='this.incrementRevenue'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.profitsTitle' :amount='this.amountProfit' :increment='this.profitIncrement'/>
+        <TheOverviewCard :title='this.profitsTitle' :amount='this.amountProfit' :increment='this.incrementProfit'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.supplierResourcesTitle' :amount='this.statistics.resource_usage.total.supply' :increment='this.statistics.resource_usage.last_month.supply' />
+        <TheOverviewCard :title='this.supplierResourcesTitle' :amount='this.amountSupplierResources' :increment='this.incrementSupplierResources' />
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.transporterResourcesTitle' :amount='this.statistics.resource_usage.total.transport' :increment='this.statistics.resource_usage.last_month.transport'/>
+        <TheOverviewCard :title='this.transporterResourcesTitle' :amount='this.amountTransporterResources' :increment='this.incrementTransporterResources'/>
       </div>
 
       <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5">
-        <TheOverviewCard :title='this.emissionsTitle' :amount='this.statistics.emissions.total' :increment='this.statistics.emissions.last_month'/>
+        <TheOverviewCard :title='this.emissionsTitle' :amount='this.amountEmissions' :increment='this.incrementEmissions'/>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
               <div class="input-group w-25 rounded-3">
                 <input id="orders-input" class="form-control bg-light border-success border-end-0 super-round" type="search"
                   placeholder="Número, estado, consumidor...">
-                <span class="input-group-text bg-light border-success border-start-0 super-round">
+                <span class="input-group-text bg-light border-success border-start-0 super-round" @click="this.filterOrders()">
                   <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l" /></span>
               </div>
 
@@ -53,12 +53,11 @@
 
           <!-- table  -->
           <div class="table-responsive" style="max-height: 400px;">
-            <table class="table text-nowrap px-3" id="orders-table">
+            <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
                   <th>Número</th>
                   <th>Consumidor</th>
-                  <th>Itens</th>
                   <th>Recursos</th>
                   <th>Emissões</th>
                   <th>Data de encomenda</th>
@@ -79,8 +78,8 @@
                     </div>
                   </td>
                   <td class="order align-middle"> {{ order.consumer.first_name }} {{ order.consumer.last_name }} </td>
-                  <td class="order align-middle"> {{ this.getOrderDetails(order.items, 'supplier_resource_usage') }} kWh/dia +
-                    {{ this.getOrderDetails(order.items, 'transporter_resource_usage') }} L/100km </td>
+                  <td class="order align-middle"> {{ this.getOrderDetails(order.items, 'supplier_resource_usage') }} kWh/dia e
+                    {{ this.getOrderDetails(order.items, 'transporter_resource_usage') }} L/100 km </td>
                   <td class="order align-middle"> {{ this.getOrderDetails(order.items, 'transporter_emissions') }}
                     CO<sub>2</sub> g/km/t</td>
                   <td class="order align-middle"> {{ this.formatDate(order.date) }} </td>
@@ -123,6 +122,9 @@ import http from "../../../../http-common";
 
 export default {
     name: "TheOrdersTab",
+    components: {
+      TheOverviewCard 
+    },
     data() {
         return {
             ordersTitle: 'Encomendas',
@@ -131,37 +133,39 @@ export default {
             supplierResourcesTitle: 'Gastos de armazenamento',
             transporterResourcesTitle: 'Gastos de transporte',
             emissionsTitle: 'Emissões',
-            amountProfit: 0,
-            profitIncrement: 0,
             currentOrder: []
         };
     },
     props: [
         "orders",
         "amountOrders",
-        "statistics"
+        "amountRevenue",
+        "incrementRevenue",
+        "amountProfit",
+        "incrementProfit",
+        "amountSupplierResources",
+        "incrementSupplierResources",
+        "amountTransporterResources",
+        "incrementTransporterResources",
+        "amountEmissions",
+        "incrementEmissions"
     ],
-    mounted() {
-      this.getProfit();
-    },
     methods: {
       filterOrders: function () {
-        let input = document.getElementById("orders-input");
-        let table = document.getElementById("orders-table");
-        let orders = document.getElementsByClassName("orders");
+        let i, value;
+        let filter = document.getElementById("orders-input").value.toUpperCase();
+        let orders = document.getElementsByClassName("order");
 
-        let filter = input.value.toUpperCase();
+        console.log(filter);
+        console.log(orders);
 
         for (i = 0; i < orders.length; i++) {
-          td = orders[i].getElementsByTagName("td")[0];
-          if (td) {
-            value = td.textContent || td.innerText;
+            value = orders[i].textContent || orders[i].innerText;
             if (value.toUpperCase().indexOf(filter) > -1) {
               orders[i].style.display = "";
             } else {
               orders[i].style.display = "none";
-            }
-          }       
+            }       
         }
       },
         getCurrentOrder: function (orderId) {
@@ -183,10 +187,6 @@ export default {
                     console.log("Failure!");
                 });
             }
-        },
-        getProfit: function () {
-          this.amountProfit = this.statistics.revenue.total.total * 0.05;
-          this.profitIncrement = this.statistics.revenue.last_month.total * 0.05;
         },
         formatDate: function (timestamp) {
             let date = new Date(timestamp);
@@ -212,8 +212,7 @@ export default {
                     return items.reduce((accumulator, item) => accumulator + item.transporter_emissions, 0).toFixed(2);
             }
         }
-    },
-    components: { TheOverviewCard }
+    }
 };
 </script>
 

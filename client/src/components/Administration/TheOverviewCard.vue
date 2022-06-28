@@ -19,12 +19,20 @@
                 </div>
             </div>
             <div>
-                <h1 class="fw-bold"> {{ amount }} </h1>
-                <p v-if=" title == 'Utilizadores'" class="mb-0 text-secondary text-lowercase"><span class="badge bg-secondary text-uppercase">Hoje</span>
-                <span class="ms-2 text-success">+{{ increment }}</span> {{ title }}</p>
-
-                <p v-else-if="title == 'Vendas' || title == 'Lucros' || title == 'Gastos de armazenamento' || title == 'Gastos de transporte' || title == 'Emissões'" class="mb-0 text-secondary text-lowercase"><span class="badge bg-secondary text-uppercase">Este mês</span>
-                <span class="ms-2 text-success">+{{ increment }}</span> {{ title }}</p>
+                <h1 v-if="title == 'Vendas'  || title == 'Lucros'" class="fw-bold"> {{ amount }}€ </h1>
+                <h1 v-else-if="title == 'Gastos de armazenamento'" class="fw-bold"> {{ amount }} kWh/dia</h1>
+                <h1 v-else-if="title == 'Gastos de transporte'" class="fw-bold"> {{ amount }} L/100 km</h1>
+                <h1 v-else-if="title == 'Emissões'" class="fw-bold"> {{ amount }} CO<sub>2</sub> g/km/t</h1>
+                <h1 v-else class="fw-bold"> {{ amount }} </h1>
+                <p v-if="title == 'Utilizadores' || title == 'Vendas' || title == 'Lucros' || title == 'Gastos de armazenamento' || title == 'Gastos de transporte' || title == 'Emissões'" class="mb-0 text-secondary text-lowercase"><span class="badge bg-secondary text-uppercase">Este mês</span>
+                    <span v-if="title == 'Vendas'  || title == 'Lucros'" class="ms-2 text-success">+{{ increment }}€</span>
+                    <span v-else-if="title == 'Gastos de armazenamento'" class="ms-2 text-success">+{{ increment }} kWh/dia</span>
+                    <span v-else-if="title == 'Gastos de transporte'" class="ms-2 text-success">+{{ increment }} L/100 km</span>
+                    <span v-else-if="title == 'Emissões'" class="ms-2 text-success">+{{ increment }} CO<sub>2</sub> g/km/t</span>
+                    <span v-else class="ms-2 text-success">+{{ increment }}</span>
+                    
+                    {{ title }}
+                </p>
             </div>
         </div>
     </div>

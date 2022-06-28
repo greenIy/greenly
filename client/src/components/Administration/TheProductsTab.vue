@@ -336,7 +336,6 @@ export default {
     'amountCategories',
     'amountProducts',
     'amountRequests'
-    //'increment', //not sure if needed
   ],
   methods: {
     getCurrentCategory: function (categoryId) {
