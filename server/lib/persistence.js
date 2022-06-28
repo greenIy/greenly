@@ -4661,19 +4661,21 @@ async function createProduct(
 
         // Create the product attributes
         
-        if (attributes.length > 0) {
-            await Promise.all(attributes.map(async (attribute, index) => {
+        if (attributes) {
+            if (attributes.length > 0) {
+                await Promise.all(attributes.map(async (attribute, index) => {
 
-                await prisma.productAttribute.create({
-                    data: {
-                        id: index + 1,
-                        product: newProduct.id,
-                        title: attribute.title,
-                        content: attribute.content
-                    }
-                })
+                    await prisma.productAttribute.create({
+                        data: {
+                            id: index + 1,
+                            product: newProduct.id,
+                            title: attribute.title,
+                            content: attribute.content
+                        }
+                    })
 
-            }))
+                }))
+            }
         }
 
         return newProduct.id
