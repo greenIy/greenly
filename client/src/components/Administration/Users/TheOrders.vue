@@ -390,8 +390,6 @@
 </template>
 
 <script>
-import { Toast } from '../../../main';
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 library.add(faBox, faShoppingBag, faCalendar, faHandHoldingDollar, faClock, faBoxesPacking, faWarehouse, faTruckRampBox, faTruckFast, faHouseSignal, faCircleCheck, faCircleExclamation, faXmark);
@@ -513,10 +511,7 @@ export default {
         successfulCancelProduct() {
             var closeCancelProductModal = document.getElementById("closeCancelProductModal");
             closeCancelProductModal.click()
-            var animation = {animation: true, delay: 5000};
-            var successToast = document.getElementById("cancelProductToast");
-            var successfulToast = new Toast(successToast, animation)
-            successfulToast.show();
+            //this.successNotification('O novo administrador foi criado com sucesso.')
         },
         cancelProduct(order_id, product_id) {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -552,7 +547,6 @@ form {
     padding: 4.8em;
 }
 
-#successToast,
 .bg-5e9f88{
         background-color: #5E9F88!important;
     }

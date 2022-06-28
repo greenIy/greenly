@@ -29,21 +29,6 @@
                             <button type="submit" class="btn bg-5e9f88 text-light" id="registerButton">Registar</button>
                         </div>
                     </form>
-
-                    <!-- Toast Edit User Info -->
-                    <div class="toast-container position-absolute top-0 end-0 p-3">
-                        <div class="toast align-items-center text-white bg-primary border-0" id="successToast"
-                            role="alert" aria-live="polite" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <strong>Registada!</strong> A nova categoria foi
-                                    criada com sucesso.
-                                </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                                    data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -54,7 +39,7 @@
 </template>
 
 <script>
-import { Toast } from '../../../main';
+import { useToast } from "vue-toastification";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
@@ -65,7 +50,10 @@ import http from "../../../../http-common";
 export default {
     name: 'TheAdminRegistration',
     data(){
+        const toast = useToast();
+
         return {
+            toast,
             registerInfo: {
                 name: '',
                 parentCategory: 0
@@ -85,17 +73,7 @@ export default {
                     parent_category: this.registerInfo.parentCategory}), 
                     { headers: {"Authorization" : `Bearer ${accessToken}`}}).then((response) => {
                     if (response.status == 200) {
-                        let animation = {
-                            animation: true,
-                            delay: 5000
-                        };
-                        let successToast = document.getElementById("successToast");
-                        let successfulToast = new Toast(successToast, animation);
-                        successfulToast.show();
-                        
-                        console.log("CRIADA:");
-                        console.log(this.registerInfo.name);
-                        console.log(this.registerInfo.parentCategory);
+                        this.successNotification('A nova categoria foi criada com sucesso.')
 
                         this.registerInfo.name = '';
                         this.registerInfo.parentCategory = 0;  
@@ -107,20 +85,30 @@ export default {
                     name: this.registerInfo.name}), 
                     { headers: {"Authorization" : `Bearer ${accessToken}`}}).then((response) => {
                     if (response.status == 200) {
-                        let animation = {
-                            animation: true,
-                            delay: 5000
-                        };
-                        let successToast = document.getElementById("successToast");
-                        let successfulToast = new Toast(successToast, animation);
-                        successfulToast.show();
+                        this.successNotification('A nova categoria foi criada com sucesso.')
 
                         this.registerInfo.name = '';
                     }
                 })
                 .catch(error => console.log(error.response.data.errors[0]));
             }
-        }
+        },
+        successNotification(msg){
+        this.toast.success(msg, {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
+    }
     }
 }
 </script>

@@ -71,21 +71,6 @@
                             <button type="submit" class="btn bg-5e9f88 text-light" id="registerButton">Registar</button>
                         </div>
                     </form>
-
-                    <!-- Toast Edit User Info -->
-                    <div class="toast-container position-absolute top-0 end-0 p-3">
-                        <div class="toast align-items-center text-white bg-primary border-0" id="successToast"
-                            role="alert" aria-live="polite" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <strong>Registado!</strong> O novo administrador foi
-                                    criado com sucesso.
-                                </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                                    data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -96,7 +81,7 @@
 </template>
 
 <script>
-import { Toast } from '../../../main';
+import { useToast } from "vue-toastification";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEye, faEyeSlash, faLeaf } from '@fortawesome/free-solid-svg-icons';
@@ -107,7 +92,10 @@ import http from "../../../../http-common";
 export default {
     name: 'TheAdminRegistration',
     data(){
+        const toast = useToast();
+
         return {
+            toast,
             showPassword1: false,
             showPassword2: false,
             registerInfo: {
@@ -156,13 +144,7 @@ export default {
                     type: "ADMINISTRATOR"}), 
                     { headers: {"Authorization" : `Bearer ${accessToken}`}}).then((response) => {
                     if (response.status == 201) {
-                        let animation = {
-                            animation: true,
-                            delay: 5000
-                        };
-                        let successToast = document.getElementById("successToast");
-                        let successfulToast = new Toast(successToast, animation)
-                        successfulToast.show();
+                        this.successNotification('O novo administrador foi criado com sucesso.')
 
                         this.registerInfo.firstName = '';
                         this.registerInfo.lastName = '';
@@ -183,6 +165,22 @@ export default {
             document.getElementById("email").classList.remove("is-invalid");
             document.getElementById("password").classList.remove("is-invalid");
             document.getElementById("passwordConfirm").classList.remove("is-invalid");
+        },
+        successNotification(msg){
+        this.toast.success(msg, {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      });
         }
     }
 }
@@ -193,7 +191,6 @@ form {
     padding: 4.8em;
 }
 
-#successToast,
 .bg-5e9f88{
         background-color: #5E9F88!important;
     }

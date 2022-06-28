@@ -2,7 +2,7 @@ import axios from "axios";
 import { router } from "./src/main"
 
 let customAxios = axios.create({
-  baseURL: "https://api.greenly.pt",
+  baseURL: "http://dev.greenly.pt",
   headers: {
     "Content-type": "application/json"
   }
@@ -14,7 +14,7 @@ customAxios.interceptors.response.use(response => {
  if (error.response.status === 401) {
     router.push('/login')
  }
- return error;
+ return Promise.reject(error);
 });
 
 export default customAxios;
