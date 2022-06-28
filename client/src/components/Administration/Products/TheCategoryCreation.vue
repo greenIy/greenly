@@ -90,7 +90,7 @@ export default {
                             delay: 5000
                         };
                         let successToast = document.getElementById("successToast");
-                        let successfulToast = new Toast(successToast, animation)
+                        let successfulToast = new Toast(successToast, animation);
                         successfulToast.show();
                         
                         console.log("CRIADA:");
@@ -112,7 +112,7 @@ export default {
                             delay: 5000
                         };
                         let successToast = document.getElementById("successToast");
-                        let successfulToast = new Toast(successToast, animation)
+                        let successfulToast = new Toast(successToast, animation);
                         successfulToast.show();
 
                         this.registerInfo.name = '';
