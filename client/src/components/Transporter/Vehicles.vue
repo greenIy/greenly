@@ -32,7 +32,7 @@
                                 <h5 class="card-title"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp; Recursos</h5>
                                 <hr>
                                 <span class="card-text fs-1">{{ this.averageFleetResources.toFixed(2) }}</span> l/100Km<br>
-                                <span>total de recursos usados</span>
+                                <span>recursos usados</span>
                             </div>
                         </div>
                     </div>
@@ -58,18 +58,13 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="d-flex align-items-center">
-                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp;  recursos usados<br></span>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'skull-crossbones']" />&nbsp;  média de emissões<br></span>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'box']" />&nbsp;  total de encomendas<br></span>
-                    </div>
+                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" style="width: 12%"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>
                 </div>
                 <div v-if="calculateVehiclesLength() <= 0" class="text-center">
                     <p class="mt-5 fs-3">Parece que ainda não tem veículos.</p>
                 </div>
                 <div v-else class="row mt-4">
-                    <div v-for="(vehicle, index) in this.vehicles" :key="vehicle.id" class="card mb-3 ms-4 me-3" style="max-width: 30%; height: 270px !important;">
+                    <div v-for="(vehicle, index) in this.vehicles" :key="vehicle.id" class="card mb-3 ms-3 me-3" style="max-width: 30%; height: 270px !important;">
                         <div class="row g-0">
                             <div class="col-md-4 mt-5 ms-4 me-2">
                                 <img id="vehicleTruck" src="../../assets/centerTruck.png">
@@ -106,7 +101,7 @@
                     <h5 class="modal-title" id="modalNewVehicleLabel">Novo veículo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <form @submit.prevent="newVehicle">
                     <div class="mb-3">
                         <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
@@ -275,12 +270,12 @@
 							<h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" size="sm"/>&nbsp; Centro de distribuição #{{ this.selectedVehicle.distribution_center.id }}</h5>
                             <div class="row d-flex mt-3 ms-5">
                                 <div class="col mt-2">
+                                    <br>
                                     Pais: {{ this.selectedVehicle.distribution_center.address.country }}<br>
                                     Cidade: {{ this.selectedVehicle.distribution_center.address.city }}<br>
                                     Rua: {{ this.selectedVehicle.distribution_center.address.street }}<br>
                                     Código Postal: {{ this.selectedVehicle.distribution_center.address.postal_code }}<br>
-                                    Dimensão: {{ Math.ceil(this.selectedVehicle.distribution_center.total_vehicles*36) }}m²/{{ this.selectedVehicle.distribution_center.capacity }}m²<br>
-                                    Veículos: {{ this.selectedVehicle.distribution_center.total_vehicles }}/{{ Math.floor(this.selectedVehicle.distribution_center.capacity/36) }}
+                                    Capacidade: {{ this.selectedVehicle.distribution_center.capacity }}m²
                                 </div>
                                 <div class="col">
                                     <div id="vehicleMap"></div>
