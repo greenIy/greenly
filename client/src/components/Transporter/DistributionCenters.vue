@@ -40,9 +40,12 @@
 					<div v-for="(center, index) in this.distributionCenters" :key="center.id" class="card mt-4 me-4" style="max-width: 46%; height: 410px;">
 						<div class="card-body p-4">
 							<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; #{{ center.id }}</h5>
+							<div class="position-absolute top-0 end-0 p-4 pe-4">
+								<p data-bs-toggle="modal" data-bs-target="#removeCenter" style="cursor: pointer; color: red;" v-on:click="this.selectedCenter = center">Remover</p>
+							</div>
 							<hr>
-							<div style="height: 40%;">
-								<h6></h6>
+							<div style="height: 35%;">
+								<h6><font-awesome-icon :icon="['fa', 'location-dot']" size="sm"/>&nbsp; Morada</h6>
 								<address>
 									{{ center.address.street }}<br>
 									{{ center.address.city }}, {{ center.address.country }}<br>
@@ -132,7 +135,7 @@
 								</div>
 							</div>
 							<div v-else class="text-center mt-3 mb-3">
-								<p>Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu perfil.</p>
+								<p data-bs-dismiss="modal">Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu <router-link class="greenly-link" to="/perfil/moradas">perfil</router-link>!</p>
 							</div>
 						</div>
 					</div>
@@ -156,7 +159,7 @@
 							<div class="row align-items-start">
 								<div class="col">
 									<h5><font-awesome-icon :icon="['fa', 'location-dot']" size="sm"/>&nbsp; Morada</h5>
-									<address class=" ms-2 mt-2">
+									<address class="ms-2 mt-2">
 										{{ this.selectedCenter.address.street }}<br>
 										{{ this.selectedCenter.address.city }}, {{ this.selectedCenter.address.country }}<br>
 										<abbr title="CP">Código Postal:</abbr> {{ this.selectedCenter.address.postal_code }}
@@ -209,7 +212,7 @@
 					<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="chooseAddressModalLabel">Selecione morada do centro #{{ this.selectedCenter.id }}</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#detailsCenterModal"></button>
 					</div>
 					<div class="modal-body">
 						<div class="row justify-content-center" style="max-height: 500px; overflow-y: auto;">
@@ -225,7 +228,7 @@
 								</div>
 							</div>
 							<div v-else class="text-center mt-3 mb-3">
-								<p>Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu perfil.</p>
+								<p>Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu <router-link class="greenly-link" to="/perfil/moradas" data-bs-dismiss="modal">perfil</router-link>!</p>
 							</div>
 						</div>
 					</div>
@@ -242,7 +245,7 @@
 					<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="changeCapacityModalLabel">Centro de distribuição #{{ this.selectedCenter.id }}</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#detailsCenterModal"></button>
 					</div>
 					<form @submit.prevent="editCenterCapacity(this.selectedCenter)">
 					<div class="modal-body">
@@ -261,6 +264,25 @@
 						<button type="submit" class="btn btn-primary">Alterar</button>
 					</div>
 					</form>
+					</div>
+				</div>
+				</div>
+
+				<!-- Modal Remove Center -->
+				<div class="modal fade" id="removeCenter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeCenterLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="removeCenterLabel">Remover centro de distribuição #{{ this.selectedCenter.id }}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Tem a certeza que pretende remover este centro de distribuição?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="closeRemoveCenter" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-danger" v-on:click="removeDistributionCenter(this.selectedCenter.id)">Remover</button>
+					</div>
 					</div>
 				</div>
 				</div>
@@ -489,6 +511,12 @@ export default {
 			this.getDistributionCenterInfo(this.selectedCenter);
 			this.successfulToast("Alterada! A capacidade máxima do centro foi alterada com sucesso.")
 		},
+		successfulRemoveCenter() {
+            this.getUserDistributionCenters();
+            var closeEditModal = document.getElementById("closeRemoveCenter");
+            closeEditModal.click();
+            this.successfulToast("Removido! O centro de distribuição foi removido com sucesso.")
+        },
 		newDistributionCenter() {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
@@ -523,7 +551,8 @@ export default {
 				}), headers)
                 .then((response) => {
                     if (response.status == 201) {
-						this.selectedCenter.address = address;
+						this.getDistributionCenterInfo(center);
+						this.getUserDistributionCenters()
                         this.successfulToast("Alterada! A morada do centro foi alterada com sucesso.")
                     }
                     }).catch((error) => {
@@ -547,7 +576,6 @@ export default {
 				}), headers)
                 .then((response) => {
                     if (response.status == 201) {
-						this.selectedCenter.capacity = Number(newCapacity);
                         this.successfulNewCapacity();
                     }
                     }).catch((error) => {
@@ -556,7 +584,7 @@ export default {
                     })
             }
 		},
-		removeDistributionCenter() {
+		removeDistributionCenter(center) {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             const headers = {
@@ -565,21 +593,14 @@ export default {
                 }
             }
             if (accessToken && userId) {
-                http.delete(`/transporter/${userId}/centers/${2}`, headers)
+                http.delete(`/transporter/${userId}/centers/${center}`, headers)
                     .then((response) => {
-                        if (response.status == 202) {
-                            /* AuthService.getUser().then((result) => {
-                                this.user.addresses = result.addresses;
-                            });
-                            this.successfulRemoveAddress()*/
-                            console.log("Success!") 
+						console.log(response)
+                        if (response.status == 200) {
+                            this.successfulRemoveCenter() 
                         }
                     }).catch(error => {
-                        /* if (error.response.data.message == 'Address not found.') {
-                            this.addressHasOrders()
-                        } else { */
                             console.log(error.response)
-                        //} 
                     }) 
             }
 		}
@@ -599,9 +620,10 @@ export default {
 		border-radius: 5px;
     }
 	.fixedMap {
+		z-index: 1;
 		position: fixed;
 		height: 650px;
-        width: 22%;
+        width: 400px;
 	}
 	.card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -632,7 +654,7 @@ export default {
 		margin-top: 10%;
 	}
 	.greenly-link {
-        color: #5e9f88;
+        color: #5e9f88 !important;
     }
 	#selectedCapacityBar {
 		font-size: 15px;

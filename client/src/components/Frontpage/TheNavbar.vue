@@ -59,19 +59,36 @@
                                 <div v-for="noti in this.notifications" :key="noti.id">
                                     <div v-if="noti.dismissed == false" >
                                         <div class="list-group">
-                                            <router-link to="/perfil/encomendas" style="margin-left: 0">
-                                            <span role="button" class="list-group-item list-group-item-action">
-                                                <h6 class="noitificationDismiss" role="button" v-on:click="selectNotification(noti); dismissNotification()"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
-                                                <div class="w-100 justify-content-between mt-2">
-                                                    <small>
-                                                       <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;` }}&nbsp;<font-awesome-icon :icon="['fa', 'clock']"/>&nbsp;{{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
-                                                    </small>
-                                                    <h5 class="mt-2">{{ noti.title }}</h5>
-                                                    
-                                                </div>
-                                                <p class="mt-2">{{ noti.content }}</p>
-                                            </span>
-                                            </router-link>
+                                            <div v-if="user.type == 'CONSUMER'">
+                                                <router-link to="/perfil/encomendas" style="margin-left: 0">
+                                                <span role="button" class="list-group-item list-group-item-action">
+                                                    <h6 class="noitificationDismiss" role="button" v-on:click="selectNotification(noti); dismissNotification()"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
+                                                    <div class="w-100 justify-content-between mt-2">
+                                                        <small>
+                                                        <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{ `${new Date(noti.timestamp).getDate()}/${new Date(noti.timestamp).getMonth()+1}/${new Date(noti.timestamp).getFullYear()} &nbsp;` }}&nbsp;<font-awesome-icon :icon="['fa', 'clock']"/>&nbsp;{{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
+                                                        </small>
+                                                        <h5 class="mt-2">{{ noti.title }}</h5>
+                                                        
+                                                    </div>
+                                                    <p class="mt-2">{{ noti.content }}</p>
+                                                </span>
+                                                </router-link>
+                                            </div>
+                                            <div v-if="user.type == 'TRANSPORTER' || user.type == 'SUPPLIER'">
+                                                <router-link to="/painel" style="margin-left: 0">
+                                                <span role="button" class="list-group-item list-group-item-action">
+                                                    <h6 class="noitificationDismiss" role="button" v-on:click="selectNotification(noti); dismissNotification()"><font-awesome-icon :icon="['fa', 'xmark']" size="lg"/></h6>
+                                                    <div class="w-100 justify-content-between mt-2">
+                                                        <small>
+                                                        <font-awesome-icon :icon="['fa', 'calendar']"/>&nbsp;{{ `${String(new Date(noti.timestamp).getDate()).padStart(2, '0')}/${String(new Date(noti.timestamp).getMonth()+1).padStart(2, '0')}/${new Date(noti.timestamp).getFullYear()}` }}&nbsp;<font-awesome-icon :icon="['fa', 'clock']"/>&nbsp;{{ `${("0" + new Date(noti.timestamp).getHours()).slice(-2)}:${("0" + new Date(noti.timestamp).getMinutes()).slice(-2)}:${("0" + new Date(noti.timestamp).getSeconds()).slice(-2)}` }}
+                                                        </small>
+                                                        <h5 class="mt-2">{{ noti.title }}</h5>
+                                                        
+                                                    </div>
+                                                    <p class="mt-2">{{ noti.content }}</p>
+                                                </span>
+                                                </router-link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -385,12 +402,6 @@ export default {
         background-clip: content-box;
         background-color: #5E9F88;
     }
-
-    .router-link-active {
-       text-decoration: underline!important;
-       color: #5e9f88 !important;
-    }
-
     .black{
         color:black !important;
     }
