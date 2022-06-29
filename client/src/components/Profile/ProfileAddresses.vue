@@ -75,7 +75,7 @@
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" placeholder="Rua" required>
+                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" placeholder="Rua" maxlength="40" required>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
@@ -133,7 +133,7 @@
                     </div>
                     <div class="col mb-3">
                         <label for="addressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="editAddressStreet" v-bind:value="this.selectedAddress.street" required>
+                        <input type="text" class="form-control" id="editAddressStreet" v-bind:value="this.selectedAddress.street" maxlength="40" required>
                     </div>
                     <div class="row">
                         <div class="col mb-3">
@@ -276,7 +276,7 @@ export default({
             }
         },
         successfulToast(message) {
-            this.toast(message, {
+            this.toast.success(message, {
                 toastClassName: "my-custom-toast-class",
                 position: "top-right",
                 timeout: 5000,
@@ -361,7 +361,13 @@ export default({
         addressHasOrders() {
             var closeEditModal = document.getElementById("closeRemoveModalButton");
             closeEditModal.click()
-            this.errorToast("Oops! A sua morada está associada a encomendas em progresso, logo não pode ser apagada.")
+            if (this.user.type == 'CONSUMER'){
+                this.errorToast("Oops! A sua morada está associada a encomendas em progresso, logo não pode ser apagada.")
+            } else if (this.user.type == 'SUPPLIER'){
+                this.errorToast("Oops! A sua morada está associada a armazéns existentes, logo não pode ser apagada.")
+            } else if (this.user.type == 'TRANSPORTER'){
+                this.errorToast("Oops! A sua morada está associada a centros de distribuição existentes, logo não pode ser apagada.")
+            }
         },
         newAddress() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
