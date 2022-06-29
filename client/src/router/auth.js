@@ -65,7 +65,7 @@ export default class AuthService {
          * Permite decidir qual será o destino do utilizador durante a navegação consoante o seu estado de autenticação
          */
         static async authenticate(to, from, next) {
-            const publicPages = ["/produtos", "/produto", "/equipa", "/fornecedores"]
+            const publicPages = ["/produtos", "/produto", "/equipa", "/fornecedores", "/transportadores"]
                 
             // TODO: Adicionar páginas relativas à autenticação por redes sociais
             // Páginas que são inacessíveis a utilizadores autenticados 

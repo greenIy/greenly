@@ -146,9 +146,12 @@
 </template>
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
-import http from "../../../http-common"
 import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar 
 , faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag} from "@fortawesome/free-solid-svg-icons";
+
+import http from "../../../http-common"
+
+import {useToast} from 'vue-toastification';
 
 library.add(faCubes, faTruck, faXmark, faBox, faPlusMinus, faFilePen, faAt, faUser, faHouse, faIndustry, faCalendar, faMoneyBillWave, faWarehouse, faGasPump, faSkullCrossbones, faShoppingBag);
 
@@ -166,6 +169,7 @@ export default {
      this.verify();
   },
   data() {
+    const toast = useToast();
     return {
       active_el:1,
       date:String,
@@ -236,7 +240,8 @@ export default {
           }
           ]
         },
-      ]
+      ],
+      toast,
     }
   },
   methods:{
@@ -271,6 +276,8 @@ export default {
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
             this.$emit('updateStatus', true);
+            this.toast.success("O estado foi atualizado com sucesso!", {
+            position:"top-right", duration:10000})
           }
         );
     },

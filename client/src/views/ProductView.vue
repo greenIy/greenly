@@ -323,6 +323,7 @@ export default {
               if (response.status == 200) {
                 console.log("Success")
                 this.showSuccessfulCart()
+                this.emitter.emit('updateCart')
               }
 
           }).catch((error) => {
