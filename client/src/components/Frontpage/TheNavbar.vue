@@ -28,6 +28,7 @@
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
+                        <li><router-link v-if="user.type === 'ADMINISTRATOR'" to="/administracao" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'table-columns']" size=""/>&nbsp; Administração</a></router-link></li>
                         <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
                         <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
                         <hr class="dropdown-divider">
@@ -200,8 +201,8 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft} from '@fortawesome/free-solid-svg-icons';
-library.add(faCartShopping, faUser, faIdCard, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft);
+import { faCartShopping, faUser, faIdCard, faTableColumns, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft} from '@fortawesome/free-solid-svg-icons';
+library.add(faCartShopping, faUser, faIdCard, faTableColumns, faBoxArchive, faClipboard, faHeart, faArrowRightFromBracket, faBell, faCalendar, faClock, faXmark, faInbox, faClockRotateLeft);
 
 import http from "../../../http-common"
 import AuthService from '../../router/auth';
