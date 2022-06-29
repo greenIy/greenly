@@ -169,8 +169,8 @@
             </router-link>
         </div>
         <div class="pt-2">
-            <router-link to="/estatisticas" class="mb-2 ml-2">
-                estatísticas 
+            <router-link to="/transportadores" class="mb-2 ml-2">
+                transportadores 
             </router-link>
         </div>
     </div>
