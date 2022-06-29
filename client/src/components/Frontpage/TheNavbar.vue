@@ -28,8 +28,8 @@
                         <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                        <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
-                        <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel</a></router-link></li>
+                        <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
+                        <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
                         <hr class="dropdown-divider">
                         <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item ms-0" style="color: red !important"><font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />&nbsp; Terminar sessão</a></router-link></li>
                     </ul>
@@ -148,10 +148,14 @@
             </div>
         </div>
         <div class="align-self-center nav-links mt-2 mb-2">
-            <router-link to="/carrinho">
+            <router-link v-if="this.userIsLoggedIn && user.type === 'CONSUMER'" to="/carrinho">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
             </router-link>
         </div>
+        <span v-if="cartItemsAmount() > 0" class="h-25 mt-3 translate-middle translate-middle bg-custom badge rounded-pill bg-danger">
+            {{ this.cartItemsAmount() }}
+            <span class="visually-hidden"></span>
+        </span>
         <router-link  to="/login">
             
         </router-link>
@@ -190,7 +194,10 @@ export default {
     mounted() {
         this.getUserInfo();
         this.getUserNotifications();
+        this.getUserCart();
         this.emitter.on('updateNotifications', () => {this.getUserNotifications()});
+        this.emitter.on('updateCart', () => {this.getUserCart()});
+
     },
     data () {
         return {
@@ -199,6 +206,7 @@ export default {
             user: {},
             notifications: [],
             selectedNotification: '',
+            cartItems: []
         }
     },
     methods: {
@@ -232,6 +240,23 @@ export default {
                     })
             }
         },  
+        getUserCart() {
+            if (this.user.type == "CONSUMER") {
+                let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+                let userId = JSON.parse(localStorage.getItem('userId'));
+                if (accessToken) {
+                    http.get(`/user/${userId}/cart`, {
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`
+                        }
+                    }).then(response => {
+                        if (response.status == 200) {
+                            this.cartItems = response.data.items;
+                        }
+                    })
+                }
+            }
+        },  
         notificationsLength() {
             var size = Object.keys(this.notifications).length;
             return size
@@ -244,6 +269,9 @@ export default {
                 }
             }
             return size
+        },
+        cartItemsAmount() {
+            return this.cartItems.length
         },
         filedNotificationsLength() {
             var size = 0;
