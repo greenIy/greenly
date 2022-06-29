@@ -4,7 +4,7 @@
         <div class="content-wrap">
             <the-navbar/>
             <div class="tab-content p-5" id="checkout-content">
-                <h2>Checkout</h2>
+                <h2>Check-out</h2>
                 <div v-if="activeTab === 'shipping'" class="row"> <!-- Shipping tab -->
                     <div class="col-md-8">
                         <shipping-form :billing="billingAddress" :shipping="shippingAddress" @setBilling="setBillingAddress" @setShipping="setShippingAddress" @done="shippingCallback" />

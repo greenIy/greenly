@@ -2,42 +2,53 @@
     <!-- list of shipping addresses -->
     <div class="tab-content p-5" id="checkout-content">
         <div v-if="activeTab === 'shippingAddress'" class="row"> <!-- Shipping tab -->
+            <div v-if="this.addresses.length > 0">
 
             <h3>Morada de envio: </h3>
+                <div class="ps-3 pt-5 row g-4">
+                    <div v-for="address in this.addresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedShippingAddress.id === address.id}" style="width: 300px; margin-right: 30px">
+                        <!-- toggle class to show green background if selected -->
+                        <div class="card-body" @click="selectShippingAddress(address)"  style="cursor: pointer;">
+                            <address>
+                                <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
+                                {{ address.street }}<br>
+                                {{ address.city }}, {{ address.country }}<br>
+                                Código Postal: {{ address.postal_code }}
+                            </address>
+                            <address>
+                                <strong>NIF</strong><br>
+                                <a>{{ address.nif }}</a>
+                                <div class="position-absolute bottom-0 end-0 p-2 pe-3">
+                                    <!-- select address with check colored green -->
 
-            <div class="ps-4 row g-4">
-                <div v-for="address in this.addresses" :key="address.nif" class="card" :class="{'bg-selected' : selectedShippingAddress.id === address.id}" style="width: 300px; margin-right: 30px">
-                    <!-- toggle class to show green background if selected -->
-                    <div class="card-body" @click="selectShippingAddress(address)"  style="cursor: pointer;">
-                        <address>
-                            <strong><font-awesome-icon :icon="['fa', 'house-chimney']" />&nbsp; {{ address.city }}</strong><br>
-                            {{ address.street }}<br>
-                            {{ address.city }}, {{ address.country }}<br>
-                            Código Postal: {{ address.postal_code }}
-                        </address>
-                        <address>
-                            <strong>NIF</strong><br>
-                            <a>{{ address.nif }}</a>
-                            <div class="position-absolute bottom-0 end-0 p-2 pe-3">
-                                <!-- select address with check colored green -->
+                                    <a v-if="selectedShippingAddress.id === address.id" @click="selectShippingAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa-regular', 'square-check']" class="selected" /></a>
+                                    <!-- address that isn't selected -->
+                                    <a v-else @click="selectShippingAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa-regular', 'square']" /></a>
 
-                                <a v-if="selectedShippingAddress.id === address.id" @click="selectShippingAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa-regular', 'square-check']" class="selected" /></a>
-                                <!-- address that isn't selected -->
-                                <a v-else @click="selectShippingAddress(address)"><font-awesome-icon style="cursor: pointer;" :icon="['fa-regular', 'square']" /></a>
-
-                            </div>
-                        </address>
+                                </div>
+                            </address>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex flex-row justify-content-end">
-                <button class="btn btn-primary btn-lg btn-block btn-greenly" @click="changeTab('billingAddress')">
-                    <span>Avançar</span>
-                    <font-awesome-icon :icon="['fa', 'arrow-right']" class="ms-2" />
-                </button>
+                <div class="d-flex flex-row justify-content-end">
+                    <button class="btn btn-primary btn-lg btn-block btn-greenly" @click="changeTab('billingAddress')">
+                        <span>Avançar</span>
+                        <font-awesome-icon :icon="['fa', 'arrow-right']" class="ms-2" />
+                    </button>
 
+                </div>
             </div>
+            <div v-if="this.addresses.length === 0">
+                <div class="text-center d-flex flex-column align-items-center">
+                    <h3 class="mt-5">Não tem nenhuma morada registada!</h3>
+                    <p class="mt-3">
+                        <router-link to="/perfil/moradas" class="btn btn-greenly">
+                            <font-awesome-icon :icon="['fa', 'map']" size="lg"/>&nbsp; Adicionar morada
+                        </router-link>
+                    </p>
 
+                </div>
+            </div>
         </div>
         <!-- end of list of shipping addresses -->
 
@@ -92,9 +103,9 @@
 <script>
 import http from "../../../http-common";
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faHouseChimney, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
+import { faHouseChimney, faArrowLeft, faMap} from '@fortawesome/free-solid-svg-icons';
 import {faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
-library.add(faHouseChimney, faSquare, faSquareCheck, faArrowLeft);
+library.add(faHouseChimney, faSquare, faSquareCheck, faArrowLeft, faMap);
 
 
 
@@ -195,6 +206,7 @@ export default {
 .btn-greenly {
     background-color: #5e9f88;
     border-color: #5e9f88;
+    color: white;
 }
 
 </style>
