@@ -8,10 +8,10 @@
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Inventários</a>
+                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Armazéns</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Armazéns</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Inventário</a>
                     </li>
                     </ul>
                     <div v-if="active_el==1" class="d-flex align-items-center">
@@ -31,12 +31,11 @@
                     </div>
 
                     <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==2 && this.$route.name == 'fornecedor'">Inventários INFO ... Por FAZER</div>
-                    <div v-if="active_el==3 && this.$route.name == 'fornecedor'">Armazéns INFO ... Por FAZER</div>
+                    <div v-if="active_el==2 && this.$route.name == 'fornecedor'"><Warehouses :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="active_el==3 && this.$route.name == 'fornecedor'"><Inventory :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'fornecedor_historico'" :receiveData="receiveData"/>
             </div>
-            <TheFooter />
         </body>
 </div>
 </template>
@@ -46,15 +45,14 @@ import TheNavbar from '@/components/Frontpage/TheNavbar.vue';
 import TheFooter from '@/components/Frontpage/TheFooter.vue';
 import History from "@/components/Supplier/History.vue";
 import EncomendasDashboard from "@/components/Supplier/EncomendasDashboard.vue";
+import Warehouses from "@/components/Supplier/Warehouses.vue";
+import Inventory from "@/components/Supplier/Inventory.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faClockRotateLeft , faMagnifyingGlass, faXmark} from "@fortawesome/free-solid-svg-icons";
+library.add(faClockRotateLeft, faMagnifyingGlass, faXmark);
 
 import http from "../../http-common";
-
-library.add(faClockRotateLeft);
-library.add(faMagnifyingGlass);
-library.add(faXmark);
 
 
 export default {
@@ -62,8 +60,10 @@ export default {
   components: {
     TheNavbar,
     TheFooter,
-    EncomendasDashboard,
     History,
+    EncomendasDashboard,
+    Warehouses,
+    Inventory
   },
   data() {
     return {

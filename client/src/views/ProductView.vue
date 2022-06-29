@@ -144,7 +144,7 @@
                         <font-awesome-icon  class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
-                    <button class="btnH fav">
+                    <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="d-inline-block text-start col-md-1 btnH p-8 fav">
                       <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="lg"/>
                       <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                     </button>

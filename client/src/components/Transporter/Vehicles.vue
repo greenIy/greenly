@@ -1,5 +1,4 @@
 <template>
-    
 	<div class="container mt-5">
 		<div class="row align-items-start">
             <div class="row align-items-start">
@@ -32,7 +31,7 @@
                                 <h5 class="card-title"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp; Recursos</h5>
                                 <hr>
                                 <span class="card-text fs-1">{{ this.averageFleetResources.toFixed(2) }}</span> l/100Km<br>
-                                <span>total de recursos usados</span>
+                                <span>recursos usados</span>
                             </div>
                         </div>
                     </div>
@@ -58,15 +57,13 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="d-flex align-items-center">
-                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" v-on:click=""><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'bolt']" />&nbsp;  recursos usados<br></span>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'skull-crossbones']" />&nbsp;  média de emissões<br></span>&nbsp;  &nbsp;  &nbsp;
-                        <span class="fs-5"><font-awesome-icon :icon="['fa', 'box']" />&nbsp;  total de encomendass<br></span>
-                    </div>
+                        <button type="button" class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#modalNewVehicle" style="width: 12%"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar veículo</button>
                 </div>
-                <div class="row mt-4">
-                    <div v-for="(vehicle, index) in this.vehicles" :key="vehicle.id" class="card mb-3 ms-4 me-3" style="max-width: 30%; height: 270px !important;">
+                <div v-if="calculateVehiclesLength() <= 0" class="text-center">
+                    <p class="mt-5 fs-3">Parece que ainda não tem veículos.</p>
+                </div>
+                <div v-else class="row mt-4">
+                    <div v-for="(vehicle, index) in this.vehicles" :key="vehicle.id" class="card mb-3 ms-3 me-3" style="max-width: 30%; height: 270px !important;">
                         <div class="row g-0">
                             <div class="col-md-4 mt-5 ms-4 me-2">
                                 <img id="vehicleTruck" src="../../assets/centerTruck.png">
@@ -88,7 +85,7 @@
                             <hr>
                             <div class="text-center mt-1">
                                 <button type="button" class="btn btn-secondary btn-sm me-3" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle" v-on:click="selectVehicle(vehicle)"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
-                                <button type="button" class="btn btn-danger btn-sm" v-on:click=""><font-awesome-icon :icon="['fa', 'trash']" />&nbsp; Remover</button>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#removeVehicle" v-on:click="this.selectedVehicle = vehicle"><font-awesome-icon :icon="['fa', 'trash']" />&nbsp; Remover</button>
                             </div>
                         </div>
                     </div>
@@ -103,12 +100,12 @@
                     <h5 class="modal-title" id="modalNewVehicleLabel">Novo veículo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form @submit.prevent="newVehicle">
+                <div class="modal-body p-4">
+                <form @submit.prevent="newVehicle">
                     <div class="mb-3">
                         <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="fuelTypePetrol" value="PETROL" required>
                             <label class="form-check-label" for="inlineRadio1">Gasolina</label>
                         </div>
                         <div class="form-check form-check-inline">
@@ -124,11 +121,11 @@
                         <div class="col mb-3">
                             <label for="newVehicleCenter" class="form-label">Centro de distribuição <span style='color: #FF0000;'>*</span></label><br>
                             <div v-if="!this.selectedCenterNew.capacity" class="mb-3 ms-3">
-									<small>Ainda não selecionou nenhuma morada.</small><br>
-									<small>Por favor selecione uma morada a partir do conjunto de moradas associadas ao seu perfil.</small>
+									<small>Ainda não selecionou nenhum centro.</small><br>
+									<small>Por favor selecione um centro a partir do conjunto de centros associadas ao seu perfil.</small>
 								</div>
 								<div v-else>
-									<div class="card mb-3 ms-2" style="width: 260px !important; height: 135px !important ;cursor: pointer;">
+									<div class="card mb-3 ms-2" style="width: 260px !important; height: 150px !important ;cursor: pointer;">
 										<div class="card-body">
 											<address>
 												<strong><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centro #{{ this.selectedCenterNew.id  }}</strong><br>
@@ -144,26 +141,27 @@
                         <div class="col mb-3">
                             <label for="newVehicleLicense" class="form-label">Matrícula <span style='color: #FF0000;'>*</span></label>
                             <input type="text" class="form-control" id="newVehicleLicense" v-model="newVehicleInfo.license_plate" placeholder="Matrícula" minlength="6" maxlength="6" required v-on:click="removeIsInvalid">
-                            <div class="invalid-feedback" id="invalidFeedbackNewNIF">Esta matrícula já se encontra atribuída.</div>
+                            <div class="invalid-feedback">Esta matrícula já se encontra atribuída.</div>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col mb-3">
-                            <label for="newVehicleCapacity" class="form-label">Capacidade de carga <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleCapacity" v-model="newVehicleInfo.payload_capacity" placeholder="Capacidade de carga" required>
+                            <label for="newVehicleCapacity" class="form-label">Capacidade de carga m² <span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="newVehicleCapacity" v-model="newVehicleInfo.payload_capacity" placeholder="Capacidade de carga" required>
                         </div>
                         <div class="col mb-3">
-                            <label for="newVehicleResources" class="form-label">Recursos necessários <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleResources" v-model="newVehicleInfo.resource_usage" placeholder="Recursos necessários" required>
+                            <label for="newVehicleResources" class="form-label">Consumo médio l/100km <span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="newVehicleResources" v-model="newVehicleInfo.resource_usage" placeholder="Consumo médio" required>
                         </div>
                         <div class="col mb-3">
-                            <label for="newVehicleEmissions" class="form-label">Emissões médias <span style='color: #FF0000;'>*</span></label>
-                            <input type="text" class="form-control" id="newVehicleEmissions" v-model="newVehicleInfo.average_emissions" placeholder="Emissões médias" required>
+                            <label for="newVehicleEmissions" class="form-label">Emissões médias CO₂ g/km/t<span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="newVehicleEmissions" v-model="newVehicleInfo.average_emissions" placeholder="Emissões médias" required>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="closeNewVehicleModal" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Criar veículo</button>
+                        <button v-if="this.selectedCenterNew.address.street" type="submit" class="btn btn-primary">Criar veículo</button>
+                        <button v-else type="submit" class="btn btn-primary" disabled>Criar veículo</button>
                     </div>
                 </form>
                 </div>
@@ -176,7 +174,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newVehicleCenterLabel">Selecione o centre de distribuição</h5>
+                    <h5 class="modal-title" id="newVehicleCenterLabel">Selecione o centro de distribuição</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -230,15 +228,15 @@
                                             </tr>
                                             <tr>
                                                 <td>Capacidade de carga</td>
-                                                <td class="text-end">{{ this.selectedVehicle.payload_capacity }}kg</td>
+                                                <td class="text-end">{{ this.selectedVehicle.payload_capacity }}m²</td>
                                             </tr>
                                             <tr>
-                                                <td>Recursos usados</td>
+                                                <td>Consumo médio</td>
                                                 <td class="text-end">{{ this.selectedVehicle.resource_usage }} litros/100Km</td>
                                             </tr>
                                             <tr>
-                                                <td>Média de emissões</td>
-                                                <td class="text-end">{{ this.selectedVehicle.average_emissions }}CO₂ g/km/t</td>
+                                                <td>Emissões médias</td>
+                                                <td class="text-end">{{ this.selectedVehicle.average_emissions }} CO₂ g/km/t</td>
                                             </tr>
                                         </tbody>
                                     </table>   
@@ -249,7 +247,7 @@
                                     <p class="licensePlateInfo">{{ this.selectedVehicle.license_plate }}</p>
 								</div>
                                 <div class="text-center">
-                                    <button type="button" class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#chooseAddressModal"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button>
+                                    <button type="button" class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#changeVehicleDetails"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button>
                                 </div>
                                 <div class="row d-flex mt-3">
                                     <div class="col text-center">
@@ -272,12 +270,12 @@
 							<h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" size="sm"/>&nbsp; Centro de distribuição #{{ this.selectedVehicle.distribution_center.id }}</h5>
                             <div class="row d-flex mt-3 ms-5">
                                 <div class="col mt-2">
+                                    <br>
                                     Pais: {{ this.selectedVehicle.distribution_center.address.country }}<br>
                                     Cidade: {{ this.selectedVehicle.distribution_center.address.city }}<br>
                                     Rua: {{ this.selectedVehicle.distribution_center.address.street }}<br>
                                     Código Postal: {{ this.selectedVehicle.distribution_center.address.postal_code }}<br>
-                                    Dimensão: {{ Math.ceil(this.selectedVehicle.distribution_center.total_vehicles*36) }}m²/{{ this.selectedVehicle.distribution_center.capacity }}m²<br>
-                                    Veículos: {{ this.selectedVehicle.distribution_center.total_vehicles }}/{{ Math.floor(this.selectedVehicle.distribution_center.capacity/36) }}
+                                    Capacidade: {{ this.selectedVehicle.distribution_center.capacity }}m²
                                 </div>
                                 <div class="col">
                                     <div id="vehicleMap"></div>
@@ -285,7 +283,7 @@
                             </div>
 						</div>
                         <div class="text-center">
-                            <button type="button" class="btn btn-secondary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#changeCapacityModal"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Alterar centro de distribuição</button>
+                            <button type="button" class="btn btn-secondary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#changeVehicleCenter"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Alterar centro de distribuição</button>
                         </div>	
                 </div>
                 <div class="modal-footer">
@@ -294,13 +292,126 @@
                 </div>
             </div>
             </div>
+
+            <!-- Modal Change Details -->
+            <div class="modal fade" id="changeVehicleDetails" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeVehicleDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeVehicleDetailsLabel">Editar detalhes veículo #{{ this.selectedVehicle.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle"></button>
+                </div>
+                <div class="modal-body">
+                    <form @submit.prevent="editVehicleDetails(this.selectedVehicle.id)">
+                    <div class="mb-3">
+                        <label for="newVehicleFuelType" class="form-label">Combustível <span style='color: #FF0000;'>*</span></label><br>
+                        <div class="form-check form-check-inline">
+                            <input v-if="this.selectedVehicle.fuel_type == 'PETROL'" class="form-check-input" type="radio" name="inlineRadioOptions" value="PETROL" checked required>
+                            <input v-else class="form-check-input" type="radio" name="inlineRadioOptions" id="editFuelTypePetrol" value="PETROL" required>
+                            <label class="form-check-label" for="inlineRadio1">Gasolina</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input v-if="this.selectedVehicle.fuel_type == 'DIESEL'" class="form-check-input" type="radio" name="inlineRadioOptions" value="DIESEL" checked>
+                            <input v-else class="form-check-input" type="radio" name="inlineRadioOptions" id="editFuelTypeDiesel" value="DIESEL">
+                            <label class="form-check-label" for="inlineRadio2">Gasóleo</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input v-if="this.selectedVehicle.fuel_type == 'ELECTRICITY'" class="form-check-input" type="radio" name="inlineRadioOptions" value="ELECTRICITY" checked>
+                            <input v-else class="form-check-input" type="radio" name="inlineRadioOptions" id="editFuelTypeElectricity" value="ELECTRICITY">
+                            <label class="form-check-label" for="inlineRadio3">Eletricidade</label>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col mb-3">
+                            <label for="editVehicleLicense" class="form-label">Matrícula <span style='color: #FF0000;'>*</span></label>
+                            <input type="text" class="form-control" id="editVehicleLicense" v-bind:value="this.selectedVehicle.license_plate" placeholder="Matrícula" minlength="6" maxlength="6" required v-on:click="removeIsInvalid">
+                            <div class="invalid-feedback">Esta matrícula já se encontra atribuída.</div>
+                        </div>
+                        <div class="col mb-3">
+                            <label for="editVehicleCapacity" class="form-label">Capacidade de carga m²<span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="editVehicleCapacity" v-bind:value="this.selectedVehicle.payload_capacity" placeholder="Capacidade de carga" required>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col mb-3">
+                            <label for="editVehicleResources" class="form-label">Consumo médio l/100km <span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="editVehicleResources" v-bind:value="this.selectedVehicle.resource_usage" placeholder="Recursos necessários" required>
+                        </div>
+                        <div class="col mb-3">
+                            <label for="editVehicleEmissions" class="form-label">Emissões médias CO₂ g/km/t <span style='color: #FF0000;'>*</span></label>
+                            <input type="number" class="form-control" id="editVehicleEmissions" v-bind:value="this.selectedVehicle.average_emissions" placeholder="Emissões médias" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="closeEditDetails" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Editar</button>
+                    </div>
+                </form>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Modal Change Center -->
+            <div class="modal fade" id="changeVehicleCenter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeVehicleCenterLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeVehicleCenterLabel">Selecione morada do centro #{{ this.selectedVehicle.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center" style="max-height: 500px; overflow-y: auto;">
+                        <div v-if="calculateDistributionCentersLength() > 0" v-for="center in this.distributionCenters" :key="center.id" class="card mt-3 mb-3" style="width: 300px !important; cursor: pointer;">
+                            <div class="card-body" v-on:click="editVehicleCenter(this.selectedVehicle, center)" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle">
+                                <h5><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centro #{{ center.id }}</h5><br>
+                                <h6><font-awesome-icon :icon="['fa', 'location-dot']" />&nbsp; Morada</h6>
+                                <address>
+                                    {{ center.address.street }}<br>
+                                    {{ center.address.city }}, {{ center.address.country }}<br>
+                                    <abbr title="CP">Código Postal:</abbr> {{ center.address.postal_code }}
+                                </address>
+                                <p class="mt-2">Capacidade: {{ center.capacity }}m²</p>          
+                            </div>           
+                        </div>
+                        <div v-else class="text-center mt-3 mb-3">
+                            <p>Parece que não se encontram moradas disponíveis.<br>Por favor adicione uma ao seu perfil.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalDetailsVehicle">Cancelar</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Modal Remove Vehicle -->
+            <div class="modal fade" id="removeVehicle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeVehicleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeVehicleLabel">Remover veículo #{{ this.selectedVehicle.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza que pretende remover este veículo?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeRemoveVehicle" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" v-on:click="removeVehicle(this.selectedVehicle.id)">Remover</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
 		</div>
 	</div>
 		
 </template>
 
 <script>
-
+import { useToast } from "vue-toastification";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTruck, faGasPump, faOilCan, faChargingStation, faBolt, faSkullCrossbones, faBox, faPlus, faUpRightAndDownLeftFromCenter, faTrash, faBuildingCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
 library.add(faTruck, faGasPump, faOilCan, faChargingStation, faBolt, faSkullCrossbones, faBox, faPlus, faUpRightAndDownLeftFromCenter, faTrash, faBuildingCircleArrowRight);
@@ -316,7 +427,9 @@ export default {
         this.getUserDistributionCenters()
 	},
 	data() {
-		return {
+		const toast = useToast()
+        return {
+            toast,
 			user: {},
 			vehicles: [],
 			vehiclesLength: 1,
@@ -446,14 +559,48 @@ export default {
             this.selectedVehicle = vehicle;
             this.initVehicleMap()
         },
-        conflitSolver(message) {
-            if (message == "Request failed with status code 409")
-                document.getElementById("newVehicleLicense").classList.add("is-invalid");
-        },  
+        conflitSolver(message, area) {
+            if (message == "Request failed with status code 409") {
+                if (area == "new") {
+                    document.getElementById("newVehicleLicense").classList.add("is-invalid");
+                } else if (area == "edit") {
+                    document.getElementById("editVehicleLicense").classList.add("is-invalid");
+                }
+            }
+        },
+        successfulToast(message) {
+            this.toast.success(message, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: true,
+                rtl: false
+            });
+        }, 
         successfulNewVehicle() {
             this.getUserVehicles();
             var closeEditModal = document.getElementById("closeNewVehicleModal");
             closeEditModal.click();
+            this.successfulToast("Criado! O veículo foi criado com sucesso.")
+        },
+        successfulEditVehicle() {
+            this.getUserVehicles();
+            var closeEditModal = document.getElementById("closeEditDetails");
+            closeEditModal.click();
+            this.successfulToast("Atualizados! Os detalhes do veículo foram atualizados com sucesso.")
+        },
+        successfulRemoveVehicle() {
+            this.getUserVehicles();
+            var closeEditModal = document.getElementById("closeRemoveVehicle");
+            closeEditModal.click();
+            this.successfulToast("Removido! O veículo foi removido com sucesso.")
         },
 		newVehicle() {
             let accessToken = JSON.parse(localStorage.getItem('accessToken'));
@@ -475,16 +622,81 @@ export default {
                 fuel_type: this.newVehicleInfo.fuel_type,
             }), headers)
             .then((response) => {
-                console.log(response)
                 if (response.status == 201) {
                     this.successfulNewVehicle()
-                    console.log(response)
                 }
                 }).catch((error) => {
-                    this.conflitSolver(error.message);
+                    this.conflitSolver(error.message, "new");
                 })
 		},
-		removeVehicle() {
+        editVehicleDetails(vehicle) {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            let licensePlate = document.getElementById("editVehicleLicense").value
+            let payloadCapacity = document.getElementById("editVehicleCapacity").value;
+            let resourceUsage = document.getElementById("editVehicleResources").value;
+            let averageEmissions = document.getElementById("editVehicleEmissions").value;
+            let fuelType = '';
+            if (this.selectedVehicle.fuel_type == "PETROL") {
+                if(document.getElementById("editFuelTypeDiesel").checked) { fuelType = "DIESEL" }
+                else if(document.getElementById("editFuelTypeElectricity").checked) { fuelType = "ELECTRICITY" }
+                else { fuelType = "PETROL" }
+            } else if (this.selectedVehicle.fuel_type == "DIESEL") {
+                if(document.getElementById("editFuelTypePetrol").checked) { fuelType = "PETROL" }
+                else if(document.getElementById("editFuelTypeElectricity").checked) { fuelType = "ELECTRICITY" }
+                else { fuelType = "DIESEL" }
+            } else if (this.selectedVehicle.fuel_type == "ELECTRICITY") {
+                if(document.getElementById("editFuelTypePetrol").checked) { fuelType = "PETROL" }
+                else if(document.getElementById("editFuelTypeDiesel").checked) { fuelType = "DIESEL" }
+                else { fuelType = "ELECTRICITY" }
+            }
+            if (accessToken && userId){
+                let request
+                if (this.selectedVehicle == licensePlate) {
+                    request = {payload_capacity: payloadCapacity, resource_usage: resourceUsage, average_emissions: averageEmissions, fuel_type: fuelType}
+                } else {
+                    request = {license_plate: licensePlate, payload_capacity: payloadCapacity, resource_usage: resourceUsage, average_emissions: averageEmissions, fuel_type: fuelType}
+                }
+                http.put(`/transporter/${userId}/vehicles/${vehicle}`, JSON.stringify(request), headers)
+                .then((response) => {
+                    if (response.status == 201) {
+						this.successfulEditVehicle()
+                    }
+                    }).catch((error) => {
+                        this.conflitSolver(error.message, "edit");
+                        console.log("Failure!")
+                    })
+            }
+        },
+        editVehicleCenter(vehicle, center) {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+            if (accessToken && userId){
+                http.put(`/transporter/${userId}/vehicles/${vehicle.id}`, JSON.stringify({
+					distribution_center: center.id,
+				}), headers)
+                .then((response) => {
+                    if (response.status == 201) {
+						this.selectedVehicle.distribution_center = center;
+                        this.successfulToast("Alterado! O centro de distribuição do veículo foi alterado com sucesso.");
+                    }
+                    }).catch((error) => {
+                        console.log(error);
+                        console.log("Failure!")
+                    })
+            }
+        },
+		removeVehicle(vehicle) {
 			let accessToken = JSON.parse(localStorage.getItem('accessToken'));
             let userId = JSON.parse(localStorage.getItem('userId'));
             const headers = {
@@ -493,29 +705,23 @@ export default {
                 }
             }
             if (accessToken && userId) {
-                http.delete(`/transporter/${userId}/vehicles/${2}`, headers)
+                http.delete(`/transporter/${userId}/vehicles/${vehicle}`, headers)
                     .then((response) => {
-                        if (response.status == 202) {
-                            /* AuthService.getUser().then((result) => {
-                                this.user.addresses = result.addresses;
-                            });
-                            this.successfulRemoveAddress()*/
-                            console.log("Success!") 
+                        console.log(response)
+                        if (response.status == 200) {
+                            this.successfulRemoveVehicle();
                         }
                     }).catch(error => {
-                        /* if (error.response.data.message == 'Address not found.') {
-                            this.addressHasOrders()
-                        } else { */
-                            console.log(error.response)
+                            console.log(error)
                         //} 
                     }) 
             }
 		},
         removeIsInvalid() {
             document.getElementById("newVehicleLicense").classList.remove("is-invalid");
+            document.getElementById("editVehicleLicense").classList.remove("is-invalid");
         }
-	}
-			
+	}	
 };
 </script>
 
