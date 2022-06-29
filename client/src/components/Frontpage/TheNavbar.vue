@@ -241,18 +241,20 @@ export default {
             }
         },  
         getUserCart() {
-            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken) {
-                http.get(`/user/${userId}/cart`, {
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`
-                    }
-                }).then(response => {
-                    if (response.status == 200) {
-                        this.cartItems = response.data.items;
-                    }
-                })
+            if (this.user.type == "CONSUMER") {
+                let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+                let userId = JSON.parse(localStorage.getItem('userId'));
+                if (accessToken) {
+                    http.get(`/user/${userId}/cart`, {
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`
+                        }
+                    }).then(response => {
+                        if (response.status == 200) {
+                            this.cartItems = response.data.items;
+                        }
+                    })
+                }
             }
         },  
         notificationsLength() {
