@@ -149,6 +149,7 @@ import { faCubes, faTruck, faXmark, faBox , faPlusMinus, faFilePen, faIndustry, 
 
 import http from "../../../http-common"
 
+import {useToast} from 'vue-toastification';
 
 library.add(faCubes);
 library.add(faTruck);
@@ -175,7 +176,6 @@ export default {
     element: Object,
   },
    created() {
-    console.log(this.element);
     this.getData(this.element);
     this.getMoreDetails();
   },
@@ -183,6 +183,7 @@ export default {
      this.verify();
   },
   data() {
+    const toast = useToast();
     return {
       active_el:1,
       date:String,
@@ -262,7 +263,8 @@ export default {
           }
           ]
         },
-      ]
+      ],
+      toast,
     }
   },
   methods:{
@@ -296,6 +298,8 @@ export default {
         JSON.stringify({ status: `${ sel.value }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}}).then(
           (result) => {
             this.$emit('updateStatus', true);
+            this.toast.success("O estado foi atualizado com sucesso!", {
+            position:"top-right", duration:10000})
           }
         );
     },
