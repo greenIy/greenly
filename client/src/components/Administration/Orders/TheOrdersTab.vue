@@ -151,7 +151,7 @@ export default {
     ],
     methods: {
       filterOrders: function () {
-        let i, value1, value2, td1, td2;
+        let i, value1, value2, value3, value4, value5, value6, td1, td2, td3, td4, td5, td6;
         let filter = document.getElementById("orders-input").value.toUpperCase();
         let table = document.getElementById("orders-table");
         let tr = table.getElementsByTagName("tr");
@@ -162,11 +162,23 @@ export default {
         for (i = 0; i < tr.length; i++) {
           td1 = tr[i].getElementsByTagName("td")[0]; //collumns u search for
           td2 = tr[i].getElementsByTagName("td")[1];
-          if (td1 || td2) {
+          td3 = tr[i].getElementsByTagName("td")[2]; 
+          td4 = tr[i].getElementsByTagName("td")[3];
+          td5 = tr[i].getElementsByTagName("td")[4]; 
+          td6 = tr[i].getElementsByTagName("td")[5];
+          if (td1 || td2 || td3 || td4 || td5 || td6) {
             value1 = td1.textContent || td1.innerText;
             value2 = td2.textContent || td2.innerText;
+            value3 = td3.textContent || td3.innerText;
+            value4 = td4.textContent || td4.innerText;
+            value5 = td5.textContent || td5.innerText;
+            value6 = td6.textContent || td6.innerText;
             if (value1.toUpperCase().indexOf(filter) > -1 || 
-                value2.toUpperCase().indexOf(filter) > -1 ) {
+                value2.toUpperCase().indexOf(filter) > -1 ||
+                value3.toUpperCase().indexOf(filter) > -1 || 
+                value4.toUpperCase().indexOf(filter) > -1 ||
+                value5.toUpperCase().indexOf(filter) > -1 || 
+                value6.toUpperCase().indexOf(filter) > -1  ) {
               tr[i].style.display = "";
             } else {
               tr[i].style.display = "none";
@@ -269,7 +281,7 @@ export default {
 
 
   .bg-309c76 {
-    background-color: #309c76;
+    background-color: #5e9f88;
   }
 
   .bg-secondary {

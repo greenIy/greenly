@@ -1,5 +1,9 @@
 <template>
   <div class="container-fluid px-5 tab-pane fade" id="products-tab" role="tabpanel" aria-labelledby="products-pill">
+    <!-- Removal modals -->
+    <TheCategoryRemoval :currentCategoryName="this.currentCategoryName" :currentCategoryId="this.currentCategoryId"/>
+    <TheProductRemoval :currentProductName="this.currentProductName" :currentProductId="this.currentProductId" />
+
     <!--Tiny overview cards-->
     <div class="row px-5">
 
@@ -27,9 +31,9 @@
 
 
               <div class="input-group w-25 rounded-3">
-                <input class="form-control bg-light border-success border-end-0 super-round" type="search"
+                <input id="categories-input" class="form-control bg-light border-success border-end-0 super-round" type="search"
                   placeholder="Nome, família...">
-                <span class="input-group-text bg-light border-success border-start-0 super-round">
+                <span class="input-group-text bg-light border-success border-start-0 super-round" @click="this.filterCategories()">
                   <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l" /></span>
               </div>
 
@@ -37,7 +41,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive" id="categories-table" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -74,8 +78,8 @@
                         </svg>
                       </a>
                       <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
-                        <a class="dropdown-item" href="#">Ver detalhes</a>
-                        <a class="dropdown-item text-danger" href="#">Remover</a>
+                        <!--a class="dropdown-item" href="#">Ver detalhes</a-->
+                        <a @click="this.getCurrentCategory(category.name, category.id)" class="dropdown-item text-danger" data-bs-target="#category-removal" data-bs-toggle="modal">Remover</a>
                       </div>
                     </div>
                   </td>
@@ -98,9 +102,9 @@
 
 
               <div class="input-group w-25 rounded-3">
-                <input class="form-control bg-light border-success border-end-0 super-round" type="search"
+                <input id="products-input" class="form-control bg-light border-success border-end-0 super-round" type="search"
                   placeholder="Nome, categoria, fornecedor...">
-                <span class="input-group-text bg-light border-success border-start-0 super-round">
+                <span class="input-group-text bg-light border-success border-start-0 super-round" @click="this.filterProducts()">
                   <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l" /></span>
               </div>
 
@@ -108,7 +112,7 @@
           </nav>
 
           <!-- table  -->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive" id="products-table" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -145,8 +149,8 @@
                         </svg>
                       </a>
                       <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
-                        <a class="dropdown-item" href="#">Ver detalhes</a>
-                        <a class="dropdown-item text-danger" href="#">Remover</a>
+                        <!--a class="dropdown-item" href="#">Ver detalhes</a-->
+                        <a @click="this.getCurrentProduct(product.name, product.id)" class="dropdown-item text-danger" data-bs-target="#product-removal" data-bs-toggle="modal">Remover</a>
                       </div>
                     </div>
                   </td>
@@ -313,19 +317,27 @@
 
 <script>
 import TheOverviewCard from '../TheOverviewCard.vue';
+import TheCategoryRemoval from './TheCategoryRemoval.vue';
+import TheProductRemoval from './TheProductRemoval.vue';
+
+import http from "../../../../http-common";
 
 export default {
   name: 'TheProductsTab',
   components: {
     TheOverviewCard,
+    TheCategoryRemoval,
+    TheProductRemoval
   },
   data() {
     return {
       categoriesTitle: 'Categorias',
       productsTitle: 'Produtos',
       requestsTitle: 'Pedidos',
-      currentCategory: {},
-      currentProduct: {},
+      currentCategoryName: '',
+      currentCategoryId: 0,
+      currentProductName: '',
+      currentProductId: 0,
       currentRequest: {}
     };
   },
@@ -338,13 +350,67 @@ export default {
     'amountRequests'
   ],
   methods: {
-    getCurrentCategory: function (categoryId) {
-      let response = http.get(`/store/categories/${categoryId}`);
-      this.currentCategory = response.data;
+    filterCategories: function () {
+        let i, value1, value2, value3, td1, td2, td3;
+        let filter = document.getElementById("categories-input").value.toUpperCase();
+        let table = document.getElementById("categories-table");
+        let tr = table.getElementsByTagName("tr");
+
+        console.log(filter);
+        console.log(tr);
+
+        for (i = 0; i < tr.length; i++) {
+          td1 = tr[i].getElementsByTagName("td")[0]; //collumns u search for
+          td2 = tr[i].getElementsByTagName("td")[1];
+          td3 = tr[i].getElementsByTagName("td")[2];
+          if (td1 || td2 || td3) {
+            value1 = td1.textContent || td1.innerText;
+            value2 = td2.textContent || td2.innerText;
+            value3 = td3.textContent || td3.innerText;
+            if (value1.toUpperCase().indexOf(filter) > -1 || 
+                value2.toUpperCase().indexOf(filter) > -1 ||
+                value3.toUpperCase().indexOf(filter) > -1 ) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            } 
+          }      
+        }
+      },
+      filterProducts: function () {
+        let i, value1, value2, value3, td1, td2, td3;
+        let filter = document.getElementById("products-input").value.toUpperCase();
+        let table = document.getElementById("products-table");
+        let tr = table.getElementsByTagName("tr");
+
+        console.log(filter);
+        console.log(tr);
+
+        for (i = 0; i < tr.length; i++) {
+          td1 = tr[i].getElementsByTagName("td")[0]; //collumns u search for
+          td2 = tr[i].getElementsByTagName("td")[1];
+          td3 = tr[i].getElementsByTagName("td")[2];
+          if (td1 || td2 || td3) {
+            value1 = td1.textContent || td1.innerText;
+            value2 = td2.textContent || td2.innerText;
+            value3 = td3.textContent || td3.innerText;
+            if (value1.toUpperCase().indexOf(filter) > -1 || 
+                value2.toUpperCase().indexOf(filter) > -1 ||
+                value3.toUpperCase().indexOf(filter) > -1 ) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            } 
+          }      
+        }
+      },
+    getCurrentCategory: function (categoryName, categoryId) {
+      this.currentCategoryName = categoryName;
+      this.currentCategoryId = categoryId;
     },
-    getCurrentProduct: function (productId) {
-      let response = http.get(`/store/products/${productId}`);
-      this.currentCategory = response.data;
+    getCurrentProduct: function (productName, productId) {
+      this.currentProductName = productName;
+      this.currentProductId = productId;
     },
     /**
      * 
@@ -399,7 +465,7 @@ export default {
         color: #226d5393;
     }
   .bg-309c76 {
-    background-color: #309c76;
+    background-color: #5e9f88;
   }
 
   .bg-secondary {

@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button v-if="this.currentUser.type == 'CONSUMER'" class="btn bg-226d53 text-light btn-sm"
+                    <button v-if="this.currentUser.type == 'CONSUMER'" @click="this.okcaralho()" class="btn bg-226d53 text-light btn-sm"
                         data-bs-target="#user-orders" data-bs-toggle="modal" data-bs-dismiss="modal">Encomendas</button>
                     <button v-if="this.currentUser.type == 'SUPPLIER' || this.currentUser.type == 'TRANSPORTER'"
                         class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-company" data-bs-toggle="modal"
@@ -95,6 +95,88 @@
             </div>
         </div>
     </div>
+
+        <!--Orders-->
+        <div class="modal fade" id="user-orders" aria-hidden="true" aria-labelledby="user-orders" tabindex="-1"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="user-orders">Encomendas de {{ this.currentUser.first_name }}
+                            {{ this.currentUser.last_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        TBC
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-details"
+                            data-bs-toggle="modal" data-bs-dismiss="modal">Informações pessoais</button>
+                        <button v-if="this.currentUser.type == 'SUPPLIER' || this.currentUser.type == 'TRANSPORTER'"
+                            class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-company"
+                            data-bs-toggle="modal" data-bs-dismiss="modal">Empresa</button>
+                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-addresses"
+                            data-bs-toggle="modal" data-bs-dismiss="modal">Moradas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Orders-->
+
+        <!--Company-->
+        <div class="modal fade" id="user-company" aria-hidden="true" aria-labelledby="user-company" tabindex="-1"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="user-company">Empresa de {{ this.currentUser.first_name }}
+                            {{ this.currentUser.last_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        TBC
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-details" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Informações pessoais</button>
+                        <button v-if="this.currentUser.type == 'CONSUMER'" class="btn bg-226d53 text-light btn-sm"
+                            data-bs-target="#user-orders" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Encomendas</button>
+                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-addresses" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Moradas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Company-->
+
+        <!--Addresses-->
+        <div class="modal fade" id="user-addresses" aria-hidden="true" aria-labelledby="user-addresses" tabindex="-1"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="user-addresses">Moradas de {{ this.currentUser.first_name }}
+                            {{ this.currentUser.last_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        TBC
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-details" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Informações pessoais</button>
+                        <button v-if="this.currentUser.type == 'CONSUMER'" class="btn bg-226d53 text-light btn-sm"
+                            data-bs-target="#user-orders" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Encomendas</button>
+                        <button v-if="this.currentUser.type == 'SUPPLIER' || this.currentUser.type == 'TRANSPORTER'"
+                            class="btn bg-226d53 text-light btn-sm" data-bs-target="#user-company" data-bs-toggle="modal"
+                            data-bs-dismiss="modal">Empresa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Addresses-->
 </div>
 </template>
 
@@ -102,14 +184,14 @@
 import { useToast } from "vue-toastification";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPen, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
-library.add(faPen, faFloppyDisk, faXmark);
+import { faPen, faFloppyDisk, faXmark, faTruckFast } from '@fortawesome/free-solid-svg-icons';
+library.add(faPen, faFloppyDisk, faXmark, faTruckFast);
 
 import http from "../../../../http-common";
 import AuthService from "../../../router/auth";
 
 export default {
-    name: 'ThePersonalInfoModal',
+    name: 'TheUserManagement',
     components: {},
     data() {
         const toast = useToast();

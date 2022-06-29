@@ -19,26 +19,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <!--Admin pills-->
                     <TheDashboardPills />
-
-                    <!--div class="mb-2 mb-lg-0">
-                      <router-link :to="{ name: 'admin', params: { id : 'panoramica' } }" class="text-decoration-none">
-                        <h2 role="button" class="mb-0 d-inline me-3" :class="{'text-light': isGeneralTab, 'text-309c76 btn-lg' : !isGeneralTab}">Panorâmica</h2>
-                      </router-link>
-
-                      <router-link :to="{ name: 'admin', params: { id : 'utilizadores' } }" class="text-decoration-none">
-                        <h2 role="button" class="mb-0 d-inline me-3" :class="{'text-light': isUsersTab, 'text-309c76 btn-lg' : !isUsersTab}">Utilizadores</h2>
-                      </router-link>
-
-                      <router-link :to="{ name: 'admin', params: { id : 'produtos' } }" class="text-decoration-none">
-                      <h2 role="button" class="mb-0 d-inline me-3" :class="{'text-light': isProductsTab, 'text-309c76 btn-lg' : !isProductsTab}">Produtos</h2>
-                      </router-link>
-                      
-                      <router-link :to="{ name: 'admin', params: { id : 'encomendas' } }" class="text-decoration-none">
-                        <h2 role="button" class="mb-0 d-inline me-3" :class="{'text-light': isOrdersTab, 'text-309c76 btn-lg' : !isOrdersTab}">Encomendas</h2>
-                      </router-link>
-                    </div-->
-
-                  <!--Tab creation buttons-->
+                    
                   <div class="mb-2 mb-lg-0">
                     <button class="btn btn-success btn-lg bg-309c76 me-2 my-0" data-bs-target="#admin-registration" data-bs-toggle="modal">Criar administrador</button>
                     <button class="btn btn-success btn-lg bg-309c76 mx-2 my-0" data-bs-target="#category-creation" data-bs-toggle="modal">Criar categoria</button>
@@ -145,7 +126,7 @@ export default {
       this.amountCategories = response.data.length;
     },
     async getProducts() {
-      let response = await http.get("/store/products");
+      let response = await http.get("/store/products?include_unbuyable=true");
       this.products = response.data.products;
       this.amountProducts = response.data.total_products;
     },
@@ -186,11 +167,11 @@ export default {
   }
 
    .bg-309c76 {
-    background-color: #309c76;
+    background-color: #5e9f88;
   }
 
   .text-309c76{
-    color: #309c76;
+    color: #5e9f88;
   }
 
   .text-309c76:hover{

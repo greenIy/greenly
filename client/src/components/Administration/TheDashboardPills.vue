@@ -26,7 +26,7 @@ export default {
 
 <style scoped>
   .nav-link{
-    color: #309c76;
+    color: #5e9f88;
     margin-top: 10px;
   }
 .nav-link:hover{

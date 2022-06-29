@@ -1,10 +1,10 @@
 <template>
   <div class="container-fluid px-5 tab-pane fade" id="users-tab" role="tabpanel" aria-labelledby="users-pill">
     <!--User info modals-->
-    <ThePersonalInfoModal :currentUser='this.currentUser' />
-    <TheOrders :currentUser='this.currentUser' />
-    <TheCompanyModal :currentUser='this.currentUser' />
-    <TheAddressesModal :currentUser='this.currentUser' />
+    <TheUserManagement :currentUser='this.currentUser' />
+
+    <!-- Removal modal -->
+    <TheUserRemoval :currentUser='this.currentUser' />
 
     <!--Users overview card-->
     <div class="row px-5">
@@ -24,16 +24,16 @@
 
               <!--Search bar-->
               <div class="input-group w-25 rounded-3">
-                <input class="form-control bg-light border-success border-end-0 super-round" type="search"
+                <input id="users-input" class="form-control bg-light border-success border-end-0 super-round" type="search"
                   placeholder="Nome, tipo, distrito...">
-                <span class="input-group-text bg-light border-success border-start-0 super-round">
+                <span class="input-group-text bg-light border-success border-start-0 super-round" @click="this.filterUsers()">
                   <font-awesome-icon :icon="['fa', 'magnifying-glass']" size="l" /></span>
               </div>
             </div>
           </nav>
 
           <!--Users table-->
-          <div class="table-responsive" style="max-height: 400px;">
+          <div class="table-responsive" id="users-table" style="max-height: 400px;">
             <table class="table text-nowrap px-3">
               <thead class="text-uppercase">
                 <tr>
@@ -78,9 +78,8 @@
                         </svg>
                       </a>
                       <div class="dropdown-menu" aria-labelledby="dropdownTeamOne">
-                        <a @click="this.getCurrentUser(user.id)" class="dropdown-item" data-bs-target="#user-details"
-                          data-bs-toggle="modal">Ver detalhes</a>
-                        <a class="dropdown-item text-danger" href="#">Remover</a>
+                        <a @click="this.getCurrentUser(user.id)" class="dropdown-item" data-bs-target="#user-details"  data-bs-toggle="modal">Ver detalhes</a>
+                        <a @click="this.getCurrentUser(user.id)" data-bs-target="#user-removal" class="dropdown-item text-danger"  data-bs-toggle="modal">Remover</a>
                       </div>
                     </div>
                   </td>
@@ -96,10 +95,8 @@
 
 <script>
 import TheOverviewCard from '../TheOverviewCard.vue';
-import ThePersonalInfoModal from './ThePersonalInfoModal.vue';
-import TheOrders from './TheOrders.vue';
-import TheCompanyModal from './TheCompanyModal.vue';
-import TheAddressesModal from './TheAddressesModal.vue';
+import TheUserManagement from './TheUserManagement.vue';
+import TheUserRemoval from './TheUserRemoval.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
@@ -111,10 +108,8 @@ export default {
   name: 'TheUsersTab',
   components: {
     TheOverviewCard,
-    ThePersonalInfoModal,
-    TheOrders,
-    TheCompanyModal,
-    TheAddressesModal
+    TheUserManagement,
+    TheUserRemoval
 },
   data() {
     return {
@@ -128,6 +123,33 @@ export default {
     'increment',
   ],
   methods: {
+    filterUsers: function () {
+        let i, value1, value2, value3, td1, td2, td3;
+        let filter = document.getElementById("users-input").value.toUpperCase();
+        let table = document.getElementById("users-table");
+        let tr = table.getElementsByTagName("tr");
+
+        console.log(filter);
+        console.log(tr);
+
+        for (i = 0; i < tr.length; i++) {
+          td1 = tr[i].getElementsByTagName("td")[0]; //collumns u search for
+          td2 = tr[i].getElementsByTagName("td")[1];
+          td3 = tr[i].getElementsByTagName("td")[2];
+          if (td1 || td2 || td3) {
+            value1 = td1.textContent || td1.innerText;
+            value2 = td2.textContent || td2.innerText;
+            value3 = td3.textContent || td3.innerText;
+            if (value1.toUpperCase().indexOf(filter) > -1 || 
+                value2.toUpperCase().indexOf(filter) > -1 ||
+                value3.toUpperCase().indexOf(filter) > -1 ) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            } 
+          }      
+        }
+      },
     getCurrentUser: function (targetUserId) {
         let accessToken = JSON.parse(localStorage.getItem('accessToken'));
         let userId = JSON.parse(localStorage.getItem('userId'));
@@ -143,10 +165,6 @@ export default {
             .then((response) => {
               if (response.status == 200) {
                 this.currentUser = response.data;
-
-                console.log("current user passado ao modal:");
-                        console.log(this.currentUser.id);
-                        console.log(this.currentUser.first_name);
               }
             }).catch((error) => {
               console.log(error.response.data);
@@ -180,7 +198,7 @@ export default {
 
 
   .bg-309c76 {
-    background-color: #309c76;
+    background-color: #5e9f88;
   }
 
   .bg-secondary {

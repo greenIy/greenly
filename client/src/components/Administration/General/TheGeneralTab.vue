@@ -109,7 +109,7 @@ export default {
 
 
   .bg-309c76 {
-    background-color: #309c76;
+    background-color: #5e9f88;
   }
 
   .bg-secondary {

@@ -71,4 +71,8 @@ export default {
 .fa-smog {
     color: #226d53;
 }
+
+.bg-secondary {
+    background-color: rgb(177, 177, 177)!important;
+  }
 </style>
