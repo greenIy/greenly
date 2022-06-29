@@ -148,7 +148,7 @@
             </div>
         </div>
         <div class="align-self-center nav-links mt-2 mb-2">
-            <router-link v-if="user.type === 'CONSUMER'" to="/carrinho">
+            <router-link v-if="this.userIsLoggedIn && user.type === 'CONSUMER'" to="/carrinho">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
             </router-link>
         </div>
