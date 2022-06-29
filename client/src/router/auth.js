@@ -45,10 +45,27 @@ export default class AuthService {
         }
 
         /**
+         * Permite obter informação sobre dado utilizador caso o utilizador loggado tenha permissões para tal
+         */
+         static async getTargetUser(targetUserId) {
+            let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+            let userId = JSON.parse(localStorage.getItem('userId'));
+            
+            if (accessToken && userId){
+                let response = await http.get(`/user/${targetUserId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
+                if (response.status == 200) {
+                    return response.data
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        /**
          * Permite decidir qual será o destino do utilizador durante a navegação consoante o seu estado de autenticação
          */
         static async authenticate(to, from, next) {
-            const publicPages = ["/produtos", "/produto", "/equipa", "/fornecedores"]
+            const publicPages = ["/produtos", "/produto", "/equipa", "/fornecedores", "/transportadores"]
                 
             // TODO: Adicionar páginas relativas à autenticação por redes sociais
             // Páginas que são inacessíveis a utilizadores autenticados 

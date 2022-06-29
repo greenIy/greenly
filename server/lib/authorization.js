@@ -52,9 +52,9 @@ async function check(req, res, next) {
 
         /* Supply Routes */
         "/supplier/:userId/inventory":                                  "ALL_SUPPLIES",
-        "/supplier/:userId/inventory/:itemId":                          "SINGLE_SUPPLY",
-        "/supplier/:userId/inventory/:itemId/transports":               "ALL_SUPPLY_TRANSPORTS",
-        "/supplier/:userId/inventory/:itemId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT"
+        "/supplier/:userId/inventory/:supplyId":                          "SINGLE_SUPPLY",
+        "/supplier/:userId/inventory/:supplyId/transports":               "ALL_SUPPLY_TRANSPORTS",
+        "/supplier/:userId/inventory/:supplyId/transports/:transporterId":  "SINGLE_SUPPLY_TRANSPORT"
         
         
     }
@@ -462,12 +462,34 @@ async function check(req, res, next) {
             break;
 
         case "SINGLE_SUPPLY":
-        case "ALL_SUPPLY_TRANSPORTS":
-        case "SINGLE_SUPPLY_TRANSPORT":
 
             // This is valid for: GET, PUT, POST, DELETE
             // Only the supplier and administrator can manipulate a specific supply and its transport conditions
 
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
+
+            break;
+
+        case "ALL_SUPPLY_TRANSPORTS":
+
+            // This is valid for: GET, PUT, POST, DELETE
+            // Only the supplier and administrator can manipulate a specific supply and its transport conditions
+            if (
+                ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
+                (isAdministrator(req.user))) {
+                    return next()
+                }
+
+            break;
+
+        case "SINGLE_SUPPLY_TRANSPORT":
+
+            // This is valid for: GET, PUT, POST, DELETE
+            // Only the supplier and administrator can manipulate a specific supply and its transport conditions
             if (
                 ((req.params.userId == req.user.id) && isSupplier(req.user)) ||
                 (isAdministrator(req.user))) {

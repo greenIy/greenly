@@ -27,6 +27,8 @@
 import Draggable from "vuedraggable";
 import Order from "@/components/Transporter/Order.vue";
 
+import {useToast} from 'vue-toastification';
+
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTruck , faCircleCheck , faClock, faTruckRampBox, faHouseSignal } from "@fortawesome/free-solid-svg-icons";
 
@@ -48,6 +50,7 @@ export default {
     receiveData: Array,
   },
   data() {
+    const toast = useToast();
     return {
       columns: [
          {
@@ -86,6 +89,7 @@ export default {
           orders: []
         },
       ],
+      toast,
     };
   },
   mounted() {
@@ -142,7 +146,7 @@ export default {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
       if (valid) {
         http.put(`/store/orders/${ evt.draggedContext.element.id }/${ evt.draggedContext.element.item.id }`, 
-        JSON.stringify({ status: `${ next }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}});
+          JSON.stringify({ status: `${ next }` }), { headers: {"Authorization" : `Bearer ${ accessToken }`}});
       }
 
       return valid;

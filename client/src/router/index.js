@@ -20,6 +20,13 @@ const routes = [
     },
   },
   {
+    path: '/administracao',
+    name: 'admin',
+    component() {
+      return import('../views/AdminView.vue');
+    },
+  },
+  {
     path: '/produtos',
     name: 'produtos',
     // route level code-splitting
@@ -154,6 +161,13 @@ const routes = [
     name: 'suppliers',
     component() {
       return import(/* webpackChunkName: "suppliers" */ '../views/SuppliersView.vue');
+    },
+  },
+  {
+    path: '/transportadores',
+    name: 'transportadores',
+    component() {
+      return import(/* webpackChunkName: "transportadores" */ '../views/PartnersTransportersView.vue');
     },
   }
 ];

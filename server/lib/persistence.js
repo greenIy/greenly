@@ -700,7 +700,8 @@ async function getAllProducts(limit = 50,
                               keywords,
                               sort,
                               price_range,
-                              supplier) {
+                              supplier,
+                              include_unbuyable) {
 
 
     let filterSelection = {}
@@ -877,6 +878,9 @@ async function getAllProducts(limit = 50,
         if (product.Supply.length > 0) {
             product.lowest_price = parseFloat(calcLowestPrice(product.Supply).toFixed(2))
             product.highest_price = parseFloat(calcHighestPrice(product.Supply).toFixed(2))
+        } else {
+            product.lowest_price = 0
+            product.highest_price = 0
         }
 
         // Obtaining product thumbnail
@@ -898,11 +902,18 @@ async function getAllProducts(limit = 50,
     const minPrice = price_range.min || 0;
     const maxPrice = price_range.max || Number.POSITIVE_INFINITY;
 
-    // Filtering products based on price
-    products = products.filter((product) =>
-        product.lowest_price > Number(minPrice) &&
-        product.lowest_price < Number(maxPrice))
-
+    if (include_unbuyable) {
+        // Filtering products based on price
+        products = products.filter((product) =>
+            product.lowest_price >= Number(minPrice) &&
+            product.lowest_price < Number(maxPrice))
+    } else {
+        // Filtering products based on price
+        products = products.filter((product) =>
+            product.lowest_price > Number(minPrice) &&
+            product.lowest_price < Number(maxPrice))
+    }
+        
     // Get total product count
     let totalProducts = products.length
 
@@ -4661,19 +4672,21 @@ async function createProduct(
 
         // Create the product attributes
         
-        if (attributes.length > 0) {
-            await Promise.all(attributes.map(async (attribute, index) => {
+        if (attributes) {
+            if (attributes.length > 0) {
+                await Promise.all(attributes.map(async (attribute, index) => {
 
-                await prisma.productAttribute.create({
-                    data: {
-                        id: index + 1,
-                        product: newProduct.id,
-                        title: attribute.title,
-                        content: attribute.content
-                    }
-                })
+                    await prisma.productAttribute.create({
+                        data: {
+                            id: index + 1,
+                            product: newProduct.id,
+                            title: attribute.title,
+                            content: attribute.content
+                        }
+                    })
 
-            }))
+                }))
+            }
         }
 
         return newProduct.id

@@ -11,7 +11,8 @@
             </div>
             <div class="cart-info__item-info">
                 <h3 class="cart-info__item-title">{{ item.product.name }}</h3>
-                <p class="cart-info__item-price">€ {{ item.price * item.quantity }}</p>
+                <p class="cart-info__item-price">Preço: € {{ item.price * item.quantity }}</p>
+                <p class="cart-info__item-price">Envio: € {{ item.transport_price }}</p>
                 <p class="cart-info__item-quantity">Quantidade: {{ item.quantity }}</p>
             </div>
 
