@@ -258,7 +258,7 @@ export default {
             }
         },  
         getUserCart() {
-            if (this.user.type == "CONSUMER") {
+            if (this.userIsLoggedIn && this.user.type == "CONSUMER") {
                 let accessToken = JSON.parse(localStorage.getItem('accessToken'));
                 let userId = JSON.parse(localStorage.getItem('userId'));
                 if (accessToken) {
