@@ -102,7 +102,6 @@ export default {
   },
   methods: {
     updateProducts(){
-      console.log("oi");
       this.$emit("getProducts");
     }, 
     removed(productId){

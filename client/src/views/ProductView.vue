@@ -235,7 +235,8 @@ export default {
     idWarehouse: Number
   },
   mounted() {
-    this.getWishlist()
+    this.getUserInfo();
+    this.getWishlist();
   },
   data() {
     const toast = useToast()
@@ -249,8 +250,8 @@ export default {
         contain: true,
         imagesLoaded: true,
         autoPlay: 3000,
-        pauseAutoPlayOnHover: true
-
+        pauseAutoPlayOnHover: true,
+        userIsLoggedIn: this.$store.getters.getState,
       },
       userIsLoggedIn: this.$store.getters.getState,
       user: {
@@ -389,6 +390,10 @@ export default {
             })
 
         }
+    },
+    getUserInfo() {
+      this.user = this.$store.getters.getUser
+      return this.user
     },
     async getInfo() {
       this.loading = true;
