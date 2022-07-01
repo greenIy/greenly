@@ -50,7 +50,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>Quantidade</td>
-                                                        <td class="text-end">{{ item.quanity }}</td>
+                                                        <td class="text-end">{{ item.quantity }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Preço</td>
@@ -294,7 +294,6 @@ export default {
                 http.get(`/supplier/${userId}/inventory`, headers)
                 .then((response) => {
                     if (response.status == 200) {
-                        console.log(response.data)
                         this.inventory = response.data;
 						this.calculateInventoryLength()
                         this.initMaps()
