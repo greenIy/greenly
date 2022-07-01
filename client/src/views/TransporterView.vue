@@ -29,9 +29,9 @@
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
                       </div>
                     </div>
-                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==2 && this.$route.name == 'transportador'"><DistributionCenters :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==3 && this.$route.name == 'transportador'"><Vehicles :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador_centros_dist'"><DistributionCenters :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador_veiculos'"><Vehicles :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
@@ -91,6 +91,19 @@ export default {
     },
     activate:function(el){
       this.active_el=el;
+      switch(this.active_el) {
+        case 1:
+          this.$router.push({ name: 'transportador'});
+          break;
+        case 2:
+          this.$router.push({ name: 'transportador_centros_dist'});
+          break;
+        case 3:
+          this.$router.push({ name: 'transportador_veiculos'});
+          break;
+        default:
+          this.$router.push({ name: 'transportador'});
+      }
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'transportador') {

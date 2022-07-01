@@ -156,7 +156,7 @@ const routes = [
     },
   },
   {
-    path: '/painel',
+    path: '/painel/encomendas',
     name: 'transportador',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
@@ -165,6 +165,20 @@ const routes = [
   {
     path: '/painel/historico',
     name: 'transportador_historico',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/centros',
+    name: 'transportador_centros_dist',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/veiculos',
+    name: 'transportador_veiculos',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
     },
