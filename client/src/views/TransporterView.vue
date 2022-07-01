@@ -5,16 +5,16 @@
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'transportador' || this.$route.name == 'transportador_historico' }">Encomendas</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Centros de Distribuição</a>
+                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : this.$route.name == 'transportador_centros_dist' }">Centros de Distribuição</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Veículos</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : this.$route.name == 'transportador_veiculos' }">Veículos</a>
                     </li>
                     </ul>
-                    <div v-if="active_el==1" class="d-flex align-items-center">
+                    <div v-if="this.$route.name == 'transportador' || this.$route.name == 'transportador_historico'" class="d-flex align-items-center">
                       <div class=" d-inline-block ms-5"> 
                         <div class="input-group">
                           <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @input="onchange(this.search)">
@@ -69,7 +69,7 @@ export default {
       user: {
         accept: false,
       },
-      active_el:1,
+      active_el: 1,
       receiveData: [],
     };
   },
