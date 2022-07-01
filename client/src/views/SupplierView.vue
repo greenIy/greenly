@@ -30,9 +30,9 @@
                       </div>
                     </div>
 
-                    <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==2 && this.$route.name == 'fornecedor'"><Warehouses :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==3 && this.$route.name == 'fornecedor'"><Inventory :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor_armazens'"><Warehouses :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor_inventario'"><Inventory :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'fornecedor_historico'" :receiveData="receiveData"/>
             </div>
@@ -92,6 +92,19 @@ export default {
     },
     activate:function(el){
       this.active_el = el;
+      switch(this.active_el) {
+        case 1:
+          this.$router.push({ name: 'fornecedor'});
+          break;
+        case 2:
+          this.$router.push({ name: 'fornecedor_armazens'});
+          break;
+        case 3:
+          this.$router.push({ name: 'fornecedor_inventario'});
+          break;
+        default:
+          this.$router.push({ name: 'fornecedor'});
+      }
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'fornecedor') {
