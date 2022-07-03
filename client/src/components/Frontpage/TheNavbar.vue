@@ -434,4 +434,8 @@ export default {
     .black{
         color:black !important;
     }
+
+    a.router-link-active {
+        color: #5e9f88;
+    }
 </style>
