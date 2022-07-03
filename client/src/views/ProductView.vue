@@ -251,7 +251,6 @@ export default {
         imagesLoaded: true,
         autoPlay: 3000,
         pauseAutoPlayOnHover: true,
-        userIsLoggedIn: this.$store.getters.getState,
       },
       userIsLoggedIn: this.$store.getters.getState,
       user: {
