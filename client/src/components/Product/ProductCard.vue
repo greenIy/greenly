@@ -40,7 +40,7 @@
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" :for="`input_${product.id}`">
-                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
+                <input type="checkbox" v-model="compare" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
             </div>
           </form>
         </div>
@@ -163,8 +163,8 @@ export default {
       });
     },
     getUserInfo() {
-      this.user = this.$store.getters.getUser
-      return this.user
+      this.user = this.$store.getters.getUser;
+      return this.user;
     },
     compare(event){
       let query = Object.assign({}, this.$route.query);
