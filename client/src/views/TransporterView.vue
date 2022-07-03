@@ -5,16 +5,16 @@
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'transportador' || this.$route.name == 'transportador_historico' }">Encomendas</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Centros de Distribuição</a>
+                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : this.$route.name == 'transportador_centros_dist' }">Centros de Distribuição</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Veículos</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : this.$route.name == 'transportador_veiculos' }">Veículos</a>
                     </li>
                     </ul>
-                    <div v-if="active_el==1" class="d-flex align-items-center">
+                    <div v-if="this.$route.name == 'transportador' || this.$route.name == 'transportador_historico'" class="d-flex align-items-center">
                       <div class=" d-inline-block ms-5"> 
                         <div class="input-group">
                           <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @input="onchange(this.search)">
@@ -29,9 +29,9 @@
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
                       </div>
                     </div>
-                    <div v-if="active_el==1 && this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==2 && this.$route.name == 'transportador'"><DistributionCenters :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==3 && this.$route.name == 'transportador'"><Vehicles :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador_centros_dist'"><DistributionCenters :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'transportador_veiculos'"><Vehicles :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
@@ -69,7 +69,7 @@ export default {
       user: {
         accept: false,
       },
-      active_el:1,
+      active_el: 1,
       receiveData: [],
     };
   },
@@ -91,6 +91,19 @@ export default {
     },
     activate:function(el){
       this.active_el=el;
+      switch(this.active_el) {
+        case 1:
+          this.$router.push({ name: 'transportador'});
+          break;
+        case 2:
+          this.$router.push({ name: 'transportador_centros_dist'});
+          break;
+        case 3:
+          this.$router.push({ name: 'transportador_veiculos'});
+          break;
+        default:
+          this.$router.push({ name: 'transportador'});
+      }
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'transportador') {

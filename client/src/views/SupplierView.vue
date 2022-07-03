@@ -5,16 +5,16 @@
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-5 mt-4 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : active_el == 1 }">Encomendas</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'fornecedor' || this.$route.name == 'fornecedor_historico' }">Encomendas</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : active_el == 2 }">Armazéns</a>
+                        <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : this.$route.name == 'fornecedor_armazens' }">Armazéns</a>
                     </li>
                     <li role="button" class="nav-item">
-                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : active_el == 3 }">Inventário</a>
+                        <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : this.$route.name == 'fornecedor_inventario' }">Inventário</a>
                     </li>
                     </ul>
-                    <div v-if="active_el==1" class="d-flex align-items-center">
+                    <div v-if="this.$route.name == 'fornecedor' || this.$route.name == 'fornecedor_historico'" class="d-flex align-items-center">
                       <div class=" d-inline-block ms-5"> 
                         <div class="input-group">
                           <input type="text" v-model="search" class="form-control" placeholder="Procurar Encomenda" aria-label="" aria-describedby="basic-addon1" @input="onchange(this.search)">
@@ -30,9 +30,9 @@
                       </div>
                     </div>
 
-                    <div v-if="active_el==1 && this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==2 && this.$route.name == 'fornecedor'"><Warehouses :receiveData="receiveData" @updateStatus="updateStatus"/></div>
-                    <div v-if="active_el==3 && this.$route.name == 'fornecedor'"><Inventory :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor_armazens'"><Warehouses :receiveData="receiveData" @updateStatus="updateStatus"/></div>
+                    <div v-if="this.$route.name == 'fornecedor_inventario'"><Inventory :receiveData="receiveData" @updateStatus="updateStatus"/></div>
 
                     <History v-if="this.$route.name == 'fornecedor_historico'" :receiveData="receiveData"/>
             </div>
@@ -92,6 +92,19 @@ export default {
     },
     activate:function(el){
       this.active_el = el;
+      switch(this.active_el) {
+        case 1:
+          this.$router.push({ name: 'fornecedor'});
+          break;
+        case 2:
+          this.$router.push({ name: 'fornecedor_armazens'});
+          break;
+        case 3:
+          this.$router.push({ name: 'fornecedor_inventario'});
+          break;
+        default:
+          this.$router.push({ name: 'fornecedor'});
+      }
     },
     onchange(search) {
       if (search != undefined && search != '' && this.$route.name === 'fornecedor') {

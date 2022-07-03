@@ -107,32 +107,17 @@ const routes = [
     ]
   },
   {
-    path: '/painel',
-    name: 'fornecedor',
+    path: '/checkout',
+    name: 'checkout',
     component() {
-      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+      return import(/* webpackChunkName: "checkout" */ '../views/CheckoutView.vue');
     },
-    },
-    {
-      path: '/checkout',
-      name: 'checkout',
-      component() {
-        return import(/* webpackChunkName: "checkout" */ '../views/CheckoutView.vue');
-      },
-    },
-    {
-      path: '/sucesso',
-      name: 'sucesso',
-      component() {
-        return import(/* webpackChunkName: "sucesso" */ '../views/SuccessView.vue');
-    },
-
   },
   {
-    path: '/painel/historico',
-    name: 'fornecedor_historico',
+    path: '/sucesso',
+    name: 'sucesso',
     component() {
-      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+      return import(/* webpackChunkName: "sucesso" */ '../views/SuccessView.vue');
     },
   },
   {
@@ -143,7 +128,35 @@ const routes = [
     }
   },
   {
-    path: '/painel',
+    path: '/painel/encomendas',
+    name: 'fornecedor',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
+    path: '/painel/armazens',
+    name: 'fornecedor_armazens',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
+    path: '/painel/inventario',
+    name: 'fornecedor_inventario',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
+    path: '/painel/historico',
+    name: 'fornecedor_historico',
+    component() {
+      return import(/* webpackChunkName: "supplier" */ '../views/SupplierView.vue');
+    },
+  },
+  {
+    path: '/painel/encomendas',
     name: 'transportador',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
@@ -152,6 +165,20 @@ const routes = [
   {
     path: '/painel/historico',
     name: 'transportador_historico',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/centros',
+    name: 'transportador_centros_dist',
+    component() {
+      return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
+    },
+  },
+  {
+    path: '/painel/veiculos',
+    name: 'transportador_veiculos',
     component() {
       return import(/* webpackChunkName: "transporter" */ '../views/TransporterView.vue');
     },

@@ -40,7 +40,7 @@
           <form>
             <div class="form-group form-check">
               <label class="form-check-label product" :for="`input_${product.id}`">
-                <input type="checkbox" v-model="user.accept" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
+                <input type="checkbox" v-model="compare" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
             </div>
           </form>
         </div>
@@ -69,7 +69,8 @@ export default {
     productsToCompare: Array,
   },
   mounted() {
-    this.getWishlist()
+    this.getWishlist();
+    this.getUserInfo();
   },
   data() {
     const toast = useToast()
@@ -81,7 +82,8 @@ export default {
         accept: false,
       },
       wishlist: {},
-      imageLoaded: false
+      imageLoaded: false,
+      userIsLoggedIn: this.$store.getters.getState,
     };
   },
   methods: {
@@ -159,6 +161,10 @@ export default {
         icon: true,
         rtl: false
       });
+    },
+    getUserInfo() {
+      this.user = this.$store.getters.getUser;
+      return this.user;
     },
     compare(event){
       let query = Object.assign({}, this.$route.query);
