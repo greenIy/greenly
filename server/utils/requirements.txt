@@ -1,0 +1,5 @@
+Faker==13.3.0
+faker_commerce==1.0.3
+pick==1.2.0
+requests==2.22.0
+rich==12.0.1
