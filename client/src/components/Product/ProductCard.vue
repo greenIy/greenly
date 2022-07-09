@@ -1,11 +1,22 @@
 <template>
   <div class="product-card ml-2 mb-2 mr-2">
-    <div class="card-group card h-100 d-flex">
-      <div class="card h-100 hover-shadow d-flex">
-        <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
+    <div class="card h-100 hover-shadow d-flex">
+      <router-link
+        :to="'/produto/' + String(product.id)"
+        style="text-decoration: none; color: black"
+      >
         <div class="d-flex">
-          
-          <img class="img-fluid crop" :class="{'img-fluid': true, crop: true, hidden: !this.imageLoaded}" :src="product.thumbnail" alt="Imagem do produto" @load="this.imageLoaded = true"/>
+          <img
+            class="img-fluid crop"
+            :class="{
+              'img-fluid': true,
+              crop: true,
+              hidden: !this.imageLoaded,
+            }"
+            :src="product.thumbnail"
+            alt="Imagem do produto"
+            @load="this.imageLoaded = true"
+          />
 
           <content-loader
             v-if="!this.imageLoaded"
@@ -13,10 +24,10 @@
             :speed="1"
             animate="true"
             primaryColor="#f3f3f3"
-            secondaryColor="#b5b5b5">
+            secondaryColor="#b5b5b5"
+          >
             <rect x="0" y="0" rx="0" ry="0" width="222" height="250" />
           </content-loader>
-
         </div>
         <div class="card-body">
           <h5 class="card-title">{{ product.category.name }}</h5>
@@ -27,35 +38,62 @@
           </div>
           <p class="card-text text-truncate">{{ product.description }}</p>
         </div>
-        </router-link>
-        <div class="card-body py-0 position-relative mt-1 mb-2">
-         <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€ - {{ product.highest_price }}€</h4></span>
-        </div>
-        <div class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2">
-          <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="btnH fav">
-            <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="xs"/>
-            <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="xs" />
-            Favoritos
-          </button>
-          <form>
-            <div class="form-group form-check">
-              <label class="form-check-label product" :for="`input_${product.id}`">
-                <input type="checkbox" v-model="compare" :id="`input_${product.id}`" @click="compare($event)" class="form-check-input checkbox"/><span>Comparar Produto</span></label>
-            </div>
-          </form>
-        </div>
+      </router-link>
+      <div class="card-body py-0 position-relative mt-1 mb-2">
+        <span class="position-absolute bottom-0"
+          ><h4 class="card-text sticky-bottom">
+            {{ product.lowest_price }}€ - {{ product.highest_price }}€
+          </h4></span
+        >
+      </div>
+      <div
+        class="card-body py-0 div d-flex align-items-center justify-content-between fs-6 mb-2"
+      >
+        <button
+          v-if="userIsLoggedIn && user.type == 'CONSUMER'"
+          class="btnH fav"
+        >
+          <font-awesome-icon
+            v-if="isProductInWishlist(this.product)"
+            v-on:click="removeFromWishlist"
+            class="icons fa-cog text-danger"
+            :icon="['fa', 'heart']"
+            size="xs"
+          />
+          <font-awesome-icon
+            v-else
+            v-on:click="addToWishlist"
+            class="icons fa-cog"
+            :icon="['fa', 'heart']"
+            size="xs"
+          />
+          Favoritos
+        </button>
+        <form>
+          <div class="form-group form-check">
+            <label
+              class="form-check-label product"
+              :for="`input_${product.id}`"
+            >
+              <input
+                type="checkbox"
+                v-model="compare"
+                :id="`input_${product.id}`"
+                @click="compare($event)"
+                class="form-check-input checkbox"
+              /><span>Comparar Produto</span></label
+            >
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 <script>
-
-
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { ContentLoader } from "vue-content-loader"
-import http from "../../../http-common"
-
+import { ContentLoader } from "vue-content-loader";
+import http from "../../../http-common";
 
 library.add(faHeart);
 
@@ -73,11 +111,11 @@ export default {
     this.getUserInfo();
   },
   data() {
-    const toast = useToast()
+    const toast = useToast();
     return {
       toast,
       isActive: false,
-      quantity:0,
+      quantity: 0,
       user: {
         accept: false,
       },
@@ -88,66 +126,79 @@ export default {
   },
   methods: {
     getWishlist() {
-      let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
-                    if (response.status == 200) {
-                        this.wishlist = response.data
-                    }
-                })
-
+      let accessToken = JSON.parse(localStorage.getItem("accessToken"));
+      let userId = JSON.parse(localStorage.getItem("userId"));
+      if (accessToken) {
+        http
+          .get(`/user/${userId}/wishlist`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+          .then((response) => {
+            if (response.status == 200) {
+              this.wishlist = response.data;
             }
+          });
+      }
     },
     isProductInWishlist(product) {
-      var isProductIn = false
-      for (let produto = 0; produto < Object.keys(this.wishlist).length; produto++) {
+      var isProductIn = false;
+      for (
+        let produto = 0;
+        produto < Object.keys(this.wishlist).length;
+        produto++
+      ) {
         if (this.wishlist[produto].id == product.id) {
-          isProductIn = true
+          isProductIn = true;
         }
       }
-      return isProductIn
+      return isProductIn;
     },
     addToWishlist() {
-        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-        let userId = JSON.parse(localStorage.getItem('userId'));
-        if (accessToken){
-            http.post(`/user/${userId}/wishlist`, JSON.stringify(
-              {
-                product: this.product.id
-              }
-            ),{ headers: {"Authorization" : `Bearer ${accessToken}`} })
-            .then((response) => {
-                if (response.status == 201) {
-                  this.getWishlist()
-                }
-            }).catch((error) => {
-                console.log(error);
-                console.log("Failure!");
-            })
-
-        }
+      let accessToken = JSON.parse(localStorage.getItem("accessToken"));
+      let userId = JSON.parse(localStorage.getItem("userId"));
+      if (accessToken) {
+        http
+          .post(
+            `/user/${userId}/wishlist`,
+            JSON.stringify({
+              product: this.product.id,
+            }),
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          )
+          .then((response) => {
+            if (response.status == 201) {
+              this.getWishlist();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            console.log("Failure!");
+          });
+      }
     },
     removeFromWishlist() {
-        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-        let userId = JSON.parse(localStorage.getItem('userId'));
+      let accessToken = JSON.parse(localStorage.getItem("accessToken"));
+      let userId = JSON.parse(localStorage.getItem("userId"));
 
-        if (accessToken){
-            http.delete(`/user/${userId}/wishlist/${this.product.id}`,{ headers: {"Authorization" : `Bearer ${accessToken}`} })
-            .then((response) => {
-                if (response.status == 200) {
-                  this.successRemoveSingleItem()
-                  this.getWishlist()
-                }
-            }).catch((error) => {
-                console.log(error);
-                console.log("Failure!");
-            })
-
-        }
+      if (accessToken) {
+        http
+          .delete(`/user/${userId}/wishlist/${this.product.id}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+          .then((response) => {
+            if (response.status == 200) {
+              this.successRemoveSingleItem();
+              this.getWishlist();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            console.log("Failure!");
+          });
+      }
     },
-    successRemoveSingleItem(){
-        this.toast.success('O item foi removido com sucesso!', {
+    successRemoveSingleItem() {
+      this.toast.success("O item foi removido com sucesso!", {
         position: "top-right",
         timeout: 5000,
         closeOnClick: true,
@@ -159,53 +210,63 @@ export default {
         hideProgressBar: true,
         closeButton: "button",
         icon: true,
-        rtl: false
+        rtl: false,
       });
     },
     getUserInfo() {
       this.user = this.$store.getters.getUser;
       return this.user;
     },
-    compare(event){
+    compare(event) {
       let query = Object.assign({}, this.$route.query);
-      let compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length < 3;
+      let compareMoreThan2 =
+        document.querySelectorAll('input[type="checkbox"]:checked').length < 3;
 
-      if(this.$route.query.compare1 == this.product.id) {
+      if (this.$route.query.compare1 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
-        this.$emit('removeOneProduct', 0);
+        this.$emit("removeOneProduct", 0);
       } else if (this.$route.query.compare2 == this.product.id) {
         document.getElementById("input_" + this.product.id).checked = false;
-        this.$emit('removeOneProduct', 1);
-      } else if (compareMoreThan2){
+        this.$emit("removeOneProduct", 1);
+      } else if (compareMoreThan2) {
         if (!this.$route.query.compare1) {
-          this.$router.push({ query: Object.assign({}, query, { compare1: `${ this.product.id }`  }) });
+          this.$router.push({
+            query: Object.assign({}, query, { compare1: `${this.product.id}` }),
+          });
         } else if (!this.$route.query.compare2) {
           // it's only possible to compare products of same category
-          if (this.product.category.id == this.productsToCompare[0].category.id && this.product.id != this.productsToCompare[0].id) {
-            this.$router.push({ query: Object.assign({}, query, { compare2: `${ this.product.id }`  }) });
+          if (
+            this.product.category.id == this.productsToCompare[0].category.id &&
+            this.product.id != this.productsToCompare[0].id
+          ) {
+            this.$router.push({
+              query: Object.assign({}, query, {
+                compare2: `${this.product.id}`,
+              }),
+            });
           } else {
             document.getElementById("input_" + this.product.id).checked = false;
-            this.$emit('categoriesDiff', true);
+            this.$emit("categoriesDiff", true);
           }
         }
       }
 
-      compareMoreThan2 = document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
-      if(compareMoreThan2){
-        document.getElementsByClassName('checkbox').forEach(e => { 
-          if(!e.checked){
+      compareMoreThan2 =
+        document.querySelectorAll('input[type="checkbox"]:checked').length == 2;
+      if (compareMoreThan2) {
+        document.getElementsByClassName("checkbox").forEach((e) => {
+          if (!e.checked) {
             e.disabled = true;
           }
         });
       } else {
-        document.getElementsByClassName('checkbox').forEach(e => { 
+        document.getElementsByClassName("checkbox").forEach((e) => {
           e.disabled = false;
         });
       }
     },
-  }
+  },
 };
-
 </script>
 <style scoped>
 h4 {
@@ -216,9 +277,22 @@ h5 {
 }
 .card {
   margin: auto;
-  width: 14rem;
+  width: 16rem;
   font-size: 11px;
 }
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .card {
+    width: 58.4rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .card {
+    width: 23.3rem;
+  }
+}
+
 .card:hover {
   box-shadow: 1px 8px 10px #d9d9d9;
 }
@@ -251,8 +325,8 @@ h5 {
 .div label {
   font-size: 11px;
 }
-.div button{
-  padding: 0!important;
+.div button {
+  padding: 0 !important;
 }
 .product:hover {
   color: black;
@@ -271,21 +345,21 @@ h5 {
 .product-card {
   margin-left: 4px;
   margin-right: 4px;
-} 
+}
 .crop {
-    width: 100%;
-    height: 250px;
-    overflow: hidden;
-    object-fit: cover;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  object-fit: cover;
 }
 
 .form-check-input:checked {
-    background-color: #5e9f88!important;
-    border-color: #5e9f88!important;
+  background-color: #5e9f88 !important;
+  border-color: #5e9f88 !important;
 }
 
 input[type="checkbox"]:disabled + span {
-   color: #969595 !important;
+  color: #969595 !important;
 }
 
 .hidden {
