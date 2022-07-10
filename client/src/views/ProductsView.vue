@@ -378,6 +378,10 @@ export default {
   }
 }
 
+.footerOverride {
+  bottom: auto !important;
+}
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
