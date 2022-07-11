@@ -43,6 +43,7 @@
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
           <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions' />
+          <Chart :amountRevenue='this.amountRevenue'/>
         </div>
 
       </div>
@@ -63,6 +64,7 @@ import TheProductsTab from '@/components/Administration/Products/TheProductsTab.
 import TheOrdersTab from '@/components/Administration/Orders/TheOrdersTab.vue';
 import TheCategoryCreation from '../components/Administration/Products/TheCategoryCreation.vue';
 import TheProductCreation from '../components/Administration/Products/TheProductCreation.vue';
+import Chart from '../components/Administration/Chart.vue';
 
 import http from "../../http-common";
 
@@ -78,7 +80,8 @@ export default {
     TheOrdersTab,
     TheAdminRegistration,
     TheCategoryCreation,
-    TheProductCreation
+    TheProductCreation,
+    Chart
 },
   data() {
     return {
@@ -144,6 +147,8 @@ export default {
 
       this.usersIncrement = response.data.users.last_month;
       this.amountRevenue = response.data.revenue.total.total.toFixed(2);
+      console.log(response.data);
+      console.log(this.amountRevenue);
       this.incrementRevenue = response.data.revenue.last_month.total.toFixed(2);
       this.amountProfit = (response.data.revenue.total.total * 0.05).toFixed(2);
       this.incrementProfit = (response.data.revenue.last_month.total * 0.05).toFixed(2);
