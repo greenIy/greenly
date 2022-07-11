@@ -3,9 +3,7 @@
         <button class="btnH remove position-absolute end-0 ms-0 ps-0 pe-2 border-0 ">
             <font-awesome-icon @click="removed(product.index)" class="icons fa-cog " :icon="['fa', 'xmark']" />
         </button>
-        <div class="">
-            <div class="">
-                <div class="card-body  justify-content-between flex-row ">
+                <div class="card-body justify-content-between flex-row ">
                     <div class="row align-items-center h-100">
                     <div class="col-sm-2">
                         <div class="col position-relative">
@@ -13,39 +11,27 @@
                               <img class="crop rounded border" :src="product.product.thumbnail">
                           </router-link>
                         </div>
-                        <!-- <h5 class="card-title text-start text-wrap">
-                        {{ product.category.name }}
-                        </h5> -->
                     </div>    
-                    <div class="col-sm-2">
+                    <div class="col-sm-2 mx-auto">
                         <router-link :to="'/produto/'+ String(product.index)" style="text-decoration:none;color:black;">
                           <h4 class="card-title text-wrap">{{ product.product.name }}</h4>
                         </router-link>
                         <h5 class="card-title text-wrap">Fornecedor: {{ product.supplier.name }}</h5>
                         <h5 class="card-title text-wrap">Transportador: {{ product.transporter.name }}</h5>
-
-                        <!-- <h3 class="card-title text-start text-wrap">{{ product.name }}</h3>
-                        <h5 class="card-title text-start text-wrap">
-                        {{ product.category.name }}
-                        </h5> -->
                     </div>  
-                    <div class="col-sm-2 justify-content-center">
+                    <div class="col-sm-2 mx-auto">
                         <h4 class="card-title text-wrap" style="font-size:12px;"><font-awesome-icon :icon="['fa', 'sun']" style="color: orange; font-size:12px;"/>  <span class="ms-2">{{ product.supplier_renewable_resources.toFixed(2) }}</span> %</h4>
                         <h4 class="card-title text-wrap" style="font-size:12px;"><font-awesome-icon :icon="['fa', 'warehouse']" style="color: grey"/>  <span class="ms-2">{{ product.average_supplier_resource_usage.toFixed(2) }}</span> kWh</h4>
                         <h4 class="card-title text-wrap" style="font-size:12px;"><font-awesome-icon :icon="['fa', 'gas-pump']" style="color: "/>  <span class="ms-2">{{ product.average_transporter_resource_usage.toFixed(2) }}</span> l/100Km</h4>
                         <h4 class="card-title text-wrap" style="font-size:12px;"><font-awesome-icon :icon="['fa', 'skull-crossbones']" style="color: red"/>  <span class="ms-2">{{ product.average_transporter_emissions.toFixed(2) }}</span> CO2 g/Km/t</h4>
-                        <!-- <p class="card-text  text-justify text-wrap fs-6">{{ product.description }}</p> -->
                     </div>
-                    <div class="col-sm-1">
-                        <h4 class="card-title  text-wrap">{{ round(product.price, 2) }} €</h4>
-                        <!-- <span><h3 class="card-text text-wrap fs-5">{{ product.lowest_price }}€</h3></span> -->
+                    <div class="col-sm-1 mx-auto">
+                        <h4 class="card-title text-wrap mx-auto">{{ round(product.price, 2) }} €</h4>
                     </div>
-                    <div class="col-sm-2">
-                        <h4 class="card-title text-wrap ms-2">{{ product.transport_price }} €</h4>
-                        <!-- <span><h3 class="card-text text-wrap fs-5">{{ product.lowest_price }}€</h3></span> -->
+                    <div class="col-sm-2 mx-auto">
+                        <h4 class="card-title text-wrap mx-auto">{{ product.transport_price }} €</h4>
                     </div>
-                    <div class="col-sm-2">
-                        <!-- <h4 class="card-title text-wrap ms-4">{{ product.quantity }}</h4> -->
+                    <div class="col-sm-2 mx-auto">
                         <div class="d-flex justify-content-center align-items-center ">
                               <font-awesome-icon class="fs-5 fa-fw quantity-button" :icon="['fas', 'circle-minus']" @click="updateQuantity('minus', product.index)" id="decrement" />
                                 <div class="w-50">
@@ -56,14 +42,11 @@
                                 <font-awesome-icon class="fs-5 fa-fw quantity-button" :icon="['fas', 'circle-plus']" @click="updateQuantity('plus', product.index)" id="increment" />
                             </div>
                     </div>
-                    <div class="col-sm-1">
+                    <div class="col-sm-1 mx-auto">
                         <h4 class="card-title text-wrap">{{ round(product.quantity * product.price + product.transport_price, 2)}}€</h4>
-                        <!-- <span><h3 class="card-text text-wrap fs-5">{{ product.lowest_price }}€</h3></span> -->
                     </div>
                     </div>  
                 </div>
-            </div>
-        </div>
     </div>
 </template>
 <script>

@@ -1,5 +1,5 @@
 <template>
-	<div class="container mt-5">
+	<div class="container my-5">
 		<div class="row align-items-start">
 			<div class="col-4">
 				<div class="card fixedMap">
@@ -288,6 +288,7 @@
 				</div>
 			</div>
 		</div>
+		<br>
 	</div>
 		
 </template>
@@ -621,9 +622,9 @@ export default {
     }
 	.fixedMap {
 		z-index: 1;
-		position: fixed;
 		height: 650px;
-        width: 400px;
+		max-width: 400px;
+		min-width: 390px;
 	}
 	.card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -677,4 +678,7 @@ export default {
         outline: 0 !important;
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
     }
+	.footerOverride {
+  bottom: auto !important;
+}
 </style>

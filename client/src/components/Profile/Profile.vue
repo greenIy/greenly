@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-center profileContainer my-5">
+  <div class="d-flex justify-content-center profileContainer mt-4 mb-3">
     <div class="card p-3 card1Width">
       <nav>
         <div class="align-middle align-self-center">
@@ -224,6 +224,7 @@ export default {
 .card2Width {
   width: 50%;
 }
+
 @media (min-width: 992px) and (max-width: 1199px) {
   .profileContainer {
     flex-direction: column;

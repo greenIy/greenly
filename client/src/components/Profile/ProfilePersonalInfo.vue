@@ -318,12 +318,12 @@ export default {
   border-color: white;
 }
 .fieldWrapper {
-  gap: 3em;
+  gap: 2em;
   margin-bottom: 1em;
 }
 
 .entryField {
-  width: 25%;
+  width: 100%!important
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {

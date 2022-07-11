@@ -125,7 +125,7 @@
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#newItemWarehouse" id="newCenterAddress" v-on:click=""><font-awesome-icon :icon="['fa', 'warehouse']" />&nbsp; Armazéns disponíveis</button>
                         </div>
                         <div class="col mb-3">
-                            <label for="newItemProduct" class="form-label">Product <span style='color: #FF0000;'>*</span></label><br>
+                            <label for="newItemProduct" class="form-label">Produto <span style='color: #FF0000;'>*</span></label><br>
                             <select id="inputProduct" name="inputProduct" class="form-control" v-model="newItemInfo.product" required>
                                 <option v-for="product in this.products" :key="product.id" :value="product.id">{{ product.name }}</option>
                             </select>
@@ -200,7 +200,10 @@
 
 
 		</div>
+        <br><br><br>
 	</div>
+  
+
 		
 </template>
 
@@ -465,4 +468,7 @@ export default {
     .form-control {
         appearance: auto!important;
     }
+    	.footerOverride {
+  bottom: auto !important;
+}
 </style>

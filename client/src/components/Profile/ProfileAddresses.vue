@@ -1,4 +1,5 @@
 <template>
+<div class="my-5">
   <h4>Moradas</h4>
   <hr />
   <i v-if="addressesLength() == 0"
@@ -39,8 +40,7 @@
       <div
         v-for="address in this.user.addresses"
         :key="address.nif"
-        class="card"
-        style="margin-right: 30px; margin-left: 15px"
+        class="card card-ajust"
       >
         <div class="card-body">
           <address>
@@ -453,6 +453,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -909,5 +910,22 @@ export default {
 :focus {
   outline: 0 !important;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+.card-ajust{
+  margin-right: 30px;
+  margin-left: 12px
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .card-ajust{
+  margin-right: 0!important;
+  margin-left: 0!important;
+}
+}
+
+@media (max-width: 991px) {
+  .card-ajust{
+  margin-right: 0!important;
+  margin-left: 0!important;
+}
 }
 </style>

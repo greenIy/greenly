@@ -1,30 +1,10 @@
 <template>    
-    <body class="w-100">
-        <!-- Modal -->
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Limpar carrinho?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Têm a certeza que quer limpar todos os produtos do carrinho?
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closeRemoveAll" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger">Limpar Carrinho</button>
-            </div>
-            </div>
-        </div>
-        </div>
-        <div class="page-container w-100">
-            <TheNavbar @search-information="searchInformation" />
-            <div class="d-flex container mw-100" style="width: 95%!important">
-                <div class="d-flex justify-content-center w-100">
-                    <div class="card p-3 my-5 w-100" style="">
+    <div class="page-container">
+        <TheNavbar @search-information="searchInformation" />
+                <div class="d-flex justify-content-center my-2 mx-4 card-general">
+                    <div class="card mt-5">
                         <div class="card-body w-100">
-                            <h2 class="page-title text-start align-middle mt-auto"> Carrinho de compras</h2>
+                            <h2 class="page-title text-start align-middle mt-auto"> Carrinho de Compras</h2>
                             <div v-if="this.cartLength > 0" class="text-start mb-2">
                                 <font-awesome-icon :icon="['fa', 'sun']" style="color: orange" /> Recursos renováveis
                                 fornecedor |
@@ -37,16 +17,15 @@
                                 transportador
                             </div>
                             <div>
-                                <div v-if="this.cartLength == 0" style="overflow-y: hidden; overflow-x: auto; height: 370px;" class="content d-flex w-100">
+                                <div v-if="this.cartLength == 0" style="overflow-y: hidden; overflow-x: auto; height: 370px;" class="content d-flex mb-3">
                                     <div class="w-100 justify-content-center p-5 mt-5">
                                         <p class="text-center">Parece que ainda não adicionou nenhum produto ao carrinho.<br>Do que está à espera? Explore o nosso catálogo.</p>
                                         <h6 class="text-center">Ir para <router-link class="greenly-link" to="/produtos">Produtos</router-link>!</h6>
                                     </div>
                                 </div>
-                                <div v-else class="row gx-2 justify-content-start">
-                                    <div class="">
+                                <div v-else class="row gx-2">
                                         <div class="card p-3 container" style="height:40vh;">
-                                            <div class="row me-1">
+                                            <div class="row title">
                                                 <div class="col-2">
                                                     Item
                                                 </div>
@@ -77,18 +56,15 @@
                                             </div>
                                             <!-- </div>     -->
                                         </div>
-                                    </div>
+                                   
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex w- ms-2" style="width: 40%">
-                        <div class="card p-3 my-5 w-100" style="">
-                            
+                    <div v-if="this.cartLength != 0" class="d-flex ms-2">
+                        <div class="card p-3 my-5 w-100">
+                            <h2 class="mb-4">Resumo</h2>
                             <div class="card-body w-100 h-100 mt-3">
-
-                                <h2 class="mb-4">Resumo</h2>
-                                <div class="card p-3 mt-2">
                                     <table class="table">
                                         <tbody>
                                             <tr class="align-middle">
@@ -116,12 +92,8 @@
                                             
                                         </tfooter>
                                     </table>
-                                    
-                                    
-                                </div>
-                                
                             </div>
-                            <div class=" d-flex align-items-end justify-content-end h-100 me-3 mb-3" style="">
+                            <div class=" d-flex align-items-end justify-content-end h-100 me-3 mb-3">
                                     <div v-if="this.cartLength > 0">
                                         <button type="button"     data-bs-toggle="modal" data-bs-target="#staticBackdrop"
 
@@ -140,11 +112,29 @@
                                 </div>
                         </div>
                     </div>
+                    
                 </div>
+                <br>
+               <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Limpar carrinho?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+                Têm a certeza que quer limpar todos os produtos do carrinho?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeRemoveAll" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger">Limpar Carrinho</button>
+            </div>
+            </div>
+        </div>
+        </div>
             <TheFooter />
         </div>
-    </body>
 </template>
 
 
@@ -286,25 +276,52 @@
 
 
 <style scoped>
-    ::-webkit-scrollbar {
+::-webkit-scrollbar {
         width: 17px;
     }
 
-    ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
         background-color: #E4E4E4;
         border-radius: 100px;
     }
 
-    ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
         border-radius: 100px;
         border: 5px solid transparent;
         background-clip: content-box;
         background-color: #5E9F88;
     }
-    hr {
+hr {
         margin-top: 1rem;
         margin-bottom: 1rem;
         border: 0;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
+
+.footerOverride {
+  bottom: auto !important;
+}
+.card-general{
+    flex-direction: row;
+}
+
+.title{
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+
+@media (min-width: 992px) and (max-width: 1199px) {
+.card-general{
+    flex-direction: column;
+}
+}
+
+@media (max-width: 991px) {
+.card-general{
+    flex-direction: column;
+}
+
+}
 </style>

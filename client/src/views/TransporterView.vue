@@ -3,7 +3,7 @@
     <TheNavbar />
         <body>
             <div class="content-wrap">
-                <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
+                <ul class="nav nav-pills mb-5 mt-4 justify-content-center" role="tablist">
                     <li role="button" class="nav-item">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'transportador' || this.$route.name == 'transportador_historico' }">Encomendas</a>
                     </li>
@@ -35,8 +35,8 @@
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
-            
         </body>
+      <TheFooter />
 </div>
 </template>
 

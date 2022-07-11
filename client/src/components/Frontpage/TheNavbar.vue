@@ -758,5 +758,20 @@ input,
 
 a.router-link-active {
   color: #5e9f88;
+  text-decoration: underline;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .dropdown-menu{
+  margin-left: auto!important;
+  margin-right: auto!important;
+  }
+}
+
+@media (max-width: 991px) {
+  .dropdown-menu{
+  margin-left: auto!important;
+  margin-right: auto!important;
+  }
 }
 </style>

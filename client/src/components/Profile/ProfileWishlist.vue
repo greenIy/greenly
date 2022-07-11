@@ -1,6 +1,7 @@
 <template>
-  <h4 class="align-self-left">Favoritos</h4>
-  <div class="text-end align-self-end">
+<div>
+  <div class="d-flex justify-content-between">
+  <h4>Favoritos</h4>
     <button
       data-bs-toggle="modal"
       data-bs-target="#staticBackdrop"
@@ -9,10 +10,9 @@
       class="btn btn-danger"
     >
       <font-awesome-icon :icon="['fa', 'trash']" style="color: " /> Limpar
-      favoritos
+      Favoritos
     </button>
   </div>
-
   <hr />
 
   <div
@@ -47,11 +47,6 @@
       </div>
     </div>
   </div>
-  <!-- <div v-if="products.length" class="text-center mt-3">
-                <button type="button" @click="removeAllProducts($event)" class="btn btn-outline-danger btn-lg">Limpar favoritos</button>
-            </div> -->
-  <!-- <TheNextPage v-if="products.length" @sendCurrentPage="getCurrentPage" :pageAmount="getPageAmount"/> -->
-  <!-- Modal -->
   <div
     class="modal fade"
     id="staticBackdrop"
@@ -97,6 +92,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -190,7 +186,6 @@ export default {
 
     calculateWishlistLength() {
       this.wishlistLength = this.products.length;
-      console.log(this.wishlistLength);
     },
 
     successRemoveAllItems() {
@@ -227,4 +222,5 @@ export default {
   background-clip: content-box;
   background-color: #5e9f88;
 }
+
 </style>

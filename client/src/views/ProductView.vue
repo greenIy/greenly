@@ -4,6 +4,7 @@
     <body>
       <div class="mw-0">
         <div class="d-flex center cardWrapper card h-100 my-4 flex-column">
+          <h4 class="mx-3 mt-2 text-size">Produto</h4>
           <div class="d-flex firstContainer">
             <div class="carouselComponent">
               <div class="mt-4 mb-4 mx-3">
@@ -160,11 +161,9 @@
           </div>
           <div class="d-flex">
             <div class="w-100 mx-4">
-              <div class="card-body mt-1">
-                <hr class="center w-100" color="black" />
-              </div>
               <div class="card-body">
-                <ul class="nav nav-tabs" id="navList">
+                <hr class="center w-100" color="black" />
+                <ul class="nav nav-tabs mt-3" id="navList">
                   <li class="nav-item">
                     <a
                       class="nav-link text-dark"
@@ -220,7 +219,7 @@
             </div>
           </div>
           <div
-            class="d-flex w-100 align-items-center justify-content-between flex-column footerCard"
+            class="d-flex align-items-center justify-content-between  footerCard mt-2 mx-3"
           >
             <div class="d-inline-block p-0">
               <div
@@ -270,7 +269,7 @@
             </div>
             <button
               v-if="userIsLoggedIn && user.type == 'CONSUMER'"
-              class="d-inline-block text-start btnH p-8 fav"
+              class="d-flex justify-content-center  align-items-center btnH fav"
             >
               <font-awesome-icon
                 v-if="isProductInWishlist(this.product)"
@@ -810,6 +809,9 @@ h5 {
   width: 45px;
   height: 45px;
 }
+.text-size{
+  font-size:1.5em;
+}
 label {
   width: 100%;
 }
@@ -882,6 +884,12 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .footerCard {
   gap: 1em;
+  margin-bottom: 1em;
+  flex-direction: row;
+}
+
+.footerOverride {
+  bottom: auto !important;
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -909,7 +917,9 @@ input[type="number"]::-webkit-outer-spin-button {
   }
   .footerCard {
     padding-bottom: 1em;
+    flex-direction: column;
   }
+  
 }
 
 @media (max-width: 991px) {
@@ -937,6 +947,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
   .footerCard {
     padding-bottom: 1em;
+    flex-direction: column;
   }
 }
 </style>

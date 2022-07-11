@@ -1,4 +1,5 @@
 <template>
+<div class="my-5">
   <h4>Encomendas</h4>
   <hr />
   <i
@@ -559,6 +560,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>

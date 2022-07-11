@@ -37,6 +37,7 @@
                     <History v-if="this.$route.name == 'fornecedor_historico'" :receiveData="receiveData"/>
             </div>
         </body>
+    <TheFooter />
 </div>
 </template>
 
@@ -152,6 +153,9 @@ input:focus {
 
 button:focus {
   box-shadow: none !important;
+}
+.footerOverride {
+  bottom: auto !important;
 }
 
 </style>

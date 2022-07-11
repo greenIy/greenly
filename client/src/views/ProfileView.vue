@@ -1,9 +1,11 @@
 <template>
+<div>
   <div class="page-container">
     <the-navbar ref="navbar" />
     <profile />
   </div>
   <the-footer />
+</div>
 </template>
 
 <script>
@@ -25,5 +27,8 @@ export default {
 <style scoped>
 .content-wrap {
   background-color: #ededed;
+}
+.footerOverride {
+  bottom: auto !important;
 }
 </style>

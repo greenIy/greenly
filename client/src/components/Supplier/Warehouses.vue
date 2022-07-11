@@ -323,7 +323,6 @@
 			</div>
 		</div>
 	</div>
-		
 </template>
 
 <script>
@@ -665,7 +664,6 @@ export default {
     }
 	.fixedMap {
 		z-index: 1;
-		position: fixed;
 		height: 650px;
         max-width: 400px;
 		min-width: 390px;
@@ -722,4 +720,8 @@ export default {
         outline: 0 !important;
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
     }
+
+	.footerOverride {
+  bottom: auto !important;
+}
 </style>

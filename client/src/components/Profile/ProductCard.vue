@@ -1,78 +1,29 @@
 <template>
-         
-        <!-- <div class="card mb-0" style="max-width: 540px;">
-          <button class="btnH remove position-relative top-0 start-0 border-0 ">
-            <font-awesome-icon @click="removed($event)" class="icons fa-cog " :icon="['fa', 'xmark']" />
-        </button>
-          <div class="row g-0">
-            <div class="col-md-2">
-              <img src="../../assets/Team/daniela.jpg" style="object-fit: fill; width: 100%;" class="rounded-start" alt="...">
-            </div>
-            <div class="col-md-10">
-              <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-              </div>
-            </div>
-          </div>
-        </div> -->
-
-        <div class="card m-3 product-card d-flex justify-content-center">
+  <div class="card m-3 product-card">
           <button class="btnH remove position-absolute top-0 end-0 p-2 pe-3 top-0 border-0 ">
             <font-awesome-icon @click="removed(product.id)" class="icons fa-cog " :icon="['fa', 'xmark']" />
           </button>
-          <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
-          <div class="row g-0 d-flex align-items-center align-self-center h-100 my-auto">
-            <div class="col-md-3 position-relative align-items-center">
-              <!-- <img class="w-100 rounded-start" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  /> -->
-              <div class="product-image">
-                <img class="crop rounded border" :src="product.thumbnail">
-              </div>
-            </div>
-            <div class="col-md-9 d-flex">
-                <div class="card-body">
-                  <div class="row align-items-center h-100">
-                    <div class="col-sm-3">
-                      <h3 class="card-title text-start text-wrap">{{ product.name }}</h3>
+            <div class="card-body d-flex flex-row">
+              <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
+                <div class="product-image">
+                    <img class="crop rounded border" :src="product.thumbnail">
+                </div>
+                    <div class="">
+                      <h4 class="card-title text-start text-wrap text-size">{{ product.name }}</h4>
                       <h5 class="card-title text-start text-wrap">
                         {{ product.category.name }}
                       </h5>
                     </div>     
-                    <div class="col-sm-7">
-                      <p class="card-text  text-justify text-wrap fs-6">{{ product.description }}</p>
+                    <div class="">
+                      <p class="card-text fs-6">{{ product.description }}</p>
                     </div>
-                    <div class="col-sm-2">
-                      <span><h3 class="card-text text-center text-wrap fs-5">{{ product.lowest_price }}€</h3></span>
+                    <div class="">
+                      <span><h4 class="card-text fs-6">{{ product.lowest_price }}€</h4></span>
                     </div>
-                  </div>  
-                </div>
+             </router-link>
             </div>
-          </div>
-          </router-link>
+          
         </div>
-
-
-
-        <!-- <div class="card h-100 hover-shadow d-flex align-items-stretch border-top-0">
-            <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
-            <div class="d-flex">
-                <img class="img-fluid mt-3" src="../../assets/Team/daniela.jpg" alt="Imagem do produto"  />
-            </div>
-                <div class="card-body">
-                <h5 class="card-title">{{ product.category.name }}</h5>
-                <div>
-                    <h4 class="card-title">
-                    {{ product.name }}
-                    </h4>
-                </div>
-                <p class="card-text text-truncate">{{ product.description }}</p>
-                </div>
-            </router-link>
-            <div class="card-body py-0 position-relative mt-1 mb-2">
-                <span class="position-absolute bottom-0"><h4 class="card-text sticky-bottom">{{ product.lowest_price }}€</h4></span>
-            </div>
-        </div> -->
 </template>
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -141,9 +92,6 @@ export default {
 .product-image{
   width:15em; 
   height:15em; 
-  position: absolute;
-  left: 50%;
-  top: 50%;
   transform: translate(-50%, -50%);
 }
 h4 {
@@ -217,5 +165,8 @@ h5 {
     width: 100%;
     overflow: hidden;
     object-fit: cover;
+}
+.text-size{
+  font-size:1.5em;
 }
 </style>
