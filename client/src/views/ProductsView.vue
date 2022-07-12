@@ -325,7 +325,7 @@ export default {
 
 .productList {
   display: flex;
-  justify-content: end;
+  justify-content: start;
 }
 
 .mainCard {
@@ -345,6 +345,32 @@ export default {
   height: auto;
   width: 100%;
   max-width: 200px;
+}
+
+.footerOverride {
+  bottom: auto !important;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+#successToast {
+  background-color: #e3c12b !important;
+}
+
+.toast-container {
+  z-index: 4;
+}
+
+.content-wrap {
+  padding-bottom: 2rem !important;
+}
+
+.form-check-input:checked {
+  background-color: #5e9f88 !important;
+  border-color: #5e9f88 !important;
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -376,31 +402,5 @@ export default {
     display: flex;
     justify-content: center;
   }
-}
-
-.footerOverride {
-  bottom: auto !important;
-}
-
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-#successToast {
-  background-color: #e3c12b !important;
-}
-
-.toast-container {
-  z-index: 4;
-}
-
-.content-wrap {
-  padding-bottom: 2rem !important;
-}
-
-.form-check-input:checked {
-  background-color: #5e9f88 !important;
-  border-color: #5e9f88 !important;
 }
 </style>

@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div v-else style="overflow-x: hidden; overflow-y: auto; height: 370px">
+  <div v-else style="overflow-x: hidden; overflow-y: auto; height: 370px;margin-top:1em;">
     <div
       v-for="(order, index) in this.orders"
       :key="order.id"
@@ -44,7 +44,7 @@
       <div class="accordion-item">
         <h2 class="accordion-header" :id="'heading' + order.id">
           <button
-            class="accordion-button collapsed"
+            class="accordion-button collapsed acc-btn"
             type="button"
             data-bs-toggle="collapse"
             :data-bs-target="'#collapse' + order.id"
@@ -52,13 +52,13 @@
             :aria-controls="'collapse' + order.id"
           >
             <div class="container">
-              <div class="row">
-                <div class="col">
+              <div class="information">
+                <div>
                   <font-awesome-icon :icon="['fa', 'box']" />&nbsp;Encomenda #{{
                     order.id
                   }}
                 </div>
-                <div class="col">
+                <div class="space">
                   <font-awesome-icon :icon="['fa', 'calendar']" />&nbsp;{{
                     `${String(new Date(order.date).getDate()).padStart(
                       2,
@@ -69,15 +69,15 @@
                     )}/${new Date(order.date).getFullYear()}`
                   }}
                 </div>
-                <div v-if="calculateOrderProducts(index) == 1" class="col">
+                <div v-if="calculateOrderProducts(index) == 1" class="space">
                   <font-awesome-icon :icon="['fa', 'shopping-bag']" />&nbsp;
                   {{ this.calculateOrderProducts(index) }} x item
                 </div>
-                <div v-if="calculateOrderProducts(index) > 1" class="col">
+                <div v-if="calculateOrderProducts(index) > 1" class="space">
                   <font-awesome-icon :icon="['fa', 'shopping-bag']" />&nbsp;
                   {{ this.calculateOrderProducts(index) }} x itens
                 </div>
-                <div class="col">
+                <div class="space">
                   <span v-if="getOrderStatus(index) == 0"
                     ><font-awesome-icon
                       :icon="['fa', 'hand-holding-dollar']"
@@ -121,23 +121,7 @@
           <div class="accordion-body">
             <!-- <h3 class="ms-3">ID #{{ order.id }}</h3> -->
             <div class="row mt-2">
-              <div class="col ms-3">
-                <div class="card" style="width: 280px">
-                  <div class="card-img-top map" :id="'order-' + order.id"></div>
-                  <div class="card-body">
-                    <div class="card-text">
-                      <small>
-                        {{ order.shipping_address.city }},
-                        {{ order.shipping_address.country }}<br />
-                        {{ order.shipping_address.street }}<br />
-                        {{ order.shipping_address.postal_code }}
-                      </small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="container mt-2" style="width: 60%">
+              <div class="container mt-2">
                 <div v-for="item in order.items" :key="item.id">
                   <div class="row">
                     <div class="col">
@@ -457,6 +441,21 @@
                     </div>
                   </div>
                   <hr />
+                </div>
+              </div>
+              <div class="col ms-3">
+                <div class="card" style="width: 280px">
+                  <div class="card-img-top map" :id="'order-' + order.id"></div>
+                  <div class="card-body">
+                    <div class="card-text">
+                      <small>
+                        {{ order.shipping_address.city }},
+                        {{ order.shipping_address.country }}<br />
+                        {{ order.shipping_address.street }}<br />
+                        {{ order.shipping_address.postal_code }}
+                      </small>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -938,7 +937,14 @@ export default {
   outline: 0 !important;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
 }
-
+.space{
+  margin-left:1em;
+}
+.information{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 @media (min-width: 992px) and (max-width: 1199px) {
   .btnJson {
     position: relative;
@@ -946,6 +952,13 @@ export default {
     right: auto;
     margin-top: 0;
     margin-right: 0;
+  }
+  .information{
+    flex-direction: column;
+  }
+
+  .acc-btn{
+    height: 7em;
   }
 }
 
@@ -957,5 +970,16 @@ export default {
     margin-top: 1em;
     margin-right: 0;
   }
+   .information{
+    flex-direction: column;
+  }
+  .space{
+    margin:0;
+  }
+
+  .acc-btn{
+    height: 7em;
+  }
+
 }
 </style>

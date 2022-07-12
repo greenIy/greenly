@@ -174,7 +174,7 @@ export default({
     }
     .or-seperator i {
         padding: 0 10px;
-        background: #f7f7f7;
+        background: white;
         position: relative;
         top: -11px;
         z-index: 1;

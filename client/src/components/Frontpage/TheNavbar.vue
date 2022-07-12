@@ -46,26 +46,38 @@
             >
               <font-awesome-icon :icon="['fas', 'user']" size="xl" />
             </a>
-            <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
+            <ul
+              class="dropdown-menu mt-3 drop"
+              aria-labelledby="dropdownMenuLink"
+            >
               <li>
-                <router-link to="/perfil/detalhes" style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                <router-link
+                  to="/perfil/detalhes"
+                  style="margin-left: 0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp;
                     Perfil</a
                   ></router-link
                 >
               </li>
               <li v-if="user.type == 'CONSUMER'">
-                <router-link to="/perfil/encomendas" style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                <router-link
+                  to="/perfil/encomendas"
+                  style="margin-left: 0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp;
                     Encomendas</a
                   ></router-link
                 >
               </li>
               <li v-if="user.type == 'CONSUMER'">
-                <router-link to="/perfil/favoritos" style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                <router-link
+                  to="/perfil/favoritos"
+                  style="margin-left: 0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon :icon="['fa', 'heart']" />&nbsp;
                     Favoritos</a
                   ></router-link
@@ -76,7 +88,8 @@
                   v-if="user.type === 'ADMINISTRATOR'"
                   to="/administracao"
                   style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon
                       :icon="['fa', 'table-columns']"
                       size=""
@@ -89,7 +102,8 @@
                   v-if="user.type === 'SUPPLIER'"
                   :to="{ name: 'fornecedor' }"
                   style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon
                       :icon="['fa', 'box-archive']"
                       size=""
@@ -102,7 +116,8 @@
                   v-if="user.type === 'TRANSPORTER'"
                   :to="{ name: 'transportador' }"
                   style="margin-left: 0"
-                  ><a class="dropdown-item ms-0"
+                  class="drop"
+                  ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon
                       :icon="['fa', 'box-archive']"
                       size=""
@@ -116,7 +131,10 @@
                   to="/login"
                   v-on:click="logoutUser"
                   style="margin-left: 0"
-                  ><a class="dropdown-item ms-0" style="color: red !important"
+                  class="drop"
+                  ><a
+                    class="dropdown-item ms-0 drop"
+                    style="color: red !important"
                     ><font-awesome-icon
                       :icon="['fa', 'arrow-right-from-bracket']"
                     />&nbsp; Terminar sessão</a
@@ -151,7 +169,7 @@
             <font-awesome-icon :icon="['fas', 'bell']" size="xl" />
           </a>
           <ul
-            class="dropdown-menu dropdown-menu-end mt-3"
+            class="dropdown-menu dropdown-menu-end mt-3 drop"
             aria-labelledby="dropdownMenuLink"
             style="width: 400px"
           >
@@ -395,30 +413,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- <a v-if="this.user.phone && addressesLength() != 0" class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
-                        <div class="d-flex justify-content-center align-items-center p-4">
-                            Não tem notificações.
-                        </div>
-                    </a>
-                    <router-link v-if="!this.user.phone" to="/perfil/detalhes" style="margin: 0;">
-                        <a class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">Perfil incompleto (telemóvel)</h6>
-                                <small>Aviso</small>
-                            </div>
-                            <small>Por favor clique aqui para associar um número de telemóvel ao seu perfil.</small>
-                        </a>
-                    </router-link>
-                    <router-link v-if="addressesLength() == 0" to="/perfil/moradas" style="margin: 0;">
-                        <a class="list-group-item list-group-item-action" style="margin-left: 0; color: black">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">Perfil incompleto (morada)</h6>
-                                <small>Aviso</small>
-                            </div>
-                            <small>Por favor clique aqui para associar uma ou mais moradas ao seu perfil.</small>
-                        </a>
-                    </router-link> -->
           </ul>
         </div>
       </div>
@@ -427,7 +421,11 @@
           v-if="this.userIsLoggedIn && user.type === 'CONSUMER'"
           to="/carrinho"
         >
-          <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl" />
+          <font-awesome-icon
+            class="iconCar"
+            :icon="['fas', 'cart-shopping']"
+            size="xl"
+          />
         </router-link>
       </div>
       <span
@@ -675,6 +673,11 @@ export default {
   text-decoration: none;
   margin-left: 20px;
 }
+.navmenu a:active {
+  color: #fcfaf9;
+  text-decoration: none !important;
+  margin-left: 20px;
+}
 .navmenu a:hover {
   color: #e4e4e4;
 }
@@ -761,17 +764,30 @@ a.router-link-active {
   text-decoration: underline;
 }
 
+.iconCar {
+  color: white !important;
+}
+
+.drop {
+  text-decoration: none !important;
+}
+
 @media (min-width: 992px) and (max-width: 1199px) {
-  .dropdown-menu{
-  margin-left: auto!important;
-  margin-right: auto!important;
+  .dropdown-menu {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
 @media (max-width: 991px) {
-  .dropdown-menu{
-  margin-left: auto!important;
-  margin-right: auto!important;
+  .dropdown-menu {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translate3d(144px, 18px, 1px) !important;
+  }
+  .input-group {
+    order: 3;
+    float: right;
   }
 }
 </style>

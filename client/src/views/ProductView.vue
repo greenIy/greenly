@@ -915,10 +915,6 @@ input[type="number"]::-webkit-outer-spin-button {
   .cardWrapper {
     width: 95%;
   }
-  .footerCard {
-    padding-bottom: 1em;
-    flex-direction: column;
-  }
   
 }
 

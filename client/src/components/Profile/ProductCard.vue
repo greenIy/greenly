@@ -1,29 +1,32 @@
 <template>
   <div class="card m-3 product-card">
-          <button class="btnH remove position-absolute top-0 end-0 p-2 pe-3 top-0 border-0 ">
-            <font-awesome-icon @click="removed(product.id)" class="icons fa-cog " :icon="['fa', 'xmark']" />
-          </button>
-            <div class="card-body d-flex flex-row">
-              <router-link :to="'/produto/'+ String(product.id)" style="text-decoration:none;color:black;">
-                <div class="product-image">
-                    <img class="crop rounded border" :src="product.thumbnail">
-                </div>
-                    <div class="">
-                      <h4 class="card-title text-start text-wrap text-size">{{ product.name }}</h4>
-                      <h5 class="card-title text-start text-wrap">
-                        {{ product.category.name }}
-                      </h5>
-                    </div>     
-                    <div class="">
-                      <p class="card-text fs-6">{{ product.description }}</p>
-                    </div>
-                    <div class="">
-                      <span><h4 class="card-text fs-6">{{ product.lowest_price }}€</h4></span>
-                    </div>
-             </router-link>
-            </div>
-          
-        </div>
+    <button
+      class="btnH remove position-absolute top-0 end-0 p-2 pe-3 top-0 border-0"
+    >
+      <font-awesome-icon
+        @click="removed(product.id)"
+        class="icons fa-cog"
+        :icon="['fa', 'xmark']"
+      />
+    </button>
+    <div class="card-body d-flex flex-row">
+      <router-link
+        :to="'/produto/' + String(product.id)"
+        style="text-decoration: none; color: black"
+      >
+        <img class="crop rounded border" :src="product.thumbnail" />
+
+        <h4 class="card-title text-wrap text-start text-size mt-1">{{ product.name }}</h4>
+        <h5 class="card-title text-wrap text-start">
+          {{ product.category.name }}
+        </h5>
+        <p class="card-text fs-6 text-justify">{{ product.description }}</p>
+        <span
+        ><h4 class="card-text fs-6 text-end">{{ product.lowest_price }}€</h4></span
+      >
+      </router-link>
+    </div>
+  </div>
 </template>
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -33,13 +36,12 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import http from "../../../http-common";
 import { useToast } from "vue-toastification";
 
-
 library.add(faXmark);
 export default {
   name: "ProductCard",
   props: ["product"],
   data() {
-    const toast = useToast()
+    const toast = useToast();
     return {
       toast,
       isActive: false,
@@ -48,28 +50,32 @@ export default {
       },
     };
   },
-  created(){
+  created() {
     this.updateProducts();
   },
   methods: {
-    updateProducts(){
+    updateProducts() {
       this.$emit("getProducts");
-    }, 
-    removed(productId){
-        console.log("ola")
-        let userId = JSON.parse(localStorage.getItem('userId'));
-        //let productId = JSON.parse(product.id);
-        let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-        http.delete(`/user/${userId}/wishlist/${productId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
-            if (response.status == 200) {
-              this.successRemoveSingleItem()
-              this.updateProducts()
-            }
+    },
+    removed(productId) {
+      console.log("ola");
+      let userId = JSON.parse(localStorage.getItem("userId"));
+      //let productId = JSON.parse(product.id);
+      let accessToken = JSON.parse(localStorage.getItem("accessToken"));
+      http
+        .delete(`/user/${userId}/wishlist/${productId}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
         })
+        .then((response) => {
+          if (response.status == 200) {
+            this.successRemoveSingleItem();
+            this.updateProducts();
+          }
+        });
     },
 
-    successRemoveSingleItem(){
-        this.toast.success('O item foi removido com sucesso!', {
+    successRemoveSingleItem() {
+      this.toast.success("O item foi removido com sucesso!", {
         position: "top-right",
         timeout: 5000,
         closeOnClick: true,
@@ -81,19 +87,13 @@ export default {
         hideProgressBar: true,
         closeButton: "button",
         icon: true,
-        rtl: false
+        rtl: false,
       });
-    }
-    
-  }
+    },
+  },
 };
 </script>
 <style scoped>
-.product-image{
-  width:15em; 
-  height:15em; 
-  transform: translate(-50%, -50%);
-}
 h4 {
   font-size: 14px;
 }
@@ -136,8 +136,8 @@ h5 {
 .div label {
   font-size: 11px;
 }
-.div button{
-  padding: 0!important;
+.div button {
+  padding: 0 !important;
 }
 .product:hover {
   color: black;
@@ -156,17 +156,17 @@ h5 {
 }
 .product-card {
   min-height: 20em;
-} 
-.text-justify{
+}
+.text-justify {
   text-align: justify;
 }
 .crop {
-    height: 15em;
-    width: 100%;
-    overflow: hidden;
-    object-fit: cover;
+  height: 15em;
+  width: 40%;
+  overflow: hidden;
+  object-fit: cover;
 }
-.text-size{
-  font-size:1.5em;
+.text-size {
+  font-size: 1.5em;
 }
 </style>

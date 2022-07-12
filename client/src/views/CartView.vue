@@ -313,15 +313,15 @@ hr {
 
 
 @media (min-width: 992px) and (max-width: 1199px) {
-.card-general{
-    flex-direction: column;
-}
+    .card-general{
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 991px) {
-.card-general{
-    flex-direction: column;
-}
+    .card-general{
+        flex-direction: column;
+    }
 
 }
 </style>
