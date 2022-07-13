@@ -40,7 +40,7 @@
                                     <font-awesome-icon :icon="['fa', 'box-archive']" size="lg"/>&nbsp; Encomendas
                                 </router-link>
                             </li>
-                            <li v-if="user.type == 'CONSUMER'" class="nav-item">
+                            <li v-if="user.type == 'CONSUMER'" class="nav-item" data-cy="profile-wishlist-tab">
                                 <router-link :to="{ name: 'wishlist'}" class="nav-link link-dark" :class="(this.$route.name === 'wishlist') ? 'nav-link active' : ''">
                                 <svg class="bi me-0" width="16" height="16"></svg>
                                     <font-awesome-icon :icon="['fa', 'heart']" size="lg"/>&nbsp; Favoritos
@@ -52,7 +52,7 @@
                                     <font-awesome-icon :icon="['fa', 'map']" size="lg"/>&nbsp; Moradas
                                 </router-link>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" data-cy="profile-security-tab">
                                 <router-link :to="{ name: 'security'}" class="nav-link link-dark" :class="(this.$route.name === 'security') ? 'nav-link active' : ''" aria-current="page">
                                 <svg class="bi me-0" width="16" height="16"></svg>
                                     <font-awesome-icon :icon="['fa', 'gear']" size="lg"/>&nbsp; Segurança

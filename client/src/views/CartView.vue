@@ -13,7 +13,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeRemoveAll" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger">Limpar Carrinho</button>
+                <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger" data-cy="cart-clear-confirm">Limpar Carrinho</button>
             </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
                                     <div v-if="this.cartLength > 0">
                                         <button type="button"     data-bs-toggle="modal" data-bs-target="#staticBackdrop"
 
-                                            class="btn btn-danger me-2">Limpar carrinho
+                                            class="btn btn-danger me-2" data-cy="cart-clear-button">Limpar carrinho
                                             <font-awesome-icon :icon="['fa', 'trash']" style="color: " />
                                         </button>
                                     </div>

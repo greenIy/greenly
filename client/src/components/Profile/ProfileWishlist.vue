@@ -4,13 +4,13 @@
         <div class="row d-flex justify-content-center align-self-center">
             <h4 class="col-md-6 align-self-center">Favoritos</h4>
             <div class="col-md-6 text-end align-self-end">
-                <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-if="this.wishlistLength > 0" type="button" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: "/> Limpar favoritos</button>
+                <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-if="this.wishlistLength > 0" type="button" class="btn btn-danger "><font-awesome-icon :icon="['fa', 'trash']" style="color: " data-cy="wishlist-clear"/> Limpar favoritos</button>
             </div>
         </div>
         <hr>
         
         <div class="page-container" >
-                        <div class="infinite-scroll py-3 text-center" id="spinners-and-async-example" style="overflow-y: scroll; height: 450px">
+                        <div class="infinite-scroll py-3 text-center" id="spinners-and-async-example" style="overflow-y: scroll; height: 450px" data-cy="wishlist-product-container">
                             <div v-if="products.length" @currentPage="getCurrentPage">
                                 
                                 <ProductCard
@@ -48,7 +48,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" id="closeRemoveAll" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger">Limpar favoritos</button>
+            <button type="button" v-on:click="removeAllProducts()" class="btn btn-danger" data-cy="wishlist-clear-confirm">Limpar favoritos</button>
         </div>
         </div>
     </div>

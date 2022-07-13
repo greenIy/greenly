@@ -2,7 +2,7 @@
 <nav>
     <div class="navmenu d-flex justify-content-center pt-2 pb-2">
         <div class="align-self-center mt-2 mb-2">
-            <router-link to="/produtos" @click="reloadPage()" class="navbar-brand">
+            <router-link to="/produtos" @click="reloadPage()" class="navbar-brand" data-cy="navbar-home">
                 <img alt="Logo do greenly" src="../../assets/logo_dark.png">
             </router-link>
         </div>
@@ -21,16 +21,16 @@
             </div>
             <div class="align-self-center nav-links mt-2 mb-2 ml-3">
                 <div class="dropdown">
-                    <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" data-cy="navbar-dropdown">
                         <font-awesome-icon :icon="['fas', 'user']" size="xl"/>
                     </a>
                     <ul class="dropdown-menu mt-3" aria-labelledby="dropdownMenuLink">
-                        <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
+                        <li><router-link to="/perfil/detalhes" style="margin-left: 0"><a class="dropdown-item ms-0" data-cy="navbar-profile"><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp; Perfil</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/encomendas" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" />&nbsp; Encomendas</a></router-link></li>
                         <li v-if="user.type == 'CONSUMER'"><router-link to="/perfil/favoritos" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'heart']" />&nbsp; Favoritos</a></router-link></li>
-                        <li><router-link v-if="user.type === 'ADMINISTRATOR'" to="/administracao" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'table-columns']" size=""/>&nbsp; Administração</a></router-link></li>
-                        <li><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
-                        <li><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
+                        <li data-cy="navbar-dashboard-admin"><router-link v-if="user.type === 'ADMINISTRATOR'" to="/administracao" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'table-columns']" size=""/>&nbsp; Administração</a></router-link></li>
+                        <li data-cy="navbar-dashboard-supplier"><router-link v-if="user.type === 'SUPPLIER'" :to="{ name: 'fornecedor' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
+                        <li data-cy="navbar-dashboard-transporter"><router-link v-if="user.type === 'TRANSPORTER'" :to="{ name: 'transportador' }" style="margin-left: 0"><a class="dropdown-item ms-0"><font-awesome-icon :icon="['fa', 'box-archive']" size=""/>&nbsp; Painel de Gestão</a></router-link></li>
                         <hr class="dropdown-divider">
                         <li><router-link to="/login" v-on:click="logoutUser" style="margin-left: 0;"><a class="dropdown-item ms-0" style="color: red !important"><font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />&nbsp; Terminar sessão</a></router-link></li>
                     </ul>
@@ -166,7 +166,7 @@
             </div>
         </div>
         <div class="align-self-center nav-links mt-2 mb-2">
-            <router-link v-if="this.userIsLoggedIn && user.type === 'CONSUMER'" to="/carrinho">
+            <router-link v-if="this.userIsLoggedIn && user.type === 'CONSUMER'" to="/carrinho" data-cy="navbar-cart">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" size="xl"/>
             </router-link>
         </div>
@@ -259,7 +259,7 @@ export default {
             }
         },  
         getUserCart() {
-            if (this.userIsLoggedIn && this.user.type == "CONSUMER") {
+            if (this.userIsLoggedIn && this.user && this.user.type == "CONSUMER") {
                 let accessToken = JSON.parse(localStorage.getItem('accessToken'));
                 let userId = JSON.parse(localStorage.getItem('userId'));
                 if (accessToken) {

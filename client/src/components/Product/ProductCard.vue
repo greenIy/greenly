@@ -69,7 +69,6 @@ export default {
     productsToCompare: Array,
   },
   mounted() {
-    this.getWishlist();
     this.getUserInfo();
   },
   data() {
@@ -89,15 +88,15 @@ export default {
   methods: {
     getWishlist() {
       let accessToken = JSON.parse(localStorage.getItem('accessToken'));
-            let userId = JSON.parse(localStorage.getItem('userId'));
-            if (accessToken){
-                http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
-                    if (response.status == 200) {
-                        this.wishlist = response.data
-                    }
-                })
+      let userId = JSON.parse(localStorage.getItem('userId'));
+      if (accessToken){
+          http.get(`/user/${userId}/wishlist`, { headers: {"Authorization" : `Bearer ${accessToken}`} }).then(response => {
+              if (response.status == 200) {
+                  this.wishlist = response.data
+              }
+          })
 
-            }
+      }
     },
     isProductInWishlist(product) {
       var isProductIn = false
@@ -164,6 +163,11 @@ export default {
     },
     getUserInfo() {
       this.user = this.$store.getters.getUser;
+
+      if (this.user && this.user.type == "CONSUMER") {
+          this.getWishlist();
+      }
+
       return this.user;
     },
     compare(event){
