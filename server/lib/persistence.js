@@ -5347,14 +5347,9 @@ async function getStoreStatistics() {
         let firstDate = DateTime.fromJSDate(oldestUser.registration_date).set({day: 1})
         let latestDate = DateTime.now().set({day: 1})
 
-        console.log('firstDate :>> ', firstDate.month, firstDate.day);
-        console.log('latestDate :>> ', latestDate.month,latestDate.day );
-
         // Calculating time difference in months
         
         let monthDifference = round(latestDate.diff(firstDate, 'months').toObject().months, 0) + 1
-
-        console.log(monthDifference)
 
         // Getting data for each month between the first month and current month
 

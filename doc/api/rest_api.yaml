@@ -5183,7 +5183,6 @@ components:
                     type: number
                     format: float
                     description: "Informação relativa à utilização de recursos de transportadores (média de L/100km)"
-Y
               new_users:
                 type: integer
                 description: Quantidade de utilizadores inscritos durante o mês em questão
