@@ -75,14 +75,14 @@
                     </div>
                     <div class="col mb-3">
                         <label for="newAddressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" placeholder="Rua" maxlength="40" required>
+                        <input type="text" class="form-control" id="newAddressStreet" v-model="newAddressInfo.street" placeholder="Rua" maxlength="55" required>
                     </div>
-                    <div class="row">
-                        <div class="col mb-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
                             <label for="newAddressPostalCode" class="form-label">Código-postal <span style='color: #FF0000;'>*</span></label>
                             <input type="text" class="form-control" id="newAddressPostalCode" v-model="newAddressInfo.postalCode" placeholder="Código Postal" required>
                         </div>
-                        <div class="col mb-3">
+                        <div class="col-md-6">
                             <label for="newAddressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
                             <input type="number" class="form-control" id="newAddressNIF" v-model="newAddressInfo.nif" v-on:click="removeIsInvalid"  placeholder="NIF" required>
                             <div class="invalid-feedback" id="invalidFeedbackNewNIF">Deve conter exatamente 9 algarismos.</div>
@@ -133,14 +133,14 @@
                     </div>
                     <div class="col mb-3">
                         <label for="addressStreet" class="form-label">Rua <span style='color: #FF0000;'>*</span></label>
-                        <input type="text" class="form-control" id="editAddressStreet" v-bind:value="this.selectedAddress.street" maxlength="40" required>
+                        <input type="text" class="form-control" id="editAddressStreet" v-bind:value="this.selectedAddress.street" maxlength="55" required>
                     </div>
-                    <div class="row">
-                        <div class="col mb-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
                             <label for="addressPostalCode" class="form-label">Código-postal <span style='color: #FF0000;'>*</span></label>
                             <input type="text" class="form-control" id="editAddressPostalCode" v-bind:value="this.selectedAddress.postal_code" required>
                         </div>
-                        <div class="col mb-3">
+                        <div class="col-md-6">
                             <label for="addressNIF" class="form-label">NIF <span style='color: #FF0000;'>*</span></label>
                             <input type="number" class="form-control" id="editAddressNIF" v-bind:value="this.selectedAddress.nif" v-on:click="removeIsInvalid" required>
                             <div class="invalid-feedback" id="invalidFeedbackEditNIF">Deve conter exatamente 9 algarismos.</div>

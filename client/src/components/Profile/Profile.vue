@@ -58,12 +58,6 @@
                                     <font-awesome-icon :icon="['fa', 'gear']" size="lg"/>&nbsp; Segurança
                                 </router-link>
                             </li>
-                            <li class="nav-item">
-                                <router-link :to="{ name: 'statistics'}" class="nav-link link-dark" :class="(this.$route.name === 'statistics') ? 'nav-link active' : ''" aria-current="page">
-                                <svg class="bi me-0" width="16" height="16"></svg>
-                                    <font-awesome-icon :icon="['fa', 'chart-line']" size="lg"/>&nbsp; Estatísticas
-                                </router-link>
-                            </li>
 
                         </ul>
                     </nav>
@@ -90,8 +84,6 @@
 
                         <profile-security v-if="this.$route.name === 'security'"/>
 
-                        <profile-statistics v-if="this.$route.name === 'statistics'"/>
-
                     </div> 
                 </div>
             </div>
@@ -111,7 +103,6 @@ import ProfileOrders from '@/components/Profile/ProfileOrders.vue'
 import ProfileWishlist from '@/components/Profile/ProfileWishlist.vue'
 import ProfileAddresses from '@/components/Profile/ProfileAddresses.vue'
 import ProfileSecurity from '@/components/Profile/ProfileSecurity.vue'
-import ProfileStatistics from '@/components/Profile/ProfileStatistics.vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserTag, faTruckFast, faBoxOpen, faUser, faBriefcase, faBoxArchive, faHeart, faMap, faGear, faChartLine } from '@fortawesome/free-solid-svg-icons';
@@ -128,7 +119,6 @@ export default {
         ProfileWishlist,
         ProfileAddresses,
         ProfileSecurity,
-        ProfileStatistics
     },
     data() {
         return {
