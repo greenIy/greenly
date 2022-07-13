@@ -76,7 +76,7 @@
                 <br>
 
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount" v-on:click="generateCode()"><font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount" v-on:click="generateCode()"><font-awesome-icon :icon="['fa', 'user-xmark']" data-cy="profile-delete-account-button"/> &nbsp;Apagar conta</button>
 
                 <!-- Modal -->
                 <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteAccountLabel" aria-hidden="true">
@@ -90,18 +90,18 @@
                         <img src='../../assets/checkIconGreen.png'>
                     </div>
                     <div class="modal-body text-center p-4" id="deleteMessage">
-                        <h3 id="deleteAccountCode">{{ this.deleteCode }}</h3>
+                        <h3 id="deleteAccountCode" data-cy="profile-delete-account-code">{{ this.deleteCode }}</h3>
                         Digite o código acima para confirmar que pretende apagar a sua conta de forma definitiva
                         <div class="form-row justify-content-center mt-3">
                             <div class="input-group input-group-lg col-md-3 mx-auto w-50">
-                                <input v-on:click="removeIsInvalid" id="codeInput" type="text" class="form-control text-center" maxlength="4" placeholder="Código">
+                                <input v-on:click="removeIsInvalid" id="codeInput" type="text" class="form-control text-center" maxlength="4" placeholder="Código" data-cy="profile-delete-account-code-input">
                                 <div class="invalid-feedback" id="invalidDeleteCode">O código está errado.</div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="confirmDeleteAccount">Apagar</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton" v-on:click="confirmDeleteAccount" data-cy="profile-delete-account-confirmation-button">Apagar</button>
                     </div>
                     </div>
                 </div>

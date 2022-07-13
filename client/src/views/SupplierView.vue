@@ -4,13 +4,13 @@
         <body>
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-5 mt-4 justify-content-center" role="tablist">
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-supplier-orders-pill">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'fornecedor' || this.$route.name == 'fornecedor_historico' }">Encomendas</a>
                     </li>
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-supplier-warehouses-pill">
                         <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : this.$route.name == 'fornecedor_armazens' }">Armazéns</a>
                     </li>
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-supplier-supplies-pill">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : this.$route.name == 'fornecedor_inventario' }">Inventário</a>
                     </li>
                     </ul>
@@ -25,7 +25,7 @@
                         </div>
                       </div>
                       <div class="d-inline-block ms-4">
-                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Arquivo</button>
+                          <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" data-cy="dashboard-supplier-orders-archive"/>Arquivo</button>
                           <button type="button" class="btn btnHist" v-if="this.$route.name == 'fornecedor_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
                       </div>
                     </div>

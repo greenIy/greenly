@@ -14,7 +14,7 @@
           </div>
           <div class="col-sm-10 col-md-9">
           <Transition name="fade">
-            <div v-if="products.length" class="content d-flex w-100">
+            <div v-if="products.length" class="content d-flex w-100" data-cy="product-container">
               <ProductCard
               v-for="p in products"
               :key="p.id"

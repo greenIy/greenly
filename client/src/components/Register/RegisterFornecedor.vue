@@ -8,17 +8,17 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="inputFirstName" class="form-label">Nome <span style='color: #FF0000;'>*</span></label>
-                            <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Nome" required>
+                            <input type="name" class="form-control" id="firstName" v-model="registerInfo.firstName" placeholder="Nome" required data-cy="supplier-first-name">
                         </div>
                         <div class="col-md-6">
                             <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                            <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Apelido" required>
+                            <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Apelido" required data-cy="supplier-last-name"> 
                         </div>
                     </div>
                     <div class="row g-3 mt-1">
                         <div class="col">
                             <label for="inputEmail" class="form-label">E-mail <span style='color: #FF0000;'>*</span></label>
-                            <input type="email" v-on:click="removeIsInvalid" class="form-control" id="email" v-model="registerInfo.email" placeholder="E-mail" required>
+                            <input type="email" v-on:click="removeIsInvalid" class="form-control" id="email" v-model="registerInfo.email" placeholder="E-mail" required data-cy="supplier-email">
                             <div class="invalid-feedback" id="invalidFeedbackEmail"></div>
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                         <div class="col-md-6">
                             <label for="inputPassword" class="form-label">Palavra-passe</label>
                             <div class="input-group">
-                            <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Palavra-passe" required> 
+                            <input :type="showPassword1 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="password" v-model="registerInfo.password" placeholder="Palavra-passe" required data-cy="supplier-password"> 
                                 <div class="input-group-append">
                                     <span class="input-group-text" @click="showPassword1 = !showPassword1" style="height: 100%">
                                             <font-awesome-icon :icon="showPassword1 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -39,7 +39,7 @@
                         <div class="col-md-6">
                             <label for="inputPasswordConfirm" class="form-label">Repetir palavra-passe</label>
                             <div class="input-group">
-                            <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required>   
+                            <input :type="showPassword2 ? 'text' : 'password'" v-on:click="removeIsInvalid" class="form-control" id="passwordConfirm" v-model="registerInfo.passwordConfirm" placeholder="Palavra-passe" required data-cy="supplier-repeat-password">   
                                 <div class="input-group-append">
                                     <span class="input-group-text" @click="showPassword2 = !showPassword2" style="height: 100%">
                                             <font-awesome-icon :icon="showPassword2 ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -53,23 +53,23 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="inputCompanyName" class="form-label">Nome empresa <span style='color: #FF0000;'>*</span></label>
-                            <input type="name" class="form-control" id="companyName" v-model="registerInfo.companyName" placeholder="Nome" required>
+                            <input type="name" class="form-control" id="companyName" v-model="registerInfo.companyName" placeholder="Nome" required data-cy="supplier-company-name">
                         </div>
                         <div class="col-md-6">
                             <label for="inputComapnyEmail" class="form-label">Email empresa <span style='color: #FF0000;'>*</span></label>
-                            <input type="name" class="form-control" v-on:click="removeIsInvalid" id="companyEmail" v-model="registerInfo.companyEmail" placeholder="Email" required>
+                            <input type="name" class="form-control" v-on:click="removeIsInvalid" id="companyEmail" v-model="registerInfo.companyEmail" placeholder="Email" required data-cy="supplier-company-email">
                             <div class="invalid-feedback">E-mail não tem o formato correto ou e-mail já em uso.</div>
                         </div>
                     </div>
                     
                     <div class="mt-3 mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="termsConditons" required>
+                        <input type="checkbox" class="form-check-input" id="termsConditons" required data-cy="supplier-accept-terms">
                         <label class="form-check-label" style="cursor: pointer; font-size: 80%">Aceito os <u class="greenly-link" data-bs-toggle="modal" data-bs-target="#termsAndConditions">termos e condições de uso.</u></label>
                         <br>
                     </div>
                     
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%;">Registar como Fornecedor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
+                        <button type="submit" class="btn btn-primary" id="registerButton" style="width: 65%;">Registar como Fornecedor&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" data-cy="supplier-submit"/></button>
                     </div>
                 </form>
             </div>
