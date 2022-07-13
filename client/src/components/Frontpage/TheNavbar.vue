@@ -783,7 +783,6 @@ a.router-link-active {
   .dropdown-menu {
     margin-left: auto !important;
     margin-right: auto !important;
-    transform: translate3d(144px, 18px, 1px) !important;
   }
   .input-group {
     order: 3;
