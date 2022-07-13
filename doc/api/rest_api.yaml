@@ -5103,11 +5103,11 @@ components:
             total:
               type: number
               format: float
-              description: "Informação relativa emissões totais em toda a vida da plataforma"
+              description: "Informação relativa emissões totais em toda a vida da plataforma (em CO2 g/km/t)"
             last_month:
               type: number
               format: float
-              description: "Informação relativa às emissões totais no último mês na plataforma"
+              description: "Informação relativa às emissões totais no último mês na plataforma (em CO2 g/km/t)"
         resource_usage:
           type: object
           description: "Informação sobre utilização de recursos"
@@ -5146,11 +5146,47 @@ components:
             last_month:
               type: integer
               description: "Informação pertinente ao último mês na plataforma"
-            
-
-
-        
-
+        history:
+          type: array
+          description: Estatísticas da loja divididas pelo respetivo mês
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                description: Data do mês a que esta informação diz respeito (formato ISO8601) (deverá apenas ser considerado o mês e ano deste parâmetro)
+              revenue:
+                type: object
+                description: "Informação de vendas pertinente ao mês em questão"
+                properties:
+                  supply:
+                    type: number
+                    format: float
+                    description: "Informação relativa às vendas de fornecedores"
+                  transport:
+                    type: number
+                    format: float
+                    description: "Informação relativa às vendas de transportadores"
+                  total:
+                    type: number
+                    format: float
+                    description: Informação relativa às vendas totais
+              resource_usage:
+                type: object
+                description: Informação relativa à utilização de recursos no mês em questão
+                properties:
+                  supply:
+                    type: number
+                    format: float
+                    description: "Informação relativa à utilização de recursos de fornecedores (média de kWh/dia)"
+                  transport:
+                    type: number
+                    format: float
+                    description: "Informação relativa à utilização de recursos de transportadores (média de L/100km)"
+Y
+              new_users:
+                type: integer
+                description: Quantidade de utilizadores inscritos durante o mês em questão
 
   ## SECURITY SCHEMES
   securitySchemes:

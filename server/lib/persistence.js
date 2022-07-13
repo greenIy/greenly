@@ -7,6 +7,7 @@ const {Client} = require("@googlemaps/google-maps-services-js");
 const bcrypt = require('bcrypt');
 const argv = require('../server').argv
 const { nanoid } = require('nanoid');
+const { DateTime } = require('luxon');
 
 // Use 10 salt rounds for each hash
 const saltRounds = 10;
@@ -5330,6 +5331,110 @@ async function getStoreStatistics() {
             last_month: lastMonthUserData
         }
 
+
+        // Calculating historical data for each month
+
+        // Determining months amount of months, obtaining first ever month from first user
+
+        let oldestUser = await prisma.user.findFirst({
+            orderBy: {
+                registration_date: 'asc'
+            }
+        })
+
+        // Cleaning date objects
+
+        let firstDate = DateTime.fromJSDate(oldestUser.registration_date).set({day: 1})
+        let latestDate = DateTime.now().set({day: 1})
+
+        console.log('firstDate :>> ', firstDate.month, firstDate.day);
+        console.log('latestDate :>> ', latestDate.month,latestDate.day );
+
+        // Calculating time difference in months
+        
+        let monthDifference = round(latestDate.diff(firstDate, 'months').toObject().months, 0) + 1
+
+        console.log(monthDifference)
+
+        // Getting data for each month between the first month and current month
+
+        payload.history = []
+
+        for (let i = 0; i < monthDifference; i++) {
+
+            let upperBound = firstDate.plus({months: i + 1})
+
+            let lowerBound = firstDate.plus({months: i})
+
+            // Getting data related to time interval
+
+            let storeData = await prisma.order_Item.aggregate({
+                where: {
+                    status: {
+                        notIn: ["AWAITING_PAYMENT", "CANCELED", "FAILURE"]
+                    },
+                    Order: {
+                        AND: [
+                            {
+                                date: {
+                                    gte: lowerBound.toJSDate()
+                                }
+                            },
+                            {
+                                date: {
+                                    lte: upperBound.toJSDate()
+                                }
+                            }
+                        ]
+                    }
+                },
+                _sum: {
+                    supply_price: true,
+                    transport_price: true,
+                    supplier_resource_usage: true,
+                    transporter_resource_usage: true,
+                    transporter_emissions: true
+                }
+            })
+
+            let newUserCount = await prisma.user.count({
+                where: {
+                    AND: [
+                        {
+                            registration_date: {
+                                gte: lowerBound.toJSDate()
+                            }
+                        },
+                        {
+                            registration_date: {
+                                lte: upperBound.toJSDate()
+                            }
+                        }
+                    ],
+                }
+            })
+
+            // Adding to payload
+
+            let monthPayload = {
+                date: lowerBound.toISODate(),
+                revenue: {
+                    supply: nullSafe(storeData._sum.supply_price),
+                    transport: nullSafe(storeData._sum.transport_price),
+                    total: round(parseFloat(nullSafe(storeData._sum.supply_price) + nullSafe(storeData._sum.transport_price)), 2)
+                },
+                resource_usage: {
+                    supply: nullSafe(storeData._sum.supplier_resource_usage),
+                    transport: nullSafe(storeData._sum.transporter_resource_usage),
+                },
+                emissions: nullSafe(storeData._sum.transporter_emissions),
+                new_users: newUserCount
+            }
+
+            payload.history.push(monthPayload)
+
+        }
+
         return payload
 
     } catch (e) {
@@ -5449,4 +5554,4 @@ module.exports = {
 }
 
 // Avoiding circular dependency errors
-const { emailHandler } = require("./handler")
+const { emailHandler } = require("./handler");
