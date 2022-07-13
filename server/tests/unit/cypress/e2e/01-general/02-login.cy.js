@@ -13,23 +13,22 @@ describe('Login Test', () => {
 
   it('types login data', () => {
     // Getting e-mail forms
-    cy.get("input[type='email']").first().type("test@test.com")
-    cy.get("input[type='password']").first().type("teste")
+    cy.get('[data-cy="login-email"]').type(Cypress.env().consumer.email)
+    cy.get('[data-cy="login-password"]').type(Cypress.env().consumer.password)
 
   })
 
   it('submits login data', () => {
     // Submitting
-    cy.get("#loginButton").click()
+    cy.get('[data-cy="login-submit"]').click()
   })
 
   it('access profile page', () => {
     // Opening dropdown
-    cy.get(".dropdown-toggle", {
+    cy.get('[data-cy="navbar-dropdown"]', {
       timeout: 10000
-    }).first().click()
-    cy.get("a[href='/perfil/detalhes']").first().click()
-
+    }).click()
+    cy.get('[data-cy="navbar-profile"]').click()
     cy.location('href').should('contain', '/perfil');
 
   })

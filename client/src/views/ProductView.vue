@@ -140,11 +140,11 @@
                       <h4 class="my-0 fs-2" >{{ this.totalPrice }} €</h4>
                     </div>
                     <div class="d-inline-block text-end col-md-2">
-                      <button v-on:click="this.addProductToCart" class="btnS p-2">
+                      <button v-on:click="this.addProductToCart" class="btnS p-2" data-cy="product-add-to-cart">
                         <font-awesome-icon  class="icons"  :icon="['fa', 'cart-plus']" size="lg" />  Adicionar ao Carrinho {{modal}}
                       </button>
                     </div>
-                    <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="d-inline-block text-start col-md-1 btnH p-8 fav">
+                    <button v-if="userIsLoggedIn && user.type == 'CONSUMER'" class="d-inline-block text-start col-md-1 btnH p-8 fav" data-cy="product-add-to-wishlist">
                       <font-awesome-icon v-if="isProductInWishlist(this.product)" v-on:click="removeFromWishlist" class="icons fa-cog text-danger" :icon="['fa', 'heart']" size="lg"/>
                       <font-awesome-icon v-else v-on:click="addToWishlist" class="icons fa-cog" :icon="['fa', 'heart']" size="lg" />
                     </button>
