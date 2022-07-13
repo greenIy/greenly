@@ -1,98 +1,99 @@
 <template>
-<div>
-  <div class="d-flex justify-content-between">
-  <h4>Favoritos</h4>
-    <button
-      data-bs-toggle="modal"
-      data-bs-target="#staticBackdrop"
-      v-if="this.wishlistLength > 0"
-      type="button"
-      class="btn btn-danger"
-    >
-      <font-awesome-icon :icon="['fa', 'trash']" style="color: " /> Limpar
-      Favoritos
-    </button>
-  </div>
-  <hr />
-
-  <div
-    class="infinite-scroll py-3 text-center"
-    id="spinners-and-async-example"
-    style="overflow-y: scroll; height: 450px"
-  >
-    <div v-if="products.length" @currentPage="getCurrentPage">
-      <ProductCard
-        v-for="p in products"
-        :key="p.id"
-        :product="p"
-        @getProducts="getProducts"
-      ></ProductCard>
+  <div>
+    <div class="d-flex justify-content-between">
+      <h4>Favoritos</h4>
+      <button
+        data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop"
+        v-if="this.wishlistLength > 0"
+        type="button"
+        class="btn btn-danger"
+      >
+        <font-awesome-icon :icon="['fa', 'trash']" style="color: " /> Limpar
+        Favoritos
+      </button>
     </div>
+    <hr />
 
     <div
-      v-if="this.wishlistLength == 0"
-      style="overflow-y: hidden; overflow-x: auto; height: 370px"
-      class="content d-flex w-100"
+      class="infinite-scroll py-3 text-center"
+      id="spinners-and-async-example"
+      style="overflow-y: scroll; height: 450px"
     >
-      <div class="w-100 justify-content-center p-5 mt-5">
-        <p class="text-center">
-          Parece que ainda não adicionou nenhum produto aos favoritos.<br />Do
-          que está à espera? Explore o nosso catálogo.
-        </p>
-        <h6 class="text-center">
-          Ir para
-          <router-link class="greenly-link" to="/produtos">Produtos</router-link
-          >!
-        </h6>
+      <div v-if="products.length" @currentPage="getCurrentPage">
+        <ProductCard
+          v-for="p in products"
+          :key="p.id"
+          :product="p"
+          @getProducts="getProducts"
+        ></ProductCard>
       </div>
-    </div>
-  </div>
-  <div
-    class="modal fade"
-    id="staticBackdrop"
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-    tabindex="-1"
-    aria-labelledby="staticBackdropLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">
-            Limpar favoritos?
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          Têm a certeza que quer limpar todos os produtos dos favoritos?
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            id="closeRemoveAll"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            v-on:click="removeAllProducts()"
-            class="btn btn-danger"
-          >
-            Limpar favoritos
-          </button>
+
+      <div
+        v-if="this.wishlistLength == 0"
+        style="overflow-y: hidden; overflow-x: auto; height: 370px"
+        class="content d-flex w-100"
+      >
+        <div class="w-100 justify-content-center p-5 mt-5">
+          <p class="text-center">
+            Parece que ainda não adicionou nenhum produto aos favoritos.<br />Do
+            que está à espera? Explore o nosso catálogo.
+          </p>
+          <h6 class="text-center">
+            Ir para
+            <router-link class="greenly-link" to="/produtos"
+              >Produtos</router-link
+            >!
+          </h6>
         </div>
       </div>
     </div>
+    <div
+      class="modal fade"
+      id="staticBackdrop"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              Limpar favoritos?
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Têm a certeza que quer limpar todos os produtos dos favoritos?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="closeRemoveAll"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              v-on:click="removeAllProducts()"
+              class="btn btn-danger"
+            >
+              Limpar favoritos
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -222,5 +223,7 @@ export default {
   background-clip: content-box;
   background-color: #5e9f88;
 }
-
+.footerOverride {
+  bottom: auto !important;
+}
 </style>
