@@ -4,11 +4,11 @@
       <div @click="close" class="me-3 close">
         <font-awesome-icon class="fa-cog" :icon="['fa', 'close']" />
       </div>
-      <div class="container w-100 mt-2">
+      <div class="container d-flex isColumnContainer w-100 mt-2">
         <div class="d-flex comp-header">
           <p class="text">COMPARAR PRODUTOS</p>
         </div>
-        <div class="d-flex flex-row comp-content">
+        <div class="d-flex itemContainer comp-content">
           <div v-if="productsToCompare.length > 0" class="comp-content-product">
             <div class="d-inline-block">
               <img
@@ -50,7 +50,10 @@
               para comparar
             </p>
           </div>
-          <div v-if="productsToCompare.length > 1" class="me-4 ps-5">
+          <div
+            v-if="productsToCompare.length > 1"
+            class="margin3 comp-content-product"
+          >
             <div class="d-inline-block">
               <img
                 class="img-fluid product-img"
@@ -58,7 +61,7 @@
                 alt="Fotografia do produto"
               />
             </div>
-            <div class="d-inline-block pt-2 pb-2 pe-3 ps-3">
+            <div class="d-inline-block pt-2 pb-2 pe-3 ps-2">
               <span
                 ><small
                   ><router-link
@@ -80,7 +83,7 @@
               </span>
             </div>
           </div>
-          <div class="pt-2 pb-2 pe-3 ps-4" id="compare-btn">
+          <div class="" id="compare-btn">
             <button
               v-if="Object.keys(this.$route.query).length == 2"
               @click="openModal"
@@ -621,9 +624,24 @@ img {
   color: #4d4d4d;
 }
 
+.isColumnContainer {
+  flex-direction: column;
+}
+.itemContainer {
+  flex-direction: row;
+}
+.margin3 {
+  margin-left: 2em;
+}
 @media (min-width: 992px) and (max-width: 1199px) {
   .compare-div {
     height: 55%;
+  }
+  .itemContainer {
+    flex-direction: column;
+  }
+  .margin3 {
+    margin-left: 0;
   }
 }
 
@@ -637,6 +655,12 @@ img {
   .compare-modal {
     height: 100%;
     width: 100%;
+  }
+  .itemContainer {
+    flex-direction: column;
+  }
+  .margin3 {
+    margin-left: 0;
   }
 }
 </style>

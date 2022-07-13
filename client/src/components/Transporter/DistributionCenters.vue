@@ -1,6 +1,6 @@
 <template>
-  <div class="container my-2">
-    <div class="d-flex align-items-start container-elements">
+  <div class="container my-2 d-flex mainContainer">
+    <div class="d-flex justify-content-center container-elements">
       <div class="card fixedMap">
         <div v-if="this.distributionCentersLength > 0" class="card-body">
           <div id="map"></div>
@@ -13,156 +13,53 @@
           <p>Parece que ainda não criou nenhum centro de distribuição.</p>
         </div>
       </div>
-      <div
-        class="card mx-4"
-        style="width: 100%; cursor: pointer"
-        data-bs-toggle="modal"
-        data-bs-target="#newCenterModal"
-      >
+      <div class="mainContainer d-flex ms-1">
         <div
-          class="card-body addCenterButton align-items-center justify-content-center"
+          class="card flexVerticalGrow"
+          style="width: 100%; cursor: pointer"
+          data-bs-toggle="modal"
+          data-bs-target="#newCenterModal"
         >
-          <h1>
-            <font-awesome-icon
-              :icon="['fa', 'plus']"
-              size="2xl"
-              style="color: grey"
-            />
-          </h1>
-          <span>criar centro<br />de distribuição</span>
-        </div>
-      </div>
-      <div class="card me-4" style="width: 100%">
-        <div class="card-body text-center">
-          <h5 class="card-title">
-            <font-awesome-icon
-              :icon="['fa', 'building-circle-arrow-right']"
-            />&nbsp; Centros de distribuição
-          </h5>
-          <h1 class="card-text">
-            {{ this.calculateDistributionCentersLength() }}
-          </h1>
-          <hr />
-          <small class="card-text"
-            >número total de centros de distribuição</small
+          <div
+            class="card-body addCenterButton align-items-center justify-content-center"
           >
+            <h1>
+              <font-awesome-icon
+                :icon="['fa', 'plus']"
+                size="2xl"
+                style="color: grey"
+              />
+            </h1>
+            <span>criar centro<br />de distribuição</span>
+          </div>
         </div>
-      </div>
-      <div class="card me-4" style="width: 100%">
-        <div class="card-body text-center">
-          <h5 class="card-title">
-            <font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Veículos de
-            distribuição
-          </h5>
-          <h1 class="card-text">{{ this.calculateTotalVehicles() }}</h1>
-          <hr />
-          <small class="card-text"
-            >número total de veículos do centro de distribuição</small
-          >
-        </div>
-      </div>
-      <div v-if="this.distributionCentersLength > 0" class="last-card">
-        <div
-          v-for="(center, index) in this.distributionCenters"
-          :key="center.id"
-          class="card me-4"
-          style="height: 410px"
-        >
-          <div class="card-body p-4">
+        <div class="card flexVerticalGrow" style="width: 100%">
+          <div class="card-body text-center">
             <h5 class="card-title">
               <font-awesome-icon
                 :icon="['fa', 'building-circle-arrow-right']"
-              />&nbsp; #{{ center.id }}
+              />&nbsp; Centros de distribuição
             </h5>
-            <div class="position-absolute top-0 end-0 p-4 pe-4">
-              <p
-                data-bs-toggle="modal"
-                data-bs-target="#removeCenter"
-                style="cursor: pointer; color: red"
-                v-on:click="this.selectedCenter = center"
-              >
-                Remover
-              </p>
-            </div>
+            <h1 class="card-text">
+              {{ this.calculateDistributionCentersLength() }}
+            </h1>
             <hr />
-            <div style="height: 35%">
-              <h6>
-                <font-awesome-icon
-                  :icon="['fa', 'location-dot']"
-                  size="sm"
-                />&nbsp; Morada
-              </h6>
-              <address>
-                {{ center.address.street }}<br />
-                {{ center.address.city }}, {{ center.address.country }}<br />
-                <abbr title="CP">Código Postal:</abbr>
-                {{ center.address.postal_code }}
-              </address>
-            </div>
-            <h6>
-              <font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Capacidade
-            </h6>
-            <span
-              >Dimensão: {{ Math.ceil(center.total_vehicles * 36) }}m²/{{
-                center.capacity
-              }}m²</span
-            ><br />
-            <span
-              >Veículos: {{ center.total_vehicles }}/{{
-                Math.floor(center.capacity / 36)
-              }}</span
+            <small class="card-text"
+              >número total de centros de distribuição</small
             >
-            <div class="progress mt-2">
-              <div
-                v-if="getDistributionsCenterCapacity(index) < 100"
-                :id="'capacityBar' + center.id"
-                class="progress-bar bg-success"
-                role="progressbar"
-                :style="{
-                  width: String(getDistributionsCenterCapacity(index)) + '%',
-                }"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              ></div>
-              <div
-                v-else
-                :id="'capacityBar' + center.id"
-                class="progress-bar bg-danger"
-                role="progressbar"
-                :style="{
-                  width: String(getDistributionsCenterCapacity(index)) + '%',
-                }"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              ></div>
-            </div>
-            <div class="text-center mt-4">
-              <button
-                type="button"
-                class="btn btn-secondary btn-sm me-3"
-                v-on:click="
-                  changeMapCenter(
-                    center.address.latitude,
-                    center.address.longitude
-                  )
-                "
-              >
-                <font-awesome-icon
-                  :icon="['fa', 'location-crosshairs']"
-                />&nbsp; Destacar no mapa
-              </button>
-              <button
-                type="button"
-                class="btn btn-secondary btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#detailsCenterModal"
-                v-on:click="getDistributionCenterInfo(center)"
-              >
-                <font-awesome-icon
-                  :icon="['fa', 'up-right-and-down-left-from-center']"
-                />&nbsp; Mais detalhes
-              </button>
-            </div>
+          </div>
+        </div>
+        <div class="card flexVerticalGrow" style="width: 100%">
+          <div class="card-body text-center">
+            <h5 class="card-title">
+              <font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Veículos de
+              distribuição
+            </h5>
+            <h1 class="card-text">{{ this.calculateTotalVehicles() }}</h1>
+            <hr />
+            <small class="card-text"
+              >número total de veículos do centro de dist ibuição</small
+            >
           </div>
         </div>
       </div>
@@ -686,7 +583,101 @@
       </div>
     </div>
 
-    <br />
+    <div
+      v-if="this.distributionCentersLength > 0"
+      v-for="(center, index) in this.distributionCenters"
+      :key="center.id"
+      class="card adress"
+    >
+      <div class="card-body p-4">
+        <h5 class="card-title">
+          <font-awesome-icon
+            :icon="['fa', 'building-circle-arrow-right']"
+          />&nbsp; #{{ center.id }}
+        </h5>
+        <div class="position-absolute top-0 end-0 p-4 pe-4">
+          <p
+            data-bs-toggle="modal"
+            data-bs-target="#removeCenter"
+            style="cursor: pointer; color: red"
+            v-on:click="this.selectedCenter = center"
+          >
+            Remover
+          </p>
+        </div>
+        <hr />
+        <div style="height: 35%">
+          <h6>
+            <font-awesome-icon :icon="['fa', 'location-dot']" size="sm" />&nbsp;
+            Morada
+          </h6>
+          <address>
+            {{ center.address.street }}<br />
+            {{ center.address.city }}, {{ center.address.country }}<br />
+            <abbr title="CP">Código Postal:</abbr>
+            {{ center.address.postal_code }}
+          </address>
+        </div>
+        <h6><font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Capacidade</h6>
+        <span
+          >Dimensão: {{ Math.ceil(center.total_vehicles * 36) }}m²/{{
+            center.capacity
+          }}m²</span
+        ><br />
+        <span
+          >Veículos: {{ center.total_vehicles }}/{{
+            Math.floor(center.capacity / 36)
+          }}</span
+        >
+        <div class="progress mt-2">
+          <div
+            v-if="getDistributionsCenterCapacity(index) < 100"
+            :id="'capacityBar' + center.id"
+            class="progress-bar bg-success"
+            role="progressbar"
+            :style="{
+              width: String(getDistributionsCenterCapacity(index)) + '%',
+            }"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+          <div
+            v-else
+            :id="'capacityBar' + center.id"
+            class="progress-bar bg-danger"
+            role="progressbar"
+            :style="{
+              width: String(getDistributionsCenterCapacity(index)) + '%',
+            }"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+        </div>
+        <div class="text-center mt-4">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm me-3"
+            v-on:click="
+              changeMapCenter(center.address.latitude, center.address.longitude)
+            "
+          >
+            <font-awesome-icon :icon="['fa', 'location-crosshairs']" />&nbsp;
+            Destacar no mapa
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#detailsCenterModal"
+            v-on:click="getDistributionCenterInfo(center)"
+          >
+            <font-awesome-icon
+              :icon="['fa', 'up-right-and-down-left-from-center']"
+            />&nbsp; Mais detalhes
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1113,6 +1104,7 @@ export default {
 }
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 747px;
 }
 .card:hover {
   box-shadow: 1px 10px 12px #d9d9d9;
@@ -1137,7 +1129,10 @@ export default {
 }
 .addCenterButton {
   text-align: center;
-  margin-top: 10%;
+}
+
+.mainContainer {
+  flex-direction: column;
 }
 .greenly-link {
   color: #5e9f88 !important;
@@ -1166,7 +1161,14 @@ export default {
 .footerOverride {
   bottom: auto !important;
 }
-
+.adress {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+}
+.flexVerticalGrow {
+  flex: 1;
+}
 @media (min-width: 992px) and (max-width: 1199px) {
   .container-elements {
     flex-direction: column;
@@ -1176,29 +1178,38 @@ export default {
     margin: auto !important;
     margin-top: 1em !important;
   }
-  .last-card {
+  .adress {
     width: 100%;
   }
   .fixedMap {
     order: 3;
-    width: 100% !important;
+    width: 95% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
 @media (max-width: 991px) {
   .container-elements {
     flex-direction: column;
-    margin: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   .card {
     margin: auto !important;
     margin-top: 1em !important;
   }
-  .last-card {
+  .adress {
     width: 100%;
   }
   .fixedMap {
     order: 3;
+    width: 95% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .mainContainer {
+    margin: auto !important;
   }
 }
 </style>
