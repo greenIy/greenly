@@ -4,13 +4,13 @@
         <body>
             <div class="content-wrap">
                 <ul class="nav nav-pills mb-3 mt-3 justify-content-center" role="tablist">
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-transporter-orders-pill">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(1)" :class="{ active : this.$route.name == 'transportador' || this.$route.name == 'transportador_historico' }">Encomendas</a>
                     </li>
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-transporter-centers-pill">
                         <a class="nav-link" data-toggle="pill" role="tab"  @click="activate(2)" :class="{ active : this.$route.name == 'transportador_centros_dist' }">Centros de Distribuição</a>
                     </li>
-                    <li role="button" class="nav-item">
+                    <li role="button" class="nav-item" data-cy="dashboard-transporter-vehicles-pill">
                         <a class="nav-link" data-toggle="pill" role="tab" @click="activate(3)" :class="{ active : this.$route.name == 'transportador_veiculos' }">Veículos</a>
                     </li>
                     </ul>
@@ -25,7 +25,7 @@
                         </div>
                       </div>
                       <div class="d-inline-block ms-4">
-                        <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Arquivo</button>
+                        <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador'" @click="showHistory()" data-cy="dashboard-transporter-orders-archive"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Arquivo</button>
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
                         <font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer; margin-top: 8px; margin-left: 15px;" data-bs-toggle="modal" data-bs-target="#userHelper"/>
                       </div>

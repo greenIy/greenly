@@ -423,7 +423,8 @@ export default {
 	},
 	methods: {
 		initMaps() {
-            const loader = new Loader({
+			if(this.warehouses.length > 0) {
+				const loader = new Loader({
                 apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
                 version: "weekly"
             });
@@ -454,6 +455,8 @@ export default {
                 );
 				}
             })
+			}
+
         },
 		initWarehouseMap() {
             const loader = new Loader({
