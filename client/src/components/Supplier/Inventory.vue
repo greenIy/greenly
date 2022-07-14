@@ -282,7 +282,7 @@
                                             <td>{{ Math.round(transporter.transporter.average_resource_usage * 100) / 100 }} <small>l/100km</small></td>
                                             <td>{{ Math.round(transporter.transporter.average_emissions * 100) / 100 }} <small>CO₂ g/km/t</small></td>
                                             <td>{{ transporter.price }}€</td>
-                                            <td> &nbsp &nbsp</td>
+                                            <td> &nbsp; &nbsp;</td>
                                             <td><span style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#editItemTransporter" v-on:click="this.selectedItemTransporter = transporter">Editar</span></td>
                                             <td><span style="cursor: pointer; color: red" data-bs-toggle="modal" data-bs-target="#removeItemTransporter" v-on:click="this.selectedItemTransporter = transporter.transporter.id">Remover</span></td>
                                         </tr>
