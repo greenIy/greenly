@@ -22,6 +22,7 @@ describe('Get Wishlist Test', () => {
         cy.get('[data-cy="login-submit"]').click()
 
         // Opening dropdown
+        cy.wait(5000)
         cy.get('[data-cy="navbar-dropdown"]', {
             timeout: 10000
         }).click()

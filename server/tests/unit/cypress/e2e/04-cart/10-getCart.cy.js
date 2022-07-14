@@ -23,6 +23,7 @@ describe('Get Cart Test', () => {
     })
 
     it('enters cart page', () => {
+        cy.wait(5000)
         cy.get('[data-cy="navbar-cart"]', {timeout: 15000}).click()
         cy.location('href').should('contain', '/carrinho');
     })

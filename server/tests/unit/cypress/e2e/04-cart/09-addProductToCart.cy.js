@@ -31,6 +31,7 @@ describe('Add Product to Cart Test', () => {
     })
 
     it('finds "add to cart" button', () => {
+        cy.wait(5000)
         cy.get('[data-cy="product-add-to-cart"]', {timeout: 15000}).scrollIntoView()
         cy.get('[data-cy="product-add-to-cart"]').click()
         cy.wait(1000)

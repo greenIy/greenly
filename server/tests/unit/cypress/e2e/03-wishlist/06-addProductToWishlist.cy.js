@@ -23,11 +23,12 @@ describe('Add Product to Wishlist Test', () => {
     })
 
     it('enters first product', () => {
+        cy.wait(5000)
         cy.get('.product-card', {timeout: 15000}).first().click()
     })
 
     it('finds "add to wishlist" button', () => {
-
+        cy.wait(5000)
         cy.get('[data-cy="product-add-to-wishlist"]').scrollIntoView()
         cy.get('[data-cy="product-add-to-wishlist"]', {timeout: 15000}).click()
 

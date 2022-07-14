@@ -30,6 +30,7 @@ describe('Clear Wishlist Test', () => {
     })
 
     it('enters wishlist page', () => {
+        cy.wait(5000)
         cy.get('[data-cy="profile-wishlist-tab"]', {timeout: 15000}).click()
         cy.location('href').should('contain', '/perfil/favoritos');
     })
