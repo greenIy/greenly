@@ -4,13 +4,13 @@
         <!-- Pills navs -->
         <ul class="nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
             <li class="nav-item" @click="activeTab = 'consumidor'">
-                <a class="nav-link" :class="(activeTab === 'consumidor') ? 'nav-link-active' : ''" id="pills-consumidor-tab"><font-awesome-icon :icon="['fa', 'user-tag']" size="xl"/><br> Consumidor </a>
+                <a class="nav-link" :class="(activeTab === 'consumidor') ? 'nav-link-active' : ''" id="pills-consumidor-tab" data-cy="register-consumer-pill"><font-awesome-icon :icon="['fa', 'user-tag']" size="xl"/><br> Consumidor </a>
             </li>
             <li class="nav-item" @click="activeTab = 'fornecedor'">
-                <a class="nav-link" :class="(activeTab === 'fornecedor') ? 'nav-link-active' : ''" id="pills-fornecedor-tab"><font-awesome-icon :icon="['fa', 'box-open']" size="xl"/><br> Fornecedor </a>
+                <a class="nav-link" :class="(activeTab === 'fornecedor') ? 'nav-link-active' : ''" id="pills-fornecedor-tab" data-cy="register-supplier-pill"><font-awesome-icon :icon="['fa', 'box-open']" size="xl"/><br> Fornecedor </a>
             </li>
             <li class="nav-item" @click="activeTab = 'transportador'">
-                <a class="nav-link" :class="(activeTab === 'transportador') ? 'nav-link-active' : ''" id="pills-transportador-tab"><font-awesome-icon :icon="['fa', 'truck-fast']" size="xl"/><br> Transportador </a>
+                <a class="nav-link" :class="(activeTab === 'transportador') ? 'nav-link-active' : ''" id="pills-transportador-tab" data-cy="register-transporter-pill"><font-awesome-icon :icon="['fa', 'truck-fast']" size="xl"/><br> Transportador </a>
             </li>
         </ul>
       

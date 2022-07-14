@@ -6,13 +6,13 @@
                     <h2 class="text-center" >Iniciar sessão</h2>
                     <div class="mb-3">
                         <label for="inputEmail" class="form-label">E-mail</label>
-                        <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="loginInfo.email" placeholder="Introduza email" required>
+                        <input v-on:click="removeIsInvalid" type="email" class="form-control" id="email" v-model="loginInfo.email" placeholder="Introduza email" required data-cy="login-email">
                         <div class="invalid-feedback">E-mail não se encontra registado.</div>
                     </div>
                     <div class="mb-3">
                         <label for="inputPassword" class="form-label">Palavra-passe</label>
                         <div class="input-group">
-                        <input v-on:click="removeIsInvalid" :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="loginInfo.password" placeholder="Introduza palavra-passe" required>
+                        <input v-on:click="removeIsInvalid" :type="showPassword ? 'text' : 'password'" class="form-control" id="password" v-model="loginInfo.password" placeholder="Introduza palavra-passe" required data-cy="login-password">
                             <div class="input-group-append">
                                 <span class="input-group-text" @click="showPassword = !showPassword" style="height: 100%; cursor: pointer;">
                                         <font-awesome-icon :icon="showPassword ? ['fa', 'eye-slash'] : ['fa', 'eye']" />
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <p class="text-muted small" style="font-size: 85%"><router-link class="greenly-link" to="">Esqueceste-te da tua palavra-passe?</router-link></p>
-                    <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton">Iniciar&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%" id="loginButton" data-cy="login-submit">Iniciar&nbsp;&nbsp;<img  src="../../assets/leaf.png" class="mb-1" alt="Folha" style="width:7%" /></button>
                     <div class="or-seperator"><i>ou</i></div>
                         <p class="text-center">Inicia sessão através de uma rede social</p>
                         <div class="text-center social-btn">
@@ -174,7 +174,7 @@ export default({
     }
     .or-seperator i {
         padding: 0 10px;
-        background: #f7f7f7;
+        background: white;
         position: relative;
         top: -11px;
         z-index: 1;

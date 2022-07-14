@@ -100,10 +100,6 @@ const routes = [
         name: 'security',
         component: ProfileView,
       },
-      { path: 'estatisticas',
-        name: 'statistics',
-        component: ProfileView,
-      },
     ]
   },
   {

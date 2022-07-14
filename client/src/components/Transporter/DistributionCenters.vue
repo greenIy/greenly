@@ -1,8 +1,8 @@
 <template>
 	<div class="container mt-5">
-		<div class="row align-items-start">
-			<div class="col-4">
-				<div class="card fixedMap">
+		<div class="row g-3 align-items-start">
+			<div class="col-md-4">
+				<div class="card">
 					<div v-if="this.distributionCentersLength > 0" class="card-body">
 						<div id="map"></div>
 					</div>
@@ -11,60 +11,73 @@
 					</div>
 				</div>
 			</div>
-			<div class="col">
-				<div class="col d-inline-flex">
-					<div class="card me-4" style="width: 100%; cursor:pointer" data-bs-toggle="modal" data-bs-target="#newCenterModal">
-						<div class="card-body addCenterButton align-items-center justify-content-center">
-							<h1><font-awesome-icon :icon="['fa', 'plus']" size="2xl" style="color: grey" /></h1>
-							<span>criar centro<br>de distribuição</span>
+			<div class="col-md-8">
+				<div class="row g-3">
+					<div class="col-md-4">
+						<div class="card me-4" style="width: 100%; height: 220px">
+							<div class="position-absolute top-0 end-0 p-2 pe-3">
+								<font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer; text-align: right;" data-bs-toggle="modal" data-bs-target="#userHelper"/>
+							</div>
+							<div class="card-body addCenterButton align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#newCenterModal" style="cursor:pointer">
+								<h1><font-awesome-icon :icon="['fa', 'plus']" size="2xl" style="color: grey" /></h1>
+								<span>criar centro<br>de distribuição</span>
+							</div>
 						</div>
 					</div>
-					<div class="card me-4" style="width: 100%;">
-						<div class="card-body text-center">
-							<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centros de distribuição</h5>
-							<h1 class="card-text">{{ this.calculateDistributionCentersLength() }}</h1>
-							<hr>
-							<small class="card-text">número total de centros de distribuição</small>
+					<div class="col-md-4">
+						<div class="card me-4" style="width: 100%; height: 220px;">
+							<div class="card-body text-center">
+								<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; Centros de distribuição</h5>
+								<h1 class="card-text">{{ this.calculateDistributionCentersLength() }}</h1>
+								<hr>
+								<small class="card-text">número total de centros de distribuição</small>
+							</div>
 						</div>
 					</div>
-					<div class="card me-4" style="width: 100%;">
-						<div class="card-body text-center">
-							<h5 class="card-title"><font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Veículos de distribuição</h5>
-							<h1 class="card-text">{{ this.calculateTotalVehicles() }}</h1>
-							<hr>
-							<small class="card-text">número total de veículos do centro de distribuição</small>
-						</div>
+					<div class="col-md-4">
+						<div class="card me-4" style="width: 100%; height: 220px;">
+							<div class="card-body text-center">
+								<h5 class="card-title"><font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Veículos de distribuição</h5>
+								<h1 class="card-text">{{ this.calculateTotalVehicles() }}</h1>
+								<hr>
+								<small class="card-text">número total de veículos do centro de distribuição</small>
+							</div>
+						</div>		
 					</div>
 				</div>
-				<div v-if="this.distributionCentersLength > 0" class="row ms-1">
-					<div v-for="(center, index) in this.distributionCenters" :key="center.id" class="card mt-4 me-4" style="max-width: 46%; height: 410px;">
-						<div class="card-body p-4">
-							<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; #{{ center.id }}</h5>
-							<div class="position-absolute top-0 end-0 p-4 pe-4">
-								<p data-bs-toggle="modal" data-bs-target="#removeCenter" style="cursor: pointer; color: red;" v-on:click="this.selectedCenter = center">Remover</p>
+				<div class="row g-3">
+					<div v-if="this.distributionCentersLength > 0" class="row">
+						<div v-for="(center, index) in this.distributionCenters" :key="center.id" class="col-md-6">
+							<div class="card mt-4" style="height: 410px;">
+								<div class="card-body p-4">
+									<h5 class="card-title"><font-awesome-icon :icon="['fa', 'building-circle-arrow-right']" />&nbsp; #{{ center.id }}</h5>
+									<div class="position-absolute top-0 end-0 p-4 pe-4">
+										<p data-bs-toggle="modal" data-bs-target="#removeCenter" style="cursor: pointer; color: red;" v-on:click="this.selectedCenter = center">Remover</p>
+									</div>
+									<hr>
+									<div style="height: 35%;">
+										<h6><font-awesome-icon :icon="['fa', 'location-dot']" size="sm"/>&nbsp; Morada</h6>
+										<address>
+											{{ center.address.street }}<br>
+											{{ center.address.city }}, {{ center.address.country }}<br>
+											<abbr title="CP">Código Postal:</abbr> {{ center.address.postal_code }}
+										</address>
+									</div>
+									<h6><font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Capacidade</h6>
+									<span >Dimensão: {{ Math.ceil(center.total_vehicles*36) }}m²/{{ center.capacity }}m²</span><br>
+									<span >Veículos: {{ center.total_vehicles }}/{{ Math.floor(center.capacity/36) }}</span>
+									<div class="progress mt-2">
+										<div v-if="getDistributionsCenterCapacity(index) < 100 " :id="'capacityBar' + center.id" class="progress-bar bg-success" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
+										<div v-else :id="'capacityBar' + center.id" class="progress-bar bg-danger" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
+									<div class="text-center mt-4">
+										<button type="button" class="btn btn-secondary btn-sm me-3" v-on:click="changeMapCenter(center.address.latitude, center.address.longitude)"><font-awesome-icon :icon="['fa', 'location-crosshairs']" />&nbsp; Destacar no mapa</button>
+										<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#detailsCenterModal" v-on:click="getDistributionCenterInfo(center)"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
+									</div>
+								</div>
 							</div>
-							<hr>
-							<div style="height: 35%;">
-								<h6><font-awesome-icon :icon="['fa', 'location-dot']" size="sm"/>&nbsp; Morada</h6>
-								<address>
-									{{ center.address.street }}<br>
-									{{ center.address.city }}, {{ center.address.country }}<br>
-									<abbr title="CP">Código Postal:</abbr> {{ center.address.postal_code }}
-								</address>
-							</div>
-							<h6><font-awesome-icon :icon="['fa', 'truck']" />&nbsp; Capacidade</h6>
-							<span >Dimensão: {{ Math.ceil(center.total_vehicles*36) }}m²/{{ center.capacity }}m²</span><br>
-							<span >Veículos: {{ center.total_vehicles }}/{{ Math.floor(center.capacity/36) }}</span>
-							<div class="progress mt-2">
-								<div v-if="getDistributionsCenterCapacity(index) < 100 " :id="'capacityBar' + center.id" class="progress-bar bg-success" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
-								<div v-else :id="'capacityBar' + center.id" class="progress-bar bg-danger" role="progressbar" :style="{ 'width': String(getDistributionsCenterCapacity(index)) + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
-							</div>
-							<div class="text-center mt-4">
-								<button type="button" class="btn btn-secondary btn-sm me-3" v-on:click="changeMapCenter(center.address.latitude, center.address.longitude)"><font-awesome-icon :icon="['fa', 'location-crosshairs']" />&nbsp; Destacar no mapa</button>
-								<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#detailsCenterModal" v-on:click="getDistributionCenterInfo(center)"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button>
-							</div>
-						</div>
-					</div>				
+						</div>				
+					</div>
 				</div>
 
 				<!-- Modal New Center -->
@@ -286,6 +299,55 @@
 					</div>
 				</div>
 				</div>
+
+				<!-- Modal User Helper -->
+				<div class="modal fade" id="userHelper" tabindex="-1" aria-labelledby="userHelperLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Ajuda</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="accordion accordion-flush" id="accordionFlushExample">
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingOne">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+									Como posso criar um novo centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Para criar um novo centro de distribuição basta clicar no botão "<font-awesome-icon :icon="['fa', 'plus']" style="color: grey" />" e preencher todos os campos como pedido. Para selecionar a morada do seu novo centro de distribuição, esta deve de ser primeiro adicionada ao seu perfil.</div>
+								</div>
+							</div>
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingTwo">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+									Como posso remover um centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Para remover um centro de distribuição basta clicar no botão "<span style="color: red;">Remover</span>". Irá ser aberta uma caixa de confirmação e, depois de refletir na sua decisão, pode remover o seu centro de distribuição.</div>
+								</div>
+							</div>
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingThree">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+									Como posso visualizar e editar informações do meu centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Começe por carregar no botão "Mais detalhes". Irá ser aberto um menu onde pode visualizar as informações sobre esse centro de distribuição. Nesse menu pode também alterar a morada do seu centro de distribuição no botão "Alterar morada" e alterar capacidade do mesmo carregando no botão "Editar detalhes" . </div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+					</div>
+					</div>
+				</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -322,37 +384,39 @@ export default {
 	},
 	methods: {
 		initMaps() {
-            const loader = new Loader({
-                apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
-                version: "weekly"
-            });
-            loader.load().then(() => {
-                let mapCenter = {lat: this.distributionCenters[0].address.latitude, lng: this.distributionCenters[0].address.longitude}
-                this.map = new google.maps.Map(document.getElementById("map"), {
-                center: mapCenter,
-                zoom: 10,
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false,
-                zoomControl: false,
-                disableDoubleClickZoom: true,
-                draggable: false,
-                disableDefaultUI: true,
-                clickableIcons: false,
-                })
-				for (let distributionCenter of this.distributionCenters) {
-					let markerPosition = {lat: distributionCenter.address.latitude, lng: distributionCenter.address.longitude}
-					const marker = new google.maps.Marker({
-                        position: markerPosition,
-                        map: this.map,
-                        label: {
-                            text: `#${distributionCenter.id}`,
-                            color: "#FFF"
-                        }
-                    }
-                );
-				}
-            })
+			if (this.distributionCenters.length > 0) {
+				const loader = new Loader({
+					apiKey: process.env.VUE_APP_GOOGLE_API_KEY,
+					version: "weekly"
+				});
+				loader.load().then(() => {
+					let mapCenter = {lat: this.distributionCenters[0].address.latitude, lng: this.distributionCenters[0].address.longitude}
+					this.map = new google.maps.Map(document.getElementById("map"), {
+					center: mapCenter,
+					zoom: 10,
+					streetViewControl: false,
+					mapTypeControl: false,
+					fullscreenControl: false,
+					zoomControl: false,
+					disableDoubleClickZoom: true,
+					draggable: false,
+					disableDefaultUI: true,
+					clickableIcons: false,
+					})
+					for (let distributionCenter of this.distributionCenters) {
+						let markerPosition = {lat: distributionCenter.address.latitude, lng: distributionCenter.address.longitude}
+						const marker = new google.maps.Marker({
+							position: markerPosition,
+							map: this.map,
+							label: {
+								text: `#${distributionCenter.id}`,
+								color: "#FFF"
+							}
+						}
+					);
+					}
+				})
+			}
         },
 		initCenterMap() {
             const loader = new Loader({
@@ -619,12 +683,7 @@ export default {
         width: 100%;
 		border-radius: 5px;
     }
-	.fixedMap {
-		z-index: 1;
-		position: fixed;
-		height: 650px;
-        width: 400px;
-	}
+
 	.card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     }
@@ -651,7 +710,7 @@ export default {
 	}
 	.addCenterButton {
 		text-align: center;
-		margin-top: 10%;
+		margin-top: 8%;
 	}
 	.greenly-link {
         color: #5e9f88 !important;

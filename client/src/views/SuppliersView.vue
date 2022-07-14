@@ -19,7 +19,7 @@
               </div>
           </div>
       </section>
-      <div class="slider mb-3">
+      <div class="slider mb-4">
         <div class="slide-track">
           <div class="slide d-flex align-items-center mx-auto"
             v-for="s in suppliers"
@@ -28,6 +28,7 @@
           </div>
         </div>
       </div>
+      <br>
     </div>
     <TheFooter />
   </div>
