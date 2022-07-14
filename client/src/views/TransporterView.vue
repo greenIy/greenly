@@ -27,6 +27,7 @@
                       <div class="d-inline-block ms-4">
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador'" @click="showHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'clock-rotate-left']" />Arquivo</button>
                         <button type="button" class="btn btnHist" v-if="this.$route.name == 'transportador_historico'" @click="hideHistory()"><font-awesome-icon class="fs-6 fa-fw mx-1 icon" :icon="['fas', 'box']" />Encomendas Em Curso </button>
+                        <font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer; margin-top: 8px; margin-left: 15px;" data-bs-toggle="modal" data-bs-target="#userHelper"/>
                       </div>
                     </div>
                     <div v-if="this.$route.name == 'transportador'"><EncomendasDashboard :receiveData="receiveData" @updateStatus="updateStatus"/></div>
@@ -35,8 +36,58 @@
 
                     <History v-if="this.$route.name == 'transportador_historico'" :receiveData="receiveData"/>
             </div>
+
+            <!-- Modal User Helper -->
+            <div class="modal fade" id="userHelper" tabindex="-1" aria-labelledby="userHelperLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajuda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                Como posso procurar por uma encomenda?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Basta utilizar a barra de procura que se encontra no canto superior esquerdo da sua página. É necessário introduzir o ID da encomenda que procura.</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                Como posso gerir o estado de uma encomenda?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Existem duas maneiras de lidar com esta situação. Pode simplesmente arrastar a sua encomenda ou então clicar na mesma e mudar o seu estado. Ambas as opções têm o mesmo efeito.</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                                Como posso visualizar encomendas já concluidas?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Basta clicar no botão "Arquivo". Desta forma irá ser apresentada uma lista de todas as encomendas que já não se encontram ativas.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+                </div>
+            </div>
+            </div>
             
         </body>
+      <TheFooter />
 </div>
 </template>
 
@@ -154,5 +205,8 @@ input:focus {
 
 button:focus {
   box-shadow: none !important;
+}
+.footerOverride {
+  bottom: auto !important;
 }
 </style>

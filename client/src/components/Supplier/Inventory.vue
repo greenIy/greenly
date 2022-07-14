@@ -1,12 +1,10 @@
 <template>
 	<div class="container mt-5">
-        <div class="position-absolute end-0 p-2 pe-3" style="margin-top: -75px; margin-right: 30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ajuda">
-			<font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#userHelper" />
-		</div>
 		<div class="row align-items-start">
             <div class="row align-items-start">
-                <div class="row">
-                    <button type="button" class="btn btn-secondary ms-3 mb-3" data-bs-toggle="modal" data-bs-target="#modalNewItem" style="width: 200px"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar fornecimento</button>
+                <div class="mt-4 d-flex">
+                    <button type="button" class="btn btn-secondary ms-3 mb-3 me-3" data-bs-toggle="modal" data-bs-target="#modalNewItem" style="width: 200px"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar fornecimento</button>
+                    <font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer; margin-top: 3px" data-bs-toggle="modal" data-bs-target="#userHelper"/>
                 </div>
                 <div v-if="calculateInventoryLength() <= 0" class="text-center">
                     <p class="mt-5 fs-3">Parece que ainda não tem fornecimentos.</p>
@@ -31,7 +29,7 @@
                                     <div class="col">
                                         <span v-if="this.calculateExpirationTime(item.expiration_date) > 10"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}</span>
                                         <span v-if="this.calculateExpirationTime(item.expiration_date) < 10 && this.calculateExpirationTime(item.expiration_date) > 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(quase a expirar)</span>
-                                        <span v-if="this.calculateExpirationTime(item.expiration_date) < 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(expirado)</span>
+                                        <span v-if="this.calculateExpirationTime(item.expiration_date) <= 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(expirado)</span>
                                     </div>
                                 </div>
                             </div> 
@@ -395,11 +393,11 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="flush-headingOne">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                Como posso criar um novo fornecimento para um certo produto?
+                                Como posso criar um novo fornecimento?
                             </button>
                             </h2>
                             <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">Clicar no botão <button class="btn btn-secondary"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar fornecimento</button> . Preencha todos os campos pedidos para conseguir criar um novo fornecimento. Para selecionar o armazém, tem de já existir algum criado. Para finalizar clicar no botão <button class="btn btn-primary" >Criar fornecimento</button> .</div>
+                            <div class="accordion-body">Basta clicar no botão "Criar fornecimento" e preencher todos os campos como pedido. Para ser possível selecionar um armazém, é necessário ter um previamente criado e associado à sua conta.</div>
                             </div>
                         </div>
                         <div class="accordion-item">
@@ -409,17 +407,17 @@
                             </button>
                             </h2>
                             <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento. Clicar em <button class="btn btn-danger btn-sm" ><font-awesome-icon :icon="['fa', 'trash']"/> Remover</button> . Se tiver mesmo a certeza que quer eliminar o armazém clicar em <button type="button" class="btn btn-sm btn-danger">Remover</button> .</div>
+                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento. Clique em "Remover". Irá ser aberta uma caixa de confirmação e, depois de refletir na sua decisão, pode remover o fornecimento.</div>
                             </div>
                         </div>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="flush-headingThree">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                                Como posso visualizar e editar informação sobre cada fornecimento?
+                                Como posso visualizar e editar as informações do meu fornecimento?
                             </button>
                             </h2>
                             <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento e será mostrada toda a informação sobre esse fornecimento. Carregando no botão <button class="btn btn-sm btn-secondary"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Visualizar transportadores</button>  é aberto um menu onde pode visualizar as informações sobre os transportadores desse fornecimento. Neste menu pode remover e adicionar transportadores. Pode também alterar as informações sobre esse fornecimento carregando no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button> . </div>
+                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento onde será mostrada informação sobre este. Carregando no botão "Visualizar transportadores" é aberto um menu onde pode visualizar as informações sobre os transportadores desse fornecimento. Neste menu pode adiconar e remover transportadores, assim como editar o preço dos transportadores. É ainda possível alterar as informações sobre fornecimento em si carregando no botão "Editar detalhes".</div>
                             </div>
                         </div>
                     </div>
@@ -697,7 +695,7 @@ export default {
                 if (this.calculateExpirationTime(item.expiration_date) < 10 && this.calculateExpirationTime(item.expiration_date) > 1) {
                     document.getElementById(String("item"+item.id)).style.backgroundColor = "#faee422b"
                 }
-                else if (this.calculateExpirationTime(item.expiration_date) < 1) {
+                else if (this.calculateExpirationTime(item.expiration_date) <= 1) {
                     document.getElementById(String("item"+item.id)).style.backgroundColor = "#fc232350"
                 }
             }

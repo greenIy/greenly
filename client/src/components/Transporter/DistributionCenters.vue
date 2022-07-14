@@ -299,6 +299,55 @@
 					</div>
 				</div>
 				</div>
+
+				<!-- Modal User Helper -->
+				<div class="modal fade" id="userHelper" tabindex="-1" aria-labelledby="userHelperLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Ajuda</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="accordion accordion-flush" id="accordionFlushExample">
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingOne">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+									Como posso criar um novo centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Para criar um novo centro de distribuição basta clicar no botão "<font-awesome-icon :icon="['fa', 'plus']" style="color: grey" />" e preencher todos os campos como pedido. Para selecionar a morada do seu novo centro de distribuição, esta deve de ser primeiro adicionada ao seu perfil.</div>
+								</div>
+							</div>
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingTwo">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+									Como posso remover um centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Para remover um centro de distribuição basta clicar no botão "<span style="color: red;">Remover</span>". Irá ser aberta uma caixa de confirmação e, depois de refletir na sua decisão, pode remover o seu centro de distribuição.</div>
+								</div>
+							</div>
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingThree">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+									Como posso visualizar e editar informações do meu centro de distribuição?
+								</button>
+								</h2>
+								<div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+								<div class="accordion-body">Começe por carregar no botão "Mais detalhes". Irá ser aberto um menu onde pode visualizar as informações sobre esse centro de distribuição. Nesse menu pode também alterar a morada do seu centro de distribuição no botão "Alterar morada" e alterar capacidade do mesmo carregando no botão "Editar detalhes" . </div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+					</div>
+					</div>
+				</div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -1,8 +1,5 @@
 <template>
 	<div class="container mt-5">
-		<div class="position-absolute end-0 p-2 pe-3" style="margin-top: -75px; margin-right: 30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ajuda">
-			<font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#userHelper" />
-		</div>
 		<div class="row g-3 align-items-start">
 			<div class="col-md-4">
 				<div class="card">
@@ -17,8 +14,11 @@
 			<div class="col-md-8">
 				<div class="row g-3">
 					<div class="col-md-3">
-						<div class="card me-4" style="width: 100%; height: 220px !important; cursor:pointer" data-bs-toggle="modal" data-bs-target="#newWarehouseModal">
-							<div class="card-body addWarehouseButton align-items-center justify-content-center">
+						<div class="card me-4" style="width: 100%; height: 220px !important;">
+							<div class="position-absolute top-0 end-0 p-2 pe-3">
+								<font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer; text-align: right;" data-bs-toggle="modal" data-bs-target="#userHelper"/>
+							</div>
+							<div class="card-body addWarehouseButton align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#newWarehouseModal" style="cursor:pointer">
 								<h1><font-awesome-icon :icon="['fa', 'plus']" size="2xl" style="color: grey" /></h1>
 								<span>criar novo armazém</span>
 							</div>
@@ -357,7 +357,7 @@
 						</button>
 						</h2>
 						<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Clicar no botão "<font-awesome-icon :icon="['fa', 'plus']" style="color: grey" />". Preencha todos os campos pedidos para conseguir criar um novo armazém. Para selecionar a morada, esta tem de ser primeiro adicionada no perfil.</div>
+						<div class="accordion-body">Para criar um novo armazém basta clicar no botão "<font-awesome-icon :icon="['fa', 'plus']" style="color: grey" />" e preencher todos os campos como pedido. Para selecionar a morada do seu novo armazém, esta deve de ser primeiro adicionada ao seu perfil.</div>
 						</div>
 					</div>
 					<div class="accordion-item">
@@ -367,17 +367,17 @@
 						</button>
 						</h2>
 						<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Clicar em "<span style="color: red;">Remover</span>". Se tiver mesmo a certeza que quer eliminar o armazém clicar em <button type="button" class="btn btn-sm btn-danger">Remover</button>.</div>
+						<div class="accordion-body">Para remover um armazém basta clicar no botão "<span style="color: red;">Remover</span>". Irá ser aberta uma caixa de confirmação e, depois de refletir na sua decisão, pode remover o seu armazém.</div>
 						</div>
 					</div>
 					<div class="accordion-item">
 						<h2 class="accordion-header" id="flush-headingThree">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-							Como posso visualizar e editar informação sobre cada armazém?
+							Como posso visualizar e editar informações do meu armazém?
 						</button>
 						</h2>
 						<div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Começe por carregar no botão <button type="button" class="btn btn-sm btn-secondary"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button> . De seguida é aberto um menu onde pode visualizar as informações sobre esse armazém. Nesse menu pode alterar a morada atribuida ao armazem no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/> Alterar morada</button> . Pode também alterar as informações sobre esse aramzem carregando no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button> . </div>
+						<div class="accordion-body">Começe por carregar no botão "Mais detalhes". Irá ser aberto um menu onde pode visualizar as informações sobre esse armazém. Nesse menu pode também alterar a morada do seu armazém no botão "Alterar morada" e alterar informações sobre esse armazém carregando no botão "Editar detalhes" . </div>
 						</div>
 					</div>
 				</div>
@@ -776,7 +776,7 @@ export default {
 	}
 	.addWarehouseButton {
 		text-align: center;
-		margin-top: 10%;
+		margin-top: 15%;
 	}
 	.greenly-link {
         color: #5e9f88;
