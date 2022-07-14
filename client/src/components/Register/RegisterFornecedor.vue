@@ -12,7 +12,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="inputLastName" class="form-label">Apelido <span style='color: #FF0000;'>*</span></label>
-                            <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Apelido" required data-cy="supplier-last-name"> 
+                            <input type="name" class="form-control" id="lastName" v-model="registerInfo.lastName" placeholder="Apelido" required data-cy="supplier-last-name">
                         </div>
                     </div>
                     <div class="row g-3 mt-1">
