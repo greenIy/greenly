@@ -5544,7 +5544,11 @@ module.exports = {
 
     // Utils
     round,
-    report
+    report,
+    composeURL,
+    manualPagination,
+    calcLowestPrice,
+    calcHighestPrice
 
 }
 
