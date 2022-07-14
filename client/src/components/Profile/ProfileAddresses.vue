@@ -208,7 +208,7 @@
                 id="newAddressStreet"
                 v-model="newAddressInfo.street"
                 placeholder="Rua"
-                maxlength="40"
+                maxlength="55"
                 required
               />
             </div>
