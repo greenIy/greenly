@@ -15,8 +15,7 @@
                 <p class="cart-info__item-price">Envio: € {{ item.transport_price }}</p>
                 <p class="cart-info__item-quantity">Quantidade: {{ item.quantity }}</p>
             </div>
-
-    </div>
+        </div>
     </div>
     <div class="cart-info__footer" v-if="cart.length > 0">
         <p class="cart-info__total">Total: € {{ total }}</p>
@@ -25,11 +24,6 @@
         <p class="cart-info__empty">O seu carrinho está vazio!</p>
     </div>
 </div>
-
-
-
-
-
 </template>
 
 <script>
