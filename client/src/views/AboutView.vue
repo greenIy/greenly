@@ -94,69 +94,6 @@
       <TheFooter />
     </body>
   </div>
-  <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/augusto.jpg" alt="Fotografia do Augusto">
-      <div class="container">
-        <h4>Augusto Gouveia</h4>
-        <p class="title">Back-end</p>
-      </div>
-    </div>
-  </div>
-   <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/livia.jpg" alt="Fotografia da Lívia" >
-      <div class="container">
-        <h4>Lívia Batalha</h4>
-        <p class="title">Front-end</p>
-      </div>
-    </div>
-  </div>
-   <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/daniela.jpg" alt="Fotografia da Daniela" >
-      <div class="container">
-        <h4>Daniela Gonçalves</h4>
-        <p class="title">Front-end</p>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2 " src="../assets/Team/ju.jpg" alt="Fotografia da Julliana" >
-      <div class="container">
-        <h4>Julliana Sousa</h4>
-        <p class="title">Front-end</p>
-      </div>
-    </div>
-  </div>
-   <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/joao.jpg" alt="Fotografia do João" >
-      <div class="container">
-        <h4>João Mateus</h4>
-        <p class="title">Front-end</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-3 mb-3">
-    <div class="card">
-      <img class="img-fluid mt-3 mb-2" src="../assets/Team/miguel.jpg" alt="Fotografia do Miguel" >
-      <div class="container">
-        <h4>Miguel Lages</h4>
-        <p class="title">Front-end</p>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-    </div>
-   <TheFooter />
-    </body>
-</div>
-
 </template>
 
 <script>

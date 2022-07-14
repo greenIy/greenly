@@ -107,7 +107,6 @@ export default {
     productsToCompare: Array,
   },
   mounted() {
-    this.getWishlist();
     this.getUserInfo();
   },
   data() {
@@ -213,7 +212,7 @@ export default {
       this.user = this.$store.getters.getUser;
 
       if (this.user && this.user.type == "CONSUMER") {
-        this.getWishlist();
+          this.getWishlist();
       }
 
       return this.user;

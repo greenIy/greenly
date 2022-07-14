@@ -1,5 +1,5 @@
 <template>
-  <p class="align-items-center pb-3 mb-3 fs-4 fw-bold ps-2">Filtros</p>
+  <p class="align-items-center pb-3 mb-3 fs-4 fw-bold ps-4 pt-3">Filtros</p>
   <ul class="list-unstyled">
     <li>
       <div
