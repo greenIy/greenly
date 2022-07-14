@@ -126,6 +126,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop"
                 class="btn btn-danger me-2"
+                data-cy="cart-clear-button"
               >
                 Limpar carrinho
                 <font-awesome-icon :icon="['fa', 'trash']" style="color: " />
@@ -187,6 +188,7 @@
               type="button"
               v-on:click="removeAllProducts()"
               class="btn btn-danger"
+              data-cy="cart-clear-confirm"
             >
               Limpar Carrinho
             </button>

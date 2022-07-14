@@ -38,6 +38,7 @@
           <li
             v-if="user.type == 'SUPPLIER' || user.type == 'TRANSPORTER'"
             class="nav-item"
+            data-cy="profile-wishlist-tab"
           >
             <router-link
               :to="{ name: 'companyInfo' }"
@@ -65,7 +66,7 @@
               />&nbsp; Encomendas
             </router-link>
           </li>
-          <li v-if="user.type == 'CONSUMER'" class="nav-item">
+          <li v-if="user.type == 'CONSUMER'" class="nav-item" data-cy="profile-wishlist-tab">
             <router-link
               :to="{ name: 'wishlist' }"
               class="nav-link link-dark"
@@ -88,7 +89,7 @@
               Moradas
             </router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-cy="profile-security-tab">
             <router-link
               :to="{ name: 'security' }"
               class="nav-link link-dark"

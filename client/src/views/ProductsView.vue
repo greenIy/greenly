@@ -21,6 +21,7 @@
               <div
                 v-if="products.length"
                 class="productList content d-flex w-100"
+                data-cy="product-container"
               >
                 <ProductCard
                   v-for="p in products"

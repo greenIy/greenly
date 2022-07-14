@@ -2,7 +2,7 @@
   <nav>
     <div class="navmenu d-flex justify-content-center pt-2 pb-2">
       <div class="align-self-center mt-2 mb-2">
-        <router-link to="/produtos" @click="reloadPage()" class="navbar-brand">
+        <router-link to="/produtos" @click="reloadPage()" class="navbar-brand" data-cy="navbar-home">
           <img alt="Logo do greenly" src="../../assets/logo_dark.png" />
         </router-link>
       </div>
@@ -43,6 +43,7 @@
               id="dropdownMenuLink"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+              data-cy="navbar-dropdown"
             >
               <font-awesome-icon :icon="['fas', 'user']" size="xl" />
             </a>
@@ -55,6 +56,7 @@
                   to="/perfil/detalhes"
                   style="margin-left: 0"
                   class="drop"
+                  data-cy="navbar-profile"
                   ><a class="dropdown-item ms-0 drop"
                     ><font-awesome-icon :icon="['fa', 'id-card']" />&nbsp;
                     Perfil</a
@@ -83,7 +85,7 @@
                   ></router-link
                 >
               </li>
-              <li>
+              <li data-cy="navbar-dashboard-admin">
                 <router-link
                   v-if="user.type === 'ADMINISTRATOR'"
                   to="/administracao"
@@ -97,7 +99,7 @@
                   ></router-link
                 >
               </li>
-              <li>
+              <li data-cy="navbar-dashboard-supplier">
                 <router-link
                   v-if="user.type === 'SUPPLIER'"
                   :to="{ name: 'fornecedor' }"
@@ -111,7 +113,7 @@
                   ></router-link
                 >
               </li>
-              <li>
+              <li data-cy="navbar-dashboard-transporter">
                 <router-link
                   v-if="user.type === 'TRANSPORTER'"
                   :to="{ name: 'transportador' }"
@@ -420,6 +422,7 @@
         <router-link
           v-if="this.userIsLoggedIn && user.type === 'CONSUMER'"
           to="/carrinho"
+          data-cy="navbar-cart"
         >
           <font-awesome-icon
             class="iconCar"
@@ -563,7 +566,7 @@ export default {
       }
     },
     getUserCart() {
-      if (this.userIsLoggedIn && this.user.type == "CONSUMER") {
+      if (this.userIsLoggedIn && this.user && this.user.type == "CONSUMER") {
         let accessToken = JSON.parse(localStorage.getItem("accessToken"));
         let userId = JSON.parse(localStorage.getItem("userId"));
         if (accessToken) {

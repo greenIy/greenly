@@ -163,6 +163,7 @@
         data-bs-toggle="modal"
         data-bs-target="#deleteAccount"
         v-on:click="generateCode()"
+        data-cy="profile-delete-account-button"
       >
         <font-awesome-icon :icon="['fa', 'user-xmark']" /> &nbsp;Apagar conta
       </button>
@@ -196,7 +197,7 @@
               <img src="../../assets/checkIconGreen.png" />
             </div>
             <div class="modal-body text-center p-4" id="deleteMessage">
-              <h3 id="deleteAccountCode">{{ this.deleteCode }}</h3>
+              <h3 id="deleteAccountCode" data-cy="profile-delete-account-code">{{ this.deleteCode }}</h3>
               Digite o código acima para confirmar que pretende apagar a sua
               conta de forma definitiva
               <div class="form-row justify-content-center mt-3">
@@ -208,6 +209,7 @@
                     class="form-control text-center"
                     maxlength="4"
                     placeholder="Código"
+                    data-cy="profile-delete-account-code-input"
                   />
                   <div class="invalid-feedback" id="invalidDeleteCode">
                     O código está errado.
@@ -229,6 +231,7 @@
                 class="btn btn-danger"
                 id="deleteButton"
                 v-on:click="confirmDeleteAccount"
+                data-cy="profile-delete-account-confirmation-button"
               >
                 Apagar
               </button>

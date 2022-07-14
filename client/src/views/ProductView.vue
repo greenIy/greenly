@@ -258,7 +258,7 @@
               <h4 class="my-0 fs-2">{{ this.totalPrice }} €</h4>
             </div>
             <div class="d-inline-block text-end">
-              <button v-on:click="this.addProductToCart" class="btnS p-2">
+              <button v-on:click="this.addProductToCart" class="btnS p-2" data-cy="product-add-to-cart">
                 <font-awesome-icon
                   class="icons"
                   :icon="['fa', 'cart-plus']"
@@ -270,6 +270,7 @@
             <button
               v-if="userIsLoggedIn && user.type == 'CONSUMER'"
               class="d-flex justify-content-center  align-items-center btnH fav"
+              data-cy="product-add-to-wishlist"
             >
               <font-awesome-icon
                 v-if="isProductInWishlist(this.product)"

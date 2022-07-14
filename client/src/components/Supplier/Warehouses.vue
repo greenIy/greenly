@@ -813,38 +813,40 @@ export default {
         version: "weekly",
       });
       loader.load().then(() => {
-        let mapCenter = {
-          lat: this.warehouses[0].address.latitude,
-          lng: this.warehouses[0].address.longitude,
-        };
-        this.map = new google.maps.Map(document.getElementById("map"), {
-          center: mapCenter,
-          zoom: 10,
-          streetViewControl: false,
-          mapTypeControl: false,
-          fullscreenControl: false,
-          zoomControl: false,
-          disableDoubleClickZoom: true,
-          draggable: false,
-          disableDefaultUI: true,
-          clickableIcons: false,
-        });
-        for (let warehouse of this.warehouses) {
-          let markerPosition = {
-            lat: warehouse.address.latitude,
-            lng: warehouse.address.longitude,
-          };
-          const marker = new google.maps.Marker({
-            position: markerPosition,
-            map: this.map,
-            label: {
-              text: `#${warehouse.id}`,
-              color: "#FFF",
-            },
-          });
+        if (this.distributionCenters.length > 0) {
+          let mapCenter = {
+            lat: this.warehouses[0].address.latitude,
+            lng: this.warehouses[0].address.longitude
+          }
+          this.map = new google.maps.Map(document.getElementById("map"), {
+            center: mapCenter,
+            zoom: 10,
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            zoomControl: false,
+            disableDoubleClickZoom: true,
+            draggable: false,
+            disableDefaultUI: true,
+            clickableIcons: false,
+          })
+          for (let warehouse of this.warehouses) {
+            let markerPosition = {
+              lat: warehouse.address.latitude,
+              lng: warehouse.address.longitude
+            }
+            const marker = new google.maps.Marker({
+              position: markerPosition,
+              map: this.map,
+              label: {
+                text: `#${warehouse.id}`,
+                color: "#FFF"
+              }
+            });
+          }
         }
-      });
-    },
+      })
+      },
     initWarehouseMap() {
       const loader = new Loader({
         apiKey: process.env.VUE_APP_GOOGLE_API_KEY,

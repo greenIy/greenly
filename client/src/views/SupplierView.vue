@@ -7,7 +7,7 @@
           class="nav nav-pills mb-5 mt-4 justify-content-center"
           role="tablist"
         >
-          <li role="button" class="nav-item">
+          <li role="button" class="nav-item" data-cy="dashboard-supplier-orders-pill">
             <a
               class="nav-link"
               data-toggle="pill"
@@ -21,7 +21,7 @@
               >Encomendas</a
             >
           </li>
-          <li role="button" class="nav-item">
+          <li role="button" class="nav-item" data-cy="dashboard-supplier-warehouses-pill">
             <a
               class="nav-link"
               data-toggle="pill"
@@ -31,7 +31,7 @@
               >Armazéns</a
             >
           </li>
-          <li role="button" class="nav-item">
+          <li role="button" class="nav-item" data-cy="dashboard-supplier-supplies-pill">
             <a
               class="nav-link"
               data-toggle="pill"
@@ -92,6 +92,7 @@
               class="btn btnHist"
               v-if="this.$route.name == 'fornecedor'"
               @click="showHistory()"
+              data-cy="dashboard-supplier-orders-archive"
             >
               <font-awesome-icon
                 class="fs-6 fa-fw mx-1 icon"

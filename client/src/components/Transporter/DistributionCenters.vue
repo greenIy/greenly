@@ -740,38 +740,40 @@ export default {
         version: "weekly",
       });
       loader.load().then(() => {
-        let mapCenter = {
-          lat: this.distributionCenters[0].address.latitude,
-          lng: this.distributionCenters[0].address.longitude,
-        };
-        this.map = new google.maps.Map(document.getElementById("map"), {
-          center: mapCenter,
-          zoom: 10,
-          streetViewControl: false,
-          mapTypeControl: false,
-          fullscreenControl: false,
-          zoomControl: false,
-          disableDoubleClickZoom: true,
-          draggable: false,
-          disableDefaultUI: true,
-          clickableIcons: false,
-        });
-        for (let distributionCenter of this.distributionCenters) {
-          let markerPosition = {
-            lat: distributionCenter.address.latitude,
-            lng: distributionCenter.address.longitude,
-          };
-          const marker = new google.maps.Marker({
-            position: markerPosition,
-            map: this.map,
-            label: {
-              text: `#${distributionCenter.id}`,
-              color: "#FFF",
-            },
-          });
+        if (this.distributionCenters.length > 0) {
+          let mapCenter = {
+            lat: this.distributionCenters[0].address.latitude,
+            lng: this.distributionCenters[0].address.longitude
+          }
+          this.map = new google.maps.Map(document.getElementById("map"), {
+            center: mapCenter,
+            zoom: 10,
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            zoomControl: false,
+            disableDoubleClickZoom: true,
+            draggable: false,
+            disableDefaultUI: true,
+            clickableIcons: false,
+          })
+          for (let distributionCenter of this.distributionCenters) {
+            let markerPosition = {
+              lat: distributionCenter.address.latitude,
+              lng: distributionCenter.address.longitude
+            }
+            const marker = new google.maps.Marker({
+              position: markerPosition,
+              map: this.map,
+              label: {
+                text: `#${distributionCenter.id}`,
+                color: "#FFF"
+              }
+            });
+          }
         }
-      });
-    },
+      })
+      },
     initCenterMap() {
       const loader = new Loader({
         apiKey: process.env.VUE_APP_GOOGLE_API_KEY,

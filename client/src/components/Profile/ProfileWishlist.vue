@@ -8,6 +8,7 @@
         v-if="this.wishlistLength > 0"
         type="button"
         class="btn btn-danger"
+        data-cy="wishlist-clear"
       >
         <font-awesome-icon :icon="['fa', 'trash']" style="color: " /> Limpar
         Favoritos
@@ -19,6 +20,7 @@
       class="infinite-scroll py-3 text-center"
       id="spinners-and-async-example"
       style="overflow-y: scroll; height: 450px"
+      data-cy="wishlist-product-container"
     >
       <div v-if="products.length" @currentPage="getCurrentPage">
         <ProductCard
@@ -86,6 +88,7 @@
               type="button"
               v-on:click="removeAllProducts()"
               class="btn btn-danger"
+              data-cy="wishlist-clear-confirm"
             >
               Limpar favoritos
             </button>
