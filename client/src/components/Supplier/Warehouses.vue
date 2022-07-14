@@ -353,31 +353,31 @@
 					<div class="accordion-item">
 						<h2 class="accordion-header" id="flush-headingOne">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-							Accordion Item #1
+							Como posso criar um novo armazém?
 						</button>
 						</h2>
 						<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the first item's accordion body.</div>
+						<div class="accordion-body">Clicar no botão "<font-awesome-icon :icon="['fa', 'plus']" style="color: grey" />". Preencha todos os campos pedidos para conseguir criar um novo armazém. Para selecionar a morada, esta tem de ser primeiro adicionada no perfil.</div>
 						</div>
 					</div>
 					<div class="accordion-item">
 						<h2 class="accordion-header" id="flush-headingTwo">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-							Accordion Item #2
+							Como posso remover um armazém?
 						</button>
 						</h2>
 						<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
+						<div class="accordion-body">Clicar em "<span style="color: red;">Remover</span>". Se tiver mesmo a certeza que quer eliminar o armazém clicar em <button type="button" class="btn btn-sm btn-danger">Remover</button>.</div>
 						</div>
 					</div>
 					<div class="accordion-item">
 						<h2 class="accordion-header" id="flush-headingThree">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-							Accordion Item #3
+							Como posso visualizar e editar informação sobre cada armazém?
 						</button>
 						</h2>
 						<div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-						<div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.</div>
+						<div class="accordion-body">Começe por carregar no botão <button type="button" class="btn btn-sm btn-secondary"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Mais detalhes</button> . De seguida é aberto um menu onde pode visualizar as informações sobre esse armazém. Nesse menu pode alterar a morada atribuida ao armazem no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/> Alterar morada</button> . Pode também alterar as informações sobre esse aramzem carregando no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button> . </div>
 						</div>
 					</div>
 				</div>

@@ -1,5 +1,8 @@
 <template>
 	<div class="container mt-5">
+        <div class="position-absolute end-0 p-2 pe-3" style="margin-top: -75px; margin-right: 30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ajuda">
+			<font-awesome-icon :icon="['fa', 'circle-question']" size="2xl" style="color: grey; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#userHelper" />
+		</div>
 		<div class="row align-items-start">
             <div class="row align-items-start">
                 <div class="row">
@@ -374,6 +377,55 @@
                 <div class="modal-footer">
                     <button type="button" id="closeRemoveItem" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" v-on:click="removeItem(this.selectedItem.id)">Remover</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Modal User Helper -->
+            <div class="modal fade" id="userHelper" tabindex="-1" aria-labelledby="userHelperLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajuda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                Como posso criar um novo fornecimento para um certo produto?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Clicar no botão <button class="btn btn-secondary"><font-awesome-icon :icon="['fa', 'plus']" />&nbsp; Criar fornecimento</button> . Preencha todos os campos pedidos para conseguir criar um novo fornecimento. Para selecionar o armazém, tem de já existir algum criado. Para finalizar clicar no botão <button class="btn btn-primary" >Criar fornecimento</button> .</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                Como posso remover um fornecimento?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento. Clicar em <button class="btn btn-danger btn-sm" ><font-awesome-icon :icon="['fa', 'trash']"/> Remover</button> . Se tiver mesmo a certeza que quer eliminar o armazém clicar em <button type="button" class="btn btn-sm btn-danger">Remover</button> .</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                                Como posso visualizar e editar informação sobre cada fornecimento?
+                            </button>
+                            </h2>
+                            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">Abra o menu dropdown do respetivo fornecimento e será mostrada toda a informação sobre esse fornecimento. Carregando no botão <button class="btn btn-sm btn-secondary"><font-awesome-icon :icon="['fa', 'up-right-and-down-left-from-center']" />&nbsp; Visualizar transportadores</button>  é aberto um menu onde pode visualizar as informações sobre os transportadores desse fornecimento. Neste menu pode remover e adicionar transportadores. Pode também alterar as informações sobre esse fornecimento carregando no botão <button type="button" class="btn btn-secondary btn-sm"><font-awesome-icon :icon="['fa', 'pencil']" size="sm"/>&nbsp; Editar detalhes</button> . </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
                 </div>
             </div>
