@@ -2,7 +2,7 @@ import axios from "axios";
 import { router } from "./src/main"
 
 let customAxios = axios.create({
-  baseURL: "https://api.greenly.pt",
+  baseURL: "http://dev.greenly.pt",
   headers: {
     "Content-type": "application/json"
   }

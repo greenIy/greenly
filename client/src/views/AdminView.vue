@@ -43,7 +43,7 @@
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
           <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions' />
-          <Chart :amountRevenue='this.amountRevenue'/>
+          <Chart :monthlyEmissions='this.monthlyEmissions'/>
         </div>
 
       </div>
@@ -105,7 +105,37 @@ export default {
       amountTransporterResources: 0,
       incrementTransporterResources: 0,
       amountEmissions: 0,
-      incrementEmissions: 0
+      incrementEmissions: 0,
+      months: {"01": "Janeiro", 
+        "02" : "Fevereiro", 
+        "03": "Março",
+        "04": "Abril",
+        "05": "Maio",
+        "06": "Junho",
+        "07": "Julho",
+        "08": "Agosto",
+        "09": "Setembro",
+        "10": "Outubro",
+        "11": "Novembro",
+        "12": "Dezembro"},
+      monthlyEmissions: [],
+      monthlyNewUsers: [
+        {"month": "",
+         "newUsers": 0
+        }
+      ],
+      monthlyResourceUsage: [
+        {"month": "",
+         "supply": 0,
+         "transport": 0,
+        }
+      ],
+      monthlyRevenue: [
+        {"month": "",
+         "supply": 0,
+         "transport": 0,
+        }
+      ],
     };
   },
   mounted() {
@@ -147,8 +177,6 @@ export default {
 
       this.usersIncrement = response.data.users.last_month;
       this.amountRevenue = response.data.revenue.total.total.toFixed(2);
-      console.log(response.data);
-      console.log(this.amountRevenue);
       this.incrementRevenue = response.data.revenue.last_month.total.toFixed(2);
       this.amountProfit = (response.data.revenue.total.total * 0.05).toFixed(2);
       this.incrementProfit = (response.data.revenue.last_month.total * 0.05).toFixed(2);
@@ -158,6 +186,20 @@ export default {
       this.incrementTransporterResources = response.data.resource_usage.last_month.transport.toFixed(2);
       this.amountEmissions = response.data.emissions.total.toFixed(2);
       this.incrementEmissions = response.data.emissions.last_month.toFixed(2);
+
+      this.manageStatistics(response.data.history);
+    },
+    manageStatistics(data) {
+      let filteredStatistics = data.slice(-6);
+      
+      for (let i = 0; i < filteredStatistics.length; i++) {
+        let d = filteredStatistics[i].date.split("-")[1];
+
+        this.monthlyEmissions.push({month: this.months[d], emissions: filteredStatistics[i].emissions});
+        this.monthlyNewUsers.push({month: this.months[d], newUsers: filteredStatistics[i].new_users});
+        this.monthlyResourceUsage.push({month: this.months[d], ru_supply: filteredStatistics[i].resource_usage.supply, ru_transport: filteredStatistics[i].resource_usage.transport});
+        this.monthlyRevenue.push({month: this.months[d], revenue: filteredStatistics[i].revenue.total});
+      }
     },
   }
 };

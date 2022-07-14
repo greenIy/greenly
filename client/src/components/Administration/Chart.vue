@@ -50,9 +50,10 @@ export default {
       type: Object,
       default: () => {}
     },
-    amountRevenue: Number,
+    monthlyEmissions: Array,
   },
   data() {
+    console.log(this.monthlyEmissions);
     return {
       chartData: {
         labels: [ 'January', 'February', 'March' ],
