@@ -43,7 +43,33 @@
           <TheProductsTab :categories='this.categories' :products='this.products' :requests='this.requests' 
                           :amountCategories='this.amountCategories' :amountProducts='this.amountProducts' :amountRequests='this.amountRequests'/>
           <TheOrdersTab :orders='this.orders' :amountOrders='this.amountOrders' :amountRevenue='this.amountRevenue' :incrementRevenue='this.incrementRevenue' :amountProfit='this.amountProfit' :incrementProfit='this.incrementProfit' :amountSupplierResources='this.amountSupplierResources' :incrementSupplierResources='this.incrementSupplierResources' :amountTransporterResources='this.amountTransporterResources' :incrementTransporterResources='this.incrementTransporterResources' :amountEmissions='this.amountEmissions' :incrementEmissions='this.incrementEmissions' />
-          <Chart :monthlyEmissions='this.monthlyEmissions'/>
+          
+          <div class="row mt-4">
+                <div class="lc-block text-center">
+                  <div editable="rich">
+                      <h4 class="fw-bold display-2"  style="font-size: 40px !important;">Estatísticas</h4>
+                  </div>
+                </div>
+            </div>
+          <div v-if="loaded" class="container-fluid px-5 tab-pane fade show active" id="general-tab" role="tabpanel" aria-labelledby="general-pill">
+            <div class="row px-5 justify-content-md-center">
+              <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5 stats p-2">
+                <Chart :informations='this.monthlyRevenue' :months='this.monthsNeeded' infoName="Vendas (€)"/>
+              </div>
+              <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5 stats ms-2  p-2">
+               <Chart :informations='this.monthlyNewUsers' :months='this.monthsNeeded' infoName="Novos utilizadores"/>
+              </div>
+            </div>
+            <div class="row px-5 justify-content-md-center">
+              <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5 stats  p-2">
+                <Chart :informations='this.monthlyEmissions' :months='this.monthsNeeded' infoName="Emissões (CO2 g/km/t)"/>
+              </div>
+              <div class="col-xl-4 col-lg-6 col-md-12 col-12 mt-5 stats ms-2  p-2">
+                <Chart :informations='this.monthlySupplyResourceUsage' :informationsPlus='this.monthlyTransportResourceUsage' :months='this.monthsNeeded' infoName="Recursos utilizados pelo fornecedor (kWh/dia)" infoNamePlus="Recursos utilizados pelo transportador (L/100km)"/>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -85,6 +111,7 @@ export default {
 },
   data() {
     return {
+      loaded: false,
       users: [],
       amountUsers: 0,
       usersIncrement: 0,
@@ -118,24 +145,12 @@ export default {
         "10": "Outubro",
         "11": "Novembro",
         "12": "Dezembro"},
+      monthsNeeded : [],
       monthlyEmissions: [],
-      monthlyNewUsers: [
-        {"month": "",
-         "newUsers": 0
-        }
-      ],
-      monthlyResourceUsage: [
-        {"month": "",
-         "supply": 0,
-         "transport": 0,
-        }
-      ],
-      monthlyRevenue: [
-        {"month": "",
-         "supply": 0,
-         "transport": 0,
-        }
-      ],
+      monthlyNewUsers: [],
+      monthlySupplyResourceUsage: [],
+      monthlyTransportResourceUsage: [],
+      monthlyRevenue: [],
     };
   },
   mounted() {
@@ -195,11 +210,14 @@ export default {
       for (let i = 0; i < filteredStatistics.length; i++) {
         let d = filteredStatistics[i].date.split("-")[1];
 
-        this.monthlyEmissions.push({month: this.months[d], emissions: filteredStatistics[i].emissions});
-        this.monthlyNewUsers.push({month: this.months[d], newUsers: filteredStatistics[i].new_users});
-        this.monthlyResourceUsage.push({month: this.months[d], ru_supply: filteredStatistics[i].resource_usage.supply, ru_transport: filteredStatistics[i].resource_usage.transport});
-        this.monthlyRevenue.push({month: this.months[d], revenue: filteredStatistics[i].revenue.total});
+        this.monthsNeeded.push(this.months[d]);
+        this.monthlyEmissions.push(filteredStatistics[i].emissions);
+        this.monthlyNewUsers.push(filteredStatistics[i].new_users);
+        this.monthlySupplyResourceUsage.push(filteredStatistics[i].resource_usage.supply);
+        this.monthlyTransportResourceUsage.push(filteredStatistics[i].resource_usage.transport);
+        this.monthlyRevenue.push(filteredStatistics[i].revenue.total);
       }
+      this.loaded = true;
     },
   }
 };
@@ -236,5 +254,10 @@ export default {
 
 .overlay {
   top: -150px;
+}
+
+.stats {
+  background-color: white;
+  border: 1px solid #d1d0d0;
 }
 </style>

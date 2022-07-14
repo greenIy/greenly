@@ -1,5 +1,5 @@
 <template>
-  <Bar
+  <Bar v-if="loaded"
     :chart-options="chartOptions"
     :chart-data="chartData"
     :chart-id="chartId"
@@ -32,11 +32,11 @@ export default {
     },
     width: {
       type: Number,
-      default: 400
+      default: 50
     },
     height: {
       type: Number,
-      default: 400
+      default: 50
     },
     cssClasses: {
       default: '',
@@ -50,18 +50,39 @@ export default {
       type: Object,
       default: () => {}
     },
-    monthlyEmissions: Array,
+    informations: Array,
+    informationsPlus: Array,
+    months: Array,
+    infoName: String,
+    infoNamePlus: String,
   },
   data() {
-    console.log(this.monthlyEmissions);
     return {
-      chartData: {
-        labels: [ 'January', 'February', 'March' ],
-        datasets: [ { data: [40, 20, 12] } ]
-      },
+      loaded: false,
+      chartData: {},
       chartOptions: {
         responsive: true
+      },
+    }
+  },
+  mounted () {
+
+    try {
+      if (this.infoNamePlus) {
+        this.chartData = {
+          labels: this.months,
+          datasets: [ { data: this.informations, backgroundColor: '#226d53', label: this.infoName }, { data: this.informationsPlus, backgroundColor: '#5e9f88', label: this.infoNamePlus } ]
+        }
+      } else {
+        this.chartData = {
+          labels: this.months,
+          datasets: [ { data: this.informations, backgroundColor: '#226d53', label: this.infoName } ]
+        }
       }
+
+      this.loaded = true
+    } catch (e) {
+      console.error(e)
     }
   }
 }
