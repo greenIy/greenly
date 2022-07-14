@@ -28,8 +28,8 @@
                                     </div>
                                     <div class="col">
                                         <span v-if="this.calculateExpirationTime(item.expiration_date) > 10"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}</span>
-                                        <span v-if="this.calculateExpirationTime(item.expiration_date) < 10 && this.calculateExpirationTime(item.expiration_date) > 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(quase a expirar)</span>
-                                        <span v-if="this.calculateExpirationTime(item.expiration_date) <= 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" />&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(expirado)</span>
+                                        <span v-if="this.calculateExpirationTime(item.expiration_date) < 10 && this.calculateExpirationTime(item.expiration_date) > 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" style="color: #E3C12B;"/>&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(quase a expirar)</span>
+                                        <span v-if="this.calculateExpirationTime(item.expiration_date) <= 1"><font-awesome-icon :icon="['fa', 'calendar-xmark']" style="color: red;"/>&nbsp; {{ `${String(new Date(item.expiration_date).getDate()).padStart(2, '0')}/${String(new Date(item.expiration_date).getMonth()+1).padStart(2, '0')}/${new Date(item.expiration_date).getFullYear()}` }}<br>(expirado)</span>
                                     </div>
                                 </div>
                             </div> 
@@ -621,7 +621,6 @@ export default {
                 .then((response) => {
                     if (response.status == 200) {
                         this.transporters = response.data;
-                        this.changeAccordionsColor()
                     }
                     }).catch((error) => {
                         console.log(error);
@@ -689,16 +688,6 @@ export default {
             var totalDays = Math.ceil(totalTime / (1000 * 3600 * 24));
 
             return totalDays;
-        },
-        changeAccordionsColor() {
-            for(let item of this.inventory){
-                if (this.calculateExpirationTime(item.expiration_date) < 10 && this.calculateExpirationTime(item.expiration_date) > 1) {
-                    document.getElementById(String("item"+item.id)).style.backgroundColor = "#faee422b"
-                }
-                else if (this.calculateExpirationTime(item.expiration_date) <= 1) {
-                    document.getElementById(String("item"+item.id)).style.backgroundColor = "#fc232350"
-                }
-            }
         },
         successfulNewItem() {
             this.getUserInventory();
