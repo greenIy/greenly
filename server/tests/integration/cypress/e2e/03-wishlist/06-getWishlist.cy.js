@@ -1,18 +1,5 @@
 describe('Get Wishlist Test', () => {
-
-    before(() => {
-        cy.clearLocalStorageSnapshot();
-    });
-
-    beforeEach(() => {
-        cy.restoreLocalStorage();
-    });
-
-    afterEach(() => {
-        cy.saveLocalStorage();
-    });
-
-    it('access profile page', () => {
+    it('enters wishlist page', () => {
         cy.viewport(1920, 1080)
 
         // Getting e-mail forms
@@ -28,11 +15,9 @@ describe('Get Wishlist Test', () => {
         }).click()
         cy.get('[data-cy="navbar-profile"]', {timeout: 15000}).click()
         cy.location('href').should('contain', '/perfil');
-    })
 
-    it('enters wishlist page', () => {
         cy.get('[data-cy="profile-wishlist-tab"]', {timeout: 15000}).click()
         cy.location('href').should('contain', '/perfil/favoritos');
-    })
 
+    })
 })

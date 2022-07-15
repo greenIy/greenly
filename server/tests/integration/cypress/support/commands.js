@@ -23,6 +23,3 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
-// Preserving localstorage
-import "cypress-localstorage-commands"
