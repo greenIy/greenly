@@ -31,7 +31,7 @@
           <font-awesome-icon :icon="['fas', 'user']" size="xl" />
         </router-link>
       </div>
-      <div v-if="userIsLoggedIn" style="display: flex">
+      <div v-if="this.userIsLoggedIn" style="display: flex">
         <div class="align-self-center nav-links mt-3 mb-2 ms-3">
           <h6>{{ user.first_name }}</h6>
         </div>
