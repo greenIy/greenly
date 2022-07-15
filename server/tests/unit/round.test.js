@@ -1,5 +1,7 @@
 const round = require('../../lib/helper').round
 
+// Comentário
+
 test('correctly rounds positive number with 6 decimal points to 2 decimal points', async () => {
     expect(round(78.315124, 2)).toBe(78.32)
 });
